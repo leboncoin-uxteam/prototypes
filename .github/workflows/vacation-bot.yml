@@ -1,0 +1,31 @@
+name: Vacation Bot
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
+    - cron: '55 5 * * *'
+    - cron: '50 11 * * *'
+    - cron: '45 17 * * *'
+  workflow_dispatch:
+
+jobs:
+  run-bot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+        working-directory: vacation-bot
+
+      - name: Run vacation bot
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          SLACK_APP_TOKEN: ${{ secrets.SLACK_APP_TOKEN }}
+        run: python bot.py
+        working-directory: vacation-bot
