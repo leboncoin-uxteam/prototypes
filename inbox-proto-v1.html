@@ -2,43 +2,44 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>Inbox Proto</title>
-<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;700;800&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;700&display=swap" rel="stylesheet">
 <style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 
 :root {
-  --surface:              #ffffff;
-  --on-surface:           #152233;
-  --outline:              #acb8c7;
-  --outline-dim:          rgba(98,124,147,0.16);
-  --neutral-container:    #f0f2f5;
-  --support-container:    #e6f2fd;
-  --support:              #094171;
-  --main:                 #ec5a13;
-  --dim:                  rgba(21,34,51,0.72);
-  --bg-variant:           #f4f9fe;
+  --surface:           #ffffff;
+  --on-surface:        #152233;
+  --outline:           rgba(98,124,147,0.16);
+  --outline-solid:     #acb8c7;
+  --neutral-cont:      #f0f2f5;
+  --support-cont:      #e6f2fd;
+  --support:           #094171;
+  --main:              #ec5a13;
+  --dim:               rgba(21,34,51,0.72);
+  --bg-variant:        #f4f9fe;
 }
 
-body {
-  background: #d8dde3;
+html, body {
+  height: 100%;
+  background: #c8cdd4;
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  min-height: 100vh;
-  padding: 40px 20px 80px;
+  padding: 40px 0 80px;
   font-family: 'Nunito Sans', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
-/* ── PHONE ── */
+/* ── PHONE SHELL ── */
 .phone {
   width: 390px;
   height: 844px;
   background: var(--surface);
   border-radius: 44px;
   overflow: hidden;
-  box-shadow: 0 32px 80px rgba(0,0,0,0.22), 0 4px 16px rgba(0,0,0,0.1);
+  box-shadow: 0 28px 72px rgba(0,0,0,0.28);
   position: relative;
   flex-shrink: 0;
 }
@@ -49,7 +50,7 @@ body {
   inset: 0;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  background: var(--surface);
 }
 .screen.hidden { display: none; }
 
@@ -59,24 +60,24 @@ body {
   justify-content: space-between;
   align-items: center;
   padding: 13px 24px 0;
+  height: 44px;
   flex-shrink: 0;
 }
 .status-time {
   font-size: 15px;
   font-weight: 600;
-  color: var(--on-surface);
   letter-spacing: -0.5px;
-  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  color: var(--on-surface);
+  font-family: -apple-system, sans-serif;
 }
-.status-icons { height: 13px; display: block; }
+.status-icons { display: flex; align-items: center; gap: 6px; }
 
 /* ── NAVBAR ── */
 .navbar {
-  border-bottom: 1px solid var(--outline-dim);
+  border-bottom: 1px solid var(--outline);
   flex-shrink: 0;
-  background: var(--surface);
 }
-.navbar-title-bar {
+.navbar-bar {
   height: 54px;
   display: flex;
   align-items: center;
@@ -91,8 +92,6 @@ body {
 .navbar-back {
   position: absolute;
   left: 4px;
-  top: 50%;
-  transform: translateY(-50%);
   width: 44px;
   height: 44px;
   display: flex;
@@ -101,64 +100,60 @@ body {
   background: none;
   border: none;
   cursor: pointer;
-  color: var(--on-surface);
-  -webkit-tap-highlight-color: transparent;
 }
 
-/* ── SCROLLABLE CONTENT ── */
-.content {
+/* ── SCROLLABLE AREA ── */
+.scroll {
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
 }
-.content::-webkit-scrollbar { display: none; }
+.scroll::-webkit-scrollbar { display: none; }
 
-/* ── CAROUSEL ── */
-.carousel-section { padding: 16px 16px 0; }
+/* ══════════════════════════════
+   SCREEN 1 — MESSAGERIE
+   ══════════════════════════════ */
 
+/* Carousel */
+.carousel-wrap { padding: 16px 16px 8px; }
 .carousel {
   display: flex;
   gap: 8px;
   overflow-x: auto;
-  scrollbar-width: none;
   -webkit-overflow-scrolling: touch;
-  padding-bottom: 2px;
+  scrollbar-width: none;
 }
 .carousel::-webkit-scrollbar { display: none; }
 
 .card {
   flex-shrink: 0;
   width: 212px;
-  background: var(--support-container);
+  background: var(--support-cont);
   border-radius: 8px;
   padding: 8px;
   display: flex;
   align-items: center;
   gap: 8px;
   cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-  transition: opacity 0.12s;
+  user-select: none;
+  transition: opacity .1s;
 }
-.card:active { opacity: 0.75; }
+.card:active { opacity: .7; }
 
-.card-img {
+.card-thumb {
   width: 48px;
   height: 48px;
   border-radius: 4px;
-  overflow: hidden;
   flex-shrink: 0;
-  background: var(--neutral-container);
 }
-.card-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
-
 .card-body {
   flex: 1;
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 2px;
 }
 .card-count {
   font-size: 18px;
@@ -166,56 +161,53 @@ body {
   color: var(--on-surface);
   line-height: 24px;
 }
-.card-label {
+.card-sub {
   font-size: 12px;
   font-weight: 400;
   color: var(--on-surface);
   line-height: 16px;
 }
-.tag-support {
+.tag-blue {
   display: inline-flex;
   align-items: center;
   gap: 3px;
   background: var(--support);
   color: #fff;
-  border-radius: 4px;
-  padding: 2px 6px;
   font-size: 11px;
   font-weight: 700;
-  align-self: flex-start;
+  border-radius: 4px;
+  padding: 2px 6px 2px 4px;
   white-space: nowrap;
+  align-self: flex-start;
+  margin-top: 3px;
 }
 
-/* ── CHIPS ── */
+/* Chips */
 .chips-row {
   display: flex;
   gap: 8px;
-  padding: 12px 16px 8px;
+  padding: 8px 16px 4px;
 }
 .chip {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
   height: 32px;
   padding: 0 12px;
   border-radius: 100px;
-  border: 1.5px solid var(--outline);
+  border: 1.5px solid var(--outline-solid);
   background: var(--surface);
   font-size: 13px;
   font-weight: 500;
   color: var(--on-surface);
   cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-  transition: border-color 0.12s;
   font-family: 'Nunito Sans', sans-serif;
+  user-select: none;
+  transition: border-color .12s;
 }
-.chip.active {
-  border-color: var(--support);
-  font-weight: 700;
-}
-.chip-check { display: flex; align-items: center; }
+.chip.active { font-weight: 700; border-color: var(--on-surface); }
 
-/* ── CONVERSATION LIST ── */
+/* Conversation list */
 .conv-list { display: flex; flex-direction: column; }
 
 .conv-row {
@@ -223,69 +215,28 @@ body {
   align-items: center;
   gap: 16px;
   padding: 8px 16px;
-  background: var(--surface);
 }
-
-/* Thumb base */
 .conv-thumb {
   width: 64px;
   height: 64px;
   border-radius: 8px 8px 8px 0;
   overflow: hidden;
   flex-shrink: 0;
-  background: var(--neutral-container);
   position: relative;
+  background: var(--neutral-cont);
 }
-.conv-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
-
-/* LBC logo thumb */
-.thumb-lbc {
-  background: white;
-  border: 0.7px solid var(--outline);
-}
-
-/* Deleted thumb */
-.thumb-deleted {
-  background: var(--neutral-container);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.thumb-deleted img { width: 32px; height: 32px; object-fit: contain; }
-
-/* Bundle badge */
-.thumb-bundle-badge {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: rgba(32,39,48,0.72);
-  color: #fff;
-  font-size: 14px;
-  font-weight: 700;
-  width: 24px;
-  height: 24px;
-  border-radius: 100px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  pointer-events: none;
-}
-
-/* Conv body */
 .conv-body {
   flex: 1;
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 2px;
 }
 .conv-name-row {
   display: flex;
   align-items: center;
   gap: 4px;
 }
-.conv-verified { width: 16px; height: 16px; flex-shrink: 0; display: block; }
 .conv-name {
   font-size: 14px;
   font-weight: 700;
@@ -296,63 +247,85 @@ body {
   flex: 1;
   min-width: 0;
 }
-.conv-line {
+.conv-body-bold {
   font-size: 12px;
-  line-height: 16px;
+  font-weight: 700;
   color: var(--on-surface);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  line-height: 16px;
 }
-.conv-line.bold { font-weight: 700; }
-.conv-line.regular { font-weight: 400; }
+.conv-body-reg {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--on-surface);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  line-height: 16px;
+}
 .conv-meta {
   font-size: 10px;
-  line-height: 14px;
   color: var(--dim);
+  line-height: 14px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-
-/* Deleted conv */
 .conv-row.deleted .conv-name,
-.conv-row.deleted .conv-line,
-.conv-row.deleted .conv-meta { color: var(--dim); font-weight: 400; }
-
-/* Unread badge */
+.conv-row.deleted .conv-body-reg,
+.conv-row.deleted .conv-meta {
+  color: var(--dim);
+  font-weight: 400;
+}
 .unread-badge {
   background: var(--main);
   color: #fff;
   font-size: 10px;
   font-weight: 700;
-  width: 18px;
+  min-width: 18px;
   height: 18px;
   border-radius: 100px;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  padding: 0 3px;
 }
-
-/* Tag tinted (service client) */
+.bundle-badge {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%,-50%);
+  background: rgba(32,39,48,.72);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  width: 24px;
+  height: 24px;
+  border-radius: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 .tag-tinted {
   display: inline-flex;
   align-items: center;
-  background: var(--support-container);
+  background: var(--support-cont);
   color: var(--support);
-  border-radius: 4px;
-  padding: 2px 6px;
   font-size: 11px;
   font-weight: 700;
+  border-radius: 4px;
+  padding: 2px 6px;
+  margin-top: 2px;
 }
 
-/* ── TAB BAR ── */
+/* Tab bar */
 .tab-bar {
+  border-top: 1px solid var(--outline-solid);
   background: var(--surface);
-  border-top: 1px solid var(--outline);
   display: flex;
-  padding: 4px 8px 20px;
+  padding: 4px 8px 28px;
   flex-shrink: 0;
 }
 .tab-item {
@@ -361,10 +334,10 @@ body {
   flex-direction: column;
   align-items: center;
   gap: 2px;
-  padding: 4px;
   font-size: 12px;
   font-weight: 400;
   color: var(--on-surface);
+  padding: 4px 0;
 }
 .tab-item.active { font-weight: 700; }
 .tab-icon-wrap {
@@ -375,41 +348,52 @@ body {
   align-items: center;
   justify-content: center;
 }
-.tab-icon-wrap img { width: 24px; height: 24px; display: block; }
 .tab-dot {
   position: absolute;
-  top: -4px;
-  right: -6px;
+  top: -3px; right: -6px;
   background: var(--main);
   color: #fff;
   font-size: 9px;
   font-weight: 700;
-  width: 15px;
+  min-width: 15px;
   height: 15px;
   border-radius: 100px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1.5px solid #fff;
+  border: 1.5px solid var(--surface);
+  padding: 0 2px;
 }
 
-/* ══════════════════════════
+/* ── IMAGE PLACEHOLDERS ── */
+.ph-valise      { background: linear-gradient(140deg,#c94060,#8c1a2a); }
+.ph-manette     { background: linear-gradient(140deg,#c0c4ce,#5a5e72); }
+.ph-lbc         { background: #fff; border: 1px solid #e8ecf0; display:flex; align-items:center; justify-content:center; }
+.ph-converse    { background: linear-gradient(140deg,#e0ddd4,#b8b4a8); }
+.ph-adidas      { background: linear-gradient(140deg,#c8a870,#9a7840); }
+.ph-nike        { background: linear-gradient(140deg,#d8d8d8,#a8a8a8); }
+.ph-lot         { background: linear-gradient(140deg,#b8a888,#8a7858); }
+.ph-deleted     { background: var(--neutral-cont); display:flex; align-items:center; justify-content:center; }
+.ph-ps5         { background: linear-gradient(140deg,#2a2a3a,#4a4a6a); }
+
+.lbc-logo-mark {
+  width: 36px;
+  height: 36px;
+  background: var(--main);
+  border-radius: 5px 5px 5px 0;
+}
+
+/* ══════════════════════════════
    SCREEN 2 — FAIRE UNE OFFRE
-   ══════════════════════════ */
-.offre-content {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-  padding: 16px 16px 24px;
-}
+   ══════════════════════════════ */
+.offre-body { padding: 16px; display: flex; flex-direction: column; gap: 24px; }
 
-/* Article card */
 .article-card {
-  border: 1px solid rgba(172,184,199,0.56);
+  border: 1px solid rgba(172,184,199,.56);
   border-radius: 8px;
   overflow: hidden;
 }
-.article-row {
+.article-top {
   display: flex;
   align-items: center;
   gap: 16px;
@@ -421,10 +405,8 @@ body {
   border-radius: 4px;
   overflow: hidden;
   flex-shrink: 0;
-  background: var(--neutral-container);
 }
-.article-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.article-title {
+.article-name {
   font-size: 14px;
   font-weight: 700;
   color: var(--on-surface);
@@ -438,7 +420,6 @@ body {
   white-space: nowrap;
   flex-shrink: 0;
 }
-
 .article-buyers {
   background: var(--bg-variant);
   display: flex;
@@ -448,20 +429,26 @@ body {
 }
 .avatars-stack {
   position: relative;
-  width: 48px;
-  height: 40px;
+  width: 50px;
+  height: 44px;
   flex-shrink: 0;
 }
-.av-circle {
+.av {
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  overflow: hidden;
   position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff;
+  border: 2px solid var(--bg-variant);
+  overflow: hidden;
 }
-.av-circle:nth-child(1) { top: 0; left: 0; z-index: 2; }
-.av-circle:nth-child(2) { bottom: 0; right: 0; z-index: 1; }
-.av-circle img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.av-s { background: #8B5CF6; top: 0; left: 0; z-index: 2; }
+.av-m { background: #F59E0B; bottom: 0; right: 0; z-index: 1; }
 .buyers-text {
   font-size: 12px;
   font-weight: 700;
@@ -470,69 +457,39 @@ body {
   line-height: 16px;
 }
 
-/* Reduction form */
-.reduction-form {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-.reduction-label {
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--on-surface);
-  line-height: 20px;
-}
-.reduction-sublabel {
-  font-size: 14px;
-  font-weight: 400;
-  color: var(--on-surface);
-  line-height: 20px;
-}
+.label-bold { font-size: 14px; font-weight: 700; color: var(--on-surface); line-height: 20px; }
+.label-reg  { font-size: 14px; font-weight: 400; color: var(--on-surface); line-height: 20px; }
+
+.reduction-block { display: flex; flex-direction: column; gap: 8px; }
 
 .price-options {
   display: flex;
-  gap: 10px;
+  gap: 8px;
+  margin-top: 4px;
 }
-.price-option {
+.price-opt {
   flex: 1;
   background: var(--bg-variant);
+  border: 2px solid transparent;
   border-radius: 8px;
   padding: 16px;
   cursor: pointer;
-  border: 2px solid transparent;
-  transition: background 0.12s, border-color 0.12s;
-  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  transition: background .12s, border-color .12s;
 }
-.price-option.selected {
-  background: var(--support-container);
+.price-opt.selected {
+  background: var(--support-cont);
   border-color: var(--support);
 }
-.price-amount {
-  font-size: 16px;
-  font-weight: 700;
-  color: var(--on-surface);
-  line-height: 24px;
-}
-.price-reduction {
-  font-size: 12px;
-  font-weight: 400;
-  color: var(--on-surface);
-  line-height: 16px;
-  margin-top: 2px;
-}
+.price-opt:active { opacity: .8; }
+.price-amt { font-size: 16px; font-weight: 700; color: var(--on-surface); line-height: 24px; }
+.price-pct { font-size: 12px; font-weight: 400; color: var(--on-surface); line-height: 16px; margin-top: 2px; }
 
-/* Textarea */
-.textarea-section { display: flex; flex-direction: column; gap: 8px; }
-.textarea-label {
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--on-surface);
-  line-height: 20px;
-}
-.textarea-field {
+.msg-block { display: flex; flex-direction: column; gap: 8px; }
+.textarea {
   width: 100%;
   min-height: 120px;
-  border: 1px solid var(--outline);
+  border: 1px solid var(--outline-solid);
   border-radius: 8px;
   padding: 12px;
   font-size: 14px;
@@ -542,14 +499,13 @@ body {
   background: var(--surface);
   line-height: 1.5;
 }
-.textarea-field::placeholder { color: var(--dim); }
-.textarea-field:focus { outline: none; border-color: var(--support); }
+.textarea::placeholder { color: var(--dim); }
+.textarea:focus { outline: none; border-color: var(--support); }
 
-/* CTA bar */
 .cta-bar {
-  flex-shrink: 0;
   padding: 12px 16px 28px;
   background: var(--surface);
+  flex-shrink: 0;
 }
 .cta-btn {
   width: 100%;
@@ -562,61 +518,450 @@ body {
   font-weight: 700;
   font-family: 'Nunito Sans', sans-serif;
   cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-  transition: opacity 0.12s;
+  transition: opacity .1s;
 }
-.cta-btn:active { opacity: 0.85; }
+.cta-btn:active { opacity: .85; }
 </style>
 </head>
 <body>
-
 <div class="phone">
 
-  <!-- ═══════════════════════════════
-       ÉCRAN 1 — INBOX
-       ═══════════════════════════════ -->
+  <!-- ══════════════════════════════
+       ÉCRAN 1 — MESSAGERIE
+       ══════════════════════════════ -->
   <div id="screen-inbox" class="screen">
 
     <div class="navbar">
       <div class="status-bar">
         <span class="status-time">9:41</span>
-        <img class="status-icons" src="https://www.figma.com/api/mcp/asset/405825c6-696f-42f3-85f1-107d2f1b9fb6" alt="">
+        <div class="status-icons">
+          <!-- signal -->
+          <svg width="17" height="12" viewBox="0 0 17 12" fill="#152233">
+            <rect x="0"   y="6" width="3" height="6" rx=".5"/>
+            <rect x="4.5" y="4" width="3" height="8" rx=".5"/>
+            <rect x="9"   y="2" width="3" height="10" rx=".5"/>
+            <rect x="13.5" y="0" width="3" height="12" rx=".5"/>
+          </svg>
+          <!-- wifi -->
+          <svg width="16" height="11" viewBox="0 0 16 11" fill="#152233">
+            <path d="M8 8.5a1.5 1.5 0 110 3 1.5 1.5 0 010-3zm0-3a5.5 5.5 0 013.9 1.6L10.5 8.5A3.5 3.5 0 008 7.5a3.5 3.5 0 00-2.5 1L4.1 7.1A5.5 5.5 0 018 5.5zm0-3A9 9 0 0114.4 4.9L13 6.3A7 7 0 008 4.5 7 7 0 003 6.3L1.6 4.9A9 9 0 018 2.5z"/>
+          </svg>
+          <!-- battery -->
+          <svg width="26" height="13" viewBox="0 0 26 13" fill="none">
+            <rect x=".5" y=".5" width="22" height="12" rx="3.5" stroke="#152233" stroke-opacity=".35"/>
+            <rect x="1.5" y="1.5" width="20" height="10" rx="2.5" fill="#152233"/>
+            <path d="M24 4.5v4a2 2 0 000-4z" fill="#152233" fill-opacity=".4"/>
+          </svg>
+        </div>
       </div>
-      <div class="navbar-title-bar">
+      <div class="navbar-bar">
         <span class="navbar-title">Messagerie</span>
       </div>
     </div>
 
-    <div class="content">
+    <div class="scroll">
 
       <!-- Carousel -->
-      <div class="carousel-section">
+      <div class="carousel-wrap">
         <div class="carousel">
-          <div class="card" onclick="goToOffre()">
-            <div class="card-img">
-              <img src="https://www.figma.com/api/mcp/asset/08711926-f67e-4b0a-aa18-898dc35c927a" alt="Valise">
-            </div>
+
+          <div class="card" onclick="goToOffreValise()">
+            <div class="card-thumb" style="background:none;overflow:hidden"><img src="/Users/emilie.krasi/Downloads/Proto notif vendeur/valise samsonite.png" style="width:100%;height:100%;object-fit:cover;display:block" alt=""></div>
             <div class="card-body">
               <div class="card-count">6</div>
-              <div class="card-label">acheteurs potentiels</div>
-              <div class="tag-support">
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M13 2L4.5 13H12L11 22L19.5 11H12L13 2Z" fill="white"/>
+              <div class="card-sub">acheteurs potentiels</div>
+              <div class="tag-blue">
+                <svg width="11" height="11" viewBox="0 0 12 12" fill="none">
+                  <circle cx="6" cy="6" r="5" stroke="white" stroke-width="1.4"/>
+                  <path d="M6 3.5V6L7.5 7.5" stroke="white" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
                 Offres à envoyer
               </div>
             </div>
           </div>
-          <div class="card" onclick="goToOffre()">
-            <div class="card-img">
-              <img src="https://www.figma.com/api/mcp/asset/a12f7dde-7b0e-491a-a100-307e4f34fa2e" alt="Manette">
-            </div>
+
+          <div class="card" onclick="goToOffrePS5()">
+            <div class="card-thumb" style="background:none;overflow:hidden"><img src="/Users/emilie.krasi/Downloads/Proto notif vendeur/PlayStation 5 bon état.png" style="width:100%;height:100%;object-fit:cover;display:block" alt=""></div>
             <div class="card-body">
               <div class="card-count">5</div>
-              <div class="card-label">acheteurs potentiels</div>
-              <div class="tag-support">
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M13 2L4.5 13H12L11 22L19.5 11H12L13 2Z" fill="white"/>
+              <div class="card-sub">acheteurs potentiels</div>
+              <div class="tag-blue">
+                <svg width="11" height="11" viewBox="0 0 12 12" fill="none">
+                  <circle cx="6" cy="6" r="5" stroke="white" stroke-width="1.4"/>
+                  <path d="M6 3.5V6L7.5 7.5" stroke="white" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Offres à envoyer
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Chips -->
+      <div class="chips-row">
+        <button class="chip active" id="chip-all" onclick="filterAll()">
+          <svg width="12" height="10" viewBox="0 0 12 10" fill="none">
+            <path d="M1.5 5L4.5 8L10.5 2" stroke="#152233" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Tout
+        </button>
+        <button class="chip" id="chip-unread" onclick="filterUnread()">Non lus</button>
+      </div>
+
+      <!-- Conversations -->
+      <div class="conv-list" id="conv-list">
+
+        <!-- 1. leboncoin — NON LU -->
+        <div class="conv-row" data-unread="true">
+          <div class="conv-thumb ph-lbc">
+            <img src="https://www.figma.com/api/mcp/asset/81e435cf-b1db-46d7-ab86-96f7c4e1df7c" style="width:100%;height:100%;object-fit:cover;display:block" alt="">
+          </div>
+          <div class="conv-body">
+            <div class="conv-name-row">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <circle cx="8" cy="8" r="8" fill="#094171"/>
+                <path d="M4.5 8L7 10.5L11.5 5.5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <span class="conv-name">leboncoin</span>
+            </div>
+            <div class="conv-body-bold">Trop d'équipements inutilisés ? Ven...</div>
+            <div class="conv-body-reg">L'hiver arrive : ski, snowboard, raquet...</div>
+          </div>
+          <div class="unread-badge">1</div>
+        </div>
+
+        <!-- 2. Valise samsonite -->
+        <div class="conv-row" data-unread="false">
+          <div class="conv-thumb" style="overflow:hidden"><img src="/Users/emilie.krasi/Downloads/Proto notif vendeur/valise samsonite.png" style="width:100%;height:100%;object-fit:cover;display:block" alt=""></div>
+          <div class="conv-body">
+            <div class="conv-name">Valise samsonite chronolite</div>
+            <div class="conv-body-reg">L'article est visible au 5 rue Amelot à...</div>
+            <div class="conv-meta">Audrey - Il y a 2 mins</div>
+          </div>
+        </div>
+
+        <!-- 3. Converse all stars -->
+        <div class="conv-row" data-unread="false">
+          <div class="conv-thumb" style="overflow:hidden"><img src="https://www.figma.com/api/mcp/asset/45937384-a160-4d03-9d93-d28363f17b63" style="width:100%;height:100%;object-fit:cover;display:block" alt=""></div>
+          <div class="conv-body">
+            <div class="conv-name">Converse all stars</div>
+            <div class="conv-body-reg">Bonjour Laura, j'aime bien vos chauss...</div>
+            <div class="conv-meta">Laura S. - il y a 20 mins</div>
+          </div>
+        </div>
+
+        <!-- 4. Baskets adidas -->
+        <div class="conv-row" data-unread="false">
+          <div class="conv-thumb" style="overflow:hidden"><img src="https://www.figma.com/api/mcp/asset/22fb7e9c-0c90-443b-b719-22b035a8ccbb" style="width:100%;height:100%;object-fit:cover;display:block" alt=""></div>
+          <div class="conv-body">
+            <div class="conv-name">Baskets adidas ig1029 neuves</div>
+            <div class="conv-body-reg">Bonjour Laura, Est-que les baskets on...</div>
+            <div class="conv-meta">Laura S. - il y a 20 mins</div>
+          </div>
+        </div>
+
+        <!-- 5. Baskets Nike -->
+        <div class="conv-row" data-unread="false">
+          <div class="conv-thumb" style="overflow:hidden"><img src="https://www.figma.com/api/mcp/asset/ebea512b-96b7-49b7-8f32-1a806db9360b" style="width:100%;height:100%;object-fit:cover;display:block" alt=""></div>
+          <div class="conv-body">
+            <div class="conv-name">Baskets Nike Sportwear AL8</div>
+            <div class="conv-body-reg">Bonjour Laura, j'aime bien vos chauss...</div>
+            <div class="conv-meta">Laura S. - il y a 20 mins</div>
+          </div>
+        </div>
+
+        <!-- 6. Lot de 3 articles -->
+        <div class="conv-row" data-unread="false">
+          <div class="conv-thumb" style="overflow:hidden;position:relative">
+            <img src="https://www.figma.com/api/mcp/asset/537795fc-d48f-43ef-a9a2-97d80c2db3e5" style="width:100%;height:100%;object-fit:cover;display:block" alt="">
+            <div class="bundle-badge">3</div>
+          </div>
+          <div class="conv-body">
+            <div class="conv-name">Lot de 3 articles</div>
+            <div class="conv-body-reg">Bonjour Laura, votre annonce est-ell...</div>
+            <div class="conv-meta">Aurélie-  Avant-hier</div>
+          </div>
+        </div>
+
+        <!-- 7. Apple AirTag — supprimé -->
+        <div class="conv-row deleted" data-unread="false">
+          <div class="conv-thumb ph-deleted">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+              <path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6" stroke="#627C93" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M10 11v5M14 11v5" stroke="#627C93" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="conv-body">
+            <div class="conv-name">Apple AirTag</div>
+            <div class="conv-body-reg">Annonce supprimée</div>
+            <div class="conv-meta">Albert Muller - Samedi</div>
+          </div>
+        </div>
+
+        <!-- 8. Service client leboncoin -->
+        <div class="conv-row" data-unread="false">
+          <div class="conv-thumb" style="overflow:hidden"><img src="https://www.figma.com/api/mcp/asset/975f6b56-5aa5-4afc-a53f-0f54cc52b419" style="width:100%;height:100%;object-fit:cover;display:block" alt=""></div>
+          <div class="conv-body">
+            <div class="conv-name-row">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <circle cx="8" cy="8" r="8" fill="#094171"/>
+                <path d="M4.5 8L7 10.5L11.5 5.5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <span class="conv-name">Service client leboncoin</span>
+            </div>
+            <div class="conv-body-bold">Demande N°: 64031089</div>
+            <span class="tag-tinted">Envoyée</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Tab bar -->
+    <div class="tab-bar">
+      <div class="tab-item">
+        <div class="tab-icon-wrap">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+            <circle cx="11" cy="11" r="7" stroke="#152233" stroke-width="1.8"/>
+            <path d="M16.5 16.5L21 21" stroke="#152233" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <span>Recherche</span>
+      </div>
+      <div class="tab-item">
+        <div class="tab-icon-wrap">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+            <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" stroke="#152233" stroke-width="1.8" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <span>Favoris</span>
+      </div>
+      <div class="tab-item">
+        <div class="tab-icon-wrap">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="9" stroke="#152233" stroke-width="1.8"/>
+            <path d="M12 8v8M8 12h8" stroke="#152233" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <span>Publier</span>
+      </div>
+      <div class="tab-item active">
+        <div class="tab-icon-wrap">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+            <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" stroke="#152233" stroke-width="1.8" stroke-linejoin="round"/>
+          </svg>
+          <div class="tab-dot">1</div>
+        </div>
+        <span>Messagerie</span>
+      </div>
+      <div class="tab-item">
+        <div class="tab-icon-wrap">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="8" r="4" stroke="#152233" stroke-width="1.8"/>
+            <path d="M4 20c0-3.866 3.582-7 8-7s8 3.134 8 7" stroke="#152233" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <span>Compte</span>
+      </div>
+    </div>
+
+  </div>
+  <!-- /ÉCRAN 1 -->
+
+
+  <!-- ══════════════════════════════
+       ÉCRAN 2A — FAIRE UNE OFFRE (VALISE)
+       ══════════════════════════════ -->
+  <div id="screen-offre-valise" class="screen hidden">
+
+    <div class="navbar">
+      <div class="status-bar">
+        <span class="status-time">9:41</span>
+        <div class="status-icons">
+          <svg width="17" height="12" viewBox="0 0 17 12" fill="#152233"><rect x="0" y="6" width="3" height="6" rx=".5"/><rect x="4.5" y="4" width="3" height="8" rx=".5"/><rect x="9" y="2" width="3" height="10" rx=".5"/><rect x="13.5" y="0" width="3" height="12" rx=".5"/></svg>
+          <svg width="16" height="11" viewBox="0 0 16 11" fill="#152233"><path d="M8 8.5a1.5 1.5 0 110 3 1.5 1.5 0 010-3zm0-3a5.5 5.5 0 013.9 1.6L10.5 8.5A3.5 3.5 0 008 7.5a3.5 3.5 0 00-2.5 1L4.1 7.1A5.5 5.5 0 018 5.5zm0-3A9 9 0 0114.4 4.9L13 6.3A7 7 0 008 4.5 7 7 0 003 6.3L1.6 4.9A9 9 0 018 2.5z"/></svg>
+          <svg width="26" height="13" viewBox="0 0 26 13" fill="none"><rect x=".5" y=".5" width="22" height="12" rx="3.5" stroke="#152233" stroke-opacity=".35"/><rect x="1.5" y="1.5" width="20" height="10" rx="2.5" fill="#152233"/><path d="M24 4.5v4a2 2 0 000-4z" fill="#152233" fill-opacity=".4"/></svg>
+        </div>
+      </div>
+      <div class="navbar-bar">
+        <button class="navbar-back" onclick="goBack()">
+          <svg width="10" height="18" viewBox="0 0 10 18" fill="none">
+            <path d="M9 1L1 9L9 17" stroke="#152233" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <span class="navbar-title">Faire une offre</span>
+      </div>
+    </div>
+
+    <div class="scroll">
+      <div class="offre-body">
+
+        <div class="article-card">
+          <div class="article-top">
+            <div class="article-img" style="overflow:hidden"><img src="/Users/emilie.krasi/Downloads/Proto notif vendeur/valise samsonite.png" style="width:100%;height:100%;object-fit:cover;display:block" alt=""></div>
+            <span class="article-name">Valise samsonite chronolite</span>
+            <span class="article-price">50 €</span>
+          </div>
+          <div class="article-buyers">
+            <img src="/Users/emilie.krasi/Downloads/Proto notif vendeur/Samuellupin+5.png" style="width:40px;height:40px;object-fit:contain;flex-shrink:0" alt="">
+            <div class="buyers-text">Samuel Lupin + 5 autres acheteurs sont intéressés par votre produit.</div>
+          </div>
+        </div>
+
+        <div class="reduction-block">
+          <div>
+            <div class="label-bold">Ma réduction :</div>
+            <div class="label-reg">L'offre est envoyée à tous en même temps.</div>
+          </div>
+          <div class="price-options">
+            <div class="price-opt selected" onclick="selectPrice(this)">
+              <div class="price-amt">45 €</div>
+              <div class="price-pct">Réduction de 10%</div>
+            </div>
+            <div class="price-opt" onclick="selectPrice(this)">
+              <div class="price-amt">40 €</div>
+              <div class="price-pct">Réduction de 20%</div>
+            </div>
+            <div class="price-opt" onclick="selectPrice(this)">
+              <div class="price-amt">Autre prix</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="msg-block">
+          <div class="label-bold">Un petit message peut faire toute la différence.</div>
+          <textarea class="textarea" placeholder="Une offre a plus de chance d'aboutir en expliquant pourquoi !"></textarea>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="cta-bar">
+      <button class="cta-btn">Envoyer séparemment (6)</button>
+    </div>
+
+  </div>
+  <!-- /ÉCRAN 2A -->
+
+
+  <!-- ══════════════════════════════
+       ÉCRAN 2B — FAIRE UNE OFFRE (PS5)
+       ══════════════════════════════ -->
+  <div id="screen-offre" class="screen hidden">
+
+    <div class="navbar">
+      <div class="status-bar">
+        <span class="status-time">9:41</span>
+        <div class="status-icons">
+          <svg width="17" height="12" viewBox="0 0 17 12" fill="#152233"><rect x="0" y="6" width="3" height="6" rx=".5"/><rect x="4.5" y="4" width="3" height="8" rx=".5"/><rect x="9" y="2" width="3" height="10" rx=".5"/><rect x="13.5" y="0" width="3" height="12" rx=".5"/></svg>
+          <svg width="16" height="11" viewBox="0 0 16 11" fill="#152233"><path d="M8 8.5a1.5 1.5 0 110 3 1.5 1.5 0 010-3zm0-3a5.5 5.5 0 013.9 1.6L10.5 8.5A3.5 3.5 0 008 7.5a3.5 3.5 0 00-2.5 1L4.1 7.1A5.5 5.5 0 018 5.5zm0-3A9 9 0 0114.4 4.9L13 6.3A7 7 0 008 4.5 7 7 0 003 6.3L1.6 4.9A9 9 0 018 2.5z"/></svg>
+          <svg width="26" height="13" viewBox="0 0 26 13" fill="none"><rect x=".5" y=".5" width="22" height="12" rx="3.5" stroke="#152233" stroke-opacity=".35"/><rect x="1.5" y="1.5" width="20" height="10" rx="2.5" fill="#152233"/><path d="M24 4.5v4a2 2 0 000-4z" fill="#152233" fill-opacity=".4"/></svg>
+        </div>
+      </div>
+      <div class="navbar-bar">
+        <button class="navbar-back" onclick="goBack()">
+          <svg width="10" height="18" viewBox="0 0 10 18" fill="none">
+            <path d="M9 1L1 9L9 17" stroke="#152233" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <span class="navbar-title">Faire une offre</span>
+      </div>
+    </div>
+
+    <div class="scroll">
+      <div class="offre-body">
+
+        <!-- Article card -->
+        <div class="article-card">
+          <div class="article-top">
+            <div class="article-img" style="overflow:hidden"><img src="/Users/emilie.krasi/Downloads/Proto notif vendeur/PlayStation 5 bon état.png" style="width:100%;height:100%;object-fit:cover;display:block" alt=""></div>
+            <span class="article-name">PlayStation 5 bon état</span>
+            <span class="article-price">150 €</span>
+          </div>
+          <div class="article-buyers">
+            <img src="/Users/emilie.krasi/Downloads/Proto notif vendeur/Caroleducher+4.png" style="width:40px;height:40px;object-fit:contain;flex-shrink:0" alt="">
+            <div class="buyers-text">Carole Ducher + 4 autres acheteurs sont intéressés par votre produit.</div>
+          </div>
+        </div>
+
+        <!-- Réduction -->
+        <div class="reduction-block">
+          <div>
+            <div class="label-bold">Ma réduction :</div>
+            <div class="label-reg">L'offre est envoyée à tous en même temps.</div>
+          </div>
+          <div class="price-options">
+            <div class="price-opt selected" onclick="selectPrice(this)">
+              <div class="price-amt">135 €</div>
+              <div class="price-pct">Réduction de 10%</div>
+            </div>
+            <div class="price-opt" onclick="selectPrice(this)">
+              <div class="price-amt">120 €</div>
+              <div class="price-pct">Réduction de 20%</div>
+            </div>
+            <div class="price-opt" onclick="selectPrice(this)">
+              <div class="price-amt">Autre prix</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Message -->
+        <div class="msg-block">
+          <div class="label-bold">Un petit message peut faire toute la différence.</div>
+          <textarea class="textarea" placeholder="Une offre a plus de chance d'aboutir en expliquant pourquoi !"></textarea>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="cta-bar">
+      <button class="cta-btn" onclick="goToInboxPostPS5()">Envoyer séparemment (5)</button>
+    </div>
+
+  </div>
+  <!-- /ÉCRAN 2B -->
+
+
+  <!-- ══════════════════════════════
+       ÉCRAN 3 — INBOX APRÈS ENVOI PS5
+       ══════════════════════════════ -->
+  <div id="screen-inbox-post-ps5" class="screen hidden">
+
+    <div class="navbar">
+      <div class="status-bar">
+        <span class="status-time">9:41</span>
+        <div class="status-icons">
+          <svg width="17" height="12" viewBox="0 0 17 12" fill="#152233"><rect x="0" y="6" width="3" height="6" rx=".5"/><rect x="4.5" y="4" width="3" height="8" rx=".5"/><rect x="9" y="2" width="3" height="10" rx=".5"/><rect x="13.5" y="0" width="3" height="12" rx=".5"/></svg>
+          <svg width="16" height="11" viewBox="0 0 16 11" fill="#152233"><path d="M8 8.5a1.5 1.5 0 110 3 1.5 1.5 0 010-3zm0-3a5.5 5.5 0 013.9 1.6L10.5 8.5A3.5 3.5 0 008 7.5a3.5 3.5 0 00-2.5 1L4.1 7.1A5.5 5.5 0 018 5.5zm0-3A9 9 0 0114.4 4.9L13 6.3A7 7 0 008 4.5 7 7 0 003 6.3L1.6 4.9A9 9 0 018 2.5z"/></svg>
+          <svg width="26" height="13" viewBox="0 0 26 13" fill="none"><rect x=".5" y=".5" width="22" height="12" rx="3.5" stroke="#152233" stroke-opacity=".35"/><rect x="1.5" y="1.5" width="20" height="10" rx="2.5" fill="#152233"/><path d="M24 4.5v4a2 2 0 000-4z" fill="#152233" fill-opacity=".4"/></svg>
+        </div>
+      </div>
+      <div class="navbar-bar">
+        <span class="navbar-title">Messagerie</span>
+        <div style="position:absolute;right:16px">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+            <circle cx="11" cy="11" r="7" stroke="#152233" stroke-width="1.8"/>
+            <path d="M16.5 16.5L21 21" stroke="#152233" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <div class="scroll">
+
+      <!-- Carousel — seulement la card valise -->
+      <div class="carousel-wrap">
+        <div class="carousel">
+          <div class="card" onclick="goToOffreValise()">
+            <div class="card-thumb" style="background:none;overflow:hidden"><img src="/Users/emilie.krasi/Downloads/Proto notif vendeur/valise samsonite.png" style="width:100%;height:100%;object-fit:cover;display:block" alt=""></div>
+            <div class="card-body">
+              <div class="card-count">6</div>
+              <div class="card-sub">acheteurs potentiels</div>
+              <div class="tag-blue">
+                <svg width="11" height="11" viewBox="0 0 12 12" fill="none">
+                  <circle cx="6" cy="6" r="5" stroke="white" stroke-width="1.4"/>
+                  <path d="M6 3.5V6L7.5 7.5" stroke="white" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
                 Offres à envoyer
               </div>
@@ -627,273 +972,157 @@ body {
 
       <!-- Chips -->
       <div class="chips-row">
-        <button class="chip active" id="chip-all" onclick="filterAll()">
-          <span class="chip-check">
-            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M2 6L5 9L10 3" stroke="#094171" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </span>
+        <button class="chip active" id="chip-all-post" onclick="filterAllPost()">
+          <svg width="12" height="10" viewBox="0 0 12 10" fill="none">
+            <path d="M1.5 5L4.5 8L10.5 2" stroke="#152233" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
           Tout
         </button>
-        <button class="chip" id="chip-unread" onclick="filterUnread()">
-          Non lus
-        </button>
+        <button class="chip" id="chip-unread-post" onclick="filterUnreadPost()">Non lus</button>
       </div>
 
-      <!-- Conversations -->
-      <div class="conv-list" id="conv-list">
+      <!-- Conversations PS5 x5 + reste -->
+      <div class="conv-list" id="conv-list-post">
 
-        <!-- 1. leboncoin — NON LU -->
-        <div class="conv-row" data-unread="true">
-          <div class="conv-thumb thumb-lbc">
-            <img src="https://www.figma.com/api/mcp/asset/81e435cf-b1db-46d7-ab86-96f7c4e1df7c" alt="leboncoin">
-          </div>
-          <div class="conv-body">
-            <div class="conv-name-row">
-              <img class="conv-verified" src="https://www.figma.com/api/mcp/asset/872a916f-15f1-471b-8ca6-8cfddfcb2b3e" alt="">
-              <span class="conv-name">leboncoin</span>
-            </div>
-            <div class="conv-line bold">Trop d'équipements inutilisés ? Vendez-les et gagnez de la place !</div>
-            <div class="conv-line regular">L'hiver arrive : ski, snowboard, raquettes… c'est le moment idéal pour renouveler</div>
-          </div>
-          <div class="unread-badge">1</div>
-        </div>
-
-        <!-- 2. Valise samsonite -->
         <div class="conv-row" data-unread="false">
-          <div class="conv-thumb">
-            <img src="https://www.figma.com/api/mcp/asset/e496646d-46ca-411b-b9dd-d8fd8d93f03c" alt="Valise">
-          </div>
+          <div class="conv-thumb" style="overflow:hidden"><img src="/Users/emilie.krasi/Downloads/Proto notif vendeur/PlayStation 5 bon état.png" style="width:100%;height:100%;object-fit:cover;display:block" alt=""></div>
           <div class="conv-body">
-            <div class="conv-name">Valise samsonite chronolite</div>
-            <div class="conv-line regular">L'article est visible au 5 rue Amelot à Paris 11. N'hésitez pas si vous avez des questions.</div>
+            <div class="conv-name">PlayStation 5 bon état</div>
+            <div class="conv-body-reg">Nouvelle offre de 120 €</div>
             <div class="conv-meta">Audrey - Il y a 2 mins</div>
           </div>
         </div>
 
-        <!-- 3. Converse -->
         <div class="conv-row" data-unread="false">
-          <div class="conv-thumb">
-            <img src="https://www.figma.com/api/mcp/asset/45937384-a160-4d03-9d93-d28363f17b63" alt="Converse">
-          </div>
+          <div class="conv-thumb" style="overflow:hidden"><img src="/Users/emilie.krasi/Downloads/Proto notif vendeur/PlayStation 5 bon état.png" style="width:100%;height:100%;object-fit:cover;display:block" alt=""></div>
           <div class="conv-body">
-            <div class="conv-name">Converse all stars</div>
-            <div class="conv-line regular">Bonjour Laura, j'aime bien vos chauss...</div>
-            <div class="conv-meta">Laura S. - il y a 20 mins</div>
+            <div class="conv-name">PlayStation 5 bon état</div>
+            <div class="conv-body-reg">Nouvelle offre de 120 €</div>
+            <div class="conv-meta">Audrey - Il y a 2 mins</div>
           </div>
         </div>
 
-        <!-- 4. Adidas -->
         <div class="conv-row" data-unread="false">
-          <div class="conv-thumb">
-            <img src="https://www.figma.com/api/mcp/asset/22fb7e9c-0c90-443b-b719-22b035a8ccbb" alt="Adidas">
-          </div>
+          <div class="conv-thumb" style="overflow:hidden"><img src="/Users/emilie.krasi/Downloads/Proto notif vendeur/PlayStation 5 bon état.png" style="width:100%;height:100%;object-fit:cover;display:block" alt=""></div>
           <div class="conv-body">
-            <div class="conv-name">Baskets adidas ig1029 neuves</div>
-            <div class="conv-line regular">Bonjour Laura, Est-que les baskets ont beaucoup</div>
-            <div class="conv-meta">Laura S. - il y a 20 mins</div>
+            <div class="conv-name">PlayStation 5 bon état</div>
+            <div class="conv-body-reg">Nouvelle offre de 120 €</div>
+            <div class="conv-meta">Audrey - Il y a 2 mins</div>
           </div>
         </div>
 
-        <!-- 5. Nike -->
         <div class="conv-row" data-unread="false">
-          <div class="conv-thumb">
-            <img src="https://www.figma.com/api/mcp/asset/ebea512b-96b7-49b7-8f32-1a806db9360b" alt="Nike">
-          </div>
+          <div class="conv-thumb" style="overflow:hidden"><img src="/Users/emilie.krasi/Downloads/Proto notif vendeur/PlayStation 5 bon état.png" style="width:100%;height:100%;object-fit:cover;display:block" alt=""></div>
           <div class="conv-body">
-            <div class="conv-name">Baskets Nike Sportwear AL8</div>
-            <div class="conv-line regular">Bonjour Laura, j'aime bien vos chauss...</div>
-            <div class="conv-meta">Laura S. - il y a 20 mins</div>
+            <div class="conv-name">PlayStation 5 bon état</div>
+            <div class="conv-body-reg">Nouvelle offre de 120 €</div>
+            <div class="conv-meta">Audrey - Il y a 2 mins</div>
           </div>
         </div>
 
-        <!-- 6. Lot de 3 -->
         <div class="conv-row" data-unread="false">
-          <div class="conv-thumb">
-            <img src="https://www.figma.com/api/mcp/asset/537795fc-d48f-43ef-a9a2-97d80c2db3e5" alt="Lot">
-            <div class="thumb-bundle-badge">3</div>
-          </div>
+          <div class="conv-thumb" style="overflow:hidden"><img src="/Users/emilie.krasi/Downloads/Proto notif vendeur/PlayStation 5 bon état.png" style="width:100%;height:100%;object-fit:cover;display:block" alt=""></div>
           <div class="conv-body">
-            <div class="conv-name">Lot de 3 articles</div>
-            <div class="conv-line regular">Bonjour Laura, votre annonce est-ell...</div>
-            <div class="conv-meta">Aurélie- Avant-hier</div>
-          </div>
-        </div>
-
-        <!-- 7. Apple AirTag — supprimée -->
-        <div class="conv-row deleted" data-unread="false">
-          <div class="conv-thumb thumb-deleted">
-            <img src="https://www.figma.com/api/mcp/asset/1881e2cc-eec2-4ed4-b7b0-0eb7d53d4687" alt="supprimé">
-          </div>
-          <div class="conv-body">
-            <div class="conv-name" style="color:var(--dim)">Apple AirTag</div>
-            <div class="conv-line regular" style="color:var(--dim)">Annonce supprimée</div>
-            <div class="conv-meta">Albert Muller - Samedi</div>
-          </div>
-        </div>
-
-        <!-- 8. Service client -->
-        <div class="conv-row" data-unread="false">
-          <div class="conv-thumb thumb-lbc">
-            <img src="https://www.figma.com/api/mcp/asset/975f6b56-5aa5-4afc-a53f-0f54cc52b419" alt="Service client">
-          </div>
-          <div class="conv-body">
-            <div class="conv-name-row">
-              <img class="conv-verified" src="https://www.figma.com/api/mcp/asset/7c99eee3-6cef-4cf4-8f74-a90c08b77f27" alt="">
-              <span class="conv-name">Service client leboncoin</span>
-            </div>
-            <div class="conv-line bold">Demande N°: 64031089</div>
-            <div style="margin-top:2px;"><span class="tag-tinted">Envoyée</span></div>
+            <div class="conv-name">PlayStation 5 bon état</div>
+            <div class="conv-body-reg">Nouvelle offre de 120 €</div>
+            <div class="conv-meta">Audrey - Il y a 2 mins</div>
           </div>
         </div>
 
       </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast-ps5" style="
+      position:absolute; bottom:90px; left:16px; right:16px;
+      background:#fff; border:1px solid #e0f2e9; border-radius:12px;
+      padding:14px 16px; display:flex; align-items:flex-start; gap:10px;
+      box-shadow:0 4px 16px rgba(0,0,0,0.1);
+    ">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" style="flex-shrink:0;margin-top:1px">
+        <circle cx="10" cy="10" r="10" fill="#4CAF50"/>
+        <path d="M5.5 10L8.5 13L14.5 7" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <div style="flex:1">
+        <div style="font-size:14px;font-weight:700;color:#152233;line-height:20px">C'est dans la boîte !</div>
+        <div style="font-size:12px;font-weight:400;color:#152233;line-height:16px;margin-top:2px">5 acheteurs contactés pour "PlayStation 5 bon état"</div>
+      </div>
+      <button onclick="document.getElementById('toast-ps5').style.display='none'" style="background:none;border:none;cursor:pointer;color:#627C93;font-size:18px;line-height:1;padding:0;flex-shrink:0">×</button>
     </div>
 
     <!-- Tab bar -->
     <div class="tab-bar">
-      <div class="tab-item">
-        <div class="tab-icon-wrap"><img src="https://www.figma.com/api/mcp/asset/5fe5da5e-fd39-438e-be83-225a80234b8c" alt=""></div>
-        <span>Recherche</span>
-      </div>
-      <div class="tab-item">
-        <div class="tab-icon-wrap"><img src="https://www.figma.com/api/mcp/asset/47cb591a-7a97-4101-be79-6b52fd00bfc9" alt=""></div>
-        <span>Favoris</span>
-      </div>
-      <div class="tab-item">
-        <div class="tab-icon-wrap"><img src="https://www.figma.com/api/mcp/asset/12f03998-cbf0-4739-a54c-5bd66f313b20" alt=""></div>
-        <span>Publier</span>
-      </div>
-      <div class="tab-item active">
-        <div class="tab-icon-wrap">
-          <img src="https://www.figma.com/api/mcp/asset/f925485c-169c-4ab0-a380-7789644d9c0b" alt="">
-          <div class="tab-dot">1</div>
-        </div>
-        <span>Messagerie</span>
-      </div>
-      <div class="tab-item">
-        <div class="tab-icon-wrap"><img src="https://www.figma.com/api/mcp/asset/c51c5e9e-7904-429e-8a3a-7b0e10afeb8d" alt=""></div>
-        <span>Compte</span>
-      </div>
+      <div class="tab-item"><div class="tab-icon-wrap"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#152233" stroke-width="1.8"/><path d="M16.5 16.5L21 21" stroke="#152233" stroke-width="1.8" stroke-linecap="round"/></svg></div><span>Recherche</span></div>
+      <div class="tab-item"><div class="tab-icon-wrap"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" stroke="#152233" stroke-width="1.8" stroke-linejoin="round"/></svg></div><span>Favoris</span></div>
+      <div class="tab-item"><div class="tab-icon-wrap"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#152233" stroke-width="1.8"/><path d="M12 8v8M8 12h8" stroke="#152233" stroke-width="1.8" stroke-linecap="round"/></svg></div><span>Publier</span></div>
+      <div class="tab-item active"><div class="tab-icon-wrap"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" stroke="#152233" stroke-width="1.8" stroke-linejoin="round"/></svg><div class="tab-dot">1</div></div><span>Messagerie</span></div>
+      <div class="tab-item"><div class="tab-icon-wrap"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="#152233" stroke-width="1.8"/><path d="M4 20c0-3.866 3.582-7 8-7s8 3.134 8 7" stroke="#152233" stroke-width="1.8" stroke-linecap="round"/></svg></div><span>Compte</span></div>
     </div>
 
   </div>
-  <!-- FIN ÉCRAN 1 -->
-
-
-  <!-- ═══════════════════════════════
-       ÉCRAN 2 — FAIRE UNE OFFRE
-       ═══════════════════════════════ -->
-  <div id="screen-offre" class="screen hidden">
-
-    <div class="navbar">
-      <div class="status-bar">
-        <span class="status-time">9:41</span>
-        <img class="status-icons" src="https://www.figma.com/api/mcp/asset/757f5813-5bba-47e0-aaab-44ba4d475c11" alt="">
-      </div>
-      <div class="navbar-title-bar">
-        <button class="navbar-back" onclick="goBack()">
-          <svg width="12" height="20" viewBox="0 0 12 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M10 18L2 10L10 2" stroke="#152233" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </button>
-        <span class="navbar-title">Faire une offre</span>
-      </div>
-    </div>
-
-    <div class="content">
-      <div class="offre-content">
-
-        <!-- Article card -->
-        <div class="article-card">
-          <div class="article-row">
-            <div class="article-img">
-              <img src="https://www.figma.com/api/mcp/asset/2e3d05ad-5467-442c-81d4-d2b3bdeb47a4" alt="PlayStation 5">
-            </div>
-            <div class="article-title">PlayStation 5 bon état</div>
-            <div class="article-price">150 €</div>
-          </div>
-          <div class="article-buyers">
-            <div class="avatars-stack">
-              <div class="av-circle">
-                <img src="https://www.figma.com/api/mcp/asset/bbf6f9ec-55f7-46f4-af0d-b5fd6fe3c703" alt="">
-              </div>
-              <div class="av-circle">
-                <img src="https://www.figma.com/api/mcp/asset/f448d49d-f49b-40dc-9484-e30fff6e86fe" alt="">
-              </div>
-            </div>
-            <div class="buyers-text">Carole Ducher + 4 autres acheteurs sont intéressés par votre produit.</div>
-          </div>
-        </div>
-
-        <!-- Réduction -->
-        <div class="reduction-form">
-          <div>
-            <div class="reduction-label">Ma réduction :</div>
-            <div class="reduction-sublabel">L'offre est envoyée à tous en même temps.</div>
-          </div>
-          <div class="price-options">
-            <div class="price-option selected" onclick="selectPrice(this)">
-              <div class="price-amount">135 €</div>
-              <div class="price-reduction">Réduction de 10%</div>
-            </div>
-            <div class="price-option" onclick="selectPrice(this)">
-              <div class="price-amount">120 €</div>
-              <div class="price-reduction">Réduction de 20%</div>
-            </div>
-            <div class="price-option" onclick="selectPrice(this)">
-              <div class="price-amount">Autre prix</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Message -->
-        <div class="textarea-section">
-          <div class="textarea-label">Un petit message peut faire toute la différence.</div>
-          <textarea class="textarea-field" placeholder="Une offre a plus de chance d'aboutir en expliquant pourquoi !"></textarea>
-        </div>
-
-      </div>
-    </div>
-
-    <div class="cta-bar">
-      <button class="cta-btn">Envoyer séparemment (5)</button>
-    </div>
-
-  </div>
-  <!-- FIN ÉCRAN 2 -->
+  <!-- /ÉCRAN 3 -->
 
 </div>
 
 <script>
-  function goToOffre() {
-    document.getElementById('screen-inbox').classList.add('hidden');
-    document.getElementById('screen-offre').classList.remove('hidden');
-  }
+function goToOffreValise() {
+  document.getElementById('screen-inbox').classList.add('hidden');
+  document.getElementById('screen-offre-valise').classList.remove('hidden');
+}
 
-  function goBack() {
-    document.getElementById('screen-offre').classList.add('hidden');
-    document.getElementById('screen-inbox').classList.remove('hidden');
-  }
+function goToOffrePS5() {
+  document.getElementById('screen-inbox').classList.add('hidden');
+  document.getElementById('screen-offre').classList.remove('hidden');
+}
 
-  function filterAll() {
-    document.getElementById('chip-all').classList.add('active');
-    document.getElementById('chip-unread').classList.remove('active');
-    document.querySelectorAll('#conv-list .conv-row').forEach(r => r.style.display = '');
-  }
+function goToInboxPostPS5() {
+  document.getElementById('screen-offre').classList.add('hidden');
+  document.getElementById('screen-inbox-post-ps5').classList.remove('hidden');
+  // Toast disparaît après 4 secondes
+  setTimeout(() => {
+    const t = document.getElementById('toast-ps5');
+    if (t) t.style.display = 'none';
+  }, 4000);
+}
 
-  function filterUnread() {
-    document.getElementById('chip-unread').classList.add('active');
-    document.getElementById('chip-all').classList.remove('active');
-    document.querySelectorAll('#conv-list .conv-row').forEach(r => {
-      r.style.display = r.dataset.unread === 'true' ? '' : 'none';
-    });
-  }
+function goBack() {
+  document.getElementById('screen-offre').classList.add('hidden');
+  document.getElementById('screen-offre-valise').classList.add('hidden');
+  document.getElementById('screen-inbox').classList.remove('hidden');
+}
 
-  function selectPrice(el) {
-    document.querySelectorAll('.price-option').forEach(o => o.classList.remove('selected'));
-    el.classList.add('selected');
-  }
+function filterAll() {
+  document.getElementById('chip-all').classList.add('active');
+  document.getElementById('chip-unread').classList.remove('active');
+  document.querySelectorAll('#conv-list .conv-row').forEach(r => r.style.display = '');
+}
+
+function filterUnread() {
+  document.getElementById('chip-unread').classList.add('active');
+  document.getElementById('chip-all').classList.remove('active');
+  document.querySelectorAll('#conv-list .conv-row').forEach(r => {
+    r.style.display = r.dataset.unread === 'true' ? '' : 'none';
+  });
+}
+
+function filterAllPost() {
+  document.getElementById('chip-all-post').classList.add('active');
+  document.getElementById('chip-unread-post').classList.remove('active');
+  document.querySelectorAll('#conv-list-post .conv-row').forEach(r => r.style.display = '');
+}
+
+function filterUnreadPost() {
+  document.getElementById('chip-unread-post').classList.add('active');
+  document.getElementById('chip-all-post').classList.remove('active');
+  document.querySelectorAll('#conv-list-post .conv-row').forEach(r => {
+    r.style.display = r.dataset.unread === 'true' ? '' : 'none';
+  });
+}
+
+function selectPrice(el) {
+  document.querySelectorAll('.price-opt').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+}
 </script>
 </body>
 </html>
