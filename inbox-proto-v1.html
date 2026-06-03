@@ -614,9 +614,7 @@ html, body {
 
         <!-- 1. leboncoin — NON LU -->
         <div class="conv-row" data-unread="true">
-          <div class="conv-thumb ph-lbc">
-            <img src="https://www.figma.com/api/mcp/asset/81e435cf-b1db-46d7-ab86-96f7c4e1df7c" style="width:100%;height:100%;object-fit:cover;display:block" alt="">
-          </div>
+          <div class="conv-thumb" style="overflow:hidden"><img src="images/vignette lbc.png" style="width:100%;height:100%;object-fit:cover;display:block" alt=""></div>
           <div class="conv-body">
             <div class="conv-name-row">
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
@@ -643,7 +641,7 @@ html, body {
 
         <!-- 3. Converse all stars -->
         <div class="conv-row" data-unread="false">
-          <div class="conv-thumb" style="overflow:hidden"><img src="https://www.figma.com/api/mcp/asset/45937384-a160-4d03-9d93-d28363f17b63" style="width:100%;height:100%;object-fit:cover;display:block" alt=""></div>
+          <div class="conv-thumb" style="overflow:hidden"><img src="images/converse.png" style="width:100%;height:100%;object-fit:cover;display:block" alt=""></div>
           <div class="conv-body">
             <div class="conv-name">Converse all stars</div>
             <div class="conv-body-reg">Bonjour Laura, j'aime bien vos chauss...</div>
@@ -653,7 +651,7 @@ html, body {
 
         <!-- 4. Baskets adidas -->
         <div class="conv-row" data-unread="false">
-          <div class="conv-thumb" style="overflow:hidden"><img src="https://www.figma.com/api/mcp/asset/22fb7e9c-0c90-443b-b719-22b035a8ccbb" style="width:100%;height:100%;object-fit:cover;display:block" alt=""></div>
+          <div class="conv-thumb" style="overflow:hidden"><img src="images/adidas.png" style="width:100%;height:100%;object-fit:cover;display:block" alt=""></div>
           <div class="conv-body">
             <div class="conv-name">Baskets adidas ig1029 neuves</div>
             <div class="conv-body-reg">Bonjour Laura, Est-que les baskets on...</div>
@@ -663,7 +661,7 @@ html, body {
 
         <!-- 5. Baskets Nike -->
         <div class="conv-row" data-unread="false">
-          <div class="conv-thumb" style="overflow:hidden"><img src="https://www.figma.com/api/mcp/asset/ebea512b-96b7-49b7-8f32-1a806db9360b" style="width:100%;height:100%;object-fit:cover;display:block" alt=""></div>
+          <div class="conv-thumb" style="overflow:hidden"><img src="images/nike.png" style="width:100%;height:100%;object-fit:cover;display:block" alt=""></div>
           <div class="conv-body">
             <div class="conv-name">Baskets Nike Sportwear AL8</div>
             <div class="conv-body-reg">Bonjour Laura, j'aime bien vos chauss...</div>
@@ -674,7 +672,7 @@ html, body {
         <!-- 6. Lot de 3 articles -->
         <div class="conv-row" data-unread="false">
           <div class="conv-thumb" style="overflow:hidden;position:relative">
-            <img src="https://www.figma.com/api/mcp/asset/537795fc-d48f-43ef-a9a2-97d80c2db3e5" style="width:100%;height:100%;object-fit:cover;display:block" alt="">
+            <img src="images/lot 3.png" style="width:100%;height:100%;object-fit:cover;display:block" alt="">
             <div class="bundle-badge">3</div>
           </div>
           <div class="conv-body">
@@ -701,7 +699,7 @@ html, body {
 
         <!-- 8. Service client leboncoin -->
         <div class="conv-row" data-unread="false">
-          <div class="conv-thumb" style="overflow:hidden"><img src="https://www.figma.com/api/mcp/asset/975f6b56-5aa5-4afc-a53f-0f54cc52b419" style="width:100%;height:100%;object-fit:cover;display:block" alt=""></div>
+          <div class="conv-thumb" style="overflow:hidden"><img src="images/vignette lbc.png" style="width:100%;height:100%;object-fit:cover;display:block" alt=""></div>
           <div class="conv-body">
             <div class="conv-name-row">
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
@@ -838,7 +836,7 @@ html, body {
     </div>
 
     <div class="cta-bar">
-      <button class="cta-btn">Envoyer séparemment (6)</button>
+      <button class="cta-btn" onclick="goToInboxPostValise()">Envoyer séparemment (6)</button>
     </div>
 
   </div>
@@ -1029,25 +1027,109 @@ html, body {
           </div>
         </div>
 
+        <!-- Conversations du premier écran -->
+        <div class="conv-row" data-unread="true">
+          <div class="conv-thumb" style="overflow:hidden"><img src="images/vignette lbc.png" style="width:100%;height:100%;object-fit:cover;display:block" alt=""></div>
+          <div class="conv-body">
+            <div class="conv-name-row">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="8" fill="#094171"/><path d="M4.5 8L7 10.5L11.5 5.5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span class="conv-name">leboncoin</span>
+            </div>
+            <div class="conv-body-bold">Trop d'équipements inutilisés ? Ven...</div>
+            <div class="conv-body-reg">L'hiver arrive : ski, snowboard, raquet...</div>
+          </div>
+          <div class="unread-badge">1</div>
+        </div>
+
+        <div class="conv-row" data-unread="false">
+          <div class="conv-thumb" style="overflow:hidden"><img src="images/valise samsonite.png" style="width:100%;height:100%;object-fit:cover;display:block" alt=""></div>
+          <div class="conv-body">
+            <div class="conv-name">Valise samsonite chronolite</div>
+            <div class="conv-body-reg">L'article est visible au 5 rue Amelot à...</div>
+            <div class="conv-meta">Audrey - Il y a 2 mins</div>
+          </div>
+        </div>
+
+        <div class="conv-row" data-unread="false">
+          <div class="conv-thumb" style="overflow:hidden"><img src="images/converse.png" style="width:100%;height:100%;object-fit:cover;display:block" alt=""></div>
+          <div class="conv-body">
+            <div class="conv-name">Converse all stars</div>
+            <div class="conv-body-reg">Bonjour Laura, j'aime bien vos chauss...</div>
+            <div class="conv-meta">Laura S. - il y a 20 mins</div>
+          </div>
+        </div>
+
+        <div class="conv-row" data-unread="false">
+          <div class="conv-thumb" style="overflow:hidden"><img src="images/adidas.png" style="width:100%;height:100%;object-fit:cover;display:block" alt=""></div>
+          <div class="conv-body">
+            <div class="conv-name">Baskets adidas ig1029 neuves</div>
+            <div class="conv-body-reg">Bonjour Laura, Est-que les baskets on...</div>
+            <div class="conv-meta">Laura S. - il y a 20 mins</div>
+          </div>
+        </div>
+
+        <div class="conv-row" data-unread="false">
+          <div class="conv-thumb" style="overflow:hidden"><img src="images/nike.png" style="width:100%;height:100%;object-fit:cover;display:block" alt=""></div>
+          <div class="conv-body">
+            <div class="conv-name">Baskets Nike Sportwear AL8</div>
+            <div class="conv-body-reg">Bonjour Laura, j'aime bien vos chauss...</div>
+            <div class="conv-meta">Laura S. - il y a 20 mins</div>
+          </div>
+        </div>
+
+        <div class="conv-row" data-unread="false">
+          <div class="conv-thumb" style="overflow:hidden;position:relative">
+            <img src="images/lot 3.png" style="width:100%;height:100%;object-fit:cover;display:block" alt="">
+            <div class="bundle-badge">3</div>
+          </div>
+          <div class="conv-body">
+            <div class="conv-name">Lot de 3 articles</div>
+            <div class="conv-body-reg">Bonjour Laura, votre annonce est-ell...</div>
+            <div class="conv-meta">Aurélie-  Avant-hier</div>
+          </div>
+        </div>
+
+        <div class="conv-row deleted" data-unread="false">
+          <div class="conv-thumb ph-deleted">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6" stroke="#627C93" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 11v5M14 11v5" stroke="#627C93" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </div>
+          <div class="conv-body">
+            <div class="conv-name">Apple AirTag</div>
+            <div class="conv-body-reg">Annonce supprimée</div>
+            <div class="conv-meta">Albert Muller - Samedi</div>
+          </div>
+        </div>
+
+        <div class="conv-row" data-unread="false">
+          <div class="conv-thumb" style="overflow:hidden"><img src="images/vignette lbc.png" style="width:100%;height:100%;object-fit:cover;display:block" alt=""></div>
+          <div class="conv-body">
+            <div class="conv-name-row">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="8" fill="#094171"/><path d="M4.5 8L7 10.5L11.5 5.5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span class="conv-name">Service client leboncoin</span>
+            </div>
+            <div class="conv-body-bold">Demande N°: 64031089</div>
+            <span class="tag-tinted">Envoyée</span>
+          </div>
+        </div>
+
       </div>
     </div>
 
     <!-- Toast -->
     <div id="toast-ps5" style="
       position:absolute; bottom:90px; left:16px; right:16px;
-      background:#fff; border:1px solid #e0f2e9; border-radius:12px;
+      background:#e0f2e9; border-radius:12px;
       padding:14px 16px; display:flex; align-items:flex-start; gap:10px;
-      box-shadow:0 4px 16px rgba(0,0,0,0.1);
     ">
       <svg width="20" height="20" viewBox="0 0 20 20" fill="none" style="flex-shrink:0;margin-top:1px">
-        <circle cx="10" cy="10" r="10" fill="#4CAF50"/>
+        <circle cx="10" cy="10" r="10" fill="#1D6340"/>
         <path d="M5.5 10L8.5 13L14.5 7" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
       <div style="flex:1">
-        <div style="font-size:14px;font-weight:700;color:#152233;line-height:20px">C'est dans la boîte !</div>
-        <div style="font-size:12px;font-weight:400;color:#152233;line-height:16px;margin-top:2px">5 acheteurs contactés pour "PlayStation 5 bon état"</div>
+        <div style="font-size:14px;font-weight:700;color:#1D6340;line-height:20px">C'est dans la boîte !</div>
+        <div style="font-size:12px;font-weight:400;color:#1D6340;line-height:16px;margin-top:2px">5 acheteurs contactés pour "PlayStation 5 bon état"</div>
       </div>
-      <button onclick="document.getElementById('toast-ps5').style.display='none'" style="background:none;border:none;cursor:pointer;color:#627C93;font-size:18px;line-height:1;padding:0;flex-shrink:0">×</button>
+      <button onclick="document.getElementById('toast-ps5').style.display='none'" style="background:none;border:none;cursor:pointer;color:#1D6340;font-size:18px;line-height:1;padding:0;flex-shrink:0">×</button>
     </div>
 
     <!-- Tab bar -->
@@ -1062,33 +1144,225 @@ html, body {
   </div>
   <!-- /ÉCRAN 3 -->
 
+  <!-- ══════════════════════════════
+       ÉCRAN DYNAMIQUE — INBOX POST-OFFRE
+       ══════════════════════════════ -->
+  <div id="screen-inbox-post" class="screen hidden">
+
+    <div class="navbar">
+      <div class="status-bar">
+        <span class="status-time">9:41</span>
+        <div class="status-icons">
+          <svg width="17" height="12" viewBox="0 0 17 12" fill="#152233"><rect x="0" y="6" width="3" height="6" rx=".5"/><rect x="4.5" y="4" width="3" height="8" rx=".5"/><rect x="9" y="2" width="3" height="10" rx=".5"/><rect x="13.5" y="0" width="3" height="12" rx=".5"/></svg>
+          <svg width="16" height="11" viewBox="0 0 16 11" fill="#152233"><path d="M8 8.5a1.5 1.5 0 110 3 1.5 1.5 0 010-3zm0-3a5.5 5.5 0 013.9 1.6L10.5 8.5A3.5 3.5 0 008 7.5a3.5 3.5 0 00-2.5 1L4.1 7.1A5.5 5.5 0 018 5.5zm0-3A9 9 0 0114.4 4.9L13 6.3A7 7 0 008 4.5 7 7 0 003 6.3L1.6 4.9A9 9 0 018 2.5z"/></svg>
+          <svg width="26" height="13" viewBox="0 0 26 13" fill="none"><rect x=".5" y=".5" width="22" height="12" rx="3.5" stroke="#152233" stroke-opacity=".35"/><rect x="1.5" y="1.5" width="20" height="10" rx="2.5" fill="#152233"/><path d="M24 4.5v4a2 2 0 000-4z" fill="#152233" fill-opacity=".4"/></svg>
+        </div>
+      </div>
+      <div class="navbar-bar">
+        <span class="navbar-title">Messagerie</span>
+        <div style="position:absolute;right:16px">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#152233" stroke-width="1.8"/><path d="M16.5 16.5L21 21" stroke="#152233" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </div>
+      </div>
+    </div>
+
+    <div class="scroll">
+
+      <div id="carousel-dyn-wrap"></div>
+
+      <div class="chips-row">
+        <button class="chip active" id="chip-all-dyn" onclick="filterAllDyn()">
+          <svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1.5 5L4.5 8L10.5 2" stroke="#152233" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Tout
+        </button>
+        <button class="chip" id="chip-unread-dyn" onclick="filterUnreadDyn()">Non lus</button>
+      </div>
+
+      <div class="conv-list" id="conv-list-dyn">
+
+        <!-- généré dynamiquement par JS -->
+
+      </div>
+    </div>
+
+    <!-- Toast dynamique -->
+    <div id="toast-dyn" style="
+      position:absolute; bottom:90px; left:16px; right:16px;
+      background:#e0f2e9; border-radius:12px;
+      padding:14px 16px; display:flex; align-items:flex-start; gap:10px;
+    ">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" style="flex-shrink:0;margin-top:1px">
+        <circle cx="10" cy="10" r="10" fill="#1D6340"/>
+        <path d="M5.5 10L8.5 13L14.5 7" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <div style="flex:1">
+        <div style="font-size:14px;font-weight:700;color:#1D6340;line-height:20px">C'est dans la boîte !</div>
+        <div id="toast-dyn-text" style="font-size:12px;font-weight:400;color:#1D6340;line-height:16px;margin-top:2px"></div>
+      </div>
+      <button onclick="document.getElementById('toast-dyn').style.display='none'" style="background:none;border:none;cursor:pointer;color:#1D6340;font-size:18px;line-height:1;padding:0;flex-shrink:0">×</button>
+    </div>
+
+    <!-- Tab bar -->
+    <div class="tab-bar">
+      <div class="tab-item"><div class="tab-icon-wrap"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#152233" stroke-width="1.8"/><path d="M16.5 16.5L21 21" stroke="#152233" stroke-width="1.8" stroke-linecap="round"/></svg></div><span>Recherche</span></div>
+      <div class="tab-item"><div class="tab-icon-wrap"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" stroke="#152233" stroke-width="1.8" stroke-linejoin="round"/></svg></div><span>Favoris</span></div>
+      <div class="tab-item"><div class="tab-icon-wrap"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#152233" stroke-width="1.8"/><path d="M12 8v8M8 12h8" stroke="#152233" stroke-width="1.8" stroke-linecap="round"/></svg></div><span>Publier</span></div>
+      <div class="tab-item active"><div class="tab-icon-wrap"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" stroke="#152233" stroke-width="1.8" stroke-linejoin="round"/></svg><div class="tab-dot">1</div></div><span>Messagerie</span></div>
+      <div class="tab-item"><div class="tab-icon-wrap"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="#152233" stroke-width="1.8"/><path d="M4 20c0-3.866 3.582-7 8-7s8 3.134 8 7" stroke="#152233" stroke-width="1.8" stroke-linecap="round"/></svg></div><span>Compte</span></div>
+    </div>
+
+  </div>
+  <!-- /ÉCRAN 4 -->
+
 </div>
 
 <script>
 function goToOffreValise() {
   document.getElementById('screen-inbox').classList.add('hidden');
+  document.getElementById('screen-inbox-post').classList.add('hidden');
   document.getElementById('screen-offre-valise').classList.remove('hidden');
 }
 
 function goToOffrePS5() {
   document.getElementById('screen-inbox').classList.add('hidden');
+  document.getElementById('screen-inbox-post').classList.add('hidden');
   document.getElementById('screen-offre').classList.remove('hidden');
 }
 
+// État : tableau des offres envoyées dans l'ordre
+const offresSent = [];
+
+const CONVS_VALISE = [
+  { name: 'Valise samsonite chronolite', msg: 'Bonjour Laura, Votre valise m\'intéresse,...', meta: 'Audrey - Il y a 2 mins', img: 'images/valise samsonite.png' },
+  { name: 'Valise samsonite chronolite', msg: 'Bonjour Laura, Votre valise m\'intéresse,...', meta: 'Anne-Sophie - Il y a 2 mins', img: 'images/valise samsonite.png' },
+  { name: 'Valise samsonite chronolite', msg: 'Bonjour Laura, Votre valise m\'intéresse,...', meta: 'Marco - Il y a 2 mins', img: 'images/valise samsonite.png' },
+  { name: 'Valise samsonite chronolite', msg: 'Bonjour Laura, Votre valise m\'intéresse,...', meta: 'Martin - Il y a 2 mins', img: 'images/valise samsonite.png' },
+  { name: 'Valise samsonite chronolite', msg: 'Bonjour Laura, Votre valise m\'intéresse,...', meta: 'Mélanie - Il y a 2 mins', img: 'images/valise samsonite.png' },
+  { name: 'Valise samsonite chronolite', msg: 'Bonjour Laura, Votre valise m\'intéresse,...', meta: 'Sarah - Il y a 2 mins', img: 'images/valise samsonite.png' },
+];
+
+const CONVS_PS5 = [
+  { name: 'PlayStation 5 bon état', msg: 'Nouvelle offre de 120 €', meta: 'Audrey - Il y a 2 mins', img: 'images/PlayStation 5 bon état.png' },
+  { name: 'PlayStation 5 bon état', msg: 'Nouvelle offre de 120 €', meta: 'Laura - Il y a 2 mins', img: 'images/PlayStation 5 bon état.png' },
+  { name: 'PlayStation 5 bon état', msg: 'Nouvelle offre de 120 €', meta: 'Marc - Il y a 2 mins', img: 'images/PlayStation 5 bon état.png' },
+  { name: 'PlayStation 5 bon état', msg: 'Nouvelle offre de 120 €', meta: 'Julie - Il y a 2 mins', img: 'images/PlayStation 5 bon état.png' },
+  { name: 'PlayStation 5 bon état', msg: 'Nouvelle offre de 120 €', meta: 'Thomas - Il y a 2 mins', img: 'images/PlayStation 5 bon état.png' },
+];
+
+const CONVS_BASE = `
+  <div class="conv-row" data-unread="true">
+    <div class="conv-thumb" style="overflow:hidden"><img src="images/vignette lbc.png" style="width:100%;height:100%;object-fit:cover;display:block" alt=""></div>
+    <div class="conv-body">
+      <div class="conv-name-row"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="8" fill="#094171"/><path d="M4.5 8L7 10.5L11.5 5.5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="conv-name">leboncoin</span></div>
+      <div class="conv-body-bold">Trop d'équipements inutilisés ? Ven...</div>
+      <div class="conv-body-reg">L'hiver arrive : ski, snowboard, raquet...</div>
+    </div>
+    <div class="unread-badge">1</div>
+  </div>
+  <div class="conv-row" data-unread="false">
+    <div class="conv-thumb" style="overflow:hidden"><img src="images/converse.png" style="width:100%;height:100%;object-fit:cover;display:block" alt=""></div>
+    <div class="conv-body"><div class="conv-name">Converse all stars</div><div class="conv-body-reg">Bonjour Laura, j'aime bien vos chauss...</div><div class="conv-meta">Laura S. - il y a 20 mins</div></div>
+  </div>
+  <div class="conv-row" data-unread="false">
+    <div class="conv-thumb" style="overflow:hidden"><img src="images/adidas.png" style="width:100%;height:100%;object-fit:cover;display:block" alt=""></div>
+    <div class="conv-body"><div class="conv-name">Baskets adidas ig1029 neuves</div><div class="conv-body-reg">Bonjour Laura, Est-que les baskets on...</div><div class="conv-meta">Laura S. - il y a 20 mins</div></div>
+  </div>
+  <div class="conv-row" data-unread="false">
+    <div class="conv-thumb" style="overflow:hidden"><img src="images/nike.png" style="width:100%;height:100%;object-fit:cover;display:block" alt=""></div>
+    <div class="conv-body"><div class="conv-name">Baskets Nike Sportwear AL8</div><div class="conv-body-reg">Bonjour Laura, j'aime bien vos chauss...</div><div class="conv-meta">Laura S. - il y a 20 mins</div></div>
+  </div>
+  <div class="conv-row" data-unread="false">
+    <div class="conv-thumb" style="overflow:hidden;position:relative"><img src="images/lot 3.png" style="width:100%;height:100%;object-fit:cover;display:block" alt=""><div class="bundle-badge">3</div></div>
+    <div class="conv-body"><div class="conv-name">Lot de 3 articles</div><div class="conv-body-reg">Bonjour Laura, votre annonce est-ell...</div><div class="conv-meta">Aurélie- Avant-hier</div></div>
+  </div>
+  <div class="conv-row deleted" data-unread="false">
+    <div class="conv-thumb ph-deleted"><svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6" stroke="#627C93" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 11v5M14 11v5" stroke="#627C93" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+    <div class="conv-body"><div class="conv-name">Apple AirTag</div><div class="conv-body-reg">Annonce supprimée</div><div class="conv-meta">Albert Muller - Samedi</div></div>
+  </div>
+  <div class="conv-row" data-unread="false">
+    <div class="conv-thumb" style="overflow:hidden"><img src="images/vignette lbc.png" style="width:100%;height:100%;object-fit:cover;display:block" alt=""></div>
+    <div class="conv-body">
+      <div class="conv-name-row"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="8" fill="#094171"/><path d="M4.5 8L7 10.5L11.5 5.5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="conv-name">Service client leboncoin</span></div>
+      <div class="conv-body-bold">Demande N°: 64031089</div>
+      <span class="tag-tinted">Envoyée</span>
+    </div>
+  </div>`;
+
+function convRowHTML(c) {
+  return `<div class="conv-row" data-unread="false">
+    <div class="conv-thumb" style="overflow:hidden"><img src="${c.img}" style="width:100%;height:100%;object-fit:cover;display:block" alt=""></div>
+    <div class="conv-body"><div class="conv-name">${c.name}</div><div class="conv-body-reg">${c.msg}</div><div class="conv-meta">${c.meta}</div></div>
+  </div>`;
+}
+
+const CARD_VALISE_HTML = `<div class="card" onclick="goToOffreValise()">
+  <div class="card-thumb" style="background:none;overflow:hidden"><img src="images/valise samsonite.png" style="width:100%;height:100%;object-fit:cover;display:block" alt=""></div>
+  <div class="card-body">
+    <div class="card-count">6</div><div class="card-sub">acheteurs potentiels</div>
+    <div class="tag-blue"><svg width="11" height="11" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" stroke="white" stroke-width="1.4"/><path d="M6 3.5V6L7.5 7.5" stroke="white" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Offres à envoyer</div>
+  </div>
+</div>`;
+
+const CARD_PS5_HTML = `<div class="card" onclick="goToOffrePS5()">
+  <div class="card-thumb" style="background:none;overflow:hidden"><img src="images/PlayStation 5 bon état.png" style="width:100%;height:100%;object-fit:cover;display:block" alt=""></div>
+  <div class="card-body">
+    <div class="card-count">5</div><div class="card-sub">acheteurs potentiels</div>
+    <div class="tag-blue"><svg width="11" height="11" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" stroke="white" stroke-width="1.4"/><path d="M6 3.5V6L7.5 7.5" stroke="white" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Offres à envoyer</div>
+  </div>
+</div>`;
+
+function buildCarouselDyn() {
+  const hasValise = offresSent.includes('valise');
+  const hasPS5 = offresSent.includes('ps5');
+  let cards = '';
+  if (!hasValise) cards += CARD_VALISE_HTML;
+  if (!hasPS5) cards += CARD_PS5_HTML;
+  const wrap = document.getElementById('carousel-dyn-wrap');
+  if (cards) {
+    wrap.innerHTML = `<div class="carousel-wrap"><div class="carousel">${cards}</div></div>`;
+  } else {
+    wrap.innerHTML = '';
+  }
+}
+
+function buildDynScreen(lastLabel, lastCount) {
+  buildCarouselDyn();
+  let html = '';
+  [...offresSent].reverse().forEach(o => {
+    const convs = o === 'valise' ? CONVS_VALISE : CONVS_PS5;
+    convs.forEach(c => html += convRowHTML(c));
+  });
+  html += CONVS_BASE;
+  document.getElementById('conv-list-dyn').innerHTML = html;
+  document.getElementById('toast-dyn-text').textContent = `${lastCount} acheteurs contactés pour "${lastLabel}"`;
+  document.getElementById('toast-dyn').style.display = 'flex';
+}
+
+function goToInboxPostValise() {
+  if (!offresSent.includes('valise')) offresSent.push('valise');
+  buildDynScreen('Valise samsonite chronolite', 6);
+  document.getElementById('screen-offre-valise').classList.add('hidden');
+  document.getElementById('screen-inbox-post').classList.remove('hidden');
+}
+
 function goToInboxPostPS5() {
+  if (!offresSent.includes('ps5')) offresSent.push('ps5');
+  buildDynScreen('PlayStation 5 bon état', 5);
   document.getElementById('screen-offre').classList.add('hidden');
-  document.getElementById('screen-inbox-post-ps5').classList.remove('hidden');
-  // Toast disparaît après 4 secondes
-  setTimeout(() => {
-    const t = document.getElementById('toast-ps5');
-    if (t) t.style.display = 'none';
-  }, 4000);
+  document.getElementById('screen-inbox-post').classList.remove('hidden');
 }
 
 function goBack() {
   document.getElementById('screen-offre').classList.add('hidden');
   document.getElementById('screen-offre-valise').classList.add('hidden');
-  document.getElementById('screen-inbox').classList.remove('hidden');
+  if (offresSent.length > 0) {
+    // Au moins une offre déjà envoyée : on rebâtit le carousel sans toast
+    buildCarouselDyn();
+    document.getElementById('toast-dyn').style.display = 'none';
+    document.getElementById('screen-inbox-post').classList.remove('hidden');
+  } else {
+    document.getElementById('screen-inbox').classList.remove('hidden');
+  }
 }
 
 function filterAll() {
@@ -1105,16 +1379,16 @@ function filterUnread() {
   });
 }
 
-function filterAllPost() {
-  document.getElementById('chip-all-post').classList.add('active');
-  document.getElementById('chip-unread-post').classList.remove('active');
-  document.querySelectorAll('#conv-list-post .conv-row').forEach(r => r.style.display = '');
+function filterAllDyn() {
+  document.getElementById('chip-all-dyn').classList.add('active');
+  document.getElementById('chip-unread-dyn').classList.remove('active');
+  document.querySelectorAll('#conv-list-dyn .conv-row').forEach(r => r.style.display = '');
 }
 
-function filterUnreadPost() {
-  document.getElementById('chip-unread-post').classList.add('active');
-  document.getElementById('chip-all-post').classList.remove('active');
-  document.querySelectorAll('#conv-list-post .conv-row').forEach(r => {
+function filterUnreadDyn() {
+  document.getElementById('chip-unread-dyn').classList.add('active');
+  document.getElementById('chip-all-dyn').classList.remove('active');
+  document.querySelectorAll('#conv-list-dyn .conv-row').forEach(r => {
     r.style.display = r.dataset.unread === 'true' ? '' : 'none';
   });
 }
