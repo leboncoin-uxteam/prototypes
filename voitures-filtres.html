@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Filtres — Voitures d'occasion</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,400;0,6..12,700;1,6..12,400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #f0f4f8;
+      min-height: 100vh;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 32px 16px 64px;
+      font-family: 'Nunito Sans', sans-serif;
+    }
+
+    /* ── Phone shell ── */
+    .phone {
+      background: #fff;
+      border-radius: 24px;
+      box-shadow: 0 25px 25px rgba(108,129,157,.5);
+      width: 390px;
+      height: 844px;
+      overflow: hidden;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Status bar ── */
+    .status-bar {
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      background: #fff;
+      flex-shrink: 0;
+    }
+    .status-bar .time {
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+      font-weight: 600;
+      font-size: 15px;
+      letter-spacing: -0.5px;
+    }
+    .status-bar .icons { display: flex; align-items: center; gap: 6px; }
+
+    /* ── Screen container ── */
+    .screen {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-height: 0;
+    }
+    .screen.hidden { display: none; }
+
+    /* ── Header ── */
+    .header {
+      background: #fff;
+      flex-shrink: 0;
+      border-bottom: 1px solid rgba(172,184,199,.3);
+    }
+    .header-inner {
+      display: flex;
+      align-items: center;
+      padding: 0 8px;
+      height: 56px;
+      gap: 8px;
+    }
+    .btn-icon {
+      width: 44px; height: 44px;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 16px;
+      background: none; border: none; cursor: pointer;
+      color: #152233;
+      flex-shrink: 0;
+    }
+    .btn-icon:hover { background: rgba(21,34,51,.06); }
+
+    /* Search bar in header (searchform) */
+    .header-search {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      height: 40px;
+      background: #f0f4f8;
+      border-radius: 99px;
+      padding: 0 12px;
+      color: #6b7a8d;
+      font-size: 14px;
+    }
+    /* Filter title in header (filter screen) */
+    .header-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: #152233;
+      flex: 1;
+    }
+
+    /* ── Scrollable body ── */
+    .scrollable {
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    /* ── Filter list (searchform) ── */
+    .filter-list { padding: 0 16px 8px; }
+
+    .filter-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 60px;
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(172,184,199,.3);
+      cursor: pointer;
+      user-select: none;
+    }
+    .filter-row:last-child { border-bottom: none; }
+    .filter-row:hover { background: rgba(21,34,51,.04); border-radius: 8px; }
+    .filter-row--fixed { cursor: default; }
+    .filter-row--fixed .chevron { display: none; }
+    .filter-row-left { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0; }
+    .filter-row-label {
+      font-size: 16px;
+      font-weight: 700;
+      color: #152233;
+      line-height: 24px;
+    }
+    .filter-row-right {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex-shrink: 0;
+      margin-left: 12px;
+    }
+    .filter-row-value {
+      font-size: 14px;
+      color: #094171;
+      font-weight: 400;
+      max-width: 180px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .chevron { color: #acb8c7; flex-shrink: 0; }
+
+    /* Prix inline */
+    .prix-inline { padding: 12px 0; border-bottom: 1px solid rgba(172,184,199,.3); }
+    .prix-label {
+      font-size: 16px;
+      font-weight: 700;
+      color: #152233;
+      margin-bottom: 10px;
+    }
+    .prix-inputs { display: flex; gap: 12px; }
+    .prix-input-wrap {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      height: 44px;
+      border: 1px solid #acb8c7;
+      border-radius: 99px;
+      overflow: hidden;
+      transition: border-color .15s;
+    }
+    .prix-input-wrap:focus-within { border-color: #094171; border-width: 1.5px; }
+    .prix-input {
+      flex: 1; min-width: 0; height: 100%;
+      border: none; outline: none;
+      padding: 0 8px 0 16px;
+      font-family: 'Nunito Sans', sans-serif;
+      font-size: 15px; color: #152233; background: transparent;
+      -moz-appearance: textfield;
+    }
+    .prix-input::-webkit-outer-spin-button,
+    .prix-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+    .prix-suffix {
+      border-left: 1px solid #acb8c7;
+      height: 100%; display: flex; align-items: center;
+      padding: 0 12px; font-size: 14px; color: #152233; flex-shrink: 0;
+    }
+
+    /* ── Search bar (filter screen) ── */
+    .filter-search-wrap {
+      padding: 12px 16px;
+      border-bottom: 1px solid rgba(172,184,199,.3);
+      flex-shrink: 0;
+    }
+    .filter-search-inner {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      height: 44px;
+      background: #f0f4f8;
+      border-radius: 99px;
+      padding: 0 16px;
+    }
+    .filter-search-input {
+      flex: 1; border: none; outline: none; background: transparent;
+      font-family: 'Nunito Sans', sans-serif;
+      font-size: 15px; color: #152233;
+    }
+    .filter-search-input::placeholder { color: #9aa5b4; }
+
+    /* ── Options list ── */
+    .options-list { padding: 0 16px; }
+
+    /* Group header (marque parent pour modèles) */
+    .option-group { margin-bottom: 8px; }
+    .option-group-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 0 8px;
+      cursor: pointer;
+      user-select: none;
+    }
+    .option-group-title {
+      font-family: 'DM Sans', 'Nunito Sans', sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: #152233;
+    }
+    .option-group-chevron {
+      width: 24px;
+      height: 24px;
+      color: #152233;
+      transition: transform .2s;
+    }
+    .option-group.collapsed .option-group-chevron { transform: rotate(180deg); }
+    .option-group.collapsed .option-group-items { display: none; }
+
+    .option-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 48px;
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(172,184,199,.2);
+      cursor: pointer;
+      user-select: none;
+    }
+    .option-row:last-child { border-bottom: none; }
+    .option-row:hover { opacity: .8; }
+    .option-left {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      flex: 1;
+      min-width: 0;
+    }
+    .option-label {
+      font-size: 16px;
+      color: #152233;
+      font-weight: 400;
+    }
+    .option-row.selected .option-label { font-weight: 700; }
+    .option-count {
+      font-size: 12px;
+      color: #3a4757;
+    }
+    .option-checkmark {
+      width: 16px;
+      height: 16px;
+      color: #1a7f4b;
+      flex-shrink: 0;
+      display: none;
+    }
+    .option-row.selected .option-checkmark { display: block; }
+
+    /* ── Sticky footer ── */
+    .sticky-footer {
+      background: #fff;
+      padding: 12px 16px;
+      box-shadow: 0 -1px 2px rgba(108,129,157,.3);
+      flex-shrink: 0;
+      display: flex;
+      gap: 12px;
+    }
+    .btn-secondary {
+      height: 44px;
+      background: #fff;
+      color: #152233;
+      border: 1.5px solid #acb8c7;
+      border-radius: 16px;
+      font-family: 'Nunito Sans', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      padding: 0 20px;
+      white-space: nowrap;
+      transition: border-color .15s;
+    }
+    .btn-secondary:hover { border-color: #152233; }
+    .btn-primary {
+      flex: 1;
+      height: 44px;
+      background: #ec5a13;
+      color: #fff;
+      border: none;
+      border-radius: 16px;
+      font-family: 'Nunito Sans', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background .15s;
+    }
+    .btn-primary:hover { background: #d44e0e; }
+    .btn-primary:active { background: #bf4509; }
+  </style>
+</head>
+<body>
+<div class="phone">
+
+  <!-- Status bar -->
+  <div class="status-bar">
+    <span class="time">10:28</span>
+    <div class="icons">
+      <svg width="17" height="12" viewBox="0 0 17 12" fill="none" aria-hidden="true">
+        <rect x="0" y="8" width="3" height="4" rx="1" fill="#152233"/>
+        <rect x="4.5" y="5.5" width="3" height="6.5" rx="1" fill="#152233"/>
+        <rect x="9" y="2.5" width="3" height="9.5" rx="1" fill="#152233"/>
+        <rect x="13.5" y="0" width="3" height="12" rx="1" fill="#152233"/>
+      </svg>
+      <svg width="16" height="12" viewBox="0 0 16 12" fill="none" aria-hidden="true">
+        <path d="M8 10a1.25 1.25 0 110 2.5A1.25 1.25 0 018 10z" fill="#152233"/>
+        <path d="M4.1 7.2a5.5 5.5 0 017.8 0" stroke="#152233" stroke-width="1.5" stroke-linecap="round"/>
+        <path d="M1.5 4.5a9 9 0 0113 0" stroke="#152233" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      <svg width="26" height="13" viewBox="0 0 26 13" fill="none" aria-hidden="true">
+        <rect x="0.5" y="0.5" width="21" height="12" rx="3.5" stroke="#152233" stroke-opacity=".35"/>
+        <rect x="2" y="2" width="17" height="9" rx="2" fill="#152233"/>
+        <path d="M23 4.5v4a2 2 0 000-4z" fill="#152233" fill-opacity=".4"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- SCREEN: Searchform -->
+  <div id="screen-searchform" class="screen">
+    <div class="header">
+      <div class="header-inner">
+        <button class="btn-icon" id="btn-close" aria-label="Fermer">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path d="M19 12H5M5 12l6-6M5 12l6 6" stroke="#152233" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <div class="header-search">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <circle cx="7" cy="7" r="5" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M11 11l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          Rechercher sur leboncoin
+        </div>
+      </div>
+    </div>
+    <div class="scrollable">
+      <div class="filter-list" id="filter-list"></div>
+    </div>
+    <div class="sticky-footer">
+      <button class="btn-secondary" id="btn-effacer-all">Effacer</button>
+      <button class="btn-primary" id="btn-rechercher">Rechercher (2 215)</button>
+    </div>
+  </div>
+
+  <!-- SCREEN: Filter selection -->
+  <div id="screen-filter" class="screen hidden">
+    <div class="header">
+      <div class="header-inner">
+        <button class="btn-icon" id="btn-back" aria-label="Retour">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path d="M19 12H5M5 12l6-6M5 12l6 6" stroke="#152233" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <span class="header-title" id="filter-screen-title"></span>
+      </div>
+    </div>
+    <div class="filter-search-wrap">
+      <div class="filter-search-inner">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <circle cx="7" cy="7" r="5" stroke="#9aa5b4" stroke-width="1.5"/>
+          <path d="M11 11l3 3" stroke="#9aa5b4" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        <input type="text" class="filter-search-input" id="filter-search-input" placeholder="Rechercher" aria-label="Rechercher parmi les options" autocomplete="off" />
+      </div>
+    </div>
+    <div class="scrollable">
+      <div class="options-list" id="options-list"></div>
+    </div>
+    <div class="sticky-footer">
+      <button class="btn-secondary" id="btn-effacer-filter">Effacer</button>
+      <button class="btn-primary" id="btn-valider">Valider la sélection (0)</button>
+    </div>
+  </div>
+
+</div><!-- /phone -->
+
+<script>
+// ── Utilitaire sécurité ──────────────────────
+const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
+// ═══════════════════════════════════════════════
+// 1. DONNÉES
+// ═══════════════════════════════════════════════
+
+const FILTERS = [
+  { id: 'categorie',    label: 'Catégorie',           type: 'list',  childId: null,      dependsOnId: null,     fixed: true },
+  { id: 'localisation', label: 'Localisation',         type: 'list',  childId: null,      dependsOnId: null },
+  { id: 'mode-remise',  label: 'Mode de remise',       type: 'list',  childId: null,      dependsOnId: null },
+  { id: 'prix',         label: 'Prix',                 type: 'range', childId: null,      dependsOnId: null },
+  { id: 'marque',       label: 'Marque',               type: 'list',  childId: 'modele',  dependsOnId: null },
+  { id: 'modele',       label: 'Modèle',               type: 'list',  childId: 'finition',dependsOnId: 'marque' },
+  { id: 'finition',     label: 'Finition',             type: 'list',  childId: null,      dependsOnId: 'modele' },
+  { id: 'carburant',    label: 'Carburant',            type: 'list',  childId: null,      dependsOnId: null },
+  { id: 'boite',        label: 'Boîte de vitesse',     type: 'list',  childId: null,      dependsOnId: null },
+  { id: 'couleur',      label: 'Couleur',              type: 'list',  childId: null,      dependsOnId: null },
+  { id: 'etat',         label: 'État',                 type: 'list',  childId: null,      dependsOnId: null },
+  { id: 'statut',       label: 'Statut de l\'annonce', type: 'list',  childId: null,      dependsOnId: null },
+  { id: 'type-annonce', label: 'Type d\'annonce',      type: 'list',  childId: null,      dependsOnId: null },
+];
+
+const MOCK = {
+  categorie: [
+    { label: 'Voitures', count: 2215 },
+    { label: 'Utilitaires', count: 412 },
+    { label: 'Motos', count: 389 },
+    { label: 'Caravaning', count: 124 },
+  ],
+  localisation: [
+    { label: 'Paris 75 + 30 km', count: 412 },
+    { label: 'Lyon 69 + 30 km', count: 287 },
+    { label: 'Marseille 13 + 30 km', count: 198 },
+    { label: 'Bordeaux 33 + 30 km', count: 165 },
+    { label: 'Toulouse 31 + 30 km', count: 143 },
+    { label: 'Nantes 44 + 30 km', count: 128 },
+    { label: 'Nice 06 + 30 km', count: 112 },
+  ],
+  'mode-remise': [
+    { label: 'En main propre', count: 1850 },
+    { label: 'En livraison', count: 842 },
+  ],
+  marque: [
+    { label: 'Renault',    count: 423 },
+    { label: 'Peugeot',    count: 387 },
+    { label: 'Citroën',    count: 312 },
+    { label: 'Volkswagen', count: 298 },
+    { label: 'BMW',        count: 245 },
+    { label: 'Mercedes',   count: 234 },
+    { label: 'Audi',       count: 198 },
+    { label: 'Toyota',     count: 176 },
+    { label: 'Ford',       count: 154 },
+    { label: 'Fiat',       count: 143 },
+    { label: 'Opel',       count: 132 },
+    { label: 'Hyundai',    count: 121 },
+    { label: 'Nissan',     count: 98 },
+    { label: 'Seat',       count: 87 },
+    { label: 'Volvo',      count: 76 },
+  ],
+  modele: {
+    'Renault':    [{ label: 'Clio', count: 98 }, { label: 'Mégane', count: 87 }, { label: 'Captur', count: 76 }, { label: 'Twingo', count: 54 }, { label: 'Kangoo', count: 43 }, { label: 'Zoé', count: 38 }, { label: 'Austral', count: 27 }],
+    'Peugeot':   [{ label: '208', count: 87 }, { label: '308', count: 76 }, { label: '3008', count: 65 }, { label: '5008', count: 54 }, { label: '2008', count: 43 }, { label: 'Partner', count: 32 }],
+    'Citroën':   [{ label: 'C3', count: 76 }, { label: 'C4', count: 65 }, { label: 'Berlingo', count: 54 }, { label: 'C5 Aircross', count: 43 }, { label: 'DS3', count: 32 }],
+    'Volkswagen':[{ label: 'Golf', count: 87 }, { label: 'Polo', count: 65 }, { label: 'Tiguan', count: 54 }, { label: 'T-Roc', count: 43 }, { label: 'Passat', count: 32 }],
+    'BMW':       [{ label: 'Série 1', count: 54 }, { label: 'Série 3', count: 65 }, { label: 'Série 5', count: 43 }, { label: 'X1', count: 38 }, { label: 'X3', count: 32 }, { label: 'X5', count: 23 }],
+    'Mercedes':  [{ label: 'Classe A', count: 54 }, { label: 'Classe C', count: 65 }, { label: 'Classe E', count: 43 }, { label: 'GLA', count: 38 }, { label: 'GLB', count: 29 }, { label: 'Sprinter', count: 25 }],
+    'Audi':      [{ label: 'A1', count: 32 }, { label: 'A3', count: 54 }, { label: 'A4', count: 43 }, { label: 'Q3', count: 38 }, { label: 'Q5', count: 32 }, { label: 'TT', count: 19 }],
+    'Toyota':    [{ label: 'Yaris', count: 54 }, { label: 'Corolla', count: 43 }, { label: 'RAV4', count: 38 }, { label: 'C-HR', count: 32 }, { label: 'Prius', count: 9 }],
+    'Ford':      [{ label: 'Fiesta', count: 43 }, { label: 'Focus', count: 38 }, { label: 'Puma', count: 32 }, { label: 'Kuga', count: 23 }, { label: 'Mustang', count: 18 }],
+    'Fiat':      [{ label: '500', count: 54 }, { label: 'Panda', count: 43 }, { label: 'Tipo', count: 23 }, { label: 'Doblo', count: 23 }],
+    'Opel':      [{ label: 'Corsa', count: 43 }, { label: 'Astra', count: 38 }, { label: 'Mokka', count: 29 }, { label: 'Crossland', count: 22 }],
+    'Hyundai':   [{ label: 'i20', count: 32 }, { label: 'i30', count: 43 }, { label: 'Tucson', count: 28 }, { label: 'Kona', count: 18 }],
+    'Nissan':    [{ label: 'Micra', count: 28 }, { label: 'Juke', count: 32 }, { label: 'Qashqai', count: 24 }, { label: 'Leaf', count: 14 }],
+    'Seat':      [{ label: 'Ibiza', count: 32 }, { label: 'Leon', count: 28 }, { label: 'Arona', count: 17 }, { label: 'Ateca', count: 10 }],
+    'Volvo':     [{ label: 'V40', count: 21 }, { label: 'V60', count: 24 }, { label: 'XC40', count: 18 }, { label: 'XC60', count: 13 }],
+  },
+  finition: {
+    'Clio':    [{ label: 'Life', count: 23 }, { label: 'Zen', count: 18 }, { label: 'Intens', count: 21 }, { label: 'RS Line', count: 12 }, { label: 'Lutecia', count: 8 }],
+    'Mégane':  [{ label: 'Life', count: 18 }, { label: 'Zen', count: 22 }, { label: 'Business', count: 15 }, { label: 'GT Line', count: 9 }, { label: 'RS', count: 5 }],
+    '208':     [{ label: 'Like', count: 21 }, { label: 'Active', count: 18 }, { label: 'Allure', count: 24 }, { label: 'GT', count: 14 }, { label: 'e-208', count: 10 }],
+    'Golf':    [{ label: 'Trendline', count: 18 }, { label: 'Comfortline', count: 22 }, { label: 'Highline', count: 19 }, { label: 'GTI', count: 14 }, { label: 'R', count: 7 }],
+    'Captur':  [{ label: 'Life', count: 18 }, { label: 'Zen', count: 23 }, { label: 'Intens', count: 17 }, { label: 'RS Line', count: 8 }],
+    'A3':      [{ label: 'Design', count: 14 }, { label: 'Sport', count: 18 }, { label: 'S line', count: 12 }, { label: 'S3', count: 8 }],
+  },
+  carburant:      [{ label: 'Essence', count: 1043 }, { label: 'Diesel', count: 876 }, { label: 'Hybride', count: 187 }, { label: 'Électrique', count: 76 }, { label: 'GPL', count: 33 }],
+  boite:          [{ label: 'Manuelle', count: 1287 }, { label: 'Automatique', count: 928 }],
+  couleur:        [{ label: 'Blanc', count: 412 }, { label: 'Noir', count: 387 }, { label: 'Gris', count: 456 }, { label: 'Rouge', count: 198 }, { label: 'Bleu', count: 176 }, { label: 'Vert', count: 87 }, { label: 'Beige', count: 65 }, { label: 'Orange', count: 43 }, { label: 'Jaune', count: 32 }, { label: 'Marron', count: 54 }],
+  etat:           [{ label: 'Neuf', count: 287 }, { label: 'Occasion', count: 1876 }, { label: 'Pour pièces', count: 52 }],
+  statut:         [{ label: 'Afficher uniquement les annonces disponibles', count: 1987 }],
+  'type-annonce': [{ label: 'Offre', count: 2098 }, { label: 'Demande', count: 117 }],
+};
+
+// ═══════════════════════════════════════════════
+// 2. STATE
+// ═══════════════════════════════════════════════
+
+// ── État global ──────────────────────────────
+const _emptySelections = () =>
+  Object.fromEntries(FILTERS.map(f => [f.id, []]));
+
+const state = {
+  validated:  _emptySelections(),
+  selections: _emptySelections(),
+  activeFilterId: null,
+  prix: { min: '', max: '' },
+};
+
+// Initialise catégorie à Voitures (fixe)
+state.validated['categorie']  = ['Voitures'];
+state.selections['categorie'] = ['Voitures'];
+
+// ── Helpers ──────────────────────────────────
+
+/**
+ * Retourne les filtres à afficher dans le searchform.
+ * - Catégorie toujours premier.
+ * - Filtres enfants : uniquement si leur parent a au moins 1 valeur validée.
+ */
+function getVisibleFilters() {
+  return FILTERS.filter(f => {
+    if (f.type === 'range') return true;
+    if (!f.dependsOnId) return true;
+    return state.validated[f.dependsOnId].length > 0;
+  });
+}
+
+/**
+ * Retourne les options pour un écran filtre donné.
+ * Toujours préfixé de { label: 'Tout', count: null }.
+ * Pour les filtres dépendants (modele, finition) : fusionne les options
+ * des valeurs parentes sélectionnées.
+ */
+function getFilterOptions(filterId) {
+  const filter = FILTERS.find(f => f.id === filterId);
+  const tout = [{ label: 'Tout', count: null }];
+
+  if (!filter.dependsOnId) {
+    return [...tout, ...(MOCK[filterId] || [])];
+  }
+
+  const parentValues = state.validated[filter.dependsOnId];
+  if (parentValues.length === 0) return tout;
+
+  const optionMap = MOCK[filterId]; // { 'Renault': [...], 'Clio': [...] }
+  const seen = new Set();
+  const merged = [];
+
+  parentValues.forEach(parentVal => {
+    const opts = optionMap[parentVal] || [];
+    opts.forEach(opt => {
+      if (!seen.has(opt.label)) {
+        seen.add(opt.label);
+        merged.push(opt);
+      }
+    });
+  });
+
+  return [...tout, ...merged];
+}
+
+/**
+ * Formate les valeurs validées d'un filtre pour l'affichage sur le searchform.
+ * 0 valeur → ''
+ * 1 → 'Renault'
+ * 2–3 → 'Renault, Peugeot'
+ * 4+ → 'Renault, Peugeot +2'
+ */
+function formatValues(filterId) {
+  const vals = state.validated[filterId];
+  if (!vals || vals.length === 0) return '';
+  if (vals.length === 1) return vals[0];
+  if (vals.length <= 3) return vals.join(', ');
+  return vals.slice(0, 2).join(', ') + ` +${vals.length - 2}`;
+}
+
+/**
+ * Supprime en cascade les valeurs des filtres enfants
+ * qui ne sont plus cohérentes avec les nouvelles valeurs du parent.
+ */
+function cascadeDeleteChildren(filterId) {
+  const filter = FILTERS.find(f => f.id === filterId);
+  if (!filter.childId) return;
+
+  const childId = filter.childId;
+  const parentValues = state.validated[filterId];
+
+  if (parentValues.length === 0) {
+    // Parent vidé → vider tout l'arbre enfant
+    state.validated[childId]  = [];
+    state.selections[childId] = [];
+  } else {
+    // Garder uniquement les valeurs enfant encore valides
+    const validLabels = new Set(
+      getFilterOptions(childId).map(o => o.label)
+    );
+    state.validated[childId]  = state.validated[childId].filter(v => validLabels.has(v));
+    state.selections[childId] = [...state.validated[childId]];
+  }
+
+  cascadeDeleteChildren(childId); // récursion
+}
+
+// ═══════════════════════════════════════════════
+// 3. RENDERING
+// ═══════════════════════════════════════════════
+
+function renderSearchform() {
+  const list = document.getElementById('filter-list');
+  const visible = getVisibleFilters();
+  let html = '';
+
+  visible.forEach(filter => {
+    if (filter.type === 'range') {
+      // Prix inline
+      html += `
+        <div class="prix-inline">
+          <div class="prix-label">Prix</div>
+          <div class="prix-inputs">
+            <div class="prix-input-wrap">
+              <input class="prix-input" type="number" id="prix-min"
+                     placeholder="Minimum" min="0"
+                     value="${state.prix.min}" />
+              <span class="prix-suffix">€</span>
+            </div>
+            <div class="prix-input-wrap">
+              <input class="prix-input" type="number" id="prix-max"
+                     placeholder="Maximum" min="0"
+                     value="${state.prix.max}" />
+              <span class="prix-suffix">€</span>
+            </div>
+          </div>
+        </div>`;
+      return;
+    }
+
+    const value = formatValues(filter.id);
+    const isFixed = filter.fixed;
+
+    html += `
+      <div class="filter-row${isFixed ? ' filter-row--fixed' : ''}"
+           data-filter-id="${esc(filter.id)}"
+           ${isFixed ? '' : 'role="button" tabindex="0"'}>
+        <div class="filter-row-left">
+          <span class="filter-row-label">${esc(filter.label)}</span>
+        </div>
+        <div class="filter-row-right">
+          ${value ? `<span class="filter-row-value">${esc(value)}</span>` : ''}
+          <svg class="chevron" width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+            <path d="M7.5 5l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+      </div>`;
+  });
+
+  list.innerHTML = html;
+
+  // Bind Prix inputs
+  const prixMin = document.getElementById('prix-min');
+  const prixMax = document.getElementById('prix-max');
+  if (prixMin) prixMin.addEventListener('input', e => { state.prix.min = e.target.value; });
+  if (prixMax) prixMax.addEventListener('input', e => { state.prix.max = e.target.value; });
+
+  // Bind filter row clicks
+  list.querySelectorAll('.filter-row:not(.filter-row--fixed)').forEach(row => {
+    row.addEventListener('click', () => openFilter(row.dataset.filterId));
+    row.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openFilter(row.dataset.filterId); }
+    });
+  });
+}
+
+function renderFilterScreen(filterId) {
+  const filter = FILTERS.find(f => f.id === filterId);
+  const currentSelections = state.selections[filterId];
+
+  // Titre header
+  document.getElementById('filter-screen-title').textContent = filter.label;
+
+  // Reset barre de recherche
+  document.getElementById('filter-search-input').value = '';
+
+  // Rendu : groupé si filtre enfant (modele, finition), sinon flat
+  if (filter.dependsOnId) {
+    renderGroupedOptions(filterId, currentSelections, '');
+  } else {
+    const options = getFilterOptions(filterId);
+    renderFlatOptions(options, currentSelections);
+  }
+
+  // Mettre à jour le bouton Valider
+  updateValiderBtn();
+
+  // Bind recherche live
+  document.getElementById('filter-search-input').oninput = function () {
+    const q = this.value.toLowerCase().trim();
+    const filter = FILTERS.find(f => f.id === filterId);
+    if (filter.dependsOnId) {
+      renderGroupedOptions(filterId, state.selections[filterId], q);
+    } else {
+      const options = getFilterOptions(filterId);
+      const filtered = q ? options.filter(o => o.label.toLowerCase().includes(q)) : options;
+      renderFlatOptions(filtered, state.selections[filterId]);
+    }
+  };
+}
+
+/**
+ * Rendu groupé pour modèle/finition — options groupées par parent (marque/modèle)
+ */
+function renderGroupedOptions(filterId, currentSelections, searchQuery) {
+  const filter = FILTERS.find(f => f.id === filterId);
+  const parentId = filter.dependsOnId;
+  const parentValues = state.validated[parentId];
+  const optionMap = MOCK[filterId]; // { 'Renault': [...], 'Clio': [...] }
+  const list = document.getElementById('options-list');
+
+  let html = '';
+  parentValues.forEach(parentVal => {
+    const childOptions = optionMap[parentVal] || [];
+    // Filtrer par recherche
+    const filtered = searchQuery
+      ? childOptions.filter(o => o.label.toLowerCase().includes(searchQuery))
+      : childOptions;
+    // Si recherche active et aucun résultat pour ce parent, skip le groupe
+    if (searchQuery && filtered.length === 0) return;
+
+    html += `
+      <div class="option-group" data-parent="${esc(parentVal)}">
+        <div class="option-group-header">
+          <span class="option-group-title">${esc(parentVal)}</span>
+          <svg class="option-group-chevron" width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="option-group-items">
+          ${(!searchQuery ? `
+            <div class="option-row${currentSelections.length === 0 ? ' selected' : ''}" data-label="Tout" data-is-tout="true" data-parent="${esc(parentVal)}">
+              <div class="option-left">
+                <span class="option-label">Tout</span>
+                <span class="option-count">${childOptions.reduce((sum, o) => sum + (o.count || 0), 0).toLocaleString('fr-FR')}</span>
+              </div>
+              <svg class="option-checkmark" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <path d="M3 8l3 3 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>` : '')}
+          ${filtered.map(opt => {
+            const isSelected = currentSelections.includes(opt.label);
+            const countHtml = opt.count !== null ? `<span class="option-count">${opt.count.toLocaleString('fr-FR')}</span>` : '';
+            return `
+              <div class="option-row${isSelected ? ' selected' : ''}" data-label="${esc(opt.label)}" data-is-tout="false">
+                <div class="option-left">
+                  <span class="option-label">${esc(opt.label)}</span>
+                  ${countHtml}
+                </div>
+                <svg class="option-checkmark" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                  <path d="M3 8l3 3 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>`;
+          }).join('')}
+        </div>
+      </div>`;
+  });
+
+  list.innerHTML = html;
+
+  // Bind header collapse
+  list.querySelectorAll('.option-group-header').forEach(header => {
+    header.addEventListener('click', () => {
+      header.parentElement.classList.toggle('collapsed');
+    });
+  });
+
+  // Bind option clics
+  list.querySelectorAll('.option-row').forEach(row => {
+    row.addEventListener('click', () => toggleOption(row.dataset.label, false));
+  });
+}
+
+/**
+ * Rendu flat pour filtres sans parent (marque, carburant, etc.)
+ */
+function renderFlatOptions(options, currentSelections) {
+  const list = document.getElementById('options-list');
+  list.innerHTML = options.map(opt => {
+    const isTout = opt.label === 'Tout';
+    const isSelected = isTout
+      ? currentSelections.length === 0
+      : currentSelections.includes(opt.label);
+    const countHtml = opt.count !== null
+      ? `<span class="option-count">${opt.count.toLocaleString('fr-FR')}</span>`
+      : '';
+    return `
+      <div class="option-row${isSelected ? ' selected' : ''}" data-label="${esc(opt.label)}" data-is-tout="${isTout}">
+        <div class="option-left">
+          <span class="option-label">${esc(opt.label)}</span>
+          ${countHtml}
+        </div>
+        <svg class="option-checkmark" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <path d="M3 8l3 3 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>`;
+  }).join('');
+
+  // Bind clics
+  list.querySelectorAll('.option-row').forEach(row => {
+    row.addEventListener('click', () => toggleOption(row.dataset.label, row.dataset.isTout === 'true'));
+  });
+}
+
+function toggleOption(label, isTout) {
+  const filterId = state.activeFilterId;
+  const filter = FILTERS.find(f => f.id === filterId);
+  const sel = state.selections[filterId];
+
+  if (isTout) {
+    // Sélectionner Tout = vider les sélections spécifiques
+    state.selections[filterId] = [];
+  } else {
+    const idx = sel.indexOf(label);
+    if (idx === -1) {
+      state.selections[filterId] = [...sel, label];
+    } else {
+      state.selections[filterId] = sel.filter(v => v !== label);
+    }
+  }
+
+  // Re-render options avec la barre de recherche actuelle
+  const q = document.getElementById('filter-search-input').value.toLowerCase().trim();
+  if (filter.dependsOnId) {
+    renderGroupedOptions(filterId, state.selections[filterId], q);
+  } else {
+    const allOptions = getFilterOptions(filterId);
+    const filtered = q ? allOptions.filter(o => o.label.toLowerCase().includes(q)) : allOptions;
+    renderFlatOptions(filtered, state.selections[filterId]);
+  }
+  updateValiderBtn();
+}
+
+function updateValiderBtn() {
+  const filterId = state.activeFilterId;
+  const n = state.selections[filterId].length;
+  document.getElementById('btn-valider').textContent =
+    n === 0 ? 'Valider la sélection (Tout)' : `Valider la sélection (${n})`;
+}
+
+// ═══════════════════════════════════════════════
+// 4. NAVIGATION
+// ═══════════════════════════════════════════════
+
+function showScreen(name) {
+  document.getElementById('screen-searchform').classList.toggle('hidden', name !== 'searchform');
+  document.getElementById('screen-filter').classList.toggle('hidden', name !== 'filter');
+}
+
+function openFilter(filterId, isAutoChain = false) {
+  // Copier les validated dans selections (état de travail)
+  state.selections[filterId] = [...state.validated[filterId]];
+  state.activeFilterId = filterId;
+
+  // Auto-chain: replaceState pour que back revienne au searchform
+  // Manuel: pushState pour créer une entrée d'historique
+  if (isAutoChain) {
+    history.replaceState({ screen: 'filter', filterId }, '', '');
+  } else {
+    history.pushState({ screen: 'filter', filterId }, '', '');
+  }
+  renderFilterScreen(filterId);
+  showScreen('filter');
+}
+
+window.addEventListener('popstate', e => {
+  const screen = e.state?.screen || 'searchform';
+
+  if (screen === 'searchform') {
+    // Abandon des sélections non validées sur le filtre qu'on quitte
+    if (state.activeFilterId) {
+      state.selections[state.activeFilterId] = [...state.validated[state.activeFilterId]];
+    }
+    state.activeFilterId = null;
+    renderSearchform();
+    showScreen('searchform');
+  } else if (screen === 'filter') {
+    state.activeFilterId = e.state.filterId;
+    // Restaurer les selections depuis validated (pas de perte)
+    state.selections[e.state.filterId] = [...state.validated[e.state.filterId]];
+    renderFilterScreen(e.state.filterId);
+    showScreen('filter');
+  }
+});
+
+// Bouton ← sur l'écran filtre → history.back() déclenche popstate
+document.getElementById('btn-back').addEventListener('click', () => history.back());
+
+// Bouton ← sur le searchform → fermeture du tiroir
+document.getElementById('btn-close').addEventListener('click', () => {
+  // Flush selections ← validated (abandon des non-validés)
+  FILTERS.forEach(f => {
+    state.selections[f.id] = [...state.validated[f.id]];
+  });
+});
+
+function validateFilter() {
+  const filterId = state.activeFilterId;
+  const newValues = state.selections[filterId];
+  const isToutSelected = newValues.length === 0;
+
+  // 1. Écrire dans validated
+  state.validated[filterId] = isToutSelected ? [] : [...newValues];
+
+  // 2. Cascade delete des enfants si nécessaire
+  cascadeDeleteChildren(filterId);
+
+  // 3. Décider la prochaine étape
+  if (isToutSelected) {
+    // Sélection "Tout" → retour searchform sans enchaînement
+    // history.back() déclenche popstate qui remet selections←validated et re-render
+    history.back();
+    return;
+  }
+
+  // 4. Chercher le prochain filtre enfant avec des options disponibles
+  const filter = FILTERS.find(f => f.id === filterId);
+  if (filter.childId) {
+    const childOptions = getFilterOptions(filter.childId);
+    // childOptions contient toujours "Tout" → >1 = options réelles disponibles
+    if (childOptions.length > 1) {
+      // Auto-enchaînement vers l'enfant (replaceState pour que back → searchform)
+      openFilter(filter.childId, true);
+      return;
+    }
+  }
+
+  // 5. Fin de chaîne ou pas d'enfant → retour searchform
+  history.back();
+}
+
+// ── Bindings boutons ──
+document.getElementById('btn-valider').addEventListener('click', validateFilter);
+
+document.getElementById('btn-effacer-filter').addEventListener('click', () => {
+  // Effacer = vider les selections de l'écran actif (Tout implicite)
+  state.selections[state.activeFilterId] = [];
+  const allOptions = getFilterOptions(state.activeFilterId);
+  renderOptions(allOptions, []);
+  updateValiderBtn();
+});
+
+document.getElementById('btn-effacer-all').addEventListener('click', () => {
+  // Effacer tout le searchform
+  FILTERS.forEach(f => {
+    if (!f.fixed) {
+      state.validated[f.id]  = [];
+      state.selections[f.id] = [];
+    }
+  });
+  state.prix = { min: '', max: '' };
+  renderSearchform();
+});
+
+// ═══════════════════════════════════════════════
+// 5. INIT
+// ═══════════════════════════════════════════════
+
+history.replaceState({ screen: 'searchform' }, '', '');
+renderSearchform();
+showScreen('searchform');
+</script>
+</body>
+</html>
