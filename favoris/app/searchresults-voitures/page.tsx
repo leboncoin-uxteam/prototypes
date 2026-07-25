@@ -1,11 +1,15 @@
-import { getAnnonces } from "@/lib/db/queries"
+"use client"
+
+import { useStore } from "@/lib/store"
 import { SearchResultsView } from "@/components/SearchResultsView"
 
 export default function SearchResultsVoitures() {
-  const annonces = getAnnonces("voitures")
+  const { annonces } = useStore()
+  const annoncesVoitures = annonces.filter((a) => a.categorie === "voitures")
+
   return (
     <SearchResultsView
-      annonces={annonces}
+      annonces={annoncesVoitures}
       categorie="voitures"
       backHref="/onboarding"
       defaultQuery=""

@@ -10,7 +10,7 @@ export function TabBarWrapper() {
   useEffect(() => {
     if (typeof window === "undefined") return
     if (pathname.startsWith("/favoris")) {
-      localStorage.setItem("lbc_last_favoris", pathname)
+      localStorage.setItem("lbc_last_favoris", "/favoris")
     } else if (pathname === "/onboarding" || pathname.startsWith("/searchresults")) {
       localStorage.setItem("lbc_last_recherche", pathname)
     }

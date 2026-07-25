@@ -1,25 +1,14 @@
 "use client"
 
-import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
+import { useStore } from "@/lib/store"
 import { ListeCard } from "@/components/ListeCard"
-
-type ListeAvecImages = {
-  id: string
-  nom: string
-  images: string[]
-  count: number
-}
 
 export default function FavorisPage() {
   const router = useRouter()
-  const [listes, setListes] = useState<ListeAvecImages[]>([])
+  const { getListesAvecImages } = useStore()
 
-  useEffect(() => {
-    fetch("/api/favoris/listes")
-      .then((r) => r.json())
-      .then(setListes)
-  }, [])
+  const listes = getListesAvecImages()
 
   return (
     <main className="flex flex-col min-h-screen px-4 py-6 pb-[64px]">
@@ -41,7 +30,7 @@ export default function FavorisPage() {
               router.push(
                 liste.id === "__tous__"
                   ? "/favoris/tous"
-                  : `/favoris/${liste.id}`
+                  : `/favoris/liste?id=${liste.id}`
               )
             }
           />

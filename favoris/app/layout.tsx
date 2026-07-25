@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import { Nunito_Sans } from "next/font/google"
 import { TabBarWrapper } from "@/components/TabBarWrapper"
+import { Providers } from "./providers"
 import "./globals.css"
 
 const nunitoSans = Nunito_Sans({
@@ -19,8 +20,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="fr" className={nunitoSans.variable}>
       <body>
-        {children}
-        <TabBarWrapper />
+        <Providers>
+          {children}
+          <TabBarWrapper />
+        </Providers>
       </body>
     </html>
   )

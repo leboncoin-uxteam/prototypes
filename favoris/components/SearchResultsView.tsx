@@ -1,20 +1,14 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { useRouter } from "next/navigation"
+import { useStore, type Annonce } from "@/lib/store"
 import { SearchBar } from "@/components/SearchBar"
 import { SearchResultsList } from "@/components/SearchResultsList"
 import { FavoriBottomSheet } from "@/components/FavoriBottomSheet"
 import { CreateListeBottomSheet } from "@/components/CreateListeBottomSheet"
 import { Snackbar } from "@/components/Snackbar"
 import { FilterChipsBar } from "@/components/FilterChipsBar"
-import { Annonce } from "@/lib/db/schema"
-
-type ListeAvecImages = {
-  id: string
-  nom: string
-  images: string[]
-}
 
 const FILTER_CONFIG: Record<
   "immobilier" | "voitures" | "ameublement",
@@ -48,9 +42,9 @@ type Props = {
 
 export function SearchResultsView({ annonces, categorie, backHref, defaultQuery = "" }: Props) {
   const router = useRouter()
+  const { listes, estEnFavori, ajouterFavori, retirerFavori, creerListe, getListesAvecImages } = useStore()
+
   const [query, setQuery] = useState(defaultQuery)
-  const [favorisIds, setFavorisIds] = useState<Set<string>>(new Set())
-  const [listes, setListes] = useState<ListeAvecImages[]>([])
   const [bottomSheetOpen, setBottomSheetOpen] = useState(false)
   const [createListeOpen, setCreateListeOpen] = useState(false)
   const [annonceEnCours, setAnnonceEnCours] = useState<string | null>(null)
@@ -58,34 +52,22 @@ export function SearchResultsView({ annonces, categorie, backHref, defaultQuery 
   const [snackbarOpen, setSnackbarOpen] = useState(false)
   const [snackbarListe, setSnackbarListe] = useState("")
 
-  // Charger les favoris existants et les listes au montage
-  useEffect(() => {
-    fetch("/api/favoris")
-      .then((r) => r.json())
-      .then((data: { annonceId: string }[]) => {
-        setFavorisIds(new Set(data.map((f) => f.annonceId)))
-      })
+  // Dériver les IDs favoris directement depuis le store
+  const favorisIds = new Set(annonces.filter((a) => estEnFavori(a.id)).map((a) => a.id))
 
-    fetch("/api/favoris/listes")
-      .then((r) => r.json())
-      .then((data: ListeAvecImages[]) => {
-        // Exclure la liste virtuelle "Tous les favoris"
-        setListes(data.filter((l) => l.id !== "__tous__"))
-      })
-  }, [])
+  // Listes réelles uniquement (sans la liste virtuelle "Tous les favoris")
+  const listesReelles = listes.map((l) => {
+    const avecImages = getListesAvecImages().find((li) => li.id === l.id)
+    return {
+      id: l.id,
+      nom: l.nom,
+      images: avecImages?.images ?? [],
+    }
+  })
 
   function handleToggleFavori(annonceId: string, isFavori: boolean) {
     if (isFavori) {
-      fetch("/api/favoris", {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ annonceId }),
-      })
-      setFavorisIds((prev) => {
-        const next = new Set(prev)
-        next.delete(annonceId)
-        return next
-      })
+      retirerFavori(annonceId)
     } else {
       const annonce = annonces.find((a) => a.id === annonceId)
       setAnnonceEnCours(annonceId)
@@ -94,50 +76,25 @@ export function SearchResultsView({ annonces, categorie, backHref, defaultQuery 
     }
   }
 
-  async function handleSelectListe(listeId: string) {
+  function handleSelectListe(listeId: string) {
     if (!annonceEnCours) return
-    await fetch("/api/favoris", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ annonceId: annonceEnCours, listeId }),
-    })
-    setFavorisIds((prev) => new Set([...prev, annonceEnCours]))
-    const liste = listes.find((l) => l.id === listeId)
+    ajouterFavori(annonceEnCours, listeId)
+    const liste = listesReelles.find((l) => l.id === listeId)
     setSnackbarListe(liste?.nom ?? "la liste")
     setSnackbarOpen(true)
     setAnnonceEnCours(null)
   }
 
   function handleCreerListe() {
-    // Ouvrir la deuxième bottom sheet
     setBottomSheetOpen(false)
     setTimeout(() => setCreateListeOpen(true), 320)
   }
 
-  async function handleConfirmerCreationListe(nomListe: string) {
+  function handleConfirmerCreationListe(nomListe: string) {
     if (!annonceEnCours) return
 
-    // 1. Créer la liste
-    const resList = await fetch("/api/listes", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ nom: nomListe }),
-    })
-    const nouvelleListe = await resList.json()
-
-    // 2. Ajouter le favori dans cette nouvelle liste
-    await fetch("/api/favoris", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ annonceId: annonceEnCours, listeId: nouvelleListe.id }),
-    })
-
-    setFavorisIds((prev) => new Set([...prev, annonceEnCours]))
-
-    // 3. Mettre à jour la liste des listes
-    const resListes = await fetch("/api/favoris/listes")
-    const data = await resListes.json()
-    setListes(data.filter((l: ListeAvecImages) => l.id !== "__tous__"))
+    const nouvelleListe = creerListe(nomListe)
+    ajouterFavori(annonceEnCours, nouvelleListe.id)
 
     setSnackbarListe(nomListe)
     setSnackbarOpen(true)
@@ -182,7 +139,7 @@ export function SearchResultsView({ annonces, categorie, backHref, defaultQuery 
           setAnnonceEnCours(null)
         }}
         annonceId={annonceEnCours ?? ""}
-        listes={listes}
+        listes={listesReelles}
         onSelectListe={handleSelectListe}
         onCreerListe={handleCreerListe}
       />

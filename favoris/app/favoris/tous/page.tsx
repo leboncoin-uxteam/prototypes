@@ -2,26 +2,15 @@
 
 import { useEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
+import { useStore } from "@/lib/store"
 import { FavAdCard } from "@/components/FavAdCard"
-
-type FavoriAvecAnnonce = {
-  id: string
-  annonceId: string
-  listeId: string | null
-  dateAjout: string
-  annonce: {
-    id: string
-    titre: string
-    prix: number
-    localisation: string
-    categorie: "immobilier" | "voitures" | "ameublement"
-    image: string
-  }
-}
 
 export default function TousLesFavorisPage() {
   const router = useRouter()
-  const [favoris, setFavoris] = useState<FavoriAvecAnnonce[]>([])
+  const { getFavorisAvecAnnonces, retirerFavori } = useStore()
+
+  const favoris = getFavorisAvecAnnonces(undefined)
+
   const [pendingDelete, setPendingDelete] = useState<Set<string>>(new Set())
   const pendingDeleteRef = useRef<Set<string>>(new Set())
 
@@ -35,20 +24,12 @@ export default function TousLesFavorisPage() {
     return () => {
       const toDelete = pendingDeleteRef.current
       if (toDelete.size === 0) return
-      for (const annonceId of toDelete) {
-        fetch("/api/favoris", {
-          method: "DELETE",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ annonceId }),
-        })
-      }
+      Array.from(toDelete).forEach((annonceId) => {
+        retirerFavori(annonceId)
+      })
     }
-  }, [])
-
-  useEffect(() => {
-    fetch("/api/favoris")
-      .then((r) => r.json())
-      .then((data: FavoriAvecAnnonce[]) => setFavoris(data))
+    // retirerFavori est stable (useCallback) — on l'inclut quand même pour être exhaustif
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   function handleToggle(annonceId: string) {
@@ -75,6 +56,7 @@ export default function TousLesFavorisPage() {
           className="flex items-center justify-center w-10 h-10"
           aria-label="Retour"
         >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/images/Arrow.svg" alt="" width={24} height={24} />
         </button>
         <h1 className="text-headline-2 flex-1 text-center" style={{ color: "var(--base-on-surface)" }}>
@@ -86,7 +68,7 @@ export default function TousLesFavorisPage() {
       <div className="flex flex-col px-4 pt-2 gap-4">
         {favoris.length === 0 ? (
           <p className="text-body-2 mt-8 text-center" style={{ color: "var(--dim-on-surface-dim-1-text)" }}>
-            Aucun favori pour l'instant
+            Aucun favori pour l&apos;instant
           </p>
         ) : (
           favoris.map((fav) => (

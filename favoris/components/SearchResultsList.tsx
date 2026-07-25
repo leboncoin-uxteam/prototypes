@@ -1,7 +1,7 @@
 "use client"
 
 import { AdCard, AdCardProps } from "@/components/AdCard"
-import { Annonce } from "@/lib/db/schema"
+import { Annonce } from "@/lib/store"
 
 type Props = {
   annonces: Annonce[]

@@ -30,6 +30,7 @@ export function Snackbar({ isOpen, nomListe, onClose, duration = 4000 }: Snackba
       const timer = setTimeout(() => setVisible(false), 300)
       return () => clearTimeout(timer)
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen])
 
   if (!visible) return null
