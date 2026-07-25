@@ -1,0 +1,192 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+/* ============================================================
+   SPARK / LEBONCOIN DESIGN TOKENS
+   Source: figma-export.json — PART LightMode (default)
+   ============================================================ */
+
+:root {
+  /* --- Couleurs sémantiques --- */
+  --main-main: #ec5a13;
+  --main-on-main: #ffffff;
+  --main-main-container: #ffe9de;
+  --main-on-main-container: #89380f;
+  --main-main-variant: #b84a14;
+  --main-on-main-variant: #ffffff;
+
+  --support-support: #094171;
+  --support-on-support: #ffffff;
+  --support-support-container: #e6f2fd;
+  --support-on-support-container: #152233;
+  --support-support-variant: #0c5291;
+  --support-on-support-variant: #ffffff;
+
+  --accent-accent: #8526d9;
+  --accent-on-accent: #ffffff;
+  --accent-accent-container: #e9d6fa;
+  --accent-on-accent-container: #360f57;
+  --accent-accent-variant: #501782;
+  --accent-on-accent-variant: #ffffff;
+
+  --basic-basic: #094171;
+  --basic-on-basic: #ffffff;
+  --basic-basic-container: #e6f2fd;
+  --basic-on-basic-container: #152233;
+
+  --feedback-error: #ad291f;
+  --feedback-on-error: #ffffff;
+  --feedback-error-container: #f7d7d4;
+  --feedback-on-error-container: #822017;
+  --feedback-success: #1d6340;
+  --feedback-on-success: #ffffff;
+  --feedback-success-container: #e0f2e9;
+  --feedback-on-success-container: #1d6340;
+  --feedback-alert: #ffaa00;
+  --feedback-on-alert: #202730;
+  --feedback-alert-container: #ffeecc;
+  --feedback-on-alert-container: #664400;
+  --feedback-neutral: #3a4757;
+  --feedback-on-neutral: #ffffff;
+  --feedback-neutral-container: #f0f2f5;
+  --feedback-on-neutral-container: #3a4757;
+  --feedback-info: #0c5291;
+  --feedback-info-container: #c2e0fa;
+  --feedback-on-info-container: #0c5291;
+  --feedback-on-info: #ffffff;
+
+  --base-surface: #ffffff;
+  --base-on-surface: #152233;
+  --base-background: #ffffff;
+  --base-on-background: #152233;
+  --base-background-variant: #f4f9fe;
+  --base-on-background-variant: #152233;
+  --base-outline: #acb8c7;
+  --base-outline-high: #202730;
+  --base-overlay: rgba(32, 39, 48, 0.72);
+  --base-on-overlay: #ffffff;
+  --base-surface-inverse: #2b3441;
+  --base-on-surface-inverse: #ffffff;
+  --base-surface-dark: #2b3441;
+  --base-on-surface-dark: #ffffff;
+
+  --ai-ai: #0c5291;
+  --ai-on-ai: #ffffff;
+  --ai-ai-container: #c2e0fa;
+  --ai-on-ai-container: #152233;
+
+  /* --- États hover --- */
+  --states-main-hover: #f07b42;
+  --states-main-variant-hover: #ec5a13;
+  --states-support-hover: #0c5291;
+  --states-surface-hover: #f6f8f9;
+  --states-neutral-hover: #4f6076;
+
+  /* --- Dim (opacités) --- */
+  --dim-main-dim-1-text: rgba(236, 90, 19, 0.72);
+  --dim-main-dim-2-icon: rgba(236, 90, 19, 0.56);
+  --dim-main-dim-3-disabled: rgba(236, 90, 19, 0.4);
+  --dim-main-dim-4-low-elements: rgba(236, 90, 19, 0.16);
+  --dim-main-dim-5-press-ripple: rgba(236, 90, 19, 0.08);
+  --dim-on-surface-dim-1-text: rgba(21, 34, 51, 0.72);
+  --dim-on-surface-dim-2-icon: rgba(21, 34, 51, 0.56);
+  --dim-on-surface-dim-3-disabled: rgba(21, 34, 51, 0.4);
+  --dim-on-surface-dim-4-low-elements: rgba(21, 34, 51, 0.16);
+  --dim-on-surface-dim-5-press-ripple: rgba(21, 34, 51, 0.08);
+  --dim-outline-dim-1: rgba(172, 184, 199, 0.72);
+  --dim-outline-dim-2: rgba(172, 184, 199, 0.56);
+  --dim-outline-dim-3: rgba(172, 184, 199, 0.4);
+
+  /* --- Ombres --- */
+  --extra-elevation-shadow: rgba(108, 129, 157, 0.5);
+  --shadow-sm: 0px 1px 2px 0px rgba(108, 129, 157, 0.5);
+  --shadow-md: 0px 4px 8px 0px rgba(108, 129, 157, 0.5);
+  --shadow-lg: 0px 8px 16px 0px rgba(108, 129, 157, 0.5);
+  --shadow-xl: 0px 12px 24px 0px rgba(108, 129, 157, 0.5);
+
+  /* --- Focus --- */
+  --extra-focus-1-surface: #f9f9f9;
+  --extra-focus-2-blue: #0000ff;
+
+  /* --- Spacing --- */
+  --spacing-none: 0px;
+  --spacing-sm: 4px;
+  --spacing-md: 8px;
+  --spacing-lg: 16px;
+  --spacing-xl: 24px;
+  --spacing-2xl: 32px;
+  --spacing-3xl: 40px;
+
+  /* --- Border width --- */
+  --border-none: 0px;
+  --border-sm: 1px;
+  --border-md: 2px;
+  --border-lg: 4px;
+  --border-xl: 8px;
+
+  /* --- Border radius --- */
+  --radius-none: 0px;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-full: 99999px;
+}
+
+/* Dark mode */
+[data-theme="dark"] {
+  --main-main: #f07b42;
+  --main-on-main: #2f1305;
+  --main-main-container: #89380f;
+  --main-on-main-container: #fff2eb;
+  --main-main-variant: #f49d71;
+  --base-surface: #202730;
+  --base-on-surface: #f6f8f9;
+  --base-background: #202730;
+  --base-on-background: #f6f8f9;
+  --base-background-variant: #13171d;
+  --base-outline: #6c819d;
+  --base-outline-high: #f0f2f5;
+  --feedback-error: #e8867d;
+  --feedback-success: #8ecdae;
+  --feedback-alert: #ffcc66;
+  --feedback-neutral: #d0d7df;
+}
+
+/* ============================================================
+   TYPOGRAPHIE — Spark text styles
+   ============================================================ */
+
+:root {
+  --font-family: var(--font-nunito-sans), 'Nunito Sans', sans-serif;
+}
+
+body {
+  font-family: var(--font-family);
+  font-size: 16px;
+  line-height: 24px;
+  color: var(--base-on-background);
+  background-color: var(--base-background);
+}
+
+* {
+  font-family: var(--font-family);
+}
+
+.text-display-1   { font-size: 40px; line-height: 56px; font-weight: 700; }
+.text-display-2   { font-size: 32px; line-height: 44px; font-weight: 700; }
+.text-display-3   { font-size: 24px; line-height: 32px; font-weight: 700; }
+.text-headline-1  { font-size: 20px; line-height: 28px; font-weight: 700; }
+.text-headline-2  { font-size: 18px; line-height: 24px; font-weight: 700; }
+.text-subhead     { font-size: 16px; line-height: 24px; font-weight: 700; }
+.text-body-1      { font-size: 16px; line-height: 24px; font-weight: 400; }
+.text-body-1-hl   { font-size: 16px; line-height: 24px; font-weight: 700; }
+.text-body-2      { font-size: 14px; line-height: 20px; font-weight: 400; }
+.text-body-2-hl   { font-size: 14px; line-height: 20px; font-weight: 700; }
+.text-caption     { font-size: 12px; line-height: 16px; font-weight: 400; }
+.text-caption-hl  { font-size: 12px; line-height: 16px; font-weight: 700; }
+.text-small       { font-size: 10px; line-height: 14px; font-weight: 400; }
+.text-small-hl    { font-size: 10px; line-height: 14px; font-weight: 700; }
+.text-callout     { font-size: 16px; line-height: 24px; font-weight: 700; }

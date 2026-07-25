@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300">
+  <rect width="400" height="300" fill="#E8F4F8"/>
+  <!-- Ciel -->
+  <rect width="400" height="180" fill="#C5DEE8"/>
+  <!-- Soleil -->
+  <circle cx="340" cy="50" r="30" fill="#F5D76E" opacity="0.8"/>
+  <!-- Maison corps -->
+  <rect x="60" y="140" width="280" height="130" fill="#D4B896"/>
+  <!-- Toit -->
+  <polygon points="40,145 200,60 360,145" fill="#B05C3A"/>
+  <!-- Cheminée -->
+  <rect x="270" y="75" width="20" height="40" fill="#8B4513"/>
+  <!-- Fenêtres -->
+  <rect x="90" y="170" width="50" height="50" fill="#87CEEB" rx="2"/>
+  <line x1="115" y1="170" x2="115" y2="220" stroke="#fff" stroke-width="2"/>
+  <line x1="90" y1="195" x2="140" y2="195" stroke="#fff" stroke-width="2"/>
+  <rect x="260" y="170" width="50" height="50" fill="#87CEEB" rx="2"/>
+  <line x1="285" y1="170" x2="285" y2="220" stroke="#fff" stroke-width="2"/>
+  <line x1="260" y1="195" x2="310" y2="195" stroke="#fff" stroke-width="2"/>
+  <!-- Porte -->
+  <rect x="175" y="200" width="50" height="70" fill="#7A5C3A" rx="3"/>
+  <circle cx="218" cy="237" r="3" fill="#D4AF37"/>
+  <!-- Jardin -->
+  <rect x="0" y="268" width="400" height="32" fill="#7A9E5A"/>
+  <!-- Arbres -->
+  <rect x="25" y="220" width="8" height="50" fill="#5C4A2A"/>
+  <circle cx="29" cy="210" r="22" fill="#4A8A3A"/>
+  <rect x="355" y="225" width="8" height="45" fill="#5C4A2A"/>
+  <circle cx="359" cy="215" r="20" fill="#4A8A3A"/>
+  <!-- Sol -->
+  <text x="200" y="292" font-family="Arial" font-size="11" fill="#3A5A2A" text-anchor="middle">Vincennes</text>
+</svg>

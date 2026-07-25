@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300">
+  <rect width="400" height="300" fill="#E8F4F8"/>
+  <!-- Ciel -->
+  <rect width="400" height="160" fill="#B8D9E8"/>
+  <!-- Immeuble -->
+  <rect x="80" y="90" width="240" height="180" fill="#D4C5B0"/>
+  <!-- Façade -->
+  <rect x="90" y="100" width="220" height="170" fill="#C9B99A"/>
+  <!-- Fenêtres rangée 1 -->
+  <rect x="110" y="120" width="40" height="35" fill="#87CEEB" rx="2"/>
+  <rect x="180" y="120" width="40" height="35" fill="#87CEEB" rx="2"/>
+  <rect x="250" y="120" width="40" height="35" fill="#F5E642" rx="2"/>
+  <!-- Fenêtres rangée 2 -->
+  <rect x="110" y="175" width="40" height="35" fill="#87CEEB" rx="2"/>
+  <rect x="180" y="175" width="40" height="35" fill="#87CEEB" rx="2"/>
+  <rect x="250" y="175" width="40" height="35" fill="#87CEEB" rx="2"/>
+  <!-- Porte -->
+  <rect x="170" y="230" width="60" height="40" fill="#8B7355" rx="3"/>
+  <circle cx="223" cy="252" r="3" fill="#D4AF37"/>
+  <!-- Sol -->
+  <rect x="0" y="270" width="400" height="30" fill="#8FAF6A"/>
+  <!-- Texte -->
+  <text x="200" y="292" font-family="Arial" font-size="11" fill="#4A6B3C" text-anchor="middle">Paris 11e</text>
+</svg>

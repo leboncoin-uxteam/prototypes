@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300">
+  <rect width="400" height="300" fill="#F5F0E8"/>
+  <!-- Mur -->
+  <rect width="400" height="300" fill="#EDE8DF"/>
+  <!-- Fenêtre -->
+  <rect x="240" y="30" width="120" height="90" fill="#B8D9E8" rx="2"/>
+  <line x1="300" y1="30" x2="300" y2="120" stroke="#ccc" stroke-width="2"/>
+  <line x1="240" y1="75" x2="360" y2="75" stroke="#ccc" stroke-width="2"/>
+  <!-- Parquet -->
+  <rect x="0" y="200" width="400" height="100" fill="#C4965A"/>
+  <line x1="0" y1="215" x2="400" y2="215" stroke="#B08040" stroke-width="1"/>
+  <line x1="0" y1="230" x2="400" y2="230" stroke="#B08040" stroke-width="1"/>
+  <line x1="0" y1="245" x2="400" y2="245" stroke="#B08040" stroke-width="1"/>
+  <line x1="0" y1="260" x2="400" y2="260" stroke="#B08040" stroke-width="1"/>
+  <line x1="100" y1="200" x2="100" y2="300" stroke="#B08040" stroke-width="1"/>
+  <line x1="200" y1="200" x2="200" y2="300" stroke="#B08040" stroke-width="1"/>
+  <line x1="300" y1="200" x2="300" y2="300" stroke="#B08040" stroke-width="1"/>
+  <!-- Canapé -->
+  <rect x="40" y="155" width="200" height="55" fill="#8B9DC3" rx="4"/>
+  <rect x="40" y="140" width="200" height="22" fill="#7A8CB2" rx="3"/>
+  <rect x="40" y="155" width="15" height="55" fill="#7A8CB2" rx="2"/>
+  <rect x="225" y="155" width="15" height="55" fill="#7A8CB2" rx="2"/>
+  <!-- Petite table -->
+  <rect x="260" y="175" width="60" height="35" fill="#C4965A" rx="2"/>
+  <rect x="265" y="208" width="8" height="20" fill="#A07840"/>
+  <rect x="307" y="208" width="8" height="20" fill="#A07840"/>
+  <!-- Lampe -->
+  <rect x="325" y="110" width="6" height="70" fill="#888"/>
+  <polygon points="310,110 350,110 340,80 320,80" fill="#F5D76E" opacity="0.9"/>
+  <text x="200" y="292" font-family="Arial" font-size="11" fill="#6A5A3A" text-anchor="middle">Studio — Lyon 2e</text>
+</svg>
