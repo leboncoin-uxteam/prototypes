@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
+import { Img as Image } from "@/components/Img"
 import { useStore } from "@/lib/store"
 import { FavAdCard } from "@/components/FavAdCard"
 
@@ -56,8 +57,7 @@ export default function TousLesFavorisPage() {
           className="flex items-center justify-center w-10 h-10"
           aria-label="Retour"
         >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/images/Arrow.svg" alt="" width={24} height={24} />
+          <Image src="/images/Arrow.svg" alt="" width={24} height={24} />
         </button>
         <h1 className="text-headline-2 flex-1 text-center" style={{ color: "var(--base-on-surface)" }}>
           Tous les favoris

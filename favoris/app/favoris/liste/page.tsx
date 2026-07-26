@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, Suspense } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
-import Image from "next/image"
+import { Img as Image } from "@/components/Img"
 import { useStore } from "@/lib/store"
 import { FavAdCard } from "@/components/FavAdCard"
 import { GestionListeBottomSheet } from "@/components/GestionListeBottomSheet"

@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import Image from "next/image"
+import { Img as Image } from "@/components/Img"
 
 type SnackbarProps = {
   isOpen: boolean
