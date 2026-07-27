@@ -12,6 +12,9 @@ export type FavAdCardProps = {
   isFavori: boolean
   dateAjout?: string
   onToggleFavori: (id: string) => void
+  mode?: "default" | "selection"
+  isSelected?: boolean
+  onToggleSelection?: (id: string) => void
 }
 
 function formatDateAjout(dateAjout: string): string {
@@ -50,6 +53,9 @@ export function FavAdCard({
   isFavori,
   dateAjout,
   onToggleFavori,
+  mode = "default",
+  isSelected = false,
+  onToggleSelection,
 }: FavAdCardProps) {
   return (
     <article
@@ -65,6 +71,9 @@ export function FavAdCard({
           borderRadius: "var(--radius-md)",
           overflow: "hidden",
           backgroundColor: "var(--feedback-neutral-container)",
+          border: mode === "selection" && isSelected
+            ? "2px solid var(--support-support)"
+            : "2px solid transparent",
         }}
       >
         <Image
@@ -75,23 +84,37 @@ export function FavAdCard({
           unoptimized
         />
 
-        {/* Bouton favori */}
-        <button
-          onClick={() => onToggleFavori(id)}
-          aria-label={isFavori ? "Retirer des favoris" : "Ajouter aux favoris"}
-          className="absolute top-2 right-2 flex items-center justify-center rounded-full"
-          style={{
-            width: 32,
-            height: 32,
-            backgroundColor: "var(--base-surface)",
-          }}
-        >
-          {isFavori ? (
-            <Image src="/images/like.svg" alt="" width={16} height={16} />
-          ) : (
-            <Image src="/images/Heart.svg" alt="" width={16} height={16} />
-          )}
-        </button>
+        {mode === "selection" ? (
+          /* Bouton sélection — haut gauche */
+          <button
+            onClick={() => onToggleSelection?.(id)}
+            aria-label={isSelected ? "Désélectionner" : "Sélectionner"}
+            className="absolute top-2 left-2 flex items-center justify-center rounded-full"
+            style={{
+              width: 32,
+              height: 32,
+              backgroundColor: isSelected ? "var(--support-support)" : "var(--base-surface)",
+              border: `2px solid ${isSelected ? "var(--support-support)" : "var(--base-outline)"}`,
+            }}
+          >
+            {isSelected && (
+              <Image src="/images/check.svg" alt="" width={16} height={16} />
+            )}
+          </button>
+        ) : (
+          /* Bouton favori — haut droite */
+          <button
+            onClick={() => onToggleFavori(id)}
+            aria-label={isFavori ? "Retirer des favoris" : "Ajouter aux favoris"}
+            className="absolute top-2 right-2 flex items-center justify-center rounded-full"
+            style={{ width: 32, height: 32, backgroundColor: "var(--base-surface)" }}
+          >
+            {isFavori
+              ? <Image src="/images/like.svg" alt="" width={16} height={16} />
+              : <Image src="/images/Heart.svg" alt="" width={16} height={16} />
+            }
+          </button>
+        )}
       </div>
 
       {/* Section description */}

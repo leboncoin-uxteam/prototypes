@@ -6,6 +6,7 @@ import { Img as Image } from "@/components/Img"
 import { useStore } from "@/lib/store"
 import { FavAdCard } from "@/components/FavAdCard"
 import { GestionListeBottomSheet } from "@/components/GestionListeBottomSheet"
+import { ActionBar } from "@/components/ActionBar"
 import { AlertDialogSuppression } from "@/components/AlertDialogSuppression"
 
 function ListeFavorisContent() {
@@ -72,7 +73,7 @@ function ListeFavorisContent() {
   ]
 
   return (
-    <main className="flex flex-col min-h-screen">
+    <main className="flex flex-col min-h-screen pb-[88px]">
       <div
         className="flex items-center px-2 h-14 sticky top-0 z-10"
         style={{ backgroundColor: "var(--base-surface)" }}
@@ -129,6 +130,14 @@ function ListeFavorisContent() {
         nomListe={nom}
         onConfirm={handleSupprimerListe}
         onCancel={() => setAlertOpen(false)}
+      />
+
+      <ActionBar
+        actions={[
+          { icon: "/images/tri.svg", label: "Trier", onClick: () => {} },
+          { icon: "/images/broomstick.svg", label: "Organiser", onClick: () => {} },
+          { icon: "/images/plus.svg", label: "Ajouter", onClick: () => router.push("/onboarding") },
+        ]}
       />
     </main>
   )

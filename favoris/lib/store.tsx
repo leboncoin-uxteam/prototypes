@@ -441,21 +441,28 @@ export function useStore(): StoreContextValue {
 // ─── Provider ─────────────────────────────────────────────────────────────────
 
 export function StoreProvider({ children }: { children: React.ReactNode }) {
-  const [favoris, setFavoris] = useState<Favori[]>(() =>
-    loadFromStorage<Favori[]>(LS_FAVORIS, FAVORIS_SEED)
-  )
-  const [listes, setListes] = useState<Liste[]>(() =>
-    loadFromStorage<Liste[]>(LS_LISTES, LISTES_SEED)
-  )
+  // Initialiser avec les seed pour que SSR et premier render client soient identiques
+  const [favoris, setFavoris] = useState<Favori[]>(FAVORIS_SEED)
+  const [listes, setListes] = useState<Liste[]>(LISTES_SEED)
+  const [hydrated, setHydrated] = useState(false)
 
-  // Persister dans localStorage à chaque changement
+  // Après le montage, charger localStorage (côté client uniquement)
   useEffect(() => {
+    setFavoris(loadFromStorage<Favori[]>(LS_FAVORIS, FAVORIS_SEED))
+    setListes(loadFromStorage<Liste[]>(LS_LISTES, LISTES_SEED))
+    setHydrated(true)
+  }, [])
+
+  // Persister dans localStorage après hydration uniquement
+  useEffect(() => {
+    if (!hydrated) return
     saveToStorage(LS_FAVORIS, favoris)
-  }, [favoris])
+  }, [favoris, hydrated])
 
   useEffect(() => {
+    if (!hydrated) return
     saveToStorage(LS_LISTES, listes)
-  }, [listes])
+  }, [listes, hydrated])
 
   // ─── Actions ────────────────────────────────────────────────────────────────
 

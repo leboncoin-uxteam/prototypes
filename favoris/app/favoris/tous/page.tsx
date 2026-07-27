@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import { Img as Image } from "@/components/Img"
 import { useStore } from "@/lib/store"
 import { FavAdCard } from "@/components/FavAdCard"
+import { ActionBar } from "@/components/ActionBar"
 
 export default function TousLesFavorisPage() {
   const router = useRouter()
@@ -46,7 +47,7 @@ export default function TousLesFavorisPage() {
   }
 
   return (
-    <main className="flex flex-col min-h-screen">
+    <main className="flex flex-col min-h-screen pb-[88px]">
       {/* Header */}
       <div
         className="flex items-center gap-2 px-4 h-14 sticky top-0 z-10"
@@ -87,6 +88,13 @@ export default function TousLesFavorisPage() {
           ))
         )}
       </div>
+      <ActionBar
+        actions={[
+          { icon: "/images/tri.svg", label: "Trier", onClick: () => {} },
+          { icon: "/images/broomstick.svg", label: "Organiser", onClick: () => {} },
+          { icon: "/images/plus.svg", label: "Ajouter", onClick: () => router.push("/onboarding") },
+        ]}
+      />
     </main>
   )
 }
