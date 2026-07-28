@@ -155,6 +155,7 @@ export function SearchResultsView({ annonces, categorie, backHref, defaultQuery 
       />
 
       <Snackbar
+        variant="ajout"
         isOpen={snackbarOpen}
         nomListe={snackbarListe}
         onClose={() => setSnackbarOpen(false)}

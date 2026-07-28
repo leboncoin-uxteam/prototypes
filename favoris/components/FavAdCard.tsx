@@ -12,6 +12,7 @@ export type FavAdCardProps = {
   isFavori: boolean
   dateAjout?: string
   onToggleFavori: (id: string) => void
+  onFavoriPress?: (id: string) => void
   mode?: "default" | "selection"
   isSelected?: boolean
   onToggleSelection?: (id: string) => void
@@ -53,6 +54,7 @@ export function FavAdCard({
   isFavori,
   dateAjout,
   onToggleFavori,
+  onFavoriPress,
   mode = "default",
   isSelected = false,
   onToggleSelection,
@@ -104,7 +106,7 @@ export function FavAdCard({
         ) : (
           /* Bouton favori — haut droite */
           <button
-            onClick={() => onToggleFavori(id)}
+            onClick={() => onFavoriPress ? onFavoriPress(id) : onToggleFavori(id)}
             aria-label={isFavori ? "Retirer des favoris" : "Ajouter aux favoris"}
             className="absolute top-2 right-2 flex items-center justify-center rounded-full"
             style={{ width: 32, height: 32, backgroundColor: "var(--base-surface)" }}

@@ -371,23 +371,9 @@ const ANNONCES_SEED: Annonce[] = [
   },
 ]
 
-const LISTES_SEED: Liste[] = [
-  {
-    id: "liste-1",
-    nom: "Appart à visiter",
-    description: "Appartements et maisons à visiter ce mois-ci",
-    dateCreation: "2024-07-01",
-    ordre: 0,
-  },
-]
+const LISTES_SEED: Liste[] = []
 
-const FAVORIS_SEED: Favori[] = [
-  { id: "fav-1", annonceId: "immo-1", listeId: "liste-1", dateAjout: "2024-07-16T09:32:00" },
-  { id: "fav-2", annonceId: "immo-3", listeId: "liste-1", dateAjout: "2024-07-17T14:15:00" },
-  { id: "fav-3", annonceId: "immo-6", listeId: "liste-1", dateAjout: "2024-07-18T18:47:00" },
-  { id: "fav-4", annonceId: "immo-2", listeId: null, dateAjout: "2024-07-19T11:03:00" },
-  { id: "fav-5", annonceId: "immo-8", listeId: null, dateAjout: "2024-07-20T16:22:00" },
-]
+const FAVORIS_SEED: Favori[] = []
 
 // ─── LocalStorage helpers ─────────────────────────────────────────────────────
 
@@ -422,6 +408,7 @@ type StoreContextValue = {
   listes: Liste[]
   ajouterFavori: (annonceId: string, listeId?: string) => void
   retirerFavori: (annonceId: string) => void
+  deplacerFavoris: (annonceIds: string[], listeId: string | null) => void
   creerListe: (nom: string) => Liste
   supprimerListe: (id: string) => void
   getAnnonceById: (id: string) => Annonce | undefined
@@ -494,6 +481,14 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     setListes((prev) => [...prev, nouvelleListe])
     return nouvelleListe
   }, [listes])
+
+  const deplacerFavoris = useCallback((annonceIds: string[], listeId: string | null) => {
+    setFavoris((prev) =>
+      prev.map((f) =>
+        annonceIds.includes(f.annonceId) ? { ...f, listeId } : f
+      )
+    )
+  }, [])
 
   const supprimerListe = useCallback((id: string) => {
     // Les favoris de cette liste deviennent des favoris généraux (listeId = null)
@@ -587,6 +582,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     listes,
     ajouterFavori,
     retirerFavori,
+    deplacerFavoris,
     creerListe,
     supprimerListe,
     getAnnonceById,
