@@ -189,7 +189,7 @@ export default function TousLesFavorisPage() {
               suppressionConfirmeeRef.current = false
               setGestionFavoriOpen(false)
               // Masquer immédiatement la carte
-              setMasquesIds((prev) => new Set([...prev, id]))
+              setMasquesIds((prev) => new Set(Array.from(prev).concat(id)))
               setSnackSuppression(true)
             }}
             onDeplacerDansListe={(id, listeId) => {

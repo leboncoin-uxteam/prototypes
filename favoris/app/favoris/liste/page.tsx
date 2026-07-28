@@ -247,7 +247,7 @@ function ListeFavorisContent() {
               setFavoriSupprimeId(id)
               suppressionConfirmeeRef.current = false
               setGestionFavoriOpen(false)
-              setMasquesIds((prev) => new Set([...prev, id]))
+              setMasquesIds((prev) => new Set(Array.from(prev).concat(id)))
               setSnackSuppression(true)
             }}
             onDeplacerDansListe={(id, targetListeId) => {
