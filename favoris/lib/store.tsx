@@ -377,8 +377,8 @@ const FAVORIS_SEED: Favori[] = []
 
 // ─── LocalStorage helpers ─────────────────────────────────────────────────────
 
-const LS_FAVORIS = "lbc_favoris"
-const LS_LISTES = "lbc_listes"
+const LS_FAVORIS = "lbc_favoris_v2"
+const LS_LISTES = "lbc_listes_v2"
 
 function loadFromStorage<T>(key: string, fallback: T): T {
   if (typeof window === "undefined") return fallback

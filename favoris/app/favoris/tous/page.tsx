@@ -30,6 +30,7 @@ export default function TousLesFavorisPage() {
   const [snackSuppression, setSnackSuppression] = useState(false)
   const [favoriSupprimeId, setFavoriSupprimeId] = useState<string | null>(null)
   const suppressionConfirmeeRef = useRef(false)
+  const favoriSupprimeIdRef = useRef<string | null>(null)
   // IDs masqués visuellement en attente de confirmation de suppression
   const [masquesIds, setMasquesIds] = useState<Set<string>>(new Set())
 
@@ -42,10 +43,21 @@ export default function TousLesFavorisPage() {
   }, [pendingDelete])
 
   useEffect(() => {
+    favoriSupprimeIdRef.current = favoriSupprimeId
+  }, [favoriSupprimeId])
+
+  useEffect(() => {
     return () => {
+      // Suppression différée au quitter (cœur inactif)
       const toDelete = pendingDeleteRef.current
-      if (toDelete.size === 0) return
-      Array.from(toDelete).forEach((annonceId) => retirerFavori(annonceId))
+      if (toDelete.size > 0) {
+        Array.from(toDelete).forEach((annonceId) => retirerFavori(annonceId))
+      }
+      // Suppression via snackbar non annulée
+      const id = favoriSupprimeIdRef.current
+      if (id && !suppressionConfirmeeRef.current) {
+        retirerFavori(id)
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
