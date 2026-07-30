@@ -93,58 +93,62 @@ export function FavoriBottomSheet({
             className="text-headline-1"
             style={{ color: "var(--base-on-surface)" }}
           >
-            Sélectionner une liste de favoris
+            {listes.length === 0 ? "Créer une liste de favoris" : "Sélectionner une liste de favoris"}
           </h2>
         </div>
 
         {/* Contenu scrollable */}
         <div className="overflow-y-auto px-4 pb-8">
-          {/* Grille des listes existantes */}
-          {listes.length > 0 && (
-            <div className="grid grid-cols-2 gap-4 mb-4">
-              {listes.map((liste) => (
-                <ListeCard
-                  key={liste.id}
-                  id={liste.id}
-                  nom={liste.nom}
-                  images={liste.images}
-                  onClick={() => {
-                    onSelectListe(liste.id)
-                    onClose()
-                  }}
-                />
-              ))}
+          {listes.length === 0 ? (
+            /* Variant vide — aucune liste existante */
+            <div className="flex flex-col gap-4">
+              <p className="text-body-1" style={{ color: "var(--base-on-surface)" }}>
+                Retrouvez plus facilement vos favoris en les regroupant par thématique. Votre favoris y sera ajouté directement.
+              </p>
+              <button
+                onClick={() => onCreerListe()}
+                className="w-full flex items-center justify-center text-callout rounded-full"
+                style={{ height: 44, backgroundColor: "var(--main-main)", color: "var(--main-on-main)" }}
+              >
+                Créer une nouvelle liste
+              </button>
             </div>
+          ) : (
+            <>
+              {/* Grille des listes existantes */}
+              <div className="grid grid-cols-2 gap-4 mb-4">
+                {listes.map((liste) => (
+                  <ListeCard
+                    key={liste.id}
+                    id={liste.id}
+                    nom={liste.nom}
+                    images={liste.images}
+                    onClick={() => {
+                      onSelectListe(liste.id)
+                      onClose()
+                    }}
+                  />
+                ))}
+              </div>
+
+              {/* Divider */}
+              <hr className="my-4" style={{ border: "none", borderTop: "1px solid var(--base-outline)" }} />
+
+              {/* Sous-titre */}
+              <p className="text-subhead mb-3" style={{ color: "var(--base-on-surface)" }}>
+                Ou créez une nouvelle liste
+              </p>
+
+              {/* Bouton main filled */}
+              <button
+                onClick={() => onCreerListe()}
+                className="w-full flex items-center justify-center text-callout rounded-full"
+                style={{ height: 44, backgroundColor: "var(--main-main)", color: "var(--main-on-main)" }}
+              >
+                Créer une nouvelle liste
+              </button>
+            </>
           )}
-
-          {/* Divider intent outline */}
-          <hr
-            className="my-4"
-            style={{ border: "none", borderTop: "1px solid var(--base-outline)" }}
-          />
-
-          {/* Sous-titre */}
-          <p
-            className="text-subhead mb-3"
-            style={{ color: "var(--base-on-surface)" }}
-          >
-            Ou créez une nouvelle liste
-          </p>
-
-          {/* Bouton main filled */}
-          <button
-            onClick={() => {
-              onCreerListe()
-            }}
-            className="w-full flex items-center justify-center text-callout rounded-full"
-            style={{
-              height: 44,
-              backgroundColor: "var(--main-main)",
-              color: "var(--main-on-main)",
-            }}
-          >
-            Créer une nouvelle liste
-          </button>
         </div>
       </div>
     </>
