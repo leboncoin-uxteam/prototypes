@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Ad View Motors — Proto</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,400;0,6..12,700;1,6..12,400&display=swap" rel="stylesheet">
+<style>
+/* ── Spark Design Tokens ── */
+:root {
+  --clr-on-surface: #152233;
+  --clr-support: #094171;
+  --clr-support-container: #E6F2FD;
+  --clr-main: #EC5A13;
+  --clr-outline: #ACB8C7;
+  --clr-surface: #FFFFFF;
+  --clr-bg: #F3F5F7;
+  --clr-dim1: rgba(21,34,51,0.72);
+  --clr-dim2: rgba(21,34,51,0.56);
+  --clr-dim3: rgba(21,34,51,0.40);
+  --clr-success: #1D6340;
+  --clr-score-filled: rgba(29,99,64,0.56);
+  --clr-info: #0c5291;
+  --clr-divider: #E4E9EF;
+  --clr-card-shadow: rgba(108,129,157,0.5);
+
+  --ff: 'Nunito Sans', sans-serif;
+  --r-cta: 16px;
+  --r-input: 16px;
+  --r-card: 8px;
+
+  --shadow-card: 0px 4px 8px var(--clr-card-shadow);
+  --shadow-sheet: 0px 4px 8px rgba(0,0,0,0.14), 0px -1px 8px rgba(26,26,26,0.12);
+  --shadow-picker: 0px 8px 16px var(--clr-card-shadow);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+body { font-family: var(--ff); background:var(--clr-bg); min-height:100vh; }
+
+/* ── Phone ── */
+.phone { width:100%; height:100vh; background:var(--clr-bg); overflow:hidden; position:relative; }
+
+/* ── Status bar ── */
+.status-bar { height:50px; background:var(--clr-surface); display:flex; align-items:center; justify-content:space-between; padding:14px 28px 0 38px; position:relative; z-index:2; }
+.status-time { font:700 15px/1 var(--ff); color:var(--clr-on-surface); }
+.status-icons { display:flex; gap:5px; align-items:center; }
+
+/* ── Ad scroll area ── */
+.ad-view { position:absolute; inset:0 0 72px; overflow-y:auto; background:var(--clr-bg); -webkit-overflow-scrolling:touch; }
+.ad-view::-webkit-scrollbar { display:none; }
+
+/* ── Floating nav ── */
+.ad-nav { position:absolute; top:0; left:0; right:0; height:56px; display:flex; align-items:center; justify-content:space-between; padding:0 16px; z-index:4; pointer-events:none; }
+.nav-back, .nav-icon-btn {
+  width:40px; height:40px;
+  border-radius:var(--r-cta);
+  background:rgba(255,255,255,0.92);
+  border:none; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:0 1px 6px rgba(0,0,0,0.18);
+  pointer-events:all;
+  transition:opacity .15s;
+}
+.nav-back:active, .nav-icon-btn:active { opacity:.75; }
+.nav-actions { display:flex; gap:8px; }
+
+/* ── Gallery ── */
+.gallery { width:100%; height:300px; position:relative; overflow:hidden; background:#d0d8e0; }
+.gallery img { width:100%; height:100%; object-fit:cover; }
+.gallery-counter { position:absolute; bottom:12px; right:16px; background:rgba(0,0,0,0.52); color:#fff; font:700 12px/16px var(--ff); padding:3px 10px; border-radius:20px; }
+.gallery-pro { position:absolute; top:64px; left:16px; background:rgba(0,0,0,0.52); color:#fff; font:700 12px/16px var(--ff); padding:3px 10px; border-radius:4px; }
+.gallery-photos-btn { position:absolute; bottom:12px; left:16px; background:rgba(0,0,0,0.52); color:#fff; font:700 12px/16px var(--ff); padding:3px 10px; border-radius:20px; display:flex; align-items:center; gap:5px; border:none; cursor:pointer; }
+
+/* ── Bloc résumé ── */
+.bloc-resume { margin:-32px 16px 0; background:var(--clr-surface); border-radius:16px 16px 16px 0; padding:16px; box-shadow:var(--shadow-card); position:relative; z-index:2; }
+.ad-title { font:700 20px/28px var(--ff); color:var(--clr-on-surface); margin-bottom:4px; }
+.ad-subtitle { font:400 16px/24px var(--ff); color:var(--clr-on-surface); margin-bottom:16px; }
+.ad-subtitle b { font-weight:700; }
+.ad-price { font:700 18px/24px var(--ff); color:var(--clr-on-surface); margin-bottom:4px; }
+.score-row { display:flex; align-items:center; gap:8px; margin-bottom:12px; }
+.score-bar { display:flex; gap:2px; align-items:center; }
+.score-seg { width:24px; height:8px; border-radius:4px; background:var(--clr-score-filled); }
+.score-seg.active { background:var(--clr-success); position:relative; }
+.score-seg.active::after { content:''; position:absolute; top:-2px; left:50%; transform:translateX(-50%); width:12px; height:12px; border-radius:50%; background:var(--clr-success); border:2px solid white; }
+.score-seg.empty { background:transparent; border:1px solid var(--clr-dim3); }
+.score-label { font:400 14px/20px var(--ff); color:#3a4757; }
+.simulate-btn { display:inline-flex; align-items:center; gap:8px; background:none; border:none; cursor:pointer; padding:8px 0; font:700 16px/24px var(--ff); color:var(--clr-on-surface); text-decoration:underline; text-underline-offset:2px; }
+.ad-date { font:400 12px/16px var(--ff); color:var(--clr-dim1); margin:4px 0 12px; }
+.tags-row { display:flex; flex-wrap:wrap; gap:6px; }
+.tag { display:inline-flex; align-items:center; gap:4px; padding:2px 8px; border-radius:4px; font:700 12px/16px var(--ff); }
+.tag-support { background:var(--clr-support-container); color:var(--clr-support); }
+.tag-neutral { background:#EFF2F5; color:#3a4757; }
+
+/* ── Bloc Pro ── */
+.bloc-pro { margin:16px 16px 0; background:var(--clr-surface); border-radius:var(--r-card); padding:16px; display:flex; align-items:center; gap:12px; }
+.pro-avatar { width:48px; height:48px; border-radius:50%; background:linear-gradient(135deg,#094171,#1a6fa8); display:flex; align-items:center; justify-content:center; color:#fff; font:700 18px var(--ff); flex-shrink:0; }
+.pro-name { font:700 16px/24px var(--ff); color:var(--clr-on-surface); }
+.pro-meta { font:400 14px/20px var(--ff); color:var(--clr-dim1); margin-top:1px; }
+.pro-badge { display:inline-flex; align-items:center; gap:4px; font:700 12px/16px var(--ff); color:var(--clr-success); margin-top:3px; }
+
+/* ── Sections ── */
+.divider { height:1px; background:var(--clr-divider); margin:16px 0; }
+.section { padding:0 16px; }
+.section-title { font:700 20px/28px var(--ff); color:var(--clr-on-surface); margin-bottom:12px; }
+.section-subtitle { font:700 14px/20px var(--ff); color:var(--clr-on-surface); margin-bottom:8px; }
+
+/* ── Avantages ── */
+.avantages-row { display:flex; gap:0; overflow-x:auto; padding:0 16px; }
+.avantages-row::-webkit-scrollbar { display:none; }
+.avantage { display:flex; flex-direction:column; align-items:center; gap:6px; min-width:72px; padding:0 4px; }
+.avantage-icon { width:56px; height:56px; border-radius:50%; background:var(--clr-support-container); display:flex; align-items:center; justify-content:center; }
+.avantage-label { font:400 12px/14px var(--ff); color:var(--clr-on-surface); text-align:center; max-width:64px; }
+
+/* ── Équipements (checklist) ── */
+.equip-list { display:flex; flex-direction:column; gap:0; }
+.equip-item { display:flex; align-items:center; gap:10px; padding:8px 16px; }
+.equip-check { width:20px; height:20px; border-radius:50%; background:var(--clr-support-container); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.equip-check svg { width:12px; height:12px; }
+.equip-label { font:400 14px/20px var(--ff); color:var(--clr-on-surface); }
+
+/* ── Accordéon ── */
+.accordion { border-top:1px solid var(--clr-divider); }
+.accordion-item { border-bottom:1px solid var(--clr-divider); }
+.accordion-header { display:flex; align-items:center; justify-content:space-between; padding:14px 16px; cursor:pointer; user-select:none; }
+.accordion-label { font:400 16px/24px var(--ff); color:var(--clr-on-surface); }
+.accordion-arrow { width:20px; height:20px; transition:transform .2s; flex-shrink:0; }
+.accordion-item.open .accordion-arrow { transform:rotate(180deg); }
+.accordion-body { max-height:0; overflow:hidden; transition:max-height .25s ease; }
+.accordion-body-inner { padding:0 16px 14px; font:400 14px/22px var(--ff); color:var(--clr-dim1); }
+
+/* ── Critères historique ── */
+.criteria-list { display:flex; flex-direction:column; }
+.criteria-item { display:flex; align-items:center; gap:10px; padding:10px 16px; border-bottom:1px solid var(--clr-divider); }
+.criteria-item:last-child { border-bottom:none; }
+.criteria-item svg { flex-shrink:0; }
+.criteria-item span { font:400 14px/20px var(--ff); color:var(--clr-on-surface); }
+
+/* ── Card Autoviza ── */
+.card { margin:0 16px; background:var(--clr-surface); border-radius:var(--r-card); overflow:hidden; }
+.card-header { padding:16px; border-bottom:1px solid var(--clr-divider); font:700 16px/24px var(--ff); color:var(--clr-on-surface); }
+.card-body { padding:16px; }
+.card-body p { font:400 14px/22px var(--ff); color:var(--clr-on-surface); margin-bottom:16px; }
+.autoviza-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:16px; }
+.autoviza-cell { background:var(--clr-bg); border-radius:8px; padding:12px; }
+.autoviza-cell-icon { width:32px; height:32px; background:var(--clr-support-container); border-radius:8px; display:flex; align-items:center; justify-content:center; margin-bottom:8px; }
+.autoviza-cell-label { font:700 12px/16px var(--ff); color:var(--clr-on-surface); margin-bottom:2px; }
+.autoviza-cell-value { font:400 12px/16px var(--ff); color:var(--clr-dim1); }
+.autoviza-footer { font:400 13px/18px var(--ff); color:var(--clr-dim1); margin-bottom:12px; }
+.autoviza-logo { font:700 11px var(--ff); color:var(--clr-support); background:var(--clr-support-container); padding:2px 8px; border-radius:3px; display:inline-block; margin-top:4px; }
+.proposé-par { padding:12px 16px; display:flex; align-items:center; gap:8px; border-top:1px solid var(--clr-divider); }
+.proposé-par span { font:400 13px/20px var(--ff); color:var(--clr-dim1); }
+
+/* ── Description ── */
+.desc-text { font:400 16px/24px var(--ff); color:var(--clr-on-surface); padding:0 16px; overflow:hidden; display:-webkit-box; -webkit-line-clamp:4; -webkit-box-orient:vertical; }
+.desc-more { padding:4px 16px 0; display:block; font:700 16px/24px var(--ff); color:var(--clr-on-surface); text-decoration:underline; text-underline-offset:2px; cursor:pointer; background:none; border:none; }
+
+/* ── Financement ── */
+.finance-card { margin:0 16px; background:var(--clr-surface); border-radius:var(--r-card); overflow:hidden; }
+.finance-card-header { padding:16px; }
+.finance-tag { display:inline-flex; align-items:center; gap:4px; background:#FEF0EB; color:var(--clr-main); font:700 12px/16px var(--ff); padding:2px 8px; border-radius:4px; margin-bottom:8px; }
+.finance-title { font:700 16px/24px var(--ff); color:var(--clr-on-surface); margin-bottom:4px; }
+.finance-sub { font:400 14px/20px var(--ff); color:var(--clr-dim1); margin-bottom:8px; }
+.finance-cetelem { display:flex; align-items:center; gap:4px; font:400 14px/20px var(--ff); color:var(--clr-on-surface); }
+.cetelem-badge { font:700 11px var(--ff); background:#003189; color:#fff; padding:2px 8px; border-radius:3px; }
+.finance-divider { height:1px; background:var(--clr-divider); margin:0 16px; }
+.finance-body { padding:16px; }
+.finance-loa-header { font:700 14px/20px var(--ff); color:var(--clr-on-surface); background:var(--clr-bg); padding:12px 16px; border-radius:8px; margin-bottom:12px; }
+.slider-group { margin-bottom:16px; }
+.slider-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
+.slider-label { font:400 14px/20px var(--ff); color:var(--clr-on-surface); }
+.slider-value { font:700 14px/20px var(--ff); color:var(--clr-support); }
+input[type=range] { width:100%; height:4px; accent-color:var(--clr-support); cursor:pointer; }
+.slider-limits { display:flex; justify-content:space-between; margin-top:4px; font:400 11px/16px var(--ff); color:var(--clr-dim2); }
+.finance-result { background:var(--clr-bg); border-radius:8px; padding:12px 16px; margin:12px 0; }
+.finance-mensual { font:700 20px/28px var(--ff); color:var(--clr-on-surface); }
+.finance-mensual span { font:400 14px/20px var(--ff); color:var(--clr-dim1); }
+.finance-note { font:400 12px/16px var(--ff); color:var(--clr-dim1); margin-top:4px; }
+.finance-legal { font:400 11px/16px var(--ff); color:var(--clr-dim2); margin-top:12px; }
+
+/* ── Map ── */
+.map-placeholder { margin:0 16px; height:180px; background:linear-gradient(135deg,#cfe2f3,#a8cfe8); border-radius:var(--r-card); display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden; }
+.map-pin { display:flex; flex-direction:column; align-items:center; gap:2px; }
+.map-pin svg { filter:drop-shadow(0 2px 4px rgba(0,0,0,0.3)); }
+.map-label { font:700 13px var(--ff); color:var(--clr-on-surface); background:white; padding:3px 10px; border-radius:20px; box-shadow:0 2px 6px rgba(0,0,0,0.15); }
+
+/* ── Annonces similaires ── */
+.similar-ads { padding:0 16px; }
+.similar-grid { display:flex; gap:12px; overflow-x:auto; padding-bottom:4px; }
+.similar-grid::-webkit-scrollbar { display:none; }
+.similar-card { flex-shrink:0; width:140px; background:var(--clr-surface); border-radius:var(--r-card); overflow:hidden; box-shadow:0 2px 6px rgba(108,129,157,0.25); }
+.similar-img { width:140px; height:90px; object-fit:cover; background:linear-gradient(135deg,#d0d8e0,#a8b8c8); }
+.similar-body { padding:8px; }
+.similar-title { font:700 12px/16px var(--ff); color:var(--clr-on-surface); margin-bottom:2px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+.similar-price { font:700 13px/18px var(--ff); color:var(--clr-on-surface); }
+.similar-km { font:400 11px/14px var(--ff); color:var(--clr-dim1); }
+
+/* ── Footer links ── */
+.footer-links { padding:16px; display:flex; flex-direction:column; gap:12px; }
+.footer-link { display:flex; align-items:center; gap:8px; background:none; border:none; cursor:pointer; padding:0; font:400 14px/20px var(--ff); color:var(--clr-on-surface); text-decoration:underline; text-underline-offset:2px; }
+.footer-link svg { flex-shrink:0; }
+
+/* ── Sticky bar ── */
+.sticky-bar { position:absolute; bottom:0; left:0; right:0; height:72px; background:var(--clr-surface); border-top:1px solid var(--clr-divider); display:flex; gap:12px; align-items:center; padding:16px 16px 20px; z-index:5; }
+.btn-outlined { flex:1; height:40px; border-radius:var(--r-cta); border:1.5px solid var(--clr-support); background:none; color:var(--clr-support); font:700 16px/24px var(--ff); cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; transition:background .15s; }
+.btn-outlined:active { background:var(--clr-support-container); }
+.btn-filled { flex:1; height:40px; border-radius:var(--r-cta); border:none; background:var(--clr-support); color:#fff; font:700 16px/24px var(--ff); cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; transition:opacity .15s; }
+.btn-filled:active { opacity:.85; }
+
+/* ── Overlay ── */
+.overlay { position:absolute; inset:0; background:rgba(0,0,0,0); z-index:20; pointer-events:none; transition:background .3s ease; }
+.overlay.active { background:rgba(0,0,0,0.48); pointer-events:all; }
+
+/* ── Bottom sheets ── */
+.bsheet { position:absolute; bottom:0; left:0; right:0; background:var(--clr-surface); border-radius:16px 16px 0 0; z-index:30; transform:translateY(100%); transition:transform .38s cubic-bezier(0.32,0.72,0,1); display:flex; flex-direction:column; max-height:90%; }
+.bsheet.open { transform:translateY(0); box-shadow:var(--shadow-sheet); }
+#sheetForm { max-height:88%; }
+#sheetRaison, #sheetEcheance, #sheetServices { z-index:40; }
+
+.bsheet-handle { width:32px; height:4px; border-radius:16px; background:var(--clr-dim3); margin:8px auto 0; flex-shrink:0; }
+.bsheet-body { flex:1; overflow-y:auto; padding:16px 16px 0; }
+.bsheet-body::-webkit-scrollbar { display:none; }
+.bsheet-footer { padding:16px; flex-shrink:0; }
+
+/* ── Form tabs ── */
+.form-tabs { display:flex; gap:16px; margin-bottom:16px; }
+.tab-btn { flex:1; height:40px; border-radius:var(--r-cta); border:none; background:none; font:700 16px/24px var(--ff); color:var(--clr-on-surface); cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; transition:background .15s; }
+.tab-btn.active { background:var(--clr-support-container); }
+
+/* ── Spark inputs — label above, radius 16px ── */
+.spark-field { margin-bottom:12px; }
+.spark-field > label, .spark-label {
+  display:block;
+  font:400 14px/20px var(--ff);
+  color:var(--clr-dim1);
+  margin-bottom:6px;
+}
+.spark-input, .spark-textarea {
+  width:100%;
+  border:1.5px solid var(--clr-outline);
+  border-radius:var(--r-input);
+  padding:12px 14px;
+  font:400 16px/24px var(--ff);
+  color:var(--clr-on-surface);
+  background:#F8FAFC;
+  outline:none;
+  resize:none;
+  font-family:var(--ff);
+  transition:border-color .2s;
+}
+.spark-input:focus, .spark-textarea:focus { border-color:var(--clr-support); background:#fff; }
+.spark-textarea { min-height:96px; }
+.spark-helper { font:400 12px/16px var(--ff); color:var(--clr-info); margin-top:4px; }
+.spark-counter { font:400 12px/16px var(--ff); color:var(--clr-dim2); text-align:right; margin-top:2px; }
+
+/* ── Spark select — label above, radius 16px ── */
+.spark-select-btn {
+  width:100%; height:48px;
+  border:1.5px solid var(--clr-outline);
+  border-radius:var(--r-input);
+  padding:0 40px 0 14px;
+  background:#F8FAFC;
+  cursor:pointer;
+  display:flex; align-items:center;
+  font:400 16px/24px var(--ff);
+  color:var(--clr-dim2);
+  text-align:left;
+  transition:border-color .2s;
+  position:relative;
+}
+.spark-select-btn::after { content:''; position:absolute; right:14px; top:50%; transform:translateY(-50%); width:0; height:0; border-left:5px solid transparent; border-right:5px solid transparent; border-top:6px solid var(--clr-dim2); }
+.spark-select-btn.filled { border-color:var(--clr-support); background:#fff; color:var(--clr-on-surface); }
+.spark-select-btn.filled::after { border-top-color:var(--clr-support); }
+
+/* legal link */
+.form-legal { font:700 12px/16px var(--ff); color:var(--clr-dim1); text-decoration:underline; text-underline-offset:2px; margin:8px 0 4px; display:block; cursor:pointer; background:none; border:none; padding:0; }
+
+/* ── Send CTA — Main #EC5A13 ── */
+.btn-send { width:100%; height:44px; border-radius:var(--r-cta); border:none; background:var(--clr-main); color:#fff; font:700 16px/24px var(--ff); cursor:pointer; transition:opacity .15s; }
+.btn-send:active { opacity:.85; }
+
+/* ── Picker title ── */
+.picker-title { font:700 20px/28px var(--ff); color:var(--clr-on-surface); margin-bottom:24px; display:block; }
+
+/* ── Spark Checkbox ── */
+.spark-check-item { display:flex; align-items:flex-start; gap:12px; padding:10px 0; cursor:pointer; width:100%; border:none; background:none; text-align:left; }
+.spark-checkbox { width:20px; height:20px; border-radius:4px; border:1.5px solid var(--clr-outline); background:#fff; flex-shrink:0; margin-top:2px; display:flex; align-items:center; justify-content:center; transition:all .15s; }
+.spark-checkbox.checked { background:var(--clr-support); border-color:var(--clr-support); }
+.spark-checkbox.checked::after { content:''; width:5px; height:9px; border:2px solid #fff; border-top:none; border-left:none; transform:rotate(45deg) translateY(-1px); display:block; }
+.spark-check-label { font:400 16px/24px var(--ff); color:var(--clr-on-surface); }
+
+/* ── Spark Radio ── */
+.spark-radio-item { display:flex; align-items:center; gap:12px; padding:10px 8px; cursor:pointer; width:100%; border:none; background:none; text-align:left; }
+.spark-radio { width:20px; height:20px; border-radius:50%; border:1.5px solid var(--clr-outline); background:#fff; flex-shrink:0; display:flex; align-items:center; justify-content:center; transition:all .15s; }
+.spark-radio.selected { border-color:var(--clr-support); }
+.spark-radio.selected::after { content:''; width:10px; height:10px; border-radius:50%; background:var(--clr-support); display:block; }
+.spark-radio-label { font:400 16px/24px var(--ff); color:var(--clr-on-surface); }
+
+/* ── Confirm btn — Outlined Support ── */
+.btn-confirm { width:100%; height:44px; border-radius:var(--r-cta); border:1.5px solid var(--clr-support); background:none; color:var(--clr-support); font:700 16px/24px var(--ff); cursor:pointer; transition:background .15s; }
+.btn-confirm:active { background:var(--clr-support-container); }
+.btn-confirm:disabled { border-color:var(--clr-outline); color:var(--clr-dim3); cursor:not-allowed; }
+
+/* ── Snackbar ── */
+.snackbar { position:absolute; bottom:88px; left:16px; right:16px; background:#152233; color:#fff; border-radius:var(--r-card); padding:12px 14px; display:flex; align-items:center; gap:12px; z-index:50; transform:translateY(24px); opacity:0; pointer-events:none; transition:all .32s cubic-bezier(0.32,0.72,0,1); box-shadow:0 4px 16px rgba(0,0,0,0.28); }
+.snackbar.show { transform:translateY(0); opacity:1; }
+.snackbar-icon { width:32px; height:32px; border-radius:50%; background:var(--clr-success); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.snackbar-title { font:700 14px/20px var(--ff); }
+.snackbar-sub { font:400 12px/16px var(--ff); color:rgba(255,255,255,0.65); margin-top:1px; }
+</style>
+</head>
+<body>
+<div class="phone">
+
+  <!-- Floating nav -->
+  <div class="ad-nav">
+    <button class="nav-back">
+      <svg width="20" height="20" fill="none" stroke="#152233" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 20 20"><path d="M16 10H4M10 16l-6-6 6-6"/></svg>
+    </button>
+    <div class="nav-actions">
+      <button class="nav-icon-btn">
+        <svg width="18" height="18" fill="none" stroke="#152233" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8M16 6l-4-4-4 4M12 2v13"/></svg>
+      </button>
+      <button class="nav-icon-btn">
+        <svg width="18" height="18" fill="none" stroke="#152233" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Ad View -->
+  <div class="ad-view" id="adView">
+
+    <!-- Gallery -->
+    <div class="gallery">
+      <img src="voiture.png" alt="Citroën Berlingo XTR">
+      <span class="gallery-pro">Pro</span>
+      <button class="gallery-photos-btn">
+        <svg width="12" height="12" fill="#fff" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" stroke="#fff" stroke-width="2" fill="none"/><circle cx="8.5" cy="8.5" r="1.5" fill="#fff"/><path d="M21 15l-5-5L5 21" stroke="#fff" stroke-width="2" fill="none"/></svg>
+        8 photos
+      </button>
+      <span class="gallery-counter">1 / 8</span>
+    </div>
+
+    <!-- Bloc résumé -->
+    <div class="bloc-resume">
+      <p class="ad-title">Renault Clio (4) Expression 1.2 16v 75</p>
+      <p class="ad-subtitle">Bayonne <b>·</b> 2018 <b>·</b> 57 000 km <b>·</b> Diesel</p>
+      <p class="ad-price">22 990 €</p>
+      <div class="score-row">
+        <div class="score-bar">
+          <div class="score-seg"></div>
+          <div class="score-seg"></div>
+          <div class="score-seg"></div>
+          <div class="score-seg active"></div>
+          <div class="score-seg empty"></div>
+        </div>
+        <span class="score-label">Bonne affaire</span>
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="#3a4757" stroke-width="1.2"/><path d="M8 7v4M8 5.5v.5" stroke="#3a4757" stroke-width="1.2" stroke-linecap="round"/></svg>
+      </div>
+      <button class="simulate-btn">
+        <svg width="16" height="16" fill="none" stroke="#152233" stroke-width="1.5" stroke-linecap="round" viewBox="0 0 16 16"><rect x="2" y="2" width="12" height="12" rx="1.5"/><path d="M5 8h6M8 5v6"/></svg>
+        Simuler mon financement
+      </button>
+      <p class="ad-date">Le 7 novembre 2023 à 11 h 14</p>
+      <div class="tags-row">
+        <span class="tag tag-support">
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="#094171"><path d="M5 0L6.2 3.6H10L7 5.9 8.1 9.5 5 7.3 1.9 9.5 3 5.9 0 3.6h3.8z"/></svg>
+          Pack sérénité : dès 139 €
+        </span>
+        <span class="tag tag-neutral">
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="#3a4757"><path d="M5 0L6.2 3.6H10L7 5.9 8.1 9.5 5 7.3 1.9 9.5 3 5.9 0 3.6h3.8z"/></svg>
+        </span>
+      </div>
+    </div>
+
+    <!-- Bloc Pro -->
+    <div class="bloc-pro">
+      <div class="pro-avatar">A</div>
+      <div>
+        <div class="pro-name">AutoDeal Bayonne</div>
+        <div class="pro-meta">Professionnel · 87 annonces</div>
+        <div class="pro-badge">
+          <svg width="11" height="11" viewBox="0 0 11 11" fill="#1D6340"><path d="M5.5 0L6.9 4.2H11L7.7 6.8 8.9 11 5.5 8.5 2.1 11 3.3 6.8 0 4.2h4.1z"/></svg>
+          Très bien noté
+        </div>
+      </div>
+    </div>
+
+    <div style="height:16px;"></div>
+    <div class="divider" style="margin:0;"></div>
+
+    <!-- Les + de cette annonce -->
+    <div style="height:16px;"></div>
+    <div class="section"><p class="section-title" style="margin-bottom:16px;">Les + de cette annonce</p></div>
+    <div class="avantages-row">
+      <div class="avantage">
+        <div class="avantage-icon">
+          <svg width="24" height="24" fill="none" stroke="#094171" stroke-width="1.8" stroke-linecap="round" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <span class="avantage-label">Paiement sécurisé</span>
+      </div>
+      <div class="avantage">
+        <div class="avantage-icon">
+          <svg width="24" height="24" fill="none" stroke="#094171" stroke-width="1.8" stroke-linecap="round" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>
+        </div>
+        <span class="avantage-label">Rapport Autoviza</span>
+      </div>
+      <div class="avantage">
+        <div class="avantage-icon">
+          <svg width="24" height="24" fill="none" stroke="#094171" stroke-width="1.8" stroke-linecap="round" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+        </div>
+        <span class="avantage-label">CT valide</span>
+      </div>
+      <div class="avantage">
+        <div class="avantage-icon">
+          <svg width="24" height="24" fill="none" stroke="#094171" stroke-width="1.8" stroke-linecap="round" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>
+        </div>
+        <span class="avantage-label">Factures dispo</span>
+      </div>
+      <div class="avantage">
+        <div class="avantage-icon">
+          <svg width="24" height="24" fill="none" stroke="#094171" stroke-width="1.8" stroke-linecap="round" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+        </div>
+        <span class="avantage-label">1ère main</span>
+      </div>
+    </div>
+    <div style="height:16px;"></div>
+
+    <div class="divider" style="margin:0;"></div>
+
+    <!-- Équipements -->
+    <div style="height:16px;"></div>
+    <div class="section">
+      <p class="section-title">Équipements</p>
+      <p class="section-subtitle">Équipements différenciants</p>
+    </div>
+    <div class="equip-list">
+      <div class="equip-item">
+        <div class="equip-check"><svg width="12" height="12" fill="none" stroke="#094171" stroke-width="2" stroke-linecap="round" viewBox="0 0 12 12"><path d="M2 6l3 3 5-5"/></svg></div>
+        <span class="equip-label">Audi Music Interface à l'AV et l'AR</span>
+      </div>
+      <div class="equip-item">
+        <div class="equip-check"><svg width="12" height="12" fill="none" stroke="#094171" stroke-width="2" stroke-linecap="round" viewBox="0 0 12 12"><path d="M2 6l3 3 5-5"/></svg></div>
+        <span class="equip-label">Audi phone box</span>
+      </div>
+      <div class="equip-item">
+        <div class="equip-check"><svg width="12" height="12" fill="none" stroke="#094171" stroke-width="2" stroke-linecap="round" viewBox="0 0 12 12"><path d="M2 6l3 3 5-5"/></svg></div>
+        <span class="equip-label">Audi smartphone interface</span>
+      </div>
+      <div class="equip-item">
+        <div class="equip-check"><svg width="12" height="12" fill="none" stroke="#094171" stroke-width="2" stroke-linecap="round" viewBox="0 0 12 12"><path d="M2 6l3 3 5-5"/></svg></div>
+        <span class="equip-label">Bang &amp; Olufsen Premium Sound System avec son 3D</span>
+      </div>
+      <div class="equip-item">
+        <div class="equip-check"><svg width="12" height="12" fill="none" stroke="#094171" stroke-width="2" stroke-linecap="round" viewBox="0 0 12 12"><path d="M2 6l3 3 5-5"/></svg></div>
+        <span class="equip-label">Navigation &amp; Infotainment Audi connect</span>
+      </div>
+      <div class="equip-item">
+        <div class="equip-check"><svg width="12" height="12" fill="none" stroke="#094171" stroke-width="2" stroke-linecap="round" viewBox="0 0 12 12"><path d="M2 6l3 3 5-5"/></svg></div>
+        <span class="equip-label">Bluetooth</span>
+      </div>
+    </div>
+
+    <!-- Accordéons garanties -->
+    <div class="accordion" style="margin-top:12px;">
+      <div class="accordion-item">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+          <span class="accordion-label">Moteur et transmission</span>
+          <svg class="accordion-arrow" fill="none" stroke="#152233" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 20 20"><path d="M5 8l5 5 5-5"/></svg>
+        </div>
+        <div class="accordion-body"><div class="accordion-body-inner">Boîte automatique 6 rapports, traction intégrale quattro, moteur 2.0 TDI 150ch Euro 6.</div></div>
+      </div>
+      <div class="accordion-item">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+          <span class="accordion-label">Sécurité active</span>
+          <svg class="accordion-arrow" fill="none" stroke="#152233" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 20 20"><path d="M5 8l5 5 5-5"/></svg>
+        </div>
+        <div class="accordion-body"><div class="accordion-body-inner">ABS, ESP, aide au freinage d'urgence, régulateur de vitesse adaptatif, avertisseur d'angle mort.</div></div>
+      </div>
+      <div class="accordion-item">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+          <span class="accordion-label">Confort</span>
+          <svg class="accordion-arrow" fill="none" stroke="#152233" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 20 20"><path d="M5 8l5 5 5-5"/></svg>
+        </div>
+        <div class="accordion-body"><div class="accordion-body-inner">Climatisation automatique bi-zone, sièges chauffants avant, toit panoramique, vitres surteintées.</div></div>
+      </div>
+      <div class="accordion-item">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+          <span class="accordion-label">Extérieur</span>
+          <svg class="accordion-arrow" fill="none" stroke="#152233" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 20 20"><path d="M5 8l5 5 5-5"/></svg>
+        </div>
+        <div class="accordion-body"><div class="accordion-body-inner">Jantes alliage 18 pouces, feux LED matrix, capteurs de pluie et de luminosité, rétroviseurs rabattables électriquement.</div></div>
+      </div>
+    </div>
+
+    <div style="height:16px;"></div>
+    <div class="divider" style="margin:0;"></div>
+
+    <!-- Historique et entretien -->
+    <div style="height:16px;"></div>
+    <div class="section"><p class="section-title">Historique et entretien du véhicule</p></div>
+    <div class="criteria-list">
+      <div class="criteria-item">
+        <svg width="16" height="16" fill="none" stroke="#094171" stroke-width="1.8" stroke-linecap="round" viewBox="0 0 16 16"><path d="M3 8h10M8 3v10"/></svg>
+        <span>Carnet d'entretien disponible</span>
+      </div>
+      <div class="criteria-item">
+        <svg width="16" height="16" fill="none" stroke="#094171" stroke-width="1.8" stroke-linecap="round" viewBox="0 0 16 16"><path d="M3 8h10M8 3v10"/></svg>
+        <span>Factures disponibles</span>
+      </div>
+      <div class="criteria-item">
+        <svg width="16" height="16" fill="none" stroke="#094171" stroke-width="1.8" stroke-linecap="round" viewBox="0 0 16 16"><path d="M3 8h10M8 3v10"/></svg>
+        <span>Première main</span>
+      </div>
+      <div class="criteria-item">
+        <svg width="16" height="16" fill="none" stroke="#094171" stroke-width="1.8" stroke-linecap="round" viewBox="0 0 16 16"><path d="M3 8h10M8 3v10"/></svg>
+        <span>Contrôle technique valide</span>
+      </div>
+    </div>
+
+    <div style="height:16px;"></div>
+    <div class="divider" style="margin:0;"></div>
+
+    <!-- Rapport Autoviza -->
+    <div style="height:16px;"></div>
+    <div class="card">
+      <div class="card-header">Rapport historique Autoviza ®</div>
+      <div class="card-body">
+        <p>Ce rapport vous fournit des données sur l'historique du véhicule, certifiées par un tiers de manière neutre et indépendante.</p>
+        <div class="autoviza-grid">
+          <div class="autoviza-cell">
+            <div class="autoviza-cell-icon"><svg width="16" height="16" fill="none" stroke="#094171" stroke-width="1.8" stroke-linecap="round" viewBox="0 0 16 16"><path d="M8 2a6 6 0 100 12A6 6 0 008 2zm0 0v4m0 0l-2 2"/></svg></div>
+            <div class="autoviza-cell-label">Kilométrage</div>
+            <div class="autoviza-cell-value">Certifié 57 000 km</div>
+          </div>
+          <div class="autoviza-cell">
+            <div class="autoviza-cell-icon"><svg width="16" height="16" fill="none" stroke="#1D6340" stroke-width="1.8" stroke-linecap="round" viewBox="0 0 16 16"><path d="M8 2l1.6 4.8H14l-3.8 2.8 1.4 4.4L8 11.4l-3.6 2.6 1.4-4.4L2 6.8h4.4z"/></svg></div>
+            <div class="autoviza-cell-label">Sinistres</div>
+            <div class="autoviza-cell-value">Aucun sinistre déclaré</div>
+          </div>
+          <div class="autoviza-cell">
+            <div class="autoviza-cell-icon"><svg width="16" height="16" fill="none" stroke="#094171" stroke-width="1.8" stroke-linecap="round" viewBox="0 0 16 16"><path d="M4 2h8a1 1 0 011 1v10a1 1 0 01-1 1H4a1 1 0 01-1-1V3a1 1 0 011-1zm2 4h4M6 8h4M6 10h2"/></svg></div>
+            <div class="autoviza-cell-label">Propriétaires</div>
+            <div class="autoviza-cell-value">1 propriétaire</div>
+          </div>
+          <div class="autoviza-cell">
+            <div class="autoviza-cell-icon"><svg width="16" height="16" fill="none" stroke="#1D6340" stroke-width="1.8" stroke-linecap="round" viewBox="0 0 16 16"><path d="M2 8l4 4 8-8"/></svg></div>
+            <div class="autoviza-cell-label">Entretien</div>
+            <div class="autoviza-cell-value">Carnet complet vérifié</div>
+          </div>
+        </div>
+        <p class="autoviza-footer">D'autres informations importantes figurent sur le rapport Autoviza®</p>
+        <button class="btn-outlined" style="font-size:14px; height:36px;">Voir le rapport complet</button>
+      </div>
+      <div class="proposé-par">
+        <span>Proposé par</span>
+        <span class="autoviza-logo">AUTOVIZA®</span>
+      </div>
+    </div>
+
+    <div style="height:16px;"></div>
+    <div class="divider" style="margin:0;"></div>
+
+    <!-- Description -->
+    <div style="height:16px;"></div>
+    <div class="section"><p class="section-title">Description</p></div>
+    <p class="desc-text" id="descText">Citroën Berlingo XTR shine 130cv BlueHDi en excellent état. Véhicule 1ère main, entretien exclusivement chez Citroën. Garantie renew Gold 12 mois incluse. Options : GPS, caméra de recul, vitres surteintées, attelage, modulation intérieure, climatisation automatique. CO2 : 111 g/km. Consommation mixte : 4.2 L/100km. Disponible immédiatement. Prix ferme.</p>
+    <button class="desc-more" onclick="toggleDesc()">Voir plus</button>
+
+    <div style="height:16px;"></div>
+    <div class="divider" style="margin:0;"></div>
+
+    <!-- Financement -->
+    <div style="height:16px;"></div>
+    <div class="finance-card">
+      <div class="finance-card-header">
+        <div class="finance-tag">
+          <svg width="10" height="10" fill="#EC5A13" viewBox="0 0 10 10"><path d="M5 0L6.2 3.6H10L7 5.9 8.1 9.5 5 7.3 1.9 9.5 3 5.9 0 3.6h3.8z"/></svg>
+          Financement
+        </div>
+        <div class="finance-title">Financer mon véhicule</div>
+        <div class="finance-sub">À partir de <strong>329 €/mois</strong> en LOA</div>
+        <div class="finance-cetelem">
+          <span>Simuler un financement avec</span>
+          <span class="cetelem-badge">Cetelem</span>
+        </div>
+      </div>
+      <div class="finance-divider"></div>
+      <div class="finance-body">
+        <div class="finance-loa-header">Location avec Option d'Achat (LOA)</div>
+
+        <div class="spark-field">
+          <label class="spark-label">Apport initial</label>
+          <input type="text" class="spark-input" value="2 000 €" style="height:48px; padding:0 14px;">
+        </div>
+
+        <div class="slider-group">
+          <div class="slider-row">
+            <span class="slider-label">Durée du financement</span>
+            <span class="slider-value" id="dureeVal">20 mois</span>
+          </div>
+          <input type="range" min="5" max="25" value="20" id="dureeSlider" oninput="document.getElementById('dureeVal').textContent=this.value+' mois'; calcLOA();">
+          <div class="slider-limits"><span>5 mois</span><span>25 mois</span></div>
+        </div>
+
+        <div class="slider-group">
+          <div class="slider-row">
+            <span class="slider-label">Km annuel</span>
+            <span class="slider-value" id="kmVal">10 000 km</span>
+          </div>
+          <input type="range" min="5000" max="30000" step="1000" value="10000" id="kmSlider" oninput="document.getElementById('kmVal').textContent=Number(this.value).toLocaleString('fr')+' km'; calcLOA();">
+          <div class="slider-limits"><span>5 000 km</span><span>30 000 km</span></div>
+        </div>
+
+        <div class="finance-result">
+          <div class="finance-mensual" id="mensualResult">329 € <span>/ mois</span></div>
+          <div class="finance-note">La simulation est hors options. Contactez le vendeur pour plus de détails.</div>
+        </div>
+        <button class="btn-filled" style="height:44px; font-size:15px; border-radius:var(--r-cta);">Demander un financement</button>
+        <p class="finance-legal">Offre sous réserve d'acceptation par Cetelem. Taux annuel effectif global (TAEG) indicatif. Voir conditions en agence.</p>
+      </div>
+    </div>
+
+    <div style="height:16px;"></div>
+    <div class="divider" style="margin:0;"></div>
+
+    <!-- Localisation -->
+    <div style="height:16px;"></div>
+    <div class="section"><p class="section-title">Localisation</p></div>
+    <div style="height:8px;"></div>
+    <div class="map-placeholder">
+      <div class="map-pin">
+        <svg width="32" height="40" viewBox="0 0 32 40" fill="#094171"><path d="M16 0C7.2 0 0 7.2 0 16c0 10.8 16 24 16 24S32 26.8 32 16C32 7.2 24.8 0 16 0zm0 21a5 5 0 110-10 5 5 0 010 10z"/></svg>
+        <span class="map-label">Bayonne, 64100</span>
+      </div>
+    </div>
+
+    <div style="height:16px;"></div>
+    <div class="divider" style="margin:0;"></div>
+
+    <!-- Annonces similaires -->
+    <div style="height:16px;"></div>
+    <div class="similar-ads">
+      <p class="section-title" style="margin-bottom:12px;">Les annonces de ce pro</p>
+      <div class="similar-grid">
+        <div class="similar-card">
+          <div class="similar-img" style="background:linear-gradient(135deg,#c5d3df,#8fa8be);"></div>
+          <div class="similar-body">
+            <div class="similar-title">Peugeot Partner L2 2.0 HDi</div>
+            <div class="similar-price">18 500 €</div>
+            <div class="similar-km">82 000 km · 2019</div>
+          </div>
+        </div>
+        <div class="similar-card">
+          <div class="similar-img" style="background:linear-gradient(135deg,#bfd1c2,#8aab8f);"></div>
+          <div class="similar-body">
+            <div class="similar-title">Renault Kangoo 1.5 dCi Blue</div>
+            <div class="similar-price">16 900 €</div>
+            <div class="similar-km">61 000 km · 2020</div>
+          </div>
+        </div>
+        <div class="similar-card">
+          <div class="similar-img" style="background:linear-gradient(135deg,#d1c5c5,#b08f8f);"></div>
+          <div class="similar-body">
+            <div class="similar-title">Ford Transit Connect 1.5 EcoBlue</div>
+            <div class="similar-price">21 200 €</div>
+            <div class="similar-km">44 000 km · 2021</div>
+          </div>
+        </div>
+        <div class="similar-card">
+          <div class="similar-img" style="background:linear-gradient(135deg,#c5ccd1,#8f9fae);"></div>
+          <div class="similar-body">
+            <div class="similar-title">Citroën Berlingo XL 1.2 PureTech</div>
+            <div class="similar-price">24 800 €</div>
+            <div class="similar-km">28 000 km · 2022</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="height:16px;"></div>
+    <div class="divider" style="margin:0;"></div>
+
+    <!-- Footer -->
+    <div class="footer-links">
+      <button class="footer-link">
+        <svg width="16" height="16" fill="none" stroke="#152233" stroke-width="1.5" stroke-linecap="round" viewBox="0 0 16 16"><path d="M8 2v12M2 8h12"/></svg>
+        Signaler cette annonce
+      </button>
+      <button class="footer-link">
+        <svg width="16" height="16" fill="none" stroke="#152233" stroke-width="1.5" stroke-linecap="round" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6"/><path d="M8 7v4M8 5.5v.5"/></svg>
+        Informations légales
+      </button>
+    </div>
+
+    <div style="height:8px;"></div>
+  </div>
+
+  <!-- Sticky bar -->
+  <div class="sticky-bar">
+    <button class="btn-outlined">
+      <svg width="16" height="16" fill="none" stroke="#094171" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8 19.79 19.79 0 01.77 2.18 2 2 0 012.77 0h3a2 2 0 012 1.72 12.05 12.05 0 00.7 2.81 2 2 0 01-.45 2.11L6.91 7.91a16 16 0 006.72 6.72l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+      Téléphone
+    </button>
+    <button class="btn-filled" id="btnMessage">
+      <svg width="16" height="16" fill="#fff" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
+      Message
+    </button>
+  </div>
+
+  <!-- Overlay principal (derrière le formulaire) -->
+  <div class="overlay" id="overlay"></div>
+  <!-- Overlay secondaire (derrière les sub-sheets, par-dessus le formulaire) -->
+  <div class="overlay" id="overlayTop" style="z-index:35;"></div>
+
+  <!-- ══ Sheet: Formulaire ══ -->
+  <div class="bsheet" id="sheetForm">
+    <div class="bsheet-handle"></div>
+    <div class="bsheet-body">
+      <div class="form-tabs">
+        <button class="tab-btn active" id="tabMessage">
+          <svg width="16" height="16" fill="none" stroke="#152233" stroke-width="1.5" stroke-linecap="round" viewBox="0 0 16 16"><path d="M14 1H2a1 1 0 00-1 1v9a1 1 0 001 1h2v3l3-3h7a1 1 0 001-1V2a1 1 0 00-1-1z"/></svg>
+          Message
+        </button>
+        <button class="tab-btn" id="tabPhone">
+          <svg width="16" height="16" fill="none" stroke="#094171" stroke-width="1.5" stroke-linecap="round" viewBox="0 0 16 16"><path d="M4.4 7.2c.93 1.87 2.53 3.4 4.4 4.4l1.47-1.47c.18-.18.44-.24.68-.16.75.25 1.55.38 2.38.38.37 0 .67.3.67.67v2.33c0 .37-.3.67-.67.67A11.19 11.19 0 011.33 2.67C1.33 2.3 1.63 2 2 2h2.33c.37 0 .67.3.67.67 0 .83.13 1.63.38 2.38.07.24.01.5-.17.68L4.4 7.2z"/></svg>
+          Téléphone
+        </button>
+      </div>
+
+      <div class="spark-field">
+        <label>Votre téléphone (obligatoire)</label>
+        <input type="tel" class="spark-input" id="phoneInput" placeholder="+33 06 00 00 00 00">
+        <p class="spark-helper">Vos coordonnées (nom, prénom, téléphone, email) serviront à vous recontacter.</p>
+      </div>
+
+      <div class="spark-field" style="margin-top:4px;">
+        <label>Votre message (obligatoire)</label>
+        <textarea class="spark-textarea" id="messageInput" placeholder="Bonjour, cette annonce m'intéresse ! Est-elle toujours disponible ?" maxlength="2500"></textarea>
+        <p class="spark-counter"><span id="charCount">0</span>/2500</p>
+      </div>
+
+      <div class="spark-field">
+        <label>Raisons du contact</label>
+        <button class="spark-select-btn" id="btnRaison">
+          <span id="raisonValue">Choisissez</span>
+        </button>
+      </div>
+
+      <div class="spark-field">
+        <label>Echéance du projet</label>
+        <button class="spark-select-btn" id="btnEcheance">
+          <span id="echeanceValue">Choisissez</span>
+        </button>
+      </div>
+
+      <div class="spark-field">
+        <label>Services souhaités</label>
+        <button class="spark-select-btn" id="btnServices">
+          <span id="servicesValue">Choisissez</span>
+        </button>
+      </div>
+
+      <button class="form-legal">En savoir plus sur le traitement de vos données et exercer vos droits.</button>
+    </div>
+    <div class="bsheet-footer">
+      <button class="btn-send" id="btnSend">Envoyer</button>
+    </div>
+  </div>
+
+  <!-- ══ Sheet: Raisons du contact ══ -->
+  <div class="bsheet" id="sheetRaison">
+    <div class="bsheet-handle"></div>
+    <div class="bsheet-body">
+      <span class="picker-title">Raisons du contact</span>
+      <div id="raisonList">
+        <button class="spark-check-item" data-value="Demander plus d'informations"><div class="spark-checkbox"></div><span class="spark-check-label">Demander plus d'informations</span></button>
+        <button class="spark-check-item" data-value="Recevoir plus de photos"><div class="spark-checkbox"></div><span class="spark-check-label">Recevoir plus de photos</span></button>
+        <button class="spark-check-item" data-value="Vérifier la disponibilité du véhicule"><div class="spark-checkbox"></div><span class="spark-check-label">Vérifier la disponibilité du véhicule</span></button>
+        <button class="spark-check-item" data-value="Planifier un essai"><div class="spark-checkbox"></div><span class="spark-check-label">Planifier un essai</span></button>
+      </div>
+    </div>
+    <div class="bsheet-footer">
+      <button class="btn-confirm" id="confirmRaison" disabled>Confirmer</button>
+    </div>
+  </div>
+
+  <!-- ══ Sheet: Échéance ══ -->
+  <div class="bsheet" id="sheetEcheance">
+    <div class="bsheet-handle"></div>
+    <div class="bsheet-body">
+      <span class="picker-title">Echéance du projet</span>
+      <div id="echeanceList">
+        <button class="spark-radio-item" data-value="Dès que possible"><div class="spark-radio"></div><span class="spark-radio-label">Dès que possible</span></button>
+        <button class="spark-radio-item" data-value="Entre 1 et 3 mois"><div class="spark-radio"></div><span class="spark-radio-label">Entre 1 et 3 mois</span></button>
+        <button class="spark-radio-item" data-value="Entre 3 et 6 mois"><div class="spark-radio"></div><span class="spark-radio-label">Entre 3 et 6 mois</span></button>
+        <button class="spark-radio-item" data-value="Plus de 6 mois"><div class="spark-radio"></div><span class="spark-radio-label">Plus de 6 mois</span></button>
+      </div>
+    </div>
+    <div class="bsheet-footer">
+      <button class="btn-confirm" id="confirmEcheance" disabled>Confirmer</button>
+    </div>
+  </div>
+
+  <!-- ══ Sheet: Services ══ -->
+  <div class="bsheet" id="sheetServices">
+    <div class="bsheet-handle"></div>
+    <div class="bsheet-body">
+      <span class="picker-title">Services souhaités</span>
+      <div id="servicesList">
+        <button class="spark-check-item" data-value="Prise en charge carte grise"><div class="spark-checkbox"></div><span class="spark-check-label">Prise en charge de la carte grise / immatriculation</span></button>
+        <button class="spark-check-item" data-value="Offre de rachat"><div class="spark-checkbox"></div><span class="spark-check-label">Offre de rachat de votre véhicule</span></button>
+        <button class="spark-check-item" data-value="Solution de financement"><div class="spark-checkbox"></div><span class="spark-check-label">Solution de financement</span></button>
+        <button class="spark-check-item" data-value="Extension de garantie"><div class="spark-checkbox"></div><span class="spark-check-label">Extension de garantie</span></button>
+      </div>
+    </div>
+    <div class="bsheet-footer">
+      <button class="btn-confirm" id="confirmServices" disabled>Confirmer</button>
+    </div>
+  </div>
+
+  <!-- Snackbar -->
+  <div class="snackbar" id="snackbar">
+    <div class="snackbar-icon">
+      <svg width="16" height="16" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 16 16"><path d="M13 4L6 11.5 3 8.5"/></svg>
+    </div>
+    <div>
+      <div class="snackbar-title">Message envoyé !</div>
+      <div class="snackbar-sub">AutoDeal Bayonne vous répondra bientôt.</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ── LOA simulator ──
+function calcLOA() {
+  const duree = parseInt(document.getElementById('dureeSlider').value);
+  const km = parseInt(document.getElementById('kmSlider').value);
+  const base = 22990;
+  const apport = 2000;
+  const rate = 0.049 / 12;
+  const financed = base - apport;
+  const kmSurcharge = (km - 10000) / 1000 * 2;
+  const monthly = Math.round((financed * rate / (1 - Math.pow(1 + rate, -duree))) + kmSurcharge);
+  document.getElementById('mensualResult').innerHTML = monthly + ' € <span>/ mois</span>';
+}
+
+// ── Description expand ──
+let descExpanded = false;
+function toggleDesc() {
+  const t = document.getElementById('descText');
+  const btn = document.querySelector('.desc-more');
+  descExpanded = !descExpanded;
+  t.style.webkitLineClamp = descExpanded ? 'unset' : '4';
+  t.style.display = descExpanded ? 'block' : '-webkit-box';
+  btn.textContent = descExpanded ? 'Voir moins' : 'Voir plus';
+}
+
+// ── Accordion ──
+function toggleAccordion(header) {
+  const item = header.parentElement;
+  const body = item.querySelector('.accordion-body');
+  const isOpen = item.classList.contains('open');
+  document.querySelectorAll('.accordion-item').forEach(i => {
+    i.classList.remove('open');
+    i.querySelector('.accordion-body').style.maxHeight = '0';
+  });
+  if (!isOpen) {
+    item.classList.add('open');
+    body.style.maxHeight = body.scrollHeight + 'px';
+  }
+}
+
+// ── Persistent state for pickers ──
+const state = {
+  raison: new Set(),
+  echeance: null,
+  services: new Set()
+};
+
+// ── Sheet helpers ──
+function openSheet(id) {
+  document.getElementById('overlay').classList.add('active');
+  document.getElementById(id).classList.add('open');
+}
+function closeSheet(id) {
+  document.getElementById(id).classList.remove('open');
+  if (!document.querySelector('.bsheet.open')) document.getElementById('overlay').classList.remove('active');
+}
+function closeAll() {
+  document.querySelectorAll('.bsheet').forEach(s => s.classList.remove('open'));
+  document.getElementById('overlay').classList.remove('active');
+}
+
+// ── Sync checkbox UI from a Set ──
+function syncCheckboxes(listId, selSet) {
+  document.getElementById(listId).querySelectorAll('.spark-check-item').forEach(item => {
+    const box = item.querySelector('.spark-checkbox');
+    selSet.has(item.dataset.value) ? box.classList.add('checked') : box.classList.remove('checked');
+  });
+}
+
+// ── Sync radio UI from a value ──
+function syncRadios(listId, selVal) {
+  document.getElementById(listId).querySelectorAll('.spark-radio-item').forEach(item => {
+    const r = item.querySelector('.spark-radio');
+    item.dataset.value === selVal ? r.classList.add('selected') : r.classList.remove('selected');
+  });
+}
+
+// ── Bindings ──
+document.getElementById('btnMessage').addEventListener('click', () => openSheet('sheetForm'));
+document.getElementById('overlay').addEventListener('click', closeAll);
+document.getElementById('messageInput').addEventListener('input', function() { document.getElementById('charCount').textContent = this.value.length; });
+document.getElementById('tabMessage').addEventListener('click', function() { this.classList.add('active'); document.getElementById('tabPhone').classList.remove('active'); });
+document.getElementById('tabPhone').addEventListener('click', function() { this.classList.add('active'); document.getElementById('tabMessage').classList.remove('active'); });
+
+// ── Sub-overlay helpers ──
+function openSubSheet(id) {
+  document.getElementById('overlayTop').classList.add('active');
+  document.getElementById(id).classList.add('open');
+}
+function closeSubSheet(id) {
+  document.getElementById(id).classList.remove('open');
+  if (!['sheetRaison','sheetEcheance','sheetServices'].some(s => document.getElementById(s).classList.contains('open'))) {
+    document.getElementById('overlayTop').classList.remove('active');
+  }
+}
+document.getElementById('overlayTop').addEventListener('click', () => {
+  ['sheetRaison','sheetEcheance','sheetServices'].forEach(s => document.getElementById(s).classList.remove('open'));
+  document.getElementById('overlayTop').classList.remove('active');
+});
+
+// ── Raison (multi-select, mémorisé) ──
+document.getElementById('btnRaison').addEventListener('click', () => {
+  syncCheckboxes('raisonList', state.raison);
+  document.getElementById('confirmRaison').disabled = state.raison.size === 0;
+  openSubSheet('sheetRaison');
+});
+document.getElementById('raisonList').querySelectorAll('.spark-check-item').forEach(item => {
+  item.addEventListener('click', () => {
+    const val = item.dataset.value;
+    const box = item.querySelector('.spark-checkbox');
+    if (state.raison.has(val)) { state.raison.delete(val); box.classList.remove('checked'); }
+    else { state.raison.add(val); box.classList.add('checked'); }
+    document.getElementById('confirmRaison').disabled = state.raison.size === 0;
+  });
+});
+document.getElementById('confirmRaison').addEventListener('click', () => {
+  if (state.raison.size === 0) return;
+  const label = state.raison.size === 1 ? [...state.raison][0] : state.raison.size + ' raisons sélectionnées';
+  document.getElementById('raisonValue').textContent = label;
+  document.getElementById('btnRaison').classList.add('filled');
+  closeSubSheet('sheetRaison');
+  if (!state.echeance) setTimeout(() => openSubSheet('sheetEcheance'), 350);
+});
+
+// ── Échéance (radio, mémorisé) ──
+document.getElementById('btnEcheance').addEventListener('click', () => {
+  syncRadios('echeanceList', state.echeance);
+  document.getElementById('confirmEcheance').disabled = !state.echeance;
+  openSubSheet('sheetEcheance');
+});
+document.getElementById('echeanceList').querySelectorAll('.spark-radio-item').forEach(item => {
+  item.addEventListener('click', () => {
+    state.echeance = item.dataset.value;
+    syncRadios('echeanceList', state.echeance);
+    document.getElementById('confirmEcheance').disabled = false;
+  });
+});
+document.getElementById('confirmEcheance').addEventListener('click', () => {
+  if (!state.echeance) return;
+  document.getElementById('echeanceValue').textContent = state.echeance;
+  document.getElementById('btnEcheance').classList.add('filled');
+  closeSubSheet('sheetEcheance');
+  if (state.services.size === 0) setTimeout(() => openSubSheet('sheetServices'), 350);
+});
+
+// ── Services (multi-select, mémorisé) ──
+document.getElementById('btnServices').addEventListener('click', () => {
+  syncCheckboxes('servicesList', state.services);
+  document.getElementById('confirmServices').disabled = state.services.size === 0;
+  openSubSheet('sheetServices');
+});
+document.getElementById('servicesList').querySelectorAll('.spark-check-item').forEach(item => {
+  item.addEventListener('click', () => {
+    const val = item.dataset.value;
+    const box = item.querySelector('.spark-checkbox');
+    if (state.services.has(val)) { state.services.delete(val); box.classList.remove('checked'); }
+    else { state.services.add(val); box.classList.add('checked'); }
+    document.getElementById('confirmServices').disabled = state.services.size === 0;
+  });
+});
+document.getElementById('confirmServices').addEventListener('click', () => {
+  if (state.services.size === 0) return;
+  const label = state.services.size === 1 ? [...state.services][0] : state.services.size + ' services sélectionnés';
+  document.getElementById('servicesValue').textContent = label;
+  document.getElementById('btnServices').classList.add('filled');
+  closeSubSheet('sheetServices');
+});
+
+// ── Send ──
+document.getElementById('btnSend').addEventListener('click', () => {
+  closeAll();
+  setTimeout(() => {
+    const s = document.getElementById('snackbar');
+    s.classList.add('show');
+    setTimeout(() => s.classList.remove('show'), 4000);
+  }, 400);
+});
+</script>
+</body>
+</html>
