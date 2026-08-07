@@ -1,7 +1,7 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
-import { useRouter } from "next/navigation"
+import { useEffect, useRef, useState, Suspense } from "react"
+import { useRouter, useSearchParams } from "next/navigation"
 import { Img as Image } from "@/components/Img"
 import { useStore } from "@/lib/store"
 import { FavAdCard } from "@/components/FavAdCard"
@@ -11,14 +11,23 @@ import { CreateListeBottomSheet } from "@/components/CreateListeBottomSheet"
 import { GestionFavoriBottomSheet } from "@/components/GestionFavoriBottomSheet"
 import { Snackbar } from "@/components/Snackbar"
 
-export default function TousLesFavorisPage() {
+function TousLesFavorisContent() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const { getFavorisAvecAnnonces, retirerFavori, deplacerFavoris, creerListe, getListesAvecImages } = useStore()
 
   const favoris = getFavorisAvecAnnonces(undefined)
 
-  // Mode sélection
+  // Mode sélection — activé automatiquement si ?mode=selection dans l'URL
   const [selectionMode, setSelectionMode] = useState(false)
+
+  useEffect(() => {
+    if (searchParams.get("mode") === "selection") {
+      setSelectionMode(true)
+      setSelectedIds(new Set())
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const [deplacerOpen, setDeplacerOpen] = useState(false)
   const [creerListeOpen, setCreerListeOpen] = useState(false)
@@ -279,5 +288,13 @@ export default function TousLesFavorisPage() {
         }}
       />
     </main>
+  )
+}
+
+export default function TousLesFavorisPage() {
+  return (
+    <Suspense>
+      <TousLesFavorisContent />
+    </Suspense>
   )
 }

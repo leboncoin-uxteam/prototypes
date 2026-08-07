@@ -3,7 +3,7 @@ name: Deploy Favoris to GitHub Pages
 on:
   push:
     branches: [main]
-    paths: ['favoris/**']
+    paths: ['favoris/**', '.github/workflows/deploy-favoris.yml']
 
 jobs:
   deploy:
@@ -17,18 +17,41 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
           cache-dependency-path: favoris/package-lock.json
-      - run: npm ci
+
+      - name: Install dependencies
+        run: npm ci
         working-directory: favoris
-      - run: npm run build
+
+      - name: Build favoris
+        run: npm run build
         working-directory: favoris
+
+      - name: Assemble site
+        run: |
+          mkdir -p _site
+          # Copier tous les fichiers existants à la racine du repo (html, assets, etc.)
+          # sauf les dossiers techniques
+          find . -maxdepth 1 \
+            -not -name '.' \
+            -not -name '_site' \
+            -not -name '.git' \
+            -not -name '.github' \
+            -not -name 'favoris' \
+            -exec cp -r {} _site/ \;
+          # Copier le build Next.js dans un sous-dossier favoris/
+          cp -r favoris/out _site/favoris
+
       - uses: actions/configure-pages@v4
+
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: favoris/out
+          path: _site
+
       - id: deployment
         uses: actions/deploy-pages@v4

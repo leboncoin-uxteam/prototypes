@@ -225,7 +225,7 @@ function ListeFavorisContent() {
           actions={[
             { icon: "/images/tri.svg", label: "Trier", onClick: () => {} },
             { icon: "/images/broomstick.svg", label: "Organiser", onClick: activerSelection },
-            { icon: "/images/plus.svg", label: "Ajouter", onClick: () => router.push("/onboarding") },
+            { icon: "/images/plus.svg", label: "Ajouter", onClick: () => router.push("/favoris/tous?mode=selection") },
           ]}
         />
       )}
