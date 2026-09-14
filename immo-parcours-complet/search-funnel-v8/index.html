@@ -1076,9 +1076,10 @@ ul { list-style: none; }
        sinon le texte dépasse la hauteur de 32px de la pill. */
     font-size: 14px; line-height: 20px;
   }
-  /* Ouverte, la feuille passe en `position: fixed` : le conteneur défilant ne
-     doit pas la retenir. */
-  .filters-bar:has(.popover[data-open='true']) { overflow: visible; }
+  /* Ne pas repasser ce rail en `overflow: visible` quand la feuille s'ouvre : la
+     feuille est en `position: fixed` et aucun ancêtre n'établit de bloc conteneur,
+     elle échappe donc déjà au clip. Déclipper le rail laissait en revanche sortir
+     les chips suivantes — « Tri » partait à 531px sur un écran de 390. */
 
   /* Le titre de catégorie et la pub inline n'existent pas sur mobile : seul le
      compteur annonce la liste (Figma 4328:38010). */
