@@ -1,0 +1,2165 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Adview Immo — Media experience / Gallery</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,400;0,6..12,700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --color-support: #094171;
+    --color-on-support: #ffffff;
+    --color-support-container: #e6f2fd;
+    --color-on-support-container: #152233;
+    --color-neutral: #3a4757;
+    --color-neutral-container: #f0f2f5;
+    --color-accent-container: #e9d6fa;
+    --color-success-container: #e0f2e9;
+    --color-error-container: #f7d7d4;
+    --color-background-variant: #f4f9fe;
+    --color-surface: #ffffff;
+    --color-on-surface: #152233;
+    --color-on-surface-dim-1: rgba(21, 34, 51, 0.72);
+    --color-support-dim-3: rgba(9, 65, 113, 0.4);
+    --color-outline: #acb8c7;
+    --color-shadow: rgba(108, 129, 157, 0.5);
+    --color-surface-inverse: #2b3441;
+    --color-on-surface-inverse: #ffffff;
+    --color-on-surface-inverse-dim-1: rgba(255, 255, 255, 0.72);
+    --color-overlay: rgba(32, 39, 48, 0.6);
+
+    --spacing-none: 0px;
+    --spacing-sm: 4px;
+    --spacing-md: 8px;
+    --spacing-lg: 16px;
+    --spacing-xl: 24px;
+    --spacing-2xl: 32px;
+    --spacing-3xl: 40px;
+
+    --rounded-sm: 4px;
+    --rounded-md: 8px;
+    --rounded-lg: 16px;
+    --rounded-xl: 24px;
+    --rounded-full: 99999px;
+
+    --border-sm: 1px;
+    --border-md: 2px;
+    --border-lg: 4px;
+
+    --color-support-hovered: #0c5291;
+    --color-support-container-hovered: #f4f9fe;
+    --color-surface-hovered: #f6f8f9;
+    --color-focus: #0000ff;
+
+    --duration-short: 150ms;
+    --duration-medium: 250ms;
+    --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+
+    --gutter: var(--spacing-3xl);
+    --side-width: 427px;
+  }
+
+  /* Focus clavier — --color-focus est réservé aux outlines de focus */
+  :where(button, input, label, [tabindex]):focus-visible {
+    outline: var(--border-md) solid var(--color-focus);
+    outline-offset: 2px;
+  }
+
+  * { box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--color-surface);
+    font-family: "Nunito Sans", system-ui, sans-serif;
+    font-variation-settings: "YTLC" 500, "wdth" 100;
+    color: var(--color-on-surface);
+  }
+
+  /* ---------- Layout ---------- */
+  .adview {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+
+  /* La croix est en surimpression, pas dans le flux : sinon elle pousse le
+     panneau média vers le bas et laisse une bande blanche en haut de page.
+     En fixed elle reste atteignable pendant tout le scroll de la galerie. */
+  .adview__topbar {
+    position: fixed;
+    top: 0;
+    right: 0;
+    z-index: 2;
+    display: flex;
+    justify-content: flex-end;
+    padding: var(--spacing-md) var(--gutter);
+  }
+  /* La navbar mobile n'existe qu'en dessous de 768px */
+  .adview__topbar .adview__back,
+  .adview__topbar .adview__topbar-title { display: none; }
+
+  .adview__body {
+    flex: 1 1 auto;
+    display: flex;
+    align-items: flex-start;
+    gap: var(--gutter);
+  }
+
+  /* `position: relative` + `z-index` : le popover d'extrait est ancré ici et
+     débordera sur le panneau média, qui est sticky donc peint au-dessus du flux
+     normal. */
+  .side {
+    position: relative;
+    z-index: 1;
+    flex: 0 0 var(--side-width);
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xl);
+    padding: var(--gutter) 0 var(--spacing-3xl) var(--gutter);
+  }
+
+  /* Le panneau média reste au viewport pendant le scroll de la galerie.
+     40px en haut = hauteur de la croix en surimpression.
+     96px en bas = hauteur de la barre d'action sticky + respiration. */
+  .viewer-col {
+    position: sticky;
+    top: 0;
+    flex: 1 1 0;
+    min-width: 0;
+    align-self: flex-start;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+    padding: var(--spacing-3xl) var(--gutter) 96px;
+    background: var(--color-surface-inverse);
+    color: var(--color-on-surface-inverse);
+  }
+
+  /* ---------- Colonne latérale ---------- */
+  .side__eyebrow {
+    margin: 0;
+    font-size: 14px;
+    line-height: 20px;
+    font-weight: 400;
+    color: var(--color-on-surface-dim-1);
+  }
+  .side__title {
+    margin: 0;
+    font-size: 20px;
+    line-height: 28px;
+    font-weight: 700;
+  }
+
+  /* ---------- Chips (Spark) ---------- */
+  .chips {
+    display: flex;
+    gap: var(--spacing-md);
+    overflow-x: auto;
+    scrollbar-width: none;
+    padding-bottom: 2px;
+  }
+  .chips::-webkit-scrollbar { display: none; }
+  .chip {
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-sm);
+    height: 32px;
+    min-width: 32px;
+    padding: 6px var(--spacing-md);
+    border: var(--border-sm) solid var(--color-support);
+    border-radius: var(--rounded-full);
+    background: transparent;
+    font: inherit;
+    font-size: 16px;
+    line-height: 24px;
+    color: var(--color-support);
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background-color var(--duration-short) var(--ease-standard);
+  }
+  .chip:hover { background: var(--color-support-container); }
+  .chip[aria-pressed="true"] { background: var(--color-support-container); }
+  .chip[aria-pressed="true"]:hover { background: var(--color-support-container-hovered); }
+  .chip__icon { display: block; width: 16px; height: 16px; }
+
+  /* Le check n'apparaît qu'à l'état sélectionné */
+  .chip[aria-pressed="false"] .chip__icon { display: none; }
+
+  /* ---------- Switch (Spark) ---------- */
+  .switch-label {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    cursor: pointer;
+  }
+  .switch-label__text { font-size: 16px; line-height: 24px; }
+  /* La visite photo n'a de sens que sur l'ensemble des médias : filtrer sur
+     plan ou vidéo la retire. */
+  .is-filtered .tour-intro { display: none; }
+
+  /* Le disclaimer IA est accroché au toggle : ce qu'il annonce — classification
+     automatique des photos, rapprochement avec des extraits de la description —
+     n'existe qu'en visite photo. Il n'apparaît donc qu'une fois le toggle actif,
+     au-dessus des sections qu'il explique. */
+  .tour-intro { display: flex; flex-direction: column; gap: var(--spacing-md); }
+  .tour-intro__disclaimer {
+    display: none;
+    margin: 0;
+    font-size: 10px;
+    line-height: 14px;
+    color: var(--color-on-surface-dim-1);
+  }
+  .is-photo-tour .tour-intro__disclaimer { display: block; }
+  .tour-intro__disclaimer a { color: inherit; }
+  .switch__input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .switch {
+    position: relative;
+    flex: none;
+    width: 38px;
+    height: 24px;
+    border-radius: var(--rounded-lg);
+    background: var(--color-support-dim-3);
+    transition: background-color var(--duration-short) var(--ease-standard);
+  }
+  .switch__handle {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    transition: left var(--duration-short) var(--ease-standard);
+  }
+  .switch__handle img { display: block; width: 100%; height: 100%; }
+
+  /* État selected */
+  .switch__input:checked ~ .switch { background: var(--color-support); }
+  .switch__input:checked ~ .switch .switch__handle { left: 16px; }
+  .switch__input:not(:checked) ~ .switch .switch__handle--on { display: none; }
+  .switch__input:checked ~ .switch .switch__handle--off { display: none; }
+  .switch-label:hover .switch__input:checked ~ .switch { background: var(--color-support-hovered); }
+  .switch__input:focus-visible ~ .switch {
+    outline: var(--border-md) solid var(--color-focus);
+    outline-offset: 2px;
+  }
+
+  /* ---------- Galerie masonry ---------- */
+  .masonry {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+  }
+
+  /* ---------- Visite photo : galerie sectionnée ---------- */
+  .tour { display: none; flex-direction: column; gap: var(--spacing-2xl); }
+  /* `.adview` en tête : doit primer sur `.is-expanded .masonry { display: grid }` */
+  .adview.is-photo-tour .masonry { display: none; }
+  .is-photo-tour .tour { display: flex; }
+
+  .tour__section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+  }
+  .tour__title {
+    margin: 0;
+    font-size: 18px;
+    line-height: 24px;
+    font-weight: 700;
+  }
+  .tour__quote {
+    margin: 0;
+    font-size: 14px;
+    line-height: 20px;
+    font-weight: 400;
+    color: var(--color-on-surface-dim-1);
+  }
+  .tour__quote strong { font-weight: 700; }
+
+  /* Le bouton suit le texte dans le flux (et non collé à droite) : sur un extrait
+     d'une ligne il se retrouve en fin de ligne, sur deux lignes il reste accroché
+     au dernier mot. C'est la coupure du texte qu'il prolonge, pas la colonne. */
+  .tour__more {
+    display: inline-grid;
+    place-items: center;
+    vertical-align: middle;
+    width: 24px;
+    height: 24px;
+    margin-left: var(--spacing-md);
+    padding: 0;
+    border: 0;
+    border-radius: var(--rounded-full);
+    background: var(--color-neutral-container);
+    cursor: pointer;
+    transition: background-color var(--duration-short) var(--ease-standard);
+  }
+  .tour__more:hover { background: var(--color-surface-hovered); }
+  .tour__more img { display: block; width: 16px; height: 16px; }
+
+  /* ---------- Popover « Extrait de la description » ---------- */
+  /* Positionné en JS dans le repère de `.side` : sa pointe se pose à 8px du
+     bouton survolé, donc il suit le texte au lieu de se caler sur le bord de la
+     colonne — c'est ce bouton-là qu'il prolonge. Il déborde ensuite librement
+     sur le panneau média, qui est sticky : c'est là qu'il y a la place. */
+  .excerpt-pop {
+    position: absolute;
+    z-index: 5;
+    display: flex;
+    width: 336px;
+    /* L'ombre est portée par l'ensemble carte + pointe, en `filter` et non en
+       `box-shadow` sur la carte (Figma 4422:12328, l'effet est sur le nœud
+       racine) : ancré au bouton, le popover se pose sur le blanc de la colonne,
+       où une pointe blanche sans ombre serait purement invisible. */
+    filter: drop-shadow(0 4px 8px var(--color-shadow));
+  }
+  .excerpt-pop[hidden] { display: none; }
+  /* 8 × 16 : le calque `tip` du Figma est dessiné dans un cadre de 48 qui ne
+     sert qu'à le centrer sur la hauteur du bouton — le triangle lui-même ne fait
+     que 16 de base. Hauteur fixe, jamais étirée par la hauteur du popover. */
+  .excerpt-pop__tip {
+    position: absolute;
+    left: 0;
+    flex: none;
+    width: 8px;
+    height: 16px;
+    background: var(--color-surface);
+    clip-path: polygon(100% 0, 100% 100%, 0 50%);
+  }
+  .excerpt-pop__container {
+    position: relative;
+    flex: 1 1 auto;
+    margin-left: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+    padding: var(--spacing-lg);
+    border-radius: var(--rounded-md);
+    background: var(--color-surface);
+  }
+  .excerpt-pop__head {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+  }
+  .excerpt-pop__head img { display: block; width: 16px; height: 16px; }
+  .excerpt-pop__title { margin: 0; font-size: 18px; line-height: 24px; font-weight: 700; }
+  /* Signalement d'erreur (Figma 4422:12328) : au pied de l'extrait, là où le
+     doute naît — après la lecture du rapprochement, pas avant. */
+  .excerpt-pop__report {
+    align-self: flex-start;
+    font-size: 14px;
+    line-height: 20px;
+    color: inherit;
+  }
+  .excerpt-pop__body {
+    margin: 0;
+    /* La citation peut être longue : on scrolle dans le popover plutôt que de le
+       laisser dépasser la hauteur de l'écran. */
+    max-height: min(50vh, 400px);
+    overflow-y: auto;
+    /* Body 2 : la description est une citation, pas le texte principal de la
+       page — elle se lit un cran en dessous du titre du popover. */
+    font-size: 14px;
+    line-height: 20px;
+  }
+
+  /* Le passage rapproché par l'IA est surligné, pas seulement mis en gras :
+     l'enjeu est de le retrouver d'un coup d'œil dans un bloc de texte dense.
+     `box-decoration-break: clone` redonne son fond et ses coins à chaque
+     fragment quand le passage se casse en fin de ligne.
+
+     Le fond porte deux couches : la couleur du surlignage, et par-dessus un
+     dégradé clair étroit qui le balaie deux fois à l'ouverture — le reflet qui
+     signe l'intervention de l'IA. Il s'arrête ensuite : une brillance en boucle
+     deviendrait un parasite pendant la lecture. */
+  .excerpt-pop__body mark {
+    padding: 0 2px;
+    border-radius: 3px;
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+    color: inherit;
+    font-weight: 700;
+    background-color: var(--color-accent-container);
+    background-image: linear-gradient(105deg,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.7) 50%,
+      rgba(255, 255, 255, 0) 100%);
+    background-repeat: no-repeat;
+    background-size: 55% 100%;
+    background-position: 250% 0;
+    /* Courbe symétrique, et non `--ease-standard` : celle du système décélère
+       très tôt, le reflet parcourait 90 % du surlignage dans son premier tiers
+       puis rampait. Ici il glisse d'un bord à l'autre à vitesse lisible.
+       Un seul passage : le reflet signale, il ne clignote pas. */
+    animation: excerpt-gloss 1200ms cubic-bezier(0.4, 0, 0.6, 1) 350ms;
+  }
+
+  /* De -150 % à 250 % : avec une image de 55 % de large, ces deux bornes la
+     posent exactement hors du surlignage, à gauche puis à droite. */
+  @keyframes excerpt-gloss {
+    from { background-position: -150% 0; }
+    to { background-position: 250% 0; }
+  }
+
+  /* Sous 768px il n'y a pas de colonne à côté du rail : le popover n'a plus rien
+     à viser. Il devient une bottom sheet — l'extrait monte du bas sous le pouce,
+     avec un voile qui met la galerie en retrait le temps de la lecture. */
+  @media (max-width: 767px) {
+    /* Le `z-index` du rail ne sert qu'au débordement sur le panneau média, en
+       desktop. Le garder ici enfermerait la feuille dans un contexte
+       d'empilement sous la barre d'action, qui repasserait devant. */
+    .side { z-index: auto; }
+    .excerpt-pop {
+      position: fixed;
+      inset: 0;
+      z-index: 60;
+      width: auto;
+      align-items: flex-end;
+      background: var(--color-overlay);
+      /* Plus de pointe à détacher, et le voile n'a pas à projeter d'ombre. */
+      filter: none;
+    }
+    .excerpt-pop__tip { display: none; }
+    .excerpt-pop__container {
+      width: 100%;
+      margin-left: 0;
+      gap: var(--spacing-lg);
+      padding: var(--spacing-xl) var(--spacing-lg)
+               calc(var(--spacing-xl) + env(safe-area-inset-bottom));
+      border-radius: var(--rounded-lg) var(--rounded-lg) 0 0;
+      box-shadow: none;
+      animation: excerpt-sheet-in var(--duration-medium) var(--ease-standard);
+    }
+    /* Poignée : elle annonce une feuille qu'on peut faire redescendre — c'est la
+       seule affordance de fermeture, il n'y a pas de croix. */
+    .excerpt-pop__container::before {
+      content: '';
+      position: absolute;
+      top: var(--spacing-md);
+      left: 50%;
+      width: 32px;
+      height: 4px;
+      border-radius: var(--rounded-full);
+      background: var(--color-outline);
+      translate: -50% 0;
+    }
+    .excerpt-pop__body { max-height: 50vh; }
+  }
+
+  @keyframes excerpt-sheet-in {
+    from { translate: 0 100%; }
+    to { translate: 0 0; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .excerpt-pop__body mark,
+    .excerpt-pop__container { animation: none; }
+  }
+
+  /* Le plan est cadré, pas rogné : fond blanc + contour */
+  .masonry__row--plan { aspect-ratio: 419 / 208; }
+  .tile--plan {
+    border: var(--border-sm) solid rgba(172, 184, 199, 0.4);
+    background: var(--color-surface);
+  }
+  /* Spécificité renforcée : `.tile img { object-fit: cover }` est déclaré plus bas */
+  .tile.tile--plan img { object-fit: contain; }
+
+  /* Vignette média non-photo : glyph 3D ou lecture en surimpression */
+  .tile { position: relative; }
+  .tile .tile__badge {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+    pointer-events: none;
+  }
+
+  /* Disclaimer IA — visible seulement en visite photo */
+  .viewer__disclaimer { display: none; }
+  /* En visite photo, la vue reste en split : pas de sortie vers l'état étendu */
+  .is-photo-tour .viewer__collapse { display: none; }
+  .is-photo-tour .viewer__ai { display: none; }
+  .is-photo-tour .viewer__disclaimer { display: block; }
+  .viewer__disclaimer p {
+    margin: 0;
+    font-size: 12px;
+    line-height: 16px;
+    color: var(--color-on-surface-inverse-dim-1);
+  }
+  .viewer__disclaimer a { color: inherit; }
+  .masonry__row { display: flex; gap: var(--spacing-lg); }
+  .masonry__row--hero { aspect-ratio: 419 / 227; }
+  .masonry__row--pair { aspect-ratio: 419 / 136; }
+  .masonry__row--mixed { aspect-ratio: 419 / 302; }
+
+  .tile {
+    flex: 1 1 0;
+    min-width: 0;
+    padding: 0;
+    border: 0;
+    background: none;
+    border-radius: var(--rounded-md);
+    overflow: hidden;
+    cursor: pointer;
+  }
+  .tile img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .tile img { transition: opacity var(--duration-short) var(--ease-standard); }
+  .tile:hover img { opacity: 0.88; }
+  .tile--selected {
+    border: var(--border-md) solid var(--color-support);
+  }
+  .tile--selected img {
+    border: var(--border-lg) solid var(--color-surface);
+    border-radius: 10px;
+  }
+  .tile--selected:hover img { opacity: 1; }
+  .tile--narrow { flex: 0 0 35.4%; }
+
+  /* ---------- Filtrage par chip ---------- */
+  .tile[hidden] { display: none; }
+  .masonry__row:not(:has(.tile:not([hidden]))),
+  .masonry__stack:not(:has(.tile:not([hidden]))),
+  .tour__section:not(:has(.tile:not([hidden]))) { display: none; }
+  /* Filtré, une vignette isolée hériterait d'un ratio de paire trop écrasé */
+  .is-filtered .masonry__row:not(.masonry__row--plan) { aspect-ratio: 419 / 227; }
+
+  .masonry__stack {
+    flex: 1 1 0;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+  }
+  .masonry__stack .tile { flex: 1 1 0; min-height: 0; }
+
+  /* ---------- Zone photo principale ---------- */
+  .viewer {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: var(--spacing-md);
+  }
+
+  .viewer__stage {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 893 / 481;
+    max-height: calc(100vh - 220px);
+    border-radius: var(--rounded-md);
+    overflow: hidden;
+  }
+  .viewer__backdrop,
+  .viewer__photo {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .viewer__backdrop { transform: scale(1.5); }
+
+  .viewer__video {
+    display: none;
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+
+  /* ---------- Viewer : plan seul ---------- */
+  .viewer[data-media="plan"] .viewer__stage {
+    background: var(--color-surface);
+    border: var(--border-sm) solid rgba(172, 184, 199, 0.4);
+  }
+  .viewer[data-media="plan"] .viewer__backdrop { display: none; }
+  /* Le plan est affiché entier et centré : `width: auto` sur un élément
+     remplacé retombe sur sa taille intrinsèque, d'où les max-*. */
+  .viewer[data-media="plan"] .viewer__photo {
+    inset: 0;
+    width: auto;
+    height: auto;
+    max-width: calc(100% - var(--spacing-2xl));
+    max-height: calc(100% - var(--spacing-2xl));
+    margin: auto;
+    object-fit: contain;
+  }
+
+  /* ---------- Viewer : vidéo seule ---------- */
+  .viewer[data-media="video"] .viewer__stage { background: #000; }
+  .viewer[data-media="video"] .viewer__backdrop,
+  .viewer[data-media="video"] .viewer__photo { display: none; }
+  .viewer[data-media="video"] .viewer__video { display: block; }
+  /* Le player YouTube a ses propres contrôles */
+  .viewer[data-media="video"] .viewer__nav { display: none; }
+
+  /* Redécorer et les mentions IA ne concernent que les photos */
+  .viewer:not([data-media="photo"]) .viewer__redecorate,
+  .viewer:not([data-media="photo"]) .viewer__ai,
+  .viewer:not([data-media="photo"]) .viewer__disclaimer { display: none; }
+
+  .viewer__actions {
+    position: absolute;
+    top: var(--spacing-lg);
+    right: var(--spacing-lg);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+  }
+
+  .viewer__nav {
+    position: absolute;
+    bottom: var(--spacing-lg);
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-lg);
+  }
+
+  /* ---------- Signal d'analyse IA de la photo ---------- */
+  /* Remplace l'ancienne phrase discrète : le verdict est porté par une pastille
+     colorée et un texte en couleur pleine, pas atténuée (Figma 4427:13492 /
+     4427:13503). C'est une information de confiance, elle ne se lit pas en
+     second plan. Bloc partagé : le viewer desktop le pose sur le panneau média
+     sombre, le focus mobile sur le fond blanc (Figma 4271:40630 / 4428:13776). */
+  .ai-signal {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    font-size: 12px;
+    line-height: 16px;
+    color: var(--color-on-surface);
+  }
+  .ai-signal--inverse { color: var(--color-on-surface-inverse); }
+  /* Sur le panneau sombre le verdict tient deux lignes : la pastille se cale sur
+     la première, celle qu'elle qualifie, et non sur la coupure entre les deux. */
+  .ai-signal--inverse[data-state="modified"] { align-items: flex-start; }
+  .ai-signal p { margin: 0; }
+  .ai-signal a { color: inherit; }
+  /* Seule la pastille porte la couleur de l'état — 2px autour d'une icône de 20,
+     soit un cercle de 24. */
+  .ai-signal__badge {
+    flex: none;
+    display: flex;
+    padding: 2px;
+    border-radius: var(--rounded-full);
+  }
+  .ai-signal__icon { display: block; width: 20px; height: 20px; }
+  .ai-signal[data-state="authentic"] .ai-signal__badge { background: var(--color-success-container); }
+  .ai-signal[data-state="modified"] .ai-signal__badge { background: var(--color-error-container); }
+  .ai-signal[data-state="authentic"] .ai-signal__icon--modified,
+  .ai-signal[data-state="authentic"] .ai-signal__text--modified,
+  .ai-signal[data-state="modified"] .ai-signal__icon--authentic,
+  .ai-signal[data-state="modified"] .ai-signal__text--authentic { display: none; }
+
+  /* ---------- Boutons (Spark) ---------- */
+  .icon-btn {
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-md);
+    border: 0;
+    border-radius: var(--rounded-lg);
+    background: transparent;
+    cursor: pointer;
+  }
+  .icon-btn--surface { background: var(--color-surface); }
+  .icon-btn--bare { padding: var(--spacing-sm); }
+  .icon-btn__icon { display: block; width: 16px; height: 16px; }
+  .icon-btn { transition: background-color var(--duration-short) var(--ease-standard); }
+  .icon-btn:hover { background: var(--color-surface-hovered); }
+
+  .btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-md);
+    border: 0;
+    border-radius: var(--rounded-lg);
+    font: inherit;
+    font-weight: 700;
+    font-size: 16px;
+    line-height: 24px;
+    white-space: nowrap;
+    cursor: pointer;
+  }
+  .btn--small { height: 32px; padding: var(--spacing-sm) var(--spacing-lg); }
+  .btn--medium { height: 44px; padding: var(--spacing-md) var(--spacing-lg); }
+  .btn--contrast { background: var(--color-surface); color: var(--color-on-support-container); }
+  .btn--contrast:hover { background: var(--color-surface-hovered); }
+  .btn--support { background: var(--color-support); color: var(--color-on-support); }
+  .btn--support:hover { background: var(--color-support-hovered); }
+  .btn { transition: background-color var(--duration-short) var(--ease-standard); }
+  .btn__icon { display: block; width: 16px; height: 16px; }
+
+  /* ---------- Barre basse sticky ---------- */
+  .adview__footer {
+    position: sticky;
+    bottom: 0;
+    z-index: 10;
+    background: var(--color-surface);
+    box-shadow: 0 -8px 16px 0 var(--color-shadow);
+    padding: var(--spacing-lg) var(--gutter);
+  }
+  .adview__footer-inner {
+    max-width: 1050px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-lg);
+  }
+  .listing {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    min-width: 0;
+  }
+  .listing__thumb {
+    flex: none;
+    display: block;
+    width: 60px;
+    height: 34px;
+    border-radius: var(--rounded-sm);
+    object-fit: cover;
+  }
+  .listing__text { min-width: 0; }
+  .listing__text p {
+    margin: 0;
+    font-size: 16px;
+    line-height: 24px;
+    font-weight: 700;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .adview__footer-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2xl);
+  }
+
+  /* ---------- Transitions entre états de galerie ---------- */
+  /* Vue scindée ↔ pleine largeur change de mode de layout (flex → grid) :
+     seul View Transitions peut interpoler les positions des vignettes. */
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation-duration: var(--duration-medium);
+    animation-timing-function: var(--ease-standard);
+  }
+  /* Le panneau média disparaît : sortie plus courte que le déplacement */
+  ::view-transition-old(media-panel),
+  ::view-transition-new(media-panel) {
+    animation-duration: var(--duration-short);
+  }
+  .viewer-col { view-transition-name: media-panel; }
+
+  /* ---------- Galerie étendue (panneau média fermé) ---------- */
+  .is-expanded .viewer-col { display: none; }
+
+  @media (min-width: 900px) {
+    .is-expanded .side {
+      flex: 1 1 auto;
+      width: 100%;
+      padding: var(--gutter) var(--gutter) var(--spacing-3xl);
+    }
+    /* Gouttière 8px et rangées de 157px : la trame de la maquette pleine largeur */
+    .is-expanded .masonry,
+    .is-expanded .tour .masonry__row {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      grid-auto-rows: 157px;
+      grid-auto-flow: dense;
+      gap: var(--spacing-md);
+      aspect-ratio: auto;
+    }
+    .is-expanded .masonry > .masonry__row,
+    .is-expanded .masonry .masonry__stack,
+    .is-expanded .tour .masonry__stack { display: contents; }
+    .is-expanded .tile { flex: none; }
+    /* 2 colonnes × 2 rangées ≈ le ratio du plan, sinon il se perd dans le blanc */
+    .is-expanded .tile--plan { grid-column: span 2; grid-row: span 2; }
+    .is-expanded .tile--tall { grid-row: span 2; }
+  }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width: 1199px) {
+    :root { --gutter: var(--spacing-xl); --side-width: 320px; }
+  }
+
+  @media (max-width: 899px) {
+    .adview__body { flex-direction: column; gap: 0; }
+    .side {
+      order: 2;
+      flex: 1 1 auto;
+      width: 100%;
+      padding: var(--gutter);
+    }
+    .viewer-col {
+      order: 1;
+      position: static;
+      width: 100%;
+      height: auto;
+      padding: var(--spacing-3xl) var(--gutter);
+    }
+    .viewer { flex: 0 0 auto; }
+    .viewer__stage { max-height: none; }
+
+    /* La vignette hero dupliquerait la photo principale : grille uniforme */
+    .masonry {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    }
+    .masonry > .masonry__row,
+    .masonry .masonry__stack { display: contents; }
+    .masonry .tile,
+    .masonry .tile--narrow { flex: none; aspect-ratio: 4 / 3; }
+    /* Le plan reste lisible : pleine largeur dans la grille */
+    .masonry .tile--plan { grid-column: 1 / -1; aspect-ratio: 419 / 208; }
+
+    /* Les sections de la visite photo gardent leur groupement */
+    .tour .masonry__row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      aspect-ratio: auto;
+    }
+    .tour .masonry__stack { display: contents; }
+    .tour .tile { flex: none; aspect-ratio: 4 / 3; }
+    .tour .tile--plan { grid-column: 1 / -1; aspect-ratio: 419 / 208; }
+  }
+
+  /* ---------- Mobile : uniquement la galerie ---------- */
+  @media (max-width: 767px) {
+    /* Le media focus n'existe pas sur mobile : le clic sur une photo
+       ouvrira un écran dédié (maquette à venir). */
+    .viewer-col { display: none; }
+    .side { order: 1; padding-top: var(--spacing-md); }
+    .side__eyebrow,
+    .side__title { display: none; }
+
+    .adview__topbar {
+      position: sticky;
+      top: 0;
+      justify-content: flex-start;
+      align-items: center;
+      gap: var(--spacing-md);
+      width: 100%;
+      padding: var(--spacing-md);
+      background: var(--color-surface);
+      box-shadow: 0 6px 12px var(--color-shadow);
+    }
+    .adview__topbar .adview__back { display: flex; }
+    .adview__topbar .adview__close { display: none; }
+    .adview__topbar .icon-btn__icon { width: 24px; height: 24px; }
+    .adview__topbar .adview__topbar-title {
+      display: block;
+      min-width: 0;
+      margin: 0;
+      overflow: hidden;
+      font-size: 20px;
+      line-height: 28px;
+      font-weight: 700;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    /* Galerie d'entrée : on garde le rythme masonry de la maquette mobile
+       (4147:112448) — héros pleine largeur, paire, puis grande vignette et pile
+       de deux. Annule l'aplatissement en grille du palier 899. Ratios calés sur
+       les 343 px de large du Figma, sinon les rangées s'écrasent. */
+    .masonry { display: flex; flex-direction: column; gap: var(--spacing-lg); }
+    .masonry > .masonry__row { display: flex; gap: var(--spacing-lg); }
+    .masonry .masonry__stack { display: flex; }
+    .masonry .tile { flex: 1 1 0; width: auto; aspect-ratio: auto; }
+    .masonry .tile--narrow { flex: 0 0 48.7%; }
+    .masonry__row--hero { aspect-ratio: 343 / 227; }
+    .masonry__row--pair { aspect-ratio: 343 / 136; }
+    .masonry__row--mixed { aspect-ratio: 343 / 302; }
+    .is-filtered .masonry__row:not(.masonry__row--plan) { aspect-ratio: 343 / 227; }
+
+    /* Visite photo : même trame que la galerie d'entrée, section par section.
+       Les ratios sont redéclarés ici car `.tour .masonry__row { aspect-ratio: auto }`
+       du palier 899 est plus spécifique que les classes de rangée. */
+    .tour .masonry__row { display: flex; gap: var(--spacing-lg); }
+    .tour .masonry__stack { display: flex; }
+    .tour .tile { flex: 1 1 0; width: auto; aspect-ratio: auto; }
+    .tour .tile--narrow { flex: 0 0 48.7%; }
+    .tour .masonry__row--hero { aspect-ratio: 343 / 227; }
+    .tour .masonry__row--pair { aspect-ratio: 343 / 136; }
+    .tour .masonry__row--mixed { aspect-ratio: 343 / 302; }
+    .tour .masonry__row--plan { aspect-ratio: 419 / 208; }
+  }
+
+  @media (max-width: 599px) {
+    :root { --gutter: var(--spacing-lg); }
+    .side { gap: var(--spacing-lg); }
+    .chips { margin-inline: calc(-1 * var(--gutter)); padding-inline: var(--gutter); }
+    .viewer__stage { aspect-ratio: 4 / 3; border-radius: 0; }
+    .viewer-col { padding-inline: 0; }
+    .viewer__ai { padding-inline: var(--gutter); }
+    .adview__footer-actions { gap: var(--spacing-lg); }
+    .adview__footer-actions .btn--medium { padding-inline: var(--spacing-md); }
+  }
+  /* La croix du topbar est en surimpression du panneau média sombre :
+     l'asset exporté est monochrome foncé, on l'inverse en blanc.
+     Sur mobile la navbar est blanche, donc pas d'inversion. */
+  @media (min-width: 768px) {
+    .adview__topbar .icon-btn__icon { filter: brightness(0) invert(1); }
+    .adview__topbar .icon-btn:hover { background: rgba(255, 255, 255, 0.12); }
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  /* ---------- Focus média (mobile) ---------- */
+  /* Écran plein, pas une modale : on quitte la galerie pour la photo. */
+  .focus {
+    position: fixed;
+    inset: 0;
+    z-index: 20;
+    display: none;
+    flex-direction: column;
+    background: var(--color-surface);
+  }
+  .focus.is-open { display: flex; }
+
+  .focus__navbar {
+    flex: none;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-md);
+  }
+  .focus__navbar-row {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+  }
+  /* La pagination est un sous-titre de l'écran, centrée sous le titre, et non un
+     tag posé sur la photo (Figma 4271:40630) : elle dit où l'on en est dans la
+     série, ce qui est de l'ordre du repère de navigation. */
+  .focus__pagination {
+    margin: 0;
+    text-align: center;
+    font-size: 12px;
+    line-height: 16px;
+  }
+  .focus__navbar .icon-btn { flex: none; }
+  .focus__navbar .icon-btn__icon { width: 24px; height: 24px; }
+  .focus__title {
+    min-width: 0;
+    margin: 0;
+    overflow: hidden;
+    font-size: 20px;
+    line-height: 28px;
+    font-weight: 700;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  /* Le segmented control n'apparaît qu'en décoration virtuelle */
+  .focus__header { flex: none; padding: var(--spacing-lg); }
+  .focus[data-view="photo"] .focus__header { display: none; }
+
+  /* La photo est centrée dans l'espace restant et garde son ratio :
+     ni recadrage ni zoom, on la montre telle que l'annonceur l'a publiée. */
+  .focus__content {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  .focus__visual { position: relative; width: 100%; max-height: 100%; overflow: hidden; }
+  .focus__photo { display: block; width: 100%; max-height: 100%; object-fit: contain; }
+  .focus__photo--incoming { height: 100%; }
+  .focus__video { display: none; width: 100%; aspect-ratio: 16 / 9; border: 0; }
+  .focus[data-media="video"] .focus__visual { display: none; }
+  .focus[data-media="video"] .focus__video { display: block; }
+
+  .focus__foot {
+    position: relative;
+    flex: none;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-lg);
+  }
+  .focus[data-view="photo"] .focus__foot { align-items: center; }
+  /* Le pied centre le bouton « Redécorer » : le signal, lui, court sur toute la
+     largeur et reste aligné à gauche. Il respire davantage que les autres lignes
+     du pied : collé au bouton, le verdict se lisait comme son sous-titre. */
+  .focus__ai { align-self: stretch; margin-top: var(--spacing-md); }
+  /* La décoration virtuelle et le verdict IA ne valent que sur une photo de pièce */
+  .focus:not([data-media="photo"]) .focus__redecorate,
+  .focus:not([data-media="photo"]) .focus__ai { display: none; }
+  .focus[data-view="photo"] .focus__feedback,
+  .focus[data-view="photo"] .focus__legal,
+  .focus[data-view="staging"] .focus__redecorate,
+  /* En décoration virtuelle, l'image regardée est justement générée : le verdict
+     sur la photo d'origine n'y a plus de sens, la mention légale prend le relais. */
+  .focus[data-view="staging"] .focus__ai,
+  .focus[data-view="staging"] .focus__pagination { display: none; }
+
+  .btn--outlined {
+    border: var(--border-sm) solid var(--color-support);
+    background: transparent;
+    color: var(--color-support);
+  }
+  .btn--outlined:hover { background: var(--color-support-container); }
+
+  /* Libellé sur la gouttière gauche, comme la mention légale, et pouces
+     directement accolés plutôt que repoussés au bord droit. */
+  .focus__feedback {
+    display: flex;
+    align-self: flex-start;
+    align-items: center;
+    gap: var(--spacing-sm);
+  }
+  .focus__feedback-label { margin: 0; font-size: 12px; line-height: 16px; }
+  .focus__feedback .icon-btn {
+    width: 32px;
+    height: 32px;
+    padding: var(--spacing-md);
+    box-shadow: 0 1px 2px var(--color-shadow);
+  }
+  .focus__feedback .icon-btn[aria-pressed="true"] { background: var(--color-support-container); }
+  .focus__thumb--down .icon-btn__icon { transform: rotate(180deg); }
+
+  .focus__legal { margin: 0; font-size: 12px; line-height: 16px; color: var(--color-on-surface-dim-1); }
+  .focus__legal a { color: inherit; font-weight: 700; }
+
+  /* ---------- Modale « Décoration virtuelle » ---------- */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 10;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-xl);
+    background: var(--color-overlay);
+  }
+  .modal-overlay.is-open { display: flex; }
+
+  .modal {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 864px;
+    max-height: min(602px, 100%);
+    overflow: hidden;
+    border-radius: var(--rounded-lg);
+    background: var(--color-surface);
+  }
+
+  .modal__header {
+    position: relative;
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-lg) 76px;
+  }
+  .modal__close.icon-btn {
+    position: absolute;
+    top: var(--spacing-lg);
+    right: var(--spacing-xl);
+    width: 44px;
+    height: 44px;
+    padding: 14px;
+  }
+
+  /* Segmented control (Spark) */
+  .segmented {
+    display: flex;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-sm);
+    border: var(--border-sm) solid var(--color-outline);
+    border-radius: var(--rounded-xl);
+  }
+  .segmented__item {
+    flex: none;
+    height: 34px;
+    padding: 0 var(--spacing-lg);
+    border: 0;
+    border-radius: var(--rounded-xl);
+    background: transparent;
+    font: inherit;
+    font-size: 16px;
+    line-height: 24px;
+    color: var(--color-support);
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background-color var(--duration-short) var(--ease-standard);
+  }
+  .segmented__item:hover { background: var(--color-support-container); }
+  .segmented__item[aria-selected="true"] {
+    background: var(--color-support-container);
+    color: var(--color-on-support-container);
+    font-weight: 700;
+  }
+  .segmented__item[aria-selected="true"]:hover { background: var(--color-support-container-hovered); }
+
+  /* Variante mobile : les trois options se partagent la largeur, et la
+     sélection est aussi cerclée — le fond seul passe mal sur petit écran. */
+  .segmented--fill .segmented__item {
+    flex: 1 1 0;
+    height: 36px;
+    border: var(--border-sm) solid transparent;
+    color: var(--color-on-support-container);
+  }
+  .segmented--fill .segmented__item[aria-selected="true"] { border-color: var(--color-support); }
+
+  /* Le contenu est la zone scrollable : le header et la croix restent visibles */
+  .modal__content {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xl);
+    padding: 0 var(--spacing-xl) var(--spacing-xl);
+  }
+
+  /* La largeur suit le ratio de la projection IA (1024×682) et reste la même
+     pour les trois variantes : le cadre ne bouge pas, ni les pouces. */
+  .modal__visual {
+    position: relative;
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: min(100%, calc(436px * 1024 / 682));
+    aspect-ratio: 1024 / 682;
+    margin-inline: auto;
+    overflow: hidden;
+    border-radius: var(--rounded-md);
+    background: var(--color-background-variant);
+  }
+  .modal__image { display: block; width: 100%; height: 100%; object-fit: cover; }
+
+  /* Révélation « home staging » : la projection IA se stabilise — le flou se
+     dissipe pendant qu'elle se fond sur la photo d'origine. */
+  .reveal-layer {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+  }
+  .is-revealing .reveal-layer {
+    animation: settle 700ms var(--ease-standard) forwards;
+  }
+  @keyframes settle {
+    from { opacity: 0; transform: scale(1.03); filter: blur(16px); }
+    55% { opacity: 1; }
+    to { opacity: 1; transform: scale(1); filter: blur(0); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .is-revealing .reveal-layer { animation: none; }
+  }
+
+  .modal__feedback {
+    position: absolute;
+    top: var(--spacing-md);
+    right: var(--spacing-md);
+    display: flex;
+    gap: var(--spacing-md);
+  }
+  .modal__feedback .icon-btn { width: 32px; height: 32px; padding: var(--spacing-md); }
+  .modal__feedback .icon-btn[aria-pressed="true"] { background: var(--color-support-container); }
+  .modal__thumb--down .icon-btn__icon { transform: rotate(180deg); }
+
+  .modal__legal { display: flex; flex-direction: column; gap: var(--spacing-lg); }
+  /* Fondu blanc : signale qu'il reste des mentions légales à lire.
+     Porté par .modal et non par la zone scrollable, sinon il défilerait. */
+  .modal::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 56px;
+    background: linear-gradient(to top, var(--color-surface), rgba(255, 255, 255, 0));
+    pointer-events: none;
+    transition: opacity var(--duration-short) var(--ease-standard);
+  }
+  .modal.is-scroll-end::after { opacity: 0; }
+
+  .modal__legal p {
+    margin: 0;
+    font-size: 12px;
+    line-height: 16px;
+    color: var(--color-on-surface-dim-1);
+  }
+
+  @media (max-width: 767px) {
+    .modal-overlay { padding: 0; }
+    .modal { max-width: none; max-height: 100%; height: 100%; border-radius: 0; }
+    .modal__header { padding-inline: 68px; }
+    .segmented__item { padding-inline: var(--spacing-md); }
+  }
+
+</style>
+</head>
+<body>
+
+<div class="adview">
+
+  <div class="adview__topbar">
+    <button class="icon-btn adview__back" type="button" aria-label="Retour à l’annonce">
+      <img class="icon-btn__icon" src="assets/icon-arrow-left.svg" alt="">
+    </button>
+    <p class="adview__topbar-title">Appartement 3 pièces 58 m²</p>
+    <button class="icon-btn icon-btn--bare adview__close" type="button" aria-label="Fermer la galerie">
+      <img class="icon-btn__icon" src="assets/icon-cross.svg" alt="">
+    </button>
+  </div>
+
+  <div class="adview__body">
+
+    <div class="side">
+      <div>
+        <p class="side__eyebrow">Appartement 3 pièces 58 m²</p>
+        <h1 class="side__title">Médias</h1>
+      </div>
+
+      <div class="chips" role="group" aria-label="Filtrer les médias">
+        <button class="chip" type="button" aria-pressed="true" data-filter="all">
+          <img class="chip__icon" src="assets/icon-check.svg" alt="">
+          Tous
+        </button>
+        <button class="chip" type="button" aria-pressed="false" data-filter="plan">
+          <img class="chip__icon" src="assets/icon-check.svg" alt="">
+          Plan
+        </button>
+        <button class="chip" type="button" aria-pressed="false" data-filter="video">
+          <img class="chip__icon" src="assets/icon-check.svg" alt="">
+          Vidéo
+        </button>
+        <button class="chip" type="button" aria-pressed="false" data-filter="virtual">
+          <img class="chip__icon" src="assets/icon-check.svg" alt="">
+          Visite virtuelle
+        </button>
+      </div>
+
+      <div class="tour-intro">
+        <label class="switch-label">
+          <input class="switch__input" type="checkbox">
+          <span class="switch">
+            <img class="switch__handle switch__handle--off" src="assets/switch-handle.svg" alt="">
+            <img class="switch__handle switch__handle--on" src="assets/switch-handle-on.svg" alt="">
+          </span>
+          <span class="switch-label__text">Visite photo</span>
+        </label>
+        <p class="tour-intro__disclaimer">Notre système d’IA classifie automatiquement les photos de l’annonce, et les associe à des extraits de la description. L’IA peut commettre des erreurs.</p>
+      </div>
+
+      <!-- Les rangées pleine largeur vont aux pièces qui portent la décision, par
+           ordre de priorité : séjour, extérieur, cuisine, salle de bain. Les
+           chambres et le balcon se partagent les rangées à deux. -->
+      <div class="masonry">
+        <div class="masonry__row masonry__row--hero">
+          <button class="tile tile--selected" type="button" aria-current="true" data-media="photo" data-room="Séjour">
+            <img src="assets/ad/photo-02.jpg" alt="Séjour / salle à manger ouvert sur la cuisine">
+          </button>
+        </div>
+
+        <div class="masonry__row masonry__row--mixed">
+          <button class="tile tile--narrow tile--tall" type="button" data-media="photo" data-room="Séjour"><img src="assets/ad/photo-09.jpg" alt="Coin salon avec canapé d’angle"></button>
+          <div class="masonry__stack">
+            <button class="tile" type="button" data-media="photo" data-room="Chambre"><img src="assets/ad/photo-12.jpg" alt="Chambre principale"></button>
+            <button class="tile" type="button" data-media="photo" data-room="Cuisine"><img src="assets/ad/photo-04.jpg" alt="Cuisine semi-ouverte avec four encastré"></button>
+          </div>
+        </div>
+
+        <div class="masonry__row masonry__row--hero">
+          <button class="tile" type="button" data-media="photo" data-room="Extérieur">
+            <img src="assets/ad/photo-15.jpg" alt="Résidence arborée et voie verte">
+          </button>
+        </div>
+
+        <div class="masonry__row masonry__row--pair">
+          <button class="tile" type="button" data-media="photo" data-room="Balcon"><img src="assets/ad/photo-08.jpg" alt="Balcon exposé plein sud"></button>
+          <button class="tile" type="button" data-media="photo" data-room="Chambre"><img src="assets/ad/photo-13.jpg" alt="Seconde chambre"></button>
+        </div>
+
+        <div class="masonry__row masonry__row--hero">
+          <button class="tile" type="button" data-media="photo" data-room="Cuisine">
+            <img src="assets/ad/photo-05.jpg" alt="Cuisine équipée avec plan de travail et hotte">
+          </button>
+        </div>
+
+        <div class="masonry__row masonry__row--plan">
+          <button class="tile tile--plan" type="button" data-media="plan" data-room="Plan">
+            <img src="assets/plan.png" alt="Plan de l'appartement">
+          </button>
+        </div>
+
+        <div class="masonry__row masonry__row--hero">
+          <button class="tile" type="button" data-media="photo" data-room="Salle de bain">
+            <img src="assets/ad/photo-14.jpg" alt="Salle de bain avec baignoire et vasque">
+          </button>
+        </div>
+
+        <div class="masonry__row masonry__row--pair">
+          <button class="tile" type="button" data-media="virtual" data-room="Visite virtuelle">
+            <img src="assets/photo-08.png" alt="Visite virtuelle 3D">
+            <img class="tile__badge" src="assets/icon-3d.svg" alt="">
+          </button>
+          <button class="tile" type="button" data-media="video" data-room="Vidéo">
+            <img src="assets/photo-07.png" alt="Vidéo du bien">
+            <img class="tile__badge" src="assets/icon-play.svg" alt="">
+          </button>
+        </div>
+      </div>
+
+      <div class="tour">
+        <section class="tour__section">
+          <div>
+            <h2 class="tour__title">Séjour</h2>
+            <p class="tour__quote">« d’un <strong>séjour / salle à manger lumineux ouvrant sur un balcon exposé plein sud</strong>…»<button class="tour__more" type="button" aria-expanded="false" aria-label="Voir l’extrait de la description associé au séjour" data-match="séjour / salle à manger lumineux ouvrant sur un balcon exposé plein sud"><img src="assets/icon-three-dots.svg" alt=""></button></p>
+          </div>
+          <div class="masonry__row masonry__row--hero">
+            <button class="tile tile--selected" type="button" aria-current="true" data-media="photo" data-room="Séjour">
+              <img src="assets/ad/photo-02.jpg" alt="Séjour / salle à manger ouvert sur la cuisine">
+            </button>
+          </div>
+          <div class="masonry__row masonry__row--mixed">
+            <button class="tile tile--narrow tile--tall" type="button" data-media="photo" data-room="Séjour"><img src="assets/ad/photo-09.jpg" alt="Coin salon avec canapé d’angle"></button>
+            <div class="masonry__stack">
+              <button class="tile" type="button" data-media="photo" data-room="Séjour"><img src="assets/ad/photo-07.jpg" alt="Séjour traversant avec table à manger"></button>
+              <button class="tile" type="button" data-media="photo" data-room="Séjour"><img src="assets/ad/photo-01.jpg" alt="Séjour avec bibliothèque et rangements"></button>
+            </div>
+          </div>
+          <!-- Pile à gauche cette fois : la trame s'inverse d'une rangée mixte à l'autre -->
+          <div class="masonry__row masonry__row--mixed">
+            <div class="masonry__stack">
+              <button class="tile" type="button" data-media="photo" data-room="Séjour"><img src="assets/ad/photo-06.jpg" alt="Séjour ouvrant sur le balcon"></button>
+              <button class="tile" type="button" data-media="photo" data-room="Séjour"><img src="assets/ad/photo-03.jpg" alt="Séjour vu depuis l’entrée"></button>
+            </div>
+            <button class="tile tile--narrow tile--tall" type="button" data-media="photo" data-room="Séjour"><img src="assets/ad/photo-10.jpg" alt="Séjour et accès à la cuisine"></button>
+          </div>
+          <div class="masonry__row masonry__row--hero">
+            <button class="tile" type="button" data-media="photo" data-room="Séjour">
+              <img src="assets/ad/photo-11.jpg" alt="Entrée du séjour et cuisine semi-ouverte">
+            </button>
+          </div>
+        </section>
+
+        <section class="tour__section">
+          <div>
+            <h2 class="tour__title">Cuisine</h2>
+            <p class="tour__quote">« d’une <strong>cuisine entièrement équipée, semi-ouverte sur le séjour</strong>…»<button class="tour__more" type="button" aria-expanded="false" aria-label="Voir l’extrait de la description associé à la cuisine" data-match="cuisine entièrement équipée, semi-ouverte sur le séjour"><img src="assets/icon-three-dots.svg" alt=""></button></p>
+          </div>
+          <div class="masonry__row masonry__row--pair">
+            <button class="tile" type="button" data-media="photo" data-room="Cuisine"><img src="assets/ad/photo-05.jpg" alt="Cuisine équipée avec plan de travail et hotte"></button>
+            <button class="tile" type="button" data-media="photo" data-room="Cuisine"><img src="assets/ad/photo-04.jpg" alt="Cuisine semi-ouverte avec four encastré"></button>
+          </div>
+        </section>
+
+        <section class="tour__section">
+          <div>
+            <h2 class="tour__title">Chambres</h2>
+            <p class="tour__quote">« de <strong>deux chambres dont une avec dressing</strong>…»<button class="tour__more" type="button" aria-expanded="false" aria-label="Voir l’extrait de la description associé aux chambres" data-match="deux chambres dont une avec dressing"><img src="assets/icon-three-dots.svg" alt=""></button></p>
+          </div>
+          <div class="masonry__row masonry__row--pair">
+            <button class="tile" type="button" data-media="photo" data-room="Chambre"><img src="assets/ad/photo-12.jpg" alt="Chambre principale"></button>
+            <button class="tile" type="button" data-media="photo" data-room="Chambre"><img src="assets/ad/photo-13.jpg" alt="Seconde chambre"></button>
+          </div>
+        </section>
+
+        <section class="tour__section">
+          <div>
+            <h2 class="tour__title">Salle de bain</h2>
+            <p class="tour__quote">« d’une <strong>salle de bain et d’un WC séparé</strong>…»<button class="tour__more" type="button" aria-expanded="false" aria-label="Voir l’extrait de la description associé à la salle de bain" data-match="salle de bain et d’un WC séparé"><img src="assets/icon-three-dots.svg" alt=""></button></p>
+          </div>
+          <div class="masonry__row masonry__row--hero">
+            <button class="tile" type="button" data-media="photo" data-room="Salle de bain">
+              <img src="assets/ad/photo-14.jpg" alt="Salle de bain avec baignoire et vasque">
+            </button>
+          </div>
+        </section>
+
+        <section class="tour__section">
+          <div>
+            <h2 class="tour__title">Extérieur</h2>
+            <p class="tour__quote">« au calme au 3ᵉ étage d’une <strong>résidence sécurisée, arborée et parfaitement entretenue</strong>…»<button class="tour__more" type="button" aria-expanded="false" aria-label="Voir l’extrait de la description associé à l’extérieur" data-match="résidence sécurisée, arborée et parfaitement entretenue"><img src="assets/icon-three-dots.svg" alt=""></button></p>
+          </div>
+          <div class="masonry__row masonry__row--pair">
+            <button class="tile" type="button" data-media="photo" data-room="Balcon"><img src="assets/ad/photo-08.jpg" alt="Balcon exposé plein sud"></button>
+            <button class="tile" type="button" data-media="photo" data-room="Extérieur"><img src="assets/ad/photo-15.jpg" alt="Résidence arborée et voie verte"></button>
+          </div>
+        </section>
+
+        <section class="tour__section">
+          <div>
+            <h2 class="tour__title">Autres médias</h2>
+            <p class="tour__quote">Plan, visite virtuelle et vidéo du bien</p>
+          </div>
+          <div class="masonry__row masonry__row--plan">
+            <button class="tile tile--plan" type="button" data-media="plan" data-room="Plan"><img src="assets/plan.png" alt="Plan de l'appartement"></button>
+          </div>
+          <div class="masonry__row masonry__row--pair">
+            <button class="tile" type="button" data-media="virtual" data-room="Visite virtuelle">
+              <img src="assets/photo-08.png" alt="Visite virtuelle 3D">
+              <img class="tile__badge" src="assets/icon-3d.svg" alt="">
+            </button>
+            <button class="tile" type="button" data-media="video" data-room="Vidéo">
+              <img src="assets/photo-07.png" alt="Vidéo du bien">
+              <img class="tile__badge" src="assets/icon-play.svg" alt="">
+            </button>
+          </div>
+        </section>
+      </div>
+
+      <!-- Une seule description pour toute l'annonce : chaque section n'en met en
+           gras que le passage que l'IA lui a rattaché. Le lecteur voit donc où sa
+           pièce se situe dans le texte du vendeur, pas un fragment hors sol. -->
+      <template id="tour-description">“… Coup de cœur assuré ! Venez découvrir ce charmant 3 pièces de 58 m² au cœur de Caluire-et-Cuire. Situé au calme au 3ᵉ étage d’une résidence sécurisée, arborée et parfaitement entretenue, il se compose d’une entrée avec rangements, d’un séjour / salle à manger lumineux ouvrant sur un balcon exposé plein sud, d’une cuisine entièrement équipée, semi-ouverte sur le séjour, de deux chambres dont une avec dressing, d’une salle de bain et d’un WC séparé. Accès direct à la voie verte, commerces et écoles à pied.…”</template>
+
+      <div class="excerpt-pop" id="excerpt-pop" role="dialog" aria-label="Extrait de la description" hidden>
+        <div class="excerpt-pop__tip"></div>
+        <div class="excerpt-pop__container">
+          <div class="excerpt-pop__head">
+            <img src="assets/icon-sparks-ai.svg" alt="">
+            <p class="excerpt-pop__title">Extrait de la description</p>
+          </div>
+          <p class="excerpt-pop__body"></p>
+          <a class="excerpt-pop__report" href="#">Signaler une erreur</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="viewer-col">
+      <div class="viewer" data-media="photo">
+        <div class="viewer__stage">
+          <img class="viewer__backdrop" src="assets/ad/photo-02.jpg" alt="" aria-hidden="true">
+          <img class="viewer__photo" src="assets/ad/photo-02.jpg" alt="Séjour / salle à manger ouvert sur la cuisine">
+          <iframe class="viewer__video" title="Vidéo du bien" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+          <div class="viewer__actions">
+            <button class="btn btn--small btn--contrast viewer__redecorate" type="button">
+              <img class="btn__icon" src="assets/icon-paintbrush-ai.svg" alt="">
+              Redécorer
+            </button>
+            <button class="icon-btn icon-btn--surface viewer__collapse" type="button" aria-label="Fermer la photo et voir tous les médias">
+              <img class="icon-btn__icon" src="assets/icon-cross-photo.svg" alt="">
+            </button>
+          </div>
+
+          <div class="viewer__nav">
+            <button class="icon-btn icon-btn--surface" type="button" aria-label="Photo précédente">
+              <img class="icon-btn__icon" src="assets/icon-arrow-left.svg" alt="">
+            </button>
+            <button class="icon-btn icon-btn--surface" type="button" aria-label="Photo suivante">
+              <img class="icon-btn__icon" src="assets/icon-arrow-right.svg" alt="">
+            </button>
+          </div>
+        </div>
+
+        <!-- Résultat de l'analyse IA de la photo affichée : deux verdicts, l'un
+             ou l'autre. Les deux textes vivent dans le DOM et c'est `data-state`
+             qui les commute, pour que la copie reste lisible ici. -->
+        <div class="ai-signal ai-signal--inverse viewer__ai" data-state="authentic">
+          <span class="ai-signal__badge">
+            <img class="ai-signal__icon ai-signal__icon--authentic" src="assets/icon-ai-authentic.svg" alt="">
+            <img class="ai-signal__icon ai-signal__icon--modified" src="assets/icon-ai-modified.svg" alt="">
+          </span>
+          <p class="ai-signal__text ai-signal__text--authentic">Cette photo semble authentique, non modifiée par IA. <a href="#">Signaler une erreur</a></p>
+          <p class="ai-signal__text ai-signal__text--modified"><strong>Cette photo semble avoir été modifiée par IA.</strong><br>Vous pensez qu’elle est authentique ? <a href="#">Signaler une erreur</a></p>
+        </div>
+
+        <!-- Ne reste ici que le signalement de la photo affichée : il nomme la pièce
+             détectée, donc il n'a de sens qu'au contact de l'image. Le disclaimer
+             général, lui, est remonté sous le toggle. -->
+        <div class="viewer__disclaimer">
+          <p>Il ne s’agit pas <span class="viewer__disclaimer-room">d’un séjour</span> ? <a href="#">Signalez-le</a></p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="adview__footer">
+    <div class="adview__footer-inner">
+      <div class="listing">
+        <img class="listing__thumb" src="assets/ad/photo-02.jpg" alt="">
+        <div class="listing__text">
+          <p>Appartement 3 pièces 58 m²</p>
+          <p>240 000€</p>
+        </div>
+      </div>
+      <div class="adview__footer-actions">
+        <button class="btn btn--medium btn--support" type="button">Envoyer un message</button>
+        <button class="icon-btn icon-btn--bare" type="button" aria-label="Ajouter aux favoris">
+          <img class="icon-btn__icon" src="assets/icon-heart.svg" alt="">
+        </button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Focus média : écran mobile atteint au clic sur une vignette.
+     data-view="photo" = la photo seule, data-view="staging" = décoration virtuelle -->
+<div class="focus" id="photo-focus" data-view="photo" data-variant="original" hidden>
+  <div class="focus__navbar">
+    <div class="focus__navbar-row">
+      <button class="icon-btn focus__back" type="button" aria-label="Retour">
+        <img class="icon-btn__icon" src="assets/icon-arrow-left.svg" alt="">
+      </button>
+      <p class="focus__title">Appartement 3 pièces 58 m²</p>
+    </div>
+    <p class="focus__pagination">1/6</p>
+  </div>
+
+  <div class="focus__header">
+    <div class="segmented segmented--fill" role="tablist" aria-label="Version du visuel">
+      <button class="segmented__item" type="button" role="tab" aria-selected="true" data-variant="original">Originale</button>
+      <button class="segmented__item" type="button" role="tab" aria-selected="false" data-variant="redecorated">Redécorée</button>
+      <button class="segmented__item" type="button" role="tab" aria-selected="false" data-variant="empty">Vidée</button>
+    </div>
+  </div>
+
+  <div class="focus__content">
+    <div class="focus__visual">
+      <img class="focus__photo" src="" alt="">
+      <img class="focus__photo focus__photo--incoming reveal-layer" src="" alt="" aria-hidden="true">
+    </div>
+    <iframe class="focus__video" title="Vidéo du bien" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+  </div>
+
+  <div class="focus__foot">
+    <button class="btn btn--small btn--outlined focus__redecorate" type="button">
+      <img class="btn__icon" src="assets/icon-paintbrush-ai.svg" alt="">
+      Redécorer
+    </button>
+    <div class="ai-signal focus__ai" data-state="authentic">
+      <span class="ai-signal__badge">
+        <img class="ai-signal__icon ai-signal__icon--authentic" src="assets/icon-ai-authentic.svg" alt="">
+        <img class="ai-signal__icon ai-signal__icon--modified" src="assets/icon-ai-modified.svg" alt="">
+      </span>
+      <p class="ai-signal__text ai-signal__text--authentic">Cette photo semble authentique, non modifiée par IA. <a href="#">Signaler une erreur</a></p>
+      <p class="ai-signal__text ai-signal__text--modified"><strong>Cette photo semble avoir été modifiée par IA.</strong><br>Vous pensez qu’elle est authentique ? <a href="#">Signaler une erreur</a></p>
+    </div>
+
+    <div class="focus__feedback">
+      <p class="focus__feedback-label">Cette transformation est-elle utile ?</p>
+      <span class="focus__thumb">
+        <button class="icon-btn icon-btn--surface" type="button" aria-pressed="false" aria-label="Cette transformation est utile">
+          <img class="icon-btn__icon" src="assets/icon-thumb-up.svg" alt="">
+        </button>
+      </span>
+      <span class="focus__thumb focus__thumb--down">
+        <button class="icon-btn icon-btn--surface" type="button" aria-pressed="false" aria-label="Cette transformation n’est pas utile">
+          <img class="icon-btn__icon" src="assets/icon-thumb-up.svg" alt="">
+        </button>
+      </span>
+    </div>
+    <p class="focus__legal">Les visuels produits sont générés par un système d’intelligence artificielle, à partir des photos publiées par l’annonceur du bien immobilier. <a href="#">En savoir plus.</a></p>
+  </div>
+</div>
+
+<div class="modal-overlay" id="redecorate-modal" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="redecorate-title" data-variant="redecorated">
+    <h2 id="redecorate-title" class="sr-only">Décoration virtuelle</h2>
+    <div class="modal__header">
+      <div class="segmented" role="tablist" aria-label="Version du visuel">
+        <button class="segmented__item" type="button" role="tab" aria-selected="false" data-variant="original">Originale</button>
+        <button class="segmented__item" type="button" role="tab" aria-selected="true" data-variant="redecorated">Redécorée</button>
+        <button class="segmented__item" type="button" role="tab" aria-selected="false" data-variant="empty">Vidée</button>
+      </div>
+      <button class="icon-btn modal__close" type="button" aria-label="Fermer la décoration virtuelle">
+        <img class="icon-btn__icon" src="assets/icon-cross.svg" alt="">
+      </button>
+    </div>
+
+    <div class="modal__content">
+      <div class="modal__visual">
+        <img class="modal__image" src="assets/img-redecorated.png" alt="Projection redécorée générée par IA">
+        <img class="modal__image modal__image--incoming reveal-layer" src="" alt="" aria-hidden="true">
+        <div class="modal__feedback">
+          <span class="modal__thumb--up">
+            <button class="icon-btn icon-btn--surface" type="button" aria-pressed="false" aria-label="Ce résultat est utile">
+              <img class="icon-btn__icon" src="assets/icon-thumb-up.svg" alt="">
+            </button>
+          </span>
+          <span class="modal__thumb--down">
+            <button class="icon-btn icon-btn--surface" type="button" aria-pressed="false" aria-label="Ce résultat n’est pas utile">
+              <img class="icon-btn__icon" src="assets/icon-thumb-up.svg" alt="">
+            </button>
+          </span>
+        </div>
+      </div>
+
+      <div class="modal__legal">
+        <p>Ces visuels produits sont générés par un système d’intelligence artificielle, à partir des photos publiées par l’annonceur du bien immobilier. Ces images ont une finalité uniquement illustrative et ne constituent pas une représentation fidèle ou contractuelle du bien mis en vente. Elles ne reflètent ni l’état réel du logement ni ses caractéristiques techniques, et ne doivent pas être interprétées comme une garantie de faisabilité des aménagements suggérés ou pour apprécier l’état réel du bien.</p>
+        <p>La génération automatique peut comporter des approximations, erreurs ou interprétations visuelles. LBC France ne garantit pas la précision, l’exactitude ou la conformité du résultat, et ne peut être tenue responsable des écarts entre les projections générées et le bien réel. Les projections sont créées à partir de photos appartenant à l’annonceur. Elles sont fournies exclusivement pour un usage personnel et ne peuvent être reproduites, diffusées ou exploitées à d’autres fins sans autorisation préalable.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const YOUTUBE_ID = 'S1aJcn6hAZE';
+
+  const adview = document.querySelector('.adview');
+  const viewer = document.querySelector('.viewer');
+  const stagePhoto = document.querySelector('.viewer__photo');
+  const stageBackdrop = document.querySelector('.viewer__backdrop');
+  const stageVideo = document.querySelector('.viewer__video');
+  const disclaimerRoom = document.querySelector('.viewer__disclaimer-room');
+  const aiSignal = document.querySelector('.viewer__ai');
+
+  // Verdicts figés : l'analyse IA elle-même n'est pas l'objet de ce proto, seuls
+  // ses deux états d'affichage le sont. La liste porte sur le fichier et non sur
+  // la vignette, sinon il faudrait la répliquer dans la mosaïque et dans la
+  // visite photo, où les mêmes photos réapparaissent.
+  const AI_MODIFIED = ['photo-08.jpg', 'photo-12.jpg'];
+  const aiState = src => AI_MODIFIED.includes(src.split('/').pop()) ? 'modified' : 'authentic';
+  const tiles = [...document.querySelectorAll('.tile')];
+
+  // Nommer chaque vignette permet à View Transitions de la suivre d'un layout à l'autre
+  tiles.forEach((tile, i) => { tile.style.viewTransitionName = `tile-${i}`; });
+
+  const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
+
+  function transition(update) {
+    if (!document.startViewTransition || reduceMotion.matches) { update(); return; }
+    document.startViewTransition(update);
+  }
+
+  function showMedia(tile) {
+    const type = tile.dataset.media || 'photo';
+    viewer.dataset.media = type;
+
+    if (type === 'video') {
+      // Le player n'est chargé qu'à la demande, et jamais quand le viewer est
+      // masqué (mobile) : sinon la vidéo démarre hors écran.
+      if (!stageVideo.src && viewer.offsetParent) {
+        stageVideo.src = `https://www.youtube.com/embed/${YOUTUBE_ID}?autoplay=1&rel=0`;
+      }
+      return;
+    }
+
+    stageVideo.removeAttribute('src');
+    const img = tile.querySelector('img:not(.tile__badge)');
+    stagePhoto.src = img.src;
+    stagePhoto.alt = img.alt;
+    stageBackdrop.src = img.src;
+    aiSignal.dataset.state = aiState(img.src);
+    if (tile.dataset.room) {
+      const room = tile.dataset.room.toLowerCase();
+      const masculin = ['séjour', 'balcon', 'plan', 'extérieur'].includes(room);
+      disclaimerRoom.textContent = `d’un${masculin ? '' : 'e'} ${room}`;
+    }
+  }
+
+  function markTile(tile) {
+    tile.closest('.masonry, .tour').querySelectorAll('.tile').forEach(t => {
+      t.classList.toggle('tile--selected', t === tile);
+      t.removeAttribute('aria-current');
+    });
+    tile.setAttribute('aria-current', 'true');
+  }
+
+  function selectTile(tile) {
+    adview.classList.remove('is-expanded');
+    markTile(tile);
+    showMedia(tile);
+  }
+
+  // Sur mobile la galerie occupe tout l'écran : le média s'ouvre en focus
+  // plein écran plutôt que dans le viewer, qui n'y est pas affiché.
+  const isMobile = matchMedia('(max-width: 767px)');
+
+  tiles.forEach(tile => tile.addEventListener('click', () => {
+    if (isMobile.matches) { markTile(tile); openFocus(tile); return; }
+    transition(() => selectTile(tile));
+  }));
+
+  function visibleTiles() {
+    const scope = adview.classList.contains('is-photo-tour') ? '.tour' : '.masonry';
+    return [...document.querySelectorAll(`${scope} .tile`)].filter(t => !t.hidden);
+  }
+
+  function step(delta) {
+    const list = visibleTiles();
+    if (list.length < 2) return;
+    const from = list.findIndex(t => t.matches('.tile--selected'));
+    const next = list[(from + delta + list.length) % list.length];
+    const expanded = adview.classList.contains('is-expanded');
+    transition(() => {
+      selectTile(next);
+      adview.classList.toggle('is-expanded', expanded);
+    });
+    next.scrollIntoView({ block: 'nearest' });
+  }
+
+  const [prevBtn, nextBtn] = viewer.querySelectorAll('.viewer__nav .icon-btn');
+  prevBtn.addEventListener('click', () => step(-1));
+  nextBtn.addEventListener('click', () => step(1));
+
+  let filter = 'all';
+
+  function applyFilter() {
+    adview.classList.toggle('is-filtered', filter !== 'all');
+    // Le toggle disparaît hors « Tous » : ne pas laisser la visite photo
+    // active derrière un contrôle invisible.
+    if (filter !== 'all' && tourToggle.checked) {
+      tourToggle.checked = false;
+      adview.classList.remove('is-photo-tour');
+    }
+    tiles.forEach(t => { t.hidden = filter !== 'all' && t.dataset.media !== filter; });
+
+    const scope = adview.classList.contains('is-photo-tour') ? '.tour' : '.masonry';
+    const first = document.querySelector(`${scope} .tile:not([hidden])`);
+    if (first) selectTile(first);
+  }
+
+  document.querySelectorAll('.chip').forEach(chip => chip.addEventListener('click', () => transition(() => {
+    document.querySelectorAll('.chip').forEach(c => c.setAttribute('aria-pressed', String(c === chip)));
+    filter = chip.dataset.filter;
+    applyFilter();
+  })));
+
+  // Fermer la photo étend la galerie sur toute la largeur ;
+  // rouvrir passe par le clic sur une vignette.
+  document.querySelector('.viewer__collapse').addEventListener('click', () => transition(() => {
+    adview.classList.add('is-expanded');
+    stageVideo.removeAttribute('src');
+    viewer.dataset.media = 'photo';
+  }));
+
+  const tourToggle = document.querySelector('.switch__input');
+  tourToggle.addEventListener('change', () => transition(() => {
+    adview.classList.toggle('is-photo-tour', tourToggle.checked);
+    if (tourToggle.checked) adview.classList.remove('is-expanded');
+    applyFilter();
+    closeExcerpt();
+  }));
+
+  /* ---------- Popover « Extrait de la description » ---------- */
+  const side = document.querySelector('.side');
+  const excerptPop = document.getElementById('excerpt-pop');
+  const excerptTip = excerptPop.querySelector('.excerpt-pop__tip');
+  const excerptBody = excerptPop.querySelector('.excerpt-pop__body');
+  const description = document.getElementById('tour-description').content.textContent;
+  let excerptTrigger = null;
+
+  // Construction en nœuds DOM plutôt qu'en innerHTML : la description et le
+  // passage à surligner restent du texte, jamais du markup. Le `mark` est
+  // recréé à chaque ouverture, ce qui relance son animation de reflet.
+  function renderExcerpt(match) {
+    const at = description.indexOf(match);
+    excerptBody.textContent = '';
+    if (at < 0) { excerptBody.textContent = description; return; }
+    const mark = document.createElement('mark');
+    mark.textContent = match;
+    excerptBody.append(
+      document.createTextNode(description.slice(0, at)),
+      mark,
+      document.createTextNode(description.slice(at + match.length)),
+    );
+  }
+
+  function closeExcerpt() {
+    if (!excerptTrigger) return;
+    excerptTrigger.setAttribute('aria-expanded', 'false');
+    excerptTrigger = null;
+    excerptPop.hidden = true;
+  }
+
+  function openExcerpt(btn) {
+    renderExcerpt(btn.dataset.match);
+    excerptPop.hidden = false;
+
+    // Sous 768px c'est une bottom sheet plein écran : la calculer reviendrait à
+    // l'envoyer hors champ, le rail faisant plusieurs milliers de pixels de
+    // haut. On laisse la feuille de style faire.
+    if (isMobile.matches) {
+      excerptPop.style.top = '';
+      excerptPop.style.left = '';
+    } else {
+      // Le popover est ancré sur `.side` : on convertit la position du bouton dans
+      // ce repère. La pointe se pose 8px après le bord droit du bouton et vise son
+      // centre ; le popover se place ensuite pour que sa pointe tombe au bon
+      // endroit, mais il ne remonte jamais au-dessus du haut du rail — sinon il
+      // sortirait de la colonne par le haut.
+      const anchor = side.getBoundingClientRect();
+      const rect = btn.getBoundingClientRect();
+      const center = rect.top - anchor.top + rect.height / 2;
+      const top = Math.max(0, center - 56);
+      excerptPop.style.left = `${rect.right - anchor.left + 8}px`;
+      excerptPop.style.top = `${top}px`;
+      excerptTip.style.top = `${center - top - 8}px`;
+    }
+
+    btn.setAttribute('aria-expanded', 'true');
+    excerptTrigger = btn;
+  }
+
+  // Le popover s'ouvre au survol ; sous 768px, où il devient une bottom sheet,
+  // c'est le clic. Le test inclut le point de rupture et pas seulement
+  // `(hover: hover)` : un navigateur desktop réduit à une largeur mobile déclare
+  // toujours savoir survoler, et la feuille serait alors impossible à ouvrir —
+  // or c'est comme ça que le proto se relit.
+  const canHover = matchMedia('(hover: hover)');
+  const hoverDriven = () => canHover.matches && !isMobile.matches;
+  let closeTimer = null;
+
+  // La pointe laisse 8px de vide entre le bouton et la carte : sans ce délai, le
+  // curseur qui traverse cet interstice refermerait le popover avant de
+  // l'atteindre.
+  function scheduleClose() {
+    clearTimeout(closeTimer);
+    closeTimer = setTimeout(closeExcerpt, 180);
+  }
+  function cancelClose() { clearTimeout(closeTimer); }
+
+  document.querySelectorAll('.tour__more').forEach(btn => {
+    btn.addEventListener('click', event => {
+      event.stopPropagation();
+      if (hoverDriven()) return;
+      if (excerptTrigger === btn) closeExcerpt();
+      else openExcerpt(btn);
+    });
+    btn.addEventListener('mouseenter', () => {
+      if (!hoverDriven()) return;
+      cancelClose();
+      if (excerptTrigger !== btn) openExcerpt(btn);
+    });
+    btn.addEventListener('mouseleave', () => { if (hoverDriven()) scheduleClose(); });
+    // `excerptTrigger !== btn` : le clic qui suit un survol donne le focus au
+    // bouton, et sans ce garde-fou l'extrait serait reconstruit — donc le reflet
+    // rejoué — alors que le popover est déjà ouvert.
+    btn.addEventListener('focus', () => {
+      if (hoverDriven() && excerptTrigger !== btn) openExcerpt(btn);
+    });
+    btn.addEventListener('blur', scheduleClose);
+  });
+
+  excerptPop.addEventListener('mouseenter', cancelClose);
+  excerptPop.addEventListener('mouseleave', () => { if (hoverDriven()) scheduleClose(); });
+
+  // On retient le clic sur la carte, pas sur `.excerpt-pop` : en bottom sheet
+  // c'est lui qui porte le voile, et taper le voile doit refermer la feuille.
+  excerptPop.querySelector('.excerpt-pop__container')
+    .addEventListener('click', event => event.stopPropagation());
+  document.addEventListener('click', closeExcerpt);
+  document.addEventListener('keydown', event => { if (event.key === 'Escape') closeExcerpt(); });
+
+  // Retour navigateur seulement si on vient de l'adview : sinon un back nous
+  // renverrait vers une autre entrée de la galerie (ex. ?media=plan puis ?media=video)
+  document.querySelectorAll('.adview__topbar .icon-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (document.referrer.includes('adview.html')) history.back();
+      else location.href = 'adview.html';
+    });
+  });
+
+  // ?media=… : entrée depuis la bande médias de l'adview. `tour` arrive
+  // directement en visite photo : la carte « Photos par pièce » montre déjà des
+  // photos rangées par pièce, la galerie doit tenir cette promesse à l'arrivée
+  // plutôt que de renvoyer vers la mosaïque avec un toggle à trouver.
+  const MEDIA_PARAM = { plan: 'plan', video: 'video', photos: 'all', tour: 'all' };
+  const media = new URLSearchParams(location.search).get('media');
+  const wanted = MEDIA_PARAM[media];
+  if (wanted) {
+    document.querySelectorAll('.chip').forEach(c => c.setAttribute('aria-pressed', String(c.dataset.filter === wanted)));
+    filter = wanted;
+    if (media === 'tour') {
+      tourToggle.checked = true;
+      adview.classList.add('is-photo-tour');
+      adview.classList.remove('is-expanded');
+    }
+    applyFilter();
+  }
+  /* ---------- Modale « Décoration virtuelle » ---------- */
+  const modalOverlay = document.getElementById('redecorate-modal');
+  const modal = modalOverlay.querySelector('.modal');
+  const modalVisual = modalOverlay.querySelector('.modal__visual');
+  const modalImage = modalOverlay.querySelector('.modal__image:not(.modal__image--incoming)');
+  const modalIncoming = modalOverlay.querySelector('.modal__image--incoming');
+  const modalContent = modalOverlay.querySelector('.modal__content');
+  const modalClose = modalOverlay.querySelector('.modal__close');
+  const segments = [...modalOverlay.querySelectorAll('.segmented__item')];
+  const VARIANT_SRC = {
+    redecorated: { src: 'assets/img-redecorated.png', alt: 'Projection redécorée générée par IA' },
+    empty: { src: 'assets/img-emptied.png', alt: 'Projection du séjour vidé de ses meubles, générée par IA' },
+  };
+  // La photo de départ dépend du point d'entrée : le viewer desktop ou la
+  // vignette ouverte en focus mobile.
+  let originalMedia = { src: stagePhoto.src, alt: stagePhoto.alt };
+  let lastFocused = null;
+
+  function variantMedia(variant) {
+    return variant === 'original' ? originalMedia : VARIANT_SRC[variant];
+  }
+
+  // Le calque du haut porte la nouvelle image et se stabilise par-dessus
+  // l'ancienne, puis devient l'image de base une fois l'animation terminée.
+  // Le jeton écarte le listener d'une révélation interrompue : sans lui, un
+  // second changement de variante ferait réapparaître l'image précédente.
+  let revealToken = 0;
+
+  function swapImage(visual, base, incoming, media, animate) {
+    const token = ++revealToken;
+    if (!animate || reduceMotion.matches) {
+      visual.classList.remove('is-revealing');
+      base.src = media.src;
+      base.alt = media.alt;
+      return;
+    }
+    incoming.src = media.src;
+    incoming.addEventListener('animationend', () => {
+      if (token !== revealToken) return;
+      base.src = media.src;
+      base.alt = media.alt;
+      visual.classList.remove('is-revealing');
+    }, { once: true });
+
+    // Attendre le décodage : lancer l'animation sur une image encore en cours de
+    // chargement révélait un calque vide, puis coupait net à la fin.
+    const start = () => {
+      if (token !== revealToken) return;
+      visual.classList.remove('is-revealing');
+      void visual.offsetWidth;
+      visual.classList.add('is-revealing');
+    };
+    if (incoming.complete && incoming.naturalWidth) start();
+    else incoming.addEventListener('load', start, { once: true });
+  }
+
+  // Les projections sont lourdes : les précharger évite d'attendre au premier switch
+  Object.values(VARIANT_SRC).forEach(v => { new Image().src = v.src; });
+
+  function setVariant(variant, animate) {
+    if (modal.dataset.variant === variant && !animate) return;
+    modal.dataset.variant = variant;
+    segments.forEach(s => s.setAttribute('aria-selected', String(s.dataset.variant === variant)));
+    swapImage(modalVisual, modalImage, modalIncoming, variantMedia(variant), animate);
+  }
+
+  function updateLegalFade() {
+    const atEnd = modalContent.scrollTop + modalContent.clientHeight >= modalContent.scrollHeight - 1;
+    modal.classList.toggle('is-scroll-end', atEnd);
+  }
+
+  function openModal() {
+    lastFocused = document.activeElement;
+    originalMedia = { src: stagePhoto.src, alt: stagePhoto.alt };
+    modalOverlay.hidden = false;
+    modalOverlay.classList.add('is-open');
+    document.body.style.overflow = 'hidden';
+    modalContent.scrollTop = 0;
+    // On part de la photo réelle, puis la projection se révèle : c'est là que
+    // l'utilisateur comprend ce que fait la décoration virtuelle.
+    setVariant('original');
+    updateLegalFade();
+    modalClose.focus();
+    if (reduceMotion.matches) setVariant('redecorated');
+    else setTimeout(() => setVariant('redecorated', true), 400);
+  }
+
+  function closeModal() {
+    modalOverlay.classList.remove('is-open');
+    modalOverlay.hidden = true;
+    document.body.style.overflow = '';
+    if (lastFocused) lastFocused.focus();
+  }
+
+  document.querySelector('.viewer__redecorate').addEventListener('click', openModal);
+  modalClose.addEventListener('click', closeModal);
+  // Clic sur le voile uniquement : un clic dans la modale ne doit pas fermer
+  modalOverlay.addEventListener('click', e => { if (e.target === modalOverlay) closeModal(); });
+  // Switch manuel : bascule sèche. La révélation ne joue qu'au lancement de la
+  // feature, sinon l'effet perd son sens de démonstration.
+  segments.forEach(s => s.addEventListener('click', () => setVariant(s.dataset.variant)));
+  modalContent.addEventListener('scroll', updateLegalFade);
+  window.addEventListener('resize', updateLegalFade);
+
+  modalOverlay.querySelectorAll('.modal__feedback .icon-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const on = btn.getAttribute('aria-pressed') === 'true';
+      modalOverlay.querySelectorAll('.modal__feedback .icon-btn')
+        .forEach(b => b.setAttribute('aria-pressed', 'false'));
+      btn.setAttribute('aria-pressed', String(!on));
+    });
+  });
+
+  /* ---------- Focus média (mobile) ---------- */
+  const focusScreen = document.getElementById('photo-focus');
+  const focusVisual = focusScreen.querySelector('.focus__visual');
+  const focusPhoto = focusScreen.querySelector('.focus__photo:not(.focus__photo--incoming)');
+  const focusIncoming = focusScreen.querySelector('.focus__photo--incoming');
+  const focusVideo = focusScreen.querySelector('.focus__video');
+  const focusBack = focusScreen.querySelector('.focus__back');
+  const focusPagination = focusScreen.querySelector('.focus__pagination');
+  const focusAi = focusScreen.querySelector('.focus__ai');
+  const focusSegments = [...focusScreen.querySelectorAll('.segmented__item')];
+  let focusTile = null;
+
+  function setFocusVariant(variant, animate) {
+    if (focusScreen.dataset.variant === variant && !animate) return;
+    focusScreen.dataset.variant = variant;
+    focusSegments.forEach(s => s.setAttribute('aria-selected', String(s.dataset.variant === variant)));
+    swapImage(focusVisual, focusPhoto, focusIncoming, variantMedia(variant), animate);
+  }
+
+  function renderFocus(tile) {
+    focusTile = tile;
+    const list = visibleTiles();
+    focusPagination.textContent = `${list.indexOf(tile) + 1}/${list.length}`;
+
+    const type = tile.dataset.media || 'photo';
+    focusScreen.dataset.media = type;
+
+    if (type === 'video') {
+      focusVideo.src = `https://www.youtube.com/embed/${YOUTUBE_ID}?autoplay=1&rel=0`;
+      return;
+    }
+    focusVideo.removeAttribute('src');
+    const img = tile.querySelector('img:not(.tile__badge)');
+    focusPhoto.src = img.src;
+    focusPhoto.alt = img.alt;
+    focusAi.dataset.state = aiState(img.src);
+    originalMedia = { src: img.src, alt: img.alt };
+  }
+
+  function openFocus(tile) {
+    lastFocused = document.activeElement;
+    focusScreen.dataset.view = 'photo';
+    focusScreen.dataset.variant = 'original';
+    renderFocus(tile);
+    focusScreen.hidden = false;
+    focusScreen.classList.add('is-open');
+    document.body.style.overflow = 'hidden';
+    focusBack.focus();
+  }
+
+  function closeFocus() {
+    focusScreen.classList.remove('is-open');
+    focusScreen.hidden = true;
+    focusVideo.removeAttribute('src');
+    document.body.style.overflow = '';
+    if (focusTile) focusTile.scrollIntoView({ block: 'nearest' });
+    if (lastFocused) lastFocused.focus();
+  }
+
+  // Depuis la décoration virtuelle, le retour ramène à la photo d'origine
+  // avant de quitter le focus.
+  function focusBackStep() {
+    if (focusScreen.dataset.view === 'staging') {
+      focusScreen.dataset.view = 'photo';
+      setFocusVariant('original');
+      return;
+    }
+    closeFocus();
+  }
+
+  function focusStep(delta) {
+    const list = visibleTiles();
+    if (list.length < 2) return;
+    const from = list.indexOf(focusTile);
+    const next = list[(from + delta + list.length) % list.length];
+    markTile(next);
+    renderFocus(next);
+  }
+
+  focusBack.addEventListener('click', focusBackStep);
+  focusSegments.forEach(s => s.addEventListener('click', () => setFocusVariant(s.dataset.variant)));
+
+  // Même mise en scène que sur desktop : on part du réel, la projection arrive.
+  function openStaging() {
+    focusScreen.dataset.view = 'staging';
+    setFocusVariant('original');
+    if (reduceMotion.matches) setFocusVariant('redecorated');
+    else setTimeout(() => setFocusVariant('redecorated', true), 400);
+  }
+
+  focusScreen.querySelector('.focus__redecorate').addEventListener('click', openStaging);
+
+
+  focusScreen.querySelectorAll('.focus__feedback .icon-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const on = btn.getAttribute('aria-pressed') === 'true';
+      focusScreen.querySelectorAll('.focus__feedback .icon-btn')
+        .forEach(b => b.setAttribute('aria-pressed', 'false'));
+      btn.setAttribute('aria-pressed', String(!on));
+    });
+  });
+
+  // Le compteur n'aurait pas de sens sans navigation. Pointer Events plutôt que
+  // touch : le glissé à la souris marche aussi, pour démontrer sur un laptop.
+  const focusContent = focusScreen.querySelector('.focus__content');
+  let swipeFrom = null;
+
+  focusContent.addEventListener('pointerdown', e => {
+    swipeFrom = focusScreen.dataset.view === 'staging' ? null : e.clientX;
+  });
+  focusContent.addEventListener('pointerup', e => {
+    if (swipeFrom === null) return;
+    const dx = e.clientX - swipeFrom;
+    swipeFrom = null;
+    if (Math.abs(dx) > 40) focusStep(dx < 0 ? 1 : -1);
+  });
+  focusContent.addEventListener('pointercancel', () => { swipeFrom = null; });
+  // Sans ça, le geste est interprété comme un drag d'image par le navigateur
+  focusContent.addEventListener('dragstart', e => e.preventDefault());
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+      if (!modalOverlay.hidden) closeModal();
+      else if (!focusScreen.hidden) focusBackStep();
+      return;
+    }
+    if (focusScreen.hidden || focusScreen.dataset.view === 'staging') return;
+    if (e.key === 'ArrowLeft') focusStep(-1);
+    if (e.key === 'ArrowRight') focusStep(1);
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Parcours immo — recherche, annonce, galerie</title>
+<!-- Point d'entrée du parcours : c'est cette URL qu'on envoie aux participants,
+     plutôt que le chemin complet vers le listing. Le JS relaie la query string
+     (les variantes par participant s'appuieront dessus) ; le refresh couvre le
+     cas sans JS. -->
+<meta http-equiv="refresh" content="0; url=search-funnel-v8/index.html">
+<script>location.replace('search-funnel-v8/index.html' + location.search + location.hash);</script>
+</head>
+<body>
+<p><a href="search-funnel-v8/index.html">Ouvrir le parcours</a></p>
+</body>
+</html>

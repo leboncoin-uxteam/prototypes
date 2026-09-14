@@ -1,0 +1,3497 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="light">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Résultats de recherche — Ventes immobilières</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,300;0,6..12,400;0,6..12,600;0,6..12,700;0,6..12,800&display=swap" rel="stylesheet" />
+<!-- Mapview réelle : Leaflet + tuiles OpenStreetMap (aucune clé d'API requise) -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+/* ═══ Spark design tokens — thème light ══════════════════════════════════
+   Source : design/foundation-spark.md (MCP Storybook + Figma Spark DS).
+   Les tokens suffixés -rebrand sont ceux renvoyés par le fichier Figma
+   « Search Funnel » et qui diffèrent du light-theme.css actuel.        */
+:root {
+  /* main */
+  --color-main:                      #ec5a13;
+  --color-on-main:                   #ffffff;
+  --color-main-hovered:              #f07b42;
+  --color-main-container:            #ffe9de;
+  --color-on-main-container:         #89380f;
+  --color-main-container-hovered:    #fff2eb;
+  /* support */
+  --color-support:                   #094171;
+  --color-on-support:                #ffffff;
+  --color-support-hovered:           #0c5291;
+  --color-support-container:         #e6f2fd;
+  --color-support-variant-rebrand:   #4d4e7b;
+  /* accent */
+  --color-accent:                    #8526d9;
+  --color-on-accent:                 #ffffff;
+  --color-accent-container:          #e9d6fa;
+  --color-on-accent-container:       #360f57;
+  /* feedback */
+  --color-success:                   #1d6340;
+  /* Feedback/Error — pastille de notification (Badge Spark intent=Danger) */
+  --color-error:                     #ad291f;
+  --color-neutral:                   #3a4757;
+  --color-neutral-container:         #f0f2f5;
+  --color-on-neutral-container:      #3a4757;
+  --color-neutral-container-hovered: #f6f8f9;
+  /* base */
+  --color-background:                #ffffff;
+  --color-on-background:             #152233;
+  --color-background-variant:        #f4f9fe;
+  --color-surface:                   #ffffff;
+  --color-on-surface:                #152233;
+  --color-surface-hovered:           #f6f8f9;
+  --color-on-surface-rebrand:        #1d1f2a;
+  /* dim (texte secondaire) */
+  --color-on-surface-dim:            rgba(21, 34, 51, 0.72);
+  /* dim 3 — poignée de bottom sheet (Figma 12070:161815) */
+  --color-on-surface-dim-3:          rgba(21, 34, 51, 0.4);
+  --color-on-surface-dim-rebrand:    rgba(29, 31, 42, 0.72);
+  /* transversaux */
+  --color-outline:                   #acb8c7;
+  --color-outline-rebrand:           #dcdcde;
+  --color-outline-high:              #202730;
+  /* Dim/Outline Dim 2 et 3 — bordures atténuées utilisées par les cartes du popover */
+  --color-outline-dim-2:             rgba(172, 184, 199, 0.56);
+  --color-outline-dim-3:             rgba(172, 184, 199, 0.4);
+  --color-shadow:                    rgba(108, 129, 157, 0.5);
+  --color-focus:                     #0000ff;
+
+  /* spacing */
+  --sp-none: 0px;
+  --sp-sm:   4px;
+  --sp-md:   8px;
+  --sp-lg:   16px;
+  --sp-xl:   24px;
+  --sp-2xl:  32px;
+  --sp-3xl:  40px;
+
+  /* border radius */
+  --radius-sm:   4px;
+  --radius-md:   8px;
+  --radius-lg:   16px;
+  --radius-xl:   24px;
+  --radius-full: 9999px;
+
+  /* border width */
+  --border-sm: 1px;
+  --border-md: 2px;
+
+  /* elevation */
+  --shadow-xs: 0px 1px 2px 0px var(--color-shadow);
+  --shadow-sm: 0px 4px 8px 0px var(--color-shadow);
+  --shadow-md: 0px 6px 12px 0px var(--color-shadow);
+
+  /* motion */
+  --ease-standard:   cubic-bezier(0.2, 0, 0, 1);
+  --ease-decelerate: cubic-bezier(0.05, 0.7, 0.1, 1);
+  --duration-scale:  150ms;
+  --duration-fade:   250ms;
+
+  /* layout (mesures Figma) */
+  --page-max:   1066px;
+  --ad-col:     300px;
+  --card-image: 310px;
+  --footer-bg:  #353741;
+}
+
+/* ═══ Reset ═════════════════════════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+body {
+  font-family: 'Nunito Sans', system-ui, sans-serif;
+  font-variation-settings: 'YTLC' 500, 'wdth' 100;
+  font-size: 16px; line-height: 24px;
+  color: var(--color-on-background);
+  background: var(--color-background);
+}
+img, svg { display: block; max-width: 100%; }
+button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+a { color: inherit; text-decoration: none; }
+ul { list-style: none; }
+/* display:flex/grid des classes ci-dessous écrase le display:none du UA stylesheet */
+[hidden] { display: none !important; }
+:focus-visible { outline: var(--border-md) solid var(--color-focus); outline-offset: 2px; }
+
+/* ═══ Typographie Spark ═════════════════════════════════════════════════ */
+.t-display-3  { font-size: 24px; line-height: 32px; font-weight: 700; }
+.t-subhead    { font-size: 16px; line-height: 24px; font-weight: 700; }
+.t-body-1     { font-size: 16px; line-height: 24px; font-weight: 400; }
+.t-body-1-hl  { font-size: 16px; line-height: 24px; font-weight: 700; }
+.t-body-2     { font-size: 14px; line-height: 20px; font-weight: 400; }
+.t-body-2-hl  { font-size: 14px; line-height: 20px; font-weight: 700; }
+.t-caption    { font-size: 12px; line-height: 16px; font-weight: 400; }
+.t-caption-hl { font-size: 12px; line-height: 16px; font-weight: 700; }
+.dim          { color: var(--color-on-surface-dim); }
+
+/* ═══ Layout ════════════════════════════════════════════════════════════ */
+.shell { width: 100%; max-width: var(--page-max); margin-inline: auto; padding-inline: var(--sp-lg); }
+
+/* ═══ Composants Spark ══════════════════════════════════════════════════ */
+/* Button — Medium (44px), radius full */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--sp-md);
+  height: 44px; padding-inline: var(--sp-lg);
+  border-radius: var(--radius-full);
+  font-size: 16px; line-height: 24px; font-weight: 700;
+  white-space: nowrap;
+  transition: background-color var(--duration-scale) var(--ease-standard),
+              border-color var(--duration-scale) var(--ease-standard);
+}
+.btn--filled-main       { background: var(--color-main); color: var(--color-on-main); }
+.btn--filled-main:hover { background: var(--color-main-hovered); }
+.btn--outlined-neutral  {
+  border: var(--border-sm) solid var(--color-neutral);
+  color: var(--color-neutral); background: var(--color-surface);
+}
+.btn--outlined-neutral:hover { background: var(--color-neutral-container-hovered); }
+.btn--outlined-support  {
+  border: var(--border-sm) solid var(--color-support);
+  color: var(--color-support); background: var(--color-surface);
+}
+.btn--outlined-support:hover { background: var(--color-support-container-hovered); }
+.btn--filled-support       { background: var(--color-support); color: var(--color-on-support); }
+.btn--filled-support:hover { background: var(--color-support-hovered); }
+.btn--sm { height: 32px; padding-inline: var(--sp-md); font-size: 14px; line-height: 20px; }
+.btn__icon { width: 16px; height: 16px; flex: none; }
+
+/* Input textfield — hauteur 44px, radius lg (16px) */
+.field {
+  display: inline-flex; align-items: center; gap: var(--sp-md);
+  height: 44px; padding-inline: var(--sp-lg);
+  background: var(--color-surface);
+  border: var(--border-sm) solid var(--color-outline-rebrand);
+  border-radius: var(--radius-lg);
+  color: var(--color-on-surface-dim-rebrand);
+  font-size: 16px; line-height: 24px; white-space: nowrap;
+  transition: border-color var(--duration-scale) var(--ease-standard);
+}
+.field:hover          { border-color: var(--color-on-surface-rebrand); }
+.field--filled        { border-color: var(--color-support-variant-rebrand); }
+.field--strong        { border-color: var(--color-on-surface-rebrand); }
+.field--compact       { width: 168px; }
+.field__icon          { width: 16px; height: 16px; flex: none; }
+.field__value         { flex: 1 1 auto; overflow: hidden; text-overflow: ellipsis; text-align: left; }
+.field__input {
+  flex: 1 1 auto; min-width: 0;
+  border: 0; background: none; outline: none;
+  font: 400 16px/24px 'Nunito Sans', sans-serif;
+  text-overflow: ellipsis;
+  color: var(--color-on-surface);
+}
+.field__input::placeholder { color: var(--color-on-surface-dim); }
+/* Focus : bordure 2px Outline High simulée en inset pour éviter tout reflow */
+.field:focus-within {
+  border-color: var(--color-outline-high);
+  box-shadow: inset 0 0 0 var(--border-sm) var(--color-outline-high);
+}
+/* État « Actived » — menu déployé : bordure 2px Support Variant et placeholder
+   masqué, seul le curseur reste (Figma 12324:137539). Dès qu'on tape, le texte
+   saisi s'affiche normalement : c'est le placeholder qui disparaît, pas la valeur. */
+@media (min-width: 768px) {
+  .field--actived,
+  .field--actived:hover,
+  .field--actived:focus-within {
+    border-color: var(--color-support-variant-rebrand);
+    box-shadow: inset 0 0 0 var(--border-sm) var(--color-support-variant-rebrand);
+  }
+  .field--actived .field__input::placeholder { color: transparent; }
+}
+
+/* Chip — radius md (8px), hauteur 32px, état sélectionné */
+.chip {
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--sp-md);
+  min-width: 32px; height: 32px; padding: 6px var(--sp-md);
+  border: var(--border-sm) solid var(--color-support);
+  border-radius: var(--radius-md);
+  background: var(--color-support-container);
+  color: var(--color-support);
+  font-size: 16px; line-height: 24px;
+}
+.chip:hover     { background: var(--color-background-variant); }
+.chip__icon     { width: 16px; height: 16px; flex: none; }
+
+/* Tag — radius full, hauteur 20px */
+.tag {
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--sp-sm);
+  height: 20px; padding: 2px var(--sp-md);
+  border-radius: var(--radius-full);
+  font-size: 12px; line-height: 16px; font-weight: 700;
+}
+.tag--accent           { background: var(--color-accent); color: var(--color-on-accent); }
+.tag--main             { background: var(--color-main); color: var(--color-on-main); }
+.tag--surface          { background: var(--color-surface); color: var(--color-on-surface); }
+.tag--outlined-support { border: var(--border-sm) solid var(--color-support); color: var(--color-support); }
+.tag--outlined-neutral { border: var(--border-sm) solid var(--color-neutral); color: var(--color-neutral); }
+
+.divider { height: 1px; border: 0; background: var(--color-outline-rebrand); }
+
+/* Créa publicitaire réelle (Figma pHxiy… 4328:30594 EDF, 4328:30955 Orange) */
+.ad-visual { flex: none; border-radius: var(--radius-md); }
+/* Placeholder publicitaire — motif « Publicité » (accent container) */
+.ad-slot { position: relative; overflow: hidden; background: var(--color-accent-container); border-radius: var(--radius-md); }
+.ad-slot::before {
+  content: 'Publicité Publicité Publicité Publicité Publicité Publicité Publicité Publicité Publicité Publicité Publicité Publicité Publicité Publicité Publicité Publicité Publicité Publicité Publicité Publicité Publicité Publicité Publicité Publicité Publicité Publicité Publicité Publicité Publicité Publicité Publicité Publicité Publicité Publicité Publicité Publicité Publicité Publicité Publicité';
+  position: absolute; inset: -60%;
+  transform: rotate(-5deg);
+  font-size: 24px; line-height: 32px; font-weight: 700; word-spacing: 40px;
+  color: var(--color-on-accent-container); opacity: 0.5; pointer-events: none;
+}
+
+/* ═══ Header ════════════════════════════════════════════════════════════ */
+.header {
+  position: sticky; top: 0; z-index: 40;
+  background: var(--color-surface);
+  border-bottom: var(--border-sm) solid var(--color-outline);
+}
+.header__top { display: flex; align-items: center; gap: var(--sp-lg); min-height: 60px; }
+.header__logo { width: 140px; height: 26px; flex: none; }
+.header__search {
+  display: flex; align-items: center; gap: var(--sp-md);
+  flex: 1 1 auto; min-width: 180px; max-width: 330px;
+  height: 44px; padding: 6px 6px 6px var(--sp-lg);
+  background: var(--color-neutral-container);
+  border-radius: var(--radius-lg);
+}
+.header__search input {
+  flex: 1 1 auto; min-width: 0; border: 0; background: none; outline: none;
+  font: 400 16px/24px 'Nunito Sans', sans-serif; color: var(--color-on-surface);
+}
+.header__search input::placeholder { color: var(--color-on-surface-dim); }
+.header__submit {
+  display: grid; place-items: center; flex: none;
+  width: 32px; height: 32px; border-radius: var(--radius-full);
+  background: var(--color-main);
+  transition: background-color var(--duration-scale) var(--ease-standard);
+}
+.header__submit:hover { background: var(--color-main-hovered); }
+.header__submit img { width: 16px; height: 16px; }
+.header__back, .header__search-icon, .header__search-tool { display: none; }
+.header__nav { display: flex; align-items: center; gap: var(--sp-md); margin-left: auto; }
+.header__nav-item {
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  min-width: 58px; padding: var(--sp-sm) var(--sp-md);
+  border-radius: var(--radius-md);
+  font-size: 12px; line-height: 16px; color: var(--color-on-surface);
+  transition: background-color var(--duration-scale) var(--ease-standard);
+}
+.header__nav-item:hover { background: var(--color-surface-hovered); }
+.header__nav-item img { width: 24px; height: 24px; }
+.header__nav-item { position: relative; }
+.header__nav-item--active { font-weight: 700; }
+/* Badge Spark intent=Danger, size=Small, stroke=Yes — ancré en haut à droite
+   de l'icône (24px centrée), pas du bouton. */
+.nav-badge {
+  position: absolute; top: 0; left: calc(50% + 4px);
+  display: grid; place-items: center;
+  min-width: 16px; height: 16px; padding-inline: 3px;
+  border: var(--border-md) solid var(--color-surface);
+  border-radius: var(--radius-full);
+  background: var(--color-error); color: #fff;
+  font-size: 10px; line-height: 12px; font-weight: 700;
+}
+
+/* ═══ Popover « Mes recherches » (Figma pHxiy… 4328:33799) ══════════════ */
+.nav-slot { position: relative; }
+.nav-pop { position: absolute; top: 100%; left: 50%; z-index: 60; width: 364px; transform: translateX(-50%); }
+.nav-pop[hidden] { display: none; }
+/* Pointe 16×8 centrée sur l'icône, collée sous elle */
+.nav-pop__tip {
+  width: 16px; height: 8px; margin-inline: auto;
+  background: var(--color-surface);
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+}
+.nav-pop__container {
+  position: relative;
+  padding: var(--sp-lg);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-md);
+}
+.nav-pop__title { padding-right: var(--sp-xl); font-size: 16px; line-height: 24px; font-weight: 700; }
+.nav-pop__close {
+  position: absolute; top: var(--sp-md); right: var(--sp-md);
+  display: grid; place-items: center;
+  width: 32px; height: 32px; border-radius: var(--radius-full);
+}
+.nav-pop__close:hover { background: var(--color-surface-hovered); }
+.nav-pop__close img { width: 16px; height: 16px; }
+
+/* Carte annonce partagée popover desktop / bottom sheet mobile — le contenu
+   vient de FEATURED_AD, qui reflète l'annonce du prototype média. */
+.featured-ad {
+  display: flex; gap: var(--sp-lg);
+  margin-top: var(--sp-lg);
+  padding: var(--sp-sm); margin-inline: calc(-1 * var(--sp-sm));
+  border-radius: var(--radius-md);
+  color: inherit; text-align: left;
+  transition: background-color var(--duration-scale) var(--ease-standard);
+}
+.featured-ad:hover { background: var(--color-surface-hovered); }
+.featured-ad__thumb { width: 90px; height: 87px; flex: none; border-radius: var(--radius-md); object-fit: cover; }
+.featured-ad__body { display: flex; flex-direction: column; gap: var(--sp-md); min-width: 0; }
+.featured-ad__price { display: flex; align-items: baseline; gap: var(--sp-md); }
+.featured-ad__amount { font-size: 16px; line-height: 24px; font-weight: 700; }
+.featured-ad__sqm { font-size: 12px; line-height: 16px; color: var(--color-on-surface-dim); }
+.featured-ad__desc { font-size: 14px; line-height: 20px; font-weight: 700; }
+.featured-ad__loc { font-size: 14px; line-height: 24px; color: var(--color-on-surface-dim); }
+
+.header__categories {
+  display: flex; align-items: center; justify-content: space-between; gap: var(--sp-md);
+  min-height: 50px; overflow-x: auto;
+}
+.header__categories a { font-size: 14px; line-height: 20px; white-space: nowrap; }
+.header__categories a:hover { text-decoration: underline; }
+.header__categories span { color: var(--color-on-surface-dim); font-weight: 700; font-size: 14px; }
+
+/* ═══ Bandeau pub haut de page ══════════════════════════════════════════ */
+.pubs { display: flex; justify-content: center; padding-block: var(--sp-lg); }
+.pubs img { width: 100%; max-width: 970px; height: auto; }
+
+/* ═══ Barre de filtres + popover ════════════════════════════════════════ */
+.filters-bar { display: contents; }
+.filters { display: flex; flex-wrap: wrap; gap: var(--sp-md); align-items: flex-start; }
+.filters__location { position: relative; }
+.filters__location > .field { width: 360px; max-width: 100%; padding-right: var(--sp-lg); }
+.filters__location > .field .field__icon:last-child { margin-left: auto; }
+
+.popover {
+  position: absolute; top: calc(100% + var(--sp-md)); left: 0; z-index: 30;
+  /* 384 = 352 de contenu + 2 × 16 de padding (Figma 12248:268964) */
+  width: 384px; max-width: calc(100vw - 2 * var(--sp-lg));
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.12), 0px -1px 4px 0px rgba(0, 0, 0, 0.08);
+  opacity: 0; visibility: hidden; transform: translateY(-4px);
+  transition: opacity var(--duration-fade) var(--ease-standard),
+              transform var(--duration-fade) var(--ease-decelerate),
+              visibility var(--duration-fade);
+}
+.popover[data-open='true'] { opacity: 1; visibility: visible; transform: none; }
+.popover__body {
+  display: flex; flex-direction: column; gap: var(--sp-xl); padding: var(--sp-lg);
+  max-height: min(60vh, 520px); overflow: hidden auto;
+}
+.popover__group { display: flex; flex-direction: column; gap: var(--sp-lg); }
+.popover__results { gap: var(--sp-lg); }
+.popover__option {
+  display: flex; align-items: center; gap: var(--sp-md);
+  width: 100%; text-align: left;
+  padding: var(--sp-sm) var(--sp-md); margin-inline: calc(-1 * var(--sp-md));
+  border-radius: var(--radius-md);
+  transition: background-color var(--duration-scale) var(--ease-standard);
+}
+.popover__option:hover,
+.popover__option[aria-selected='true'] { background: var(--color-support-container); }
+.popover__option-icon {
+  display: grid; place-items: center; flex: none;
+  width: 32px; height: 32px; border-radius: var(--radius-full);
+  background: var(--color-neutral-container);
+}
+.popover__option-icon img { width: 16px; height: 16px; }
+.popover__option-text { display: flex; flex-direction: column; min-width: 0; }
+.popover__option-label { font-size: 16px; line-height: 24px; font-weight: 700; }
+/* La sous-chaîne saisie reste en Regular, le reste du libellé passe en Bold */
+.popover__option-label mark { background: none; color: inherit; font-weight: 400; }
+.popover__option-kind { font-size: 12px; line-height: 16px; color: var(--color-on-surface-dim); }
+
+/* ── Suggestion enrichie — réf. Figma 4220:7441 (RE | Media experience) ───
+   Ligne de métadonnées : type de zone · prix médian · lignes · ambiance.
+   Tout est en Content/Caption Regular, séparé par un filet de 13 px.        */
+.popover__option-meta {
+  display: flex; align-items: center; flex-wrap: wrap; gap: var(--sp-md);
+  font-size: 12px; line-height: 16px;
+  color: var(--color-on-surface-dim);
+}
+.popover__option-meta sup { font-size: 8px; vertical-align: super; line-height: 0; }
+.meta-sep { flex: none; width: 1px; height: 13px; background: var(--color-outline-rebrand); }
+.meta-lines { display: flex; align-items: center; gap: var(--sp-sm); }
+.meta-tags { display: flex; align-items: center; gap: var(--sp-sm); }
+/* Pastilles de lignes : couleurs officielles du référentiel IDFM (colourweb_hexa)
+   — données métier, hors palette Spark, donc en hexa inline. */
+.metro {
+  display: grid; place-items: center; flex: none;
+  width: 16px; height: 16px; border-radius: var(--radius-full);
+  font-size: 9px; line-height: 16px; font-weight: 700;
+}
+/* Tag-L, réf. Figma 4220:7458 */
+.tag-l {
+  display: grid; place-items: center; flex: none;
+  height: 16px; padding-inline: var(--sp-sm);
+  border-radius: var(--radius-sm);
+  background: var(--color-neutral-container);
+  color: var(--color-on-surface-rebrand);
+  font-size: 12px; line-height: 16px;
+}
+.popover__empty { padding: var(--sp-lg); color: var(--color-on-surface-dim); }
+.popover__sticky {
+  display: flex; align-items: center; justify-content: space-between;
+  height: 64px; padding: var(--sp-lg);
+  border-top: var(--border-sm) solid var(--color-outline-rebrand);
+  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+  background: var(--color-surface);
+}
+
+/* ── Barre de titre mobile — Figma 12213:184404 ───────────────────────────
+   V8 : la carte revient dans la feuille (cf. .radius-card), et la feuille
+   retrouve une barre de titre « ← Où cherchez-vous ? ✕ » à la place du bouton
+   retour flottant de la V6. Jamais affichée en desktop, où le popover garde
+   son champ pour seule entête. */
+.loc-topbar { display: none; }
+.loc-keyboard { display: none; }
+
+/* ── Entrée « Dessiner sur la carte » en ligne — Figma 12213:184404 ───────
+   Deuxième porte d'entrée vers le dessin, celle des écrans qui arrivent d'une
+   saisie de texte : ils n'affichent pas les trois cartes d'alternatives mais
+   cette seule ligne. Signalé comme incohérence — deux entrées pour une même
+   fonction, dont une seule est visible à la fois. */
+.drawrow {
+  display: flex; align-items: center; gap: var(--sp-lg);
+  width: 100%; height: 52px; padding-inline: var(--sp-lg);
+  border: var(--border-sm) solid var(--color-outline-dim-3);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  text-align: left;
+  transition: background-color var(--duration-scale) var(--ease-standard);
+}
+.drawrow:hover { background: var(--color-support-container); }
+.drawrow__label { flex: 1 1 auto; min-width: 0; }
+.drawrow img { flex: none; }
+.drawrow__icon { width: 20px; height: 20px; }
+.drawrow__chevron { width: 20px; height: 20px; }
+
+/* ── Bloc escamotable ────────────────────────────────────────────────────
+   « Autour de moi » retire les alternatives et les récents pour laisser la
+   carte grandir (Figma 12213:242276 → 12213:243417). La grille passe de 1fr à
+   0fr : aucune hauteur à mesurer en JS. Le gap du bloc est porté par l'enfant
+   pour disparaître avec lui, sinon il resterait un vide sous la carte. */
+.collapsible {
+  display: grid; grid-template-rows: 1fr;
+  transition: grid-template-rows 280ms var(--ease-standard);
+}
+.collapsible > div {
+  display: flex; flex-direction: column; gap: var(--sp-xl);
+  min-height: 0; overflow: clip;
+  transition: opacity 140ms var(--ease-standard);
+}
+.collapsible[data-open='false'] { grid-template-rows: 0fr; }
+.collapsible[data-open='false'] > div { opacity: 0; }
+
+/* ── Localisations choisies (Chip support-container + suppression) ─────── */
+.loc-chips { display: flex; flex-wrap: wrap; gap: var(--sp-md); }
+.loc-chip {
+  display: inline-flex; align-items: center; gap: var(--sp-sm);
+  min-width: 32px; height: 32px;
+  padding: 6px var(--sp-md);
+  border-radius: var(--radius-full);
+  background: var(--color-support-container);
+  color: var(--color-on-support-container);
+  font-size: 16px; line-height: 24px;
+}
+.loc-chip button { display: grid; place-items: center; }
+.loc-chip img { width: 16px; height: 16px; }
+
+/* ── Carte Rayon (mini-carte + slider) ────────────────────────────────────
+   Desktop : le réglage passe AU-DESSUS de la carte (Figma 12248:268964,
+   12253:277360) — l'inverse du mobile, où la carte coiffe le bloc
+   (12213:240881). D'où l'ordre en flex plutôt que dans le HTML.
+   Taille de carte : S seulement, hauteur = 0,5 × largeur du bloc et diamètre du
+   cercle = 0,75 × hauteur de carte (note Tech 12253:289341). Bloc = 352px dans
+   un popover de 384. */
+.radius-card {
+  display: flex; flex-direction: column;
+  overflow: clip;
+  border: var(--border-sm) solid var(--color-outline-dim-3);
+  border-radius: var(--radius-md);
+}
+.radius-control { order: -1; }
+.radius-map { position: relative; height: 176px; overflow: clip; }
+/* Mapview Leaflet/OSM. Le cercle du rayon garde une taille fixe : c'est le niveau
+   de zoom de la carte qui est calculé pour que le rayon en km tombe exactement
+   sur ce cercle — la carte se dézoome donc quand le rayon augmente. */
+.radius-map__view { position: absolute; inset: 0; z-index: 0; background: var(--color-neutral-container); }
+.radius-map__view .leaflet-control-attribution {
+  font-size: 9px; background: rgba(255, 255, 255, 0.72);
+}
+/* Cercle et pin sont centrés sur la carte comme dans Figma (centre 182/74) */
+.radius-map__circle,
+.radius-map__pin {
+  position: absolute; top: 50%; left: 50%; z-index: 1;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+/* Cercle dessiné en CSS et non repris de map-circle.svg : le bandeau mobile fait
+   varier son diamètre, et un SVG en <img> mis à l'échelle épaissit son contour
+   avec lui. Bordure CSS = 2px quel que soit le diamètre. Teintes de l'export
+   Figma (map-circle.svg) : remplissage #35376A à 16%. */
+.radius-map__circle {
+  box-sizing: border-box;
+  width: 132px; height: 132px;
+  border: var(--border-md) solid var(--color-outline-high);
+  border-radius: var(--radius-full);
+  background: rgba(53, 55, 106, 0.16);
+}
+.radius-map__pin { width: 24px; height: 23px; }
+/* Zone dessinée relue dans la feuille — Figma 12235:249560. Même tracé que le
+   plein-écran de dessin, à l'échelle de la carte : pas de rayon à régler, donc
+   pas de cercle, mais la forme reste visible pour qu'on sache ce qui est retenu. */
+.radius-map__drawn {
+  position: absolute; top: 50%; left: 50%; z-index: 1;
+  width: 58%; aspect-ratio: 232 / 152;
+  transform: translate(-50%, -50%);
+  border: var(--border-md) solid var(--color-success);
+  border-radius: 48px 96px 40px 72px;
+  background: rgba(29, 99, 64, 0.16);
+  pointer-events: none;
+}
+.radius-control { display: flex; flex-direction: column; gap: var(--sp-lg); padding: var(--sp-lg); }
+.radius-control__head { display: flex; align-items: center; justify-content: space-between; }
+.radius-control__value { font-size: 14px; line-height: 20px; font-weight: 700; color: var(--color-support); }
+.radius-slider { display: flex; flex-direction: column; gap: var(--sp-md); }
+.radius-slider__scale {
+  display: flex; justify-content: space-between;
+  font-size: 12px; line-height: 16px; color: rgba(0, 0, 0, 0.72);
+}
+/* Track 4px, progression support, handle 24px : rendu via l'asset Figma */
+.radius-slider input[type='range'] {
+  appearance: none; -webkit-appearance: none;
+  width: 100%; height: 24px; margin-block: 10px;
+  background: none; cursor: pointer;
+}
+.radius-slider input[type='range']::-webkit-slider-runnable-track {
+  height: 4px;
+  background: linear-gradient(
+    to right,
+    var(--color-support) 0 var(--radius-progress, 0%),
+    rgba(21, 34, 51, 0.16) var(--radius-progress, 0%) 100%
+  );
+}
+.radius-slider input[type='range']::-moz-range-track {
+  height: 4px; background: rgba(21, 34, 51, 0.16);
+}
+.radius-slider input[type='range']::-moz-range-progress {
+  height: 4px; background: var(--color-support);
+}
+.radius-slider input[type='range']::-webkit-slider-thumb {
+  appearance: none; -webkit-appearance: none;
+  width: 24px; height: 24px; margin-top: -10px;
+  border: 0; border-radius: var(--radius-full);
+  background: url('assets/slider-handle.svg') center / contain no-repeat;
+}
+.radius-slider input[type='range']::-moz-range-thumb {
+  width: 24px; height: 24px;
+  border: 0; border-radius: var(--radius-full);
+  background: url('assets/slider-handle.svg') center / contain no-repeat;
+}
+
+/* ── Sous-catégories de recherche (Dessin / Autour de moi / Toute la France) ── */
+.souscat { display: flex; flex-wrap: wrap; gap: var(--sp-lg); }
+.souscat__card {
+  display: flex; flex: 1 1 0; min-width: 0;
+  flex-direction: column; align-items: center; justify-content: center; gap: var(--sp-md);
+  height: 88px; padding: var(--sp-md);
+  overflow: clip;
+  border: var(--border-sm) solid var(--color-outline-dim-3);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  font-size: 14px; line-height: 20px; font-weight: 700;
+  text-align: center; color: var(--color-on-surface);
+  transition: background-color var(--duration-scale) var(--ease-standard),
+              border-color var(--duration-scale) var(--ease-standard);
+}
+.souscat__card img { width: 24px; height: 24px; flex: none; }
+.souscat__card:hover { background: var(--color-support-container); }
+.souscat__card[aria-pressed='true'] {
+  background: var(--color-support-container);
+  border-color: var(--color-outline-high);
+  color: var(--color-on-support-container);
+}
+
+/* ═══ Dessin sur la carte ════════════════════════════════════════════════
+   Trois écrans plein écran du board : dessin (12235:249497), validation de la
+   zone (12248:251532) et listing cartographique (12248:251388). Le tracé n'est
+   pas fonctionnel — c'est explicitement hors périmètre : le CTA orange fait
+   simplement avancer d'un écran, et la zone est un SVG figé.               */
+.draw {
+  position: fixed; inset: 0; z-index: 200;
+  display: flex; flex-direction: column;
+  background: var(--color-surface);
+}
+.draw[hidden] { display: none; }
+.draw__topbar {
+  display: flex; align-items: center; gap: var(--sp-md);
+  flex: none; height: 56px; padding-inline: var(--sp-lg);
+}
+.draw__title { flex: 1 1 auto; text-align: center; }
+.draw__topbar button,
+.draw__topbar .loc-topbar__spacer { display: grid; place-items: center; flex: none; width: 24px; height: 24px; }
+.draw__topbar button img { width: 24px; height: 24px; }
+/* Le canevas est un fond de carte figé : `background-size` en pixels et non en
+   `cover`, pour que la carte se recadre au lieu de se déformer. */
+.draw__canvas {
+  position: relative; flex: 1 1 auto; min-height: 0;
+  overflow: clip;
+  background: var(--color-neutral-container) url('assets/map-basemap-geoloc.png') center / 720px auto no-repeat;
+}
+/* La zone tracée et ce qui s'y accroche (corbeille, badge de validité) vivent
+   dans un même calque centré, comme le « Area » de Figma 12248:251541 : les
+   outils suivent la zone et non les bords de l'écran. */
+.draw__area {
+  position: absolute; top: 50%; left: 50%;
+  width: 232px; height: 152px;
+  transform: translate(-50%, -50%);
+}
+/* Zone validée : vert Spark, comme dans Figma 12248:251532 */
+.draw__zone {
+  position: absolute; inset: 0;
+  border: var(--border-md) solid var(--color-success);
+  border-radius: 48px 96px 40px 72px;
+  background: rgba(29, 99, 64, 0.16);
+  pointer-events: none;
+}
+/* Badge de zone valide — asset Figma 12248:251544 (Toggle/CircleCheck) */
+.draw__check {
+  position: absolute; z-index: 1;
+  bottom: -10px; left: 50%;
+  width: 20px; height: 20px;
+  transform: translateX(-50%);
+}
+/* Boutons ronds posés sur la carte — couches et corbeille. La corbeille n'est
+   pas dans un coin de l'écran mais accrochée au bord haut-gauche de la zone
+   tracée (Figma 12248:251545, enfant du calque « Area ») : c'est la zone
+   qu'elle supprime, pas la carte. */
+.draw__tool {
+  display: grid; place-items: center;
+  position: absolute; z-index: 2;
+  width: 44px; height: 44px;
+  border-radius: var(--radius-full);
+  background: var(--color-surface);
+  box-shadow: 0 1px 2px 0 var(--color-shadow);
+}
+.draw__tool img { width: 20px; height: 20px; }
+.draw__tool--layers { top: 76px; right: var(--sp-lg); }
+.draw__tool--trash  { top: -22px; left: -22px; }
+/* La poubelle exportée fait 12 × 13,33 avec preserveAspectRatio="none" : la
+   forcer en carré l'étirerait. */
+.draw__tool--trash img { width: 12px; height: 13.33px; }
+/* Consigne — Figma 12235:249497 : bandeau support-container avec fermeture */
+.draw__hint {
+  display: flex; align-items: flex-start; gap: var(--sp-md);
+  position: absolute; z-index: 2;
+  left: var(--sp-lg); right: var(--sp-lg); top: var(--sp-lg);
+  padding: var(--sp-lg);
+  border-radius: var(--radius-md);
+  background: var(--color-support-container);
+  color: var(--color-on-support-container);
+}
+.draw__hint p { flex: 1 1 auto; }
+.draw__hint button { display: grid; place-items: center; flex: none; width: 20px; height: 20px; }
+.draw__hint img { width: 16px; height: 16px; }
+/* Le CTA de tracé est centré sur la carte, celui de validation occupe la barre
+   basse : deux places différentes pour deux moments différents du geste. */
+.draw__cta {
+  position: absolute; z-index: 2;
+  left: 50%; bottom: var(--sp-xl);
+  transform: translateX(-50%);
+}
+.draw__bar {
+  flex: none; padding: var(--sp-lg);
+  border-top: var(--border-sm) solid var(--color-outline-rebrand);
+  background: var(--color-surface);
+  box-shadow: 0 -1px 2px 0 var(--color-shadow);
+}
+.draw__bar .btn { width: 100%; }
+
+/* ── Listing cartographique — Figma 12248:251388 ────────────────────────── */
+.maplist__chips {
+  display: flex; align-items: center; gap: var(--sp-md);
+  position: absolute; z-index: 2;
+  left: var(--sp-lg); right: var(--sp-lg); top: var(--sp-lg);
+  overflow: auto hidden;
+}
+.maplist__chip {
+  display: inline-flex; align-items: center; gap: var(--sp-sm);
+  flex: none; height: 40px; padding-inline: var(--sp-lg);
+  border-radius: var(--radius-full);
+  background: var(--color-surface);
+  box-shadow: 0 1px 2px 0 var(--color-shadow);
+  font-size: 14px; line-height: 20px; font-weight: 700;
+}
+.maplist__chip img { width: 16px; height: 16px; }
+.maplist__pin {
+  position: absolute; z-index: 1;
+  padding: 2px var(--sp-md);
+  border-radius: var(--radius-full);
+  background: var(--color-support);
+  color: var(--color-on-support);
+  font-size: 12px; line-height: 20px; font-weight: 700;
+  transform: translate(-50%, -50%);
+}
+.maplist__fab {
+  display: grid; place-items: center;
+  position: absolute; z-index: 2; right: var(--sp-lg); bottom: 108px;
+  width: 48px; height: 48px;
+  border-radius: var(--radius-full);
+  background: var(--color-main);
+  box-shadow: 0 1px 2px 0 var(--color-shadow);
+}
+/* La cloche est exportée en 11,1 × 13,3 avec preserveAspectRatio="none" : elle
+   se déformerait dans un carré, d'où les deux mesures explicites. */
+.maplist__fab img { width: 16px; height: 19px; }
+.maplist__sheet {
+  position: absolute; z-index: 3; left: 0; right: 0; bottom: 0;
+  padding: var(--sp-lg) var(--sp-lg) var(--sp-xl);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  background: var(--color-surface);
+  box-shadow: 0 -1px 2px 0 var(--color-shadow);
+}
+.maplist__sheet::before {
+  content: ''; display: block;
+  width: 32px; height: 4px; margin: 0 auto var(--sp-lg);
+  border-radius: var(--radius-lg);
+  background: var(--color-on-surface-dim-3);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .collapsible, .collapsible > div,
+  .filters__location:has(.popover[data-open='true']) .radius-map,
+  .filters__location:has(.popover[data-open='true']) .radius-map__circle { transition: none; }
+}
+
+/* ═══ Bandeau chips + titre ═════════════════════════════════════════════ */
+.applied-filters { display: flex; flex-wrap: wrap; gap: var(--sp-lg); margin-top: var(--sp-xl); }
+.results-head { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-xl); margin-top: var(--sp-lg); }
+.results-head__pub { display: flex; align-items: center; gap: 2px; margin-left: auto; }
+.results-head__pub img { width: 25px; height: 25px; }
+.results-head__pub span { font: 700 13px/normal Arial, sans-serif; letter-spacing: 0.3px; color: #369; }
+.results-count { margin-top: var(--sp-xl); }
+
+/* ═══ Grille résultats / colonne pub ════════════════════════════════════ */
+.results {
+  display: grid; grid-template-columns: minmax(0, 1fr) var(--ad-col);
+  gap: var(--sp-lg); align-items: start;
+  margin-top: var(--sp-xl);
+}
+.results__aside { display: flex; flex-direction: column; gap: var(--sp-lg); position: sticky; top: 130px; }
+.results__list { display: flex; flex-direction: column; gap: var(--sp-xl); }
+
+/* ═══ Awareness banner ═════════════════════════════════════════════════ */
+.awareness {
+  display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-lg);
+  padding: var(--sp-lg);
+  border-radius: var(--radius-md);
+  background: var(--color-main-container);
+  color: var(--color-on-main-container);
+}
+.awareness__text { flex: 1 1 220px; display: flex; flex-direction: column; gap: var(--sp-sm); }
+.awareness__options { display: flex; gap: var(--sp-lg); }
+.awareness__option {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--sp-md);
+  width: 148px; height: 100px; padding: var(--sp-md);
+  border-radius: var(--radius-md);
+  background: var(--color-surface); color: var(--color-on-surface);
+  box-shadow: var(--shadow-md);
+  transition: transform var(--duration-scale) var(--ease-standard);
+}
+.awareness__option:hover { transform: translateY(-2px); }
+/* Les deux illustrations n'ont pas le même ratio (75×48 pour la maison, 45×54
+   pour l'immeuble) et sont exportées en `preserveAspectRatio="none"` : leur
+   imposer un carré de 48 écrasait la première et étirait la seconde. On ne fixe
+   donc que la hauteur, la largeur suit. Le bouton fait 148×100, elle y tient. */
+.awareness__option img { width: auto; height: 48px; }
+
+/* ═══ Carte annonce ═════════════════════════════════════════════════════ */
+.adcard { display: flex; gap: var(--sp-lg); align-items: stretch; }
+.adcard__media {
+  position: relative; flex: none;
+  width: var(--card-image); height: 215px;
+  border-radius: var(--radius-md); overflow: hidden;
+  background: var(--color-neutral-container);
+}
+.adcard__media > img { width: 100%; height: 100%; object-fit: cover; }
+@media (hover: hover) and (min-width: 1024px) {
+  /* Travelling avant dans la photo, en deux temps. `scale` et `translate` sont
+     pilotés comme deux propriétés distinctes (et non via `transform`) pour leur
+     donner des durées, des courbes et surtout des délais différents : le zoom
+     avance seul, puis le cadre glisse sur le côté une fois qu'il est arrivé —
+     on avance dans la pièce, puis on s'y déplace.
+
+     Le délai du glissement démarre avant la fin nominale du zoom : la courbe du
+     zoom est quasi plate sur sa fin, donc l'enchaînement se lit comme un seul
+     mouvement continu au lieu d'un arrêt suivi d'un redémarrage.
+
+     Une transition plutôt qu'une animation @keyframes : quand le curseur repart,
+     le mouvement se rembobine depuis l'endroit exact où il en était, au lieu de
+     sauter à la fin du cycle.
+
+     Le retour au repos est plus court que l'aller, sans délai, et le glissement
+     y rentre avant le zoom : sinon la photo retrouve sa taille alors qu'elle est
+     encore décalée, et un liseré de bord apparaît. */
+  .adcard__media > img {
+    transition: scale 1600ms cubic-bezier(0.3, 0, 0.2, 1),
+                translate 1100ms cubic-bezier(0.3, 0, 0.2, 1);
+  }
+  .adcard:hover .adcard__media > img {
+    transition: scale 4400ms cubic-bezier(0.3, 0, 0.2, 1),
+                translate 3200ms cubic-bezier(0.45, 0, 0.35, 1) 3700ms;
+    scale: 1.3;
+    /* Course maximale sans révéler de bord : (S−1)/2 = 15 % de la largeur. On
+       reste bien en dessous, et le Y est résiduel : c'est un pas de côté, pas
+       une dérive en diagonale. */
+    translate: 6% 0.6%;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .adcard:hover .adcard__media > img { scale: 1; translate: none; }
+}
+.adcard__media-top {
+  position: absolute; inset: 0 0 auto 0; z-index: 2;
+  display: flex; align-items: flex-start; gap: var(--sp-md); padding: var(--sp-md);
+}
+.adcard__premium { display: flex; flex-wrap: wrap; gap: var(--sp-sm); flex: 1 1 auto; }
+.adcard__fav {
+  display: grid; place-items: center; flex: none;
+  width: 32px; height: 32px; border-radius: var(--radius-full);
+  background: var(--color-surface);
+  transition: background-color var(--duration-scale) var(--ease-standard);
+}
+.adcard__fav:hover { background: var(--color-surface-hovered); }
+.adcard__fav img { width: 16px; height: 16px; }
+.adcard__media-bottom {
+  position: absolute; inset: auto 0 0 0; z-index: 2;
+  display: flex; align-items: flex-end; justify-content: space-between; gap: var(--sp-md);
+  padding: var(--sp-md);
+}
+.adcard__vv {
+  display: grid; place-items: center; flex: none;
+  width: 32px; height: 32px; border-radius: var(--radius-full);
+  background: var(--color-surface);
+}
+.adcard__vv img { width: 16px; height: 16px; }
+.adcard__body { display: flex; flex-direction: column; gap: var(--sp-md); flex: 1 1 auto; min-width: 0; }
+.adcard__price { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--sp-md); }
+.adcard__price-main { display: flex; align-items: baseline; gap: var(--sp-sm); font-weight: 700; }
+.adcard__price-main img { width: 16px; height: 16px; align-self: center; }
+.adcard--drop .adcard__price-main { color: var(--color-success); }
+.adcard__title { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.adcard__criteria { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-lg); }
+.adcard__criteria img { width: 24px; height: 24px; }
+.adcard__criterion { display: flex; align-items: center; gap: var(--sp-sm); }
+.adcard__sep { color: var(--color-on-surface); }
+.adcard__tags { display: flex; flex-wrap: wrap; gap: var(--sp-md); }
+/* Masquée : les annonces du proto sont toutes à Montpellier, la ville
+   contredirait la localisation choisie pendant le test utilisateur. */
+.adcard__place { display: none; }
+.adcard__meta { margin-top: auto; display: flex; align-items: center; gap: var(--sp-md); }
+.adcard__meta-logo { width: 24px; height: 24px; border-radius: var(--radius-full); flex: none; background: var(--color-neutral-container); object-fit: cover; }
+
+/* Badge DPE — conteneur 39×24, lettre calée à 9px du bord gauche */
+.dpe { position: relative; width: 39px; height: 24px; flex: none; }
+.dpe img  { width: 39.542px; height: 24px; }
+.dpe span { position: absolute; left: 9px; top: 0; font-size: 16px; line-height: 24px; font-weight: 700; }
+
+/* ═══ Carrousel pro ═════════════════════════════════════════════════════ */
+.pro-carousel {
+  display: flex; flex-direction: column; gap: var(--sp-lg);
+  padding: var(--sp-lg);
+  border: var(--border-sm) solid var(--color-outline-rebrand);
+  border-radius: var(--radius-md);
+}
+.pro-carousel__head { display: flex; align-items: center; gap: var(--sp-md); }
+.pro-carousel__logo { width: 48px; height: 48px; border-radius: var(--radius-md); flex: none; background: var(--color-neutral-container); object-fit: cover; }
+.pro-carousel__cta { display: flex; align-items: center; gap: var(--sp-sm); margin-left: auto; color: var(--color-support); font-weight: 700; }
+.pro-carousel__cta img { width: 16px; height: 16px; }
+.pro-carousel__track { display: flex; gap: var(--sp-lg); overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: var(--sp-sm); }
+.pro-card { flex: none; width: 239px; scroll-snap-align: start; display: flex; flex-direction: column; gap: var(--sp-md); }
+.pro-card img.pro-card__photo { width: 239px; height: 176px; object-fit: cover; border-radius: var(--radius-md); background: var(--color-neutral-container); }
+.pro-card__criteria { display: flex; align-items: center; gap: var(--sp-md); }
+.pro-card__criteria img { width: 24px; height: 24px; }
+
+/* ═══ Pagination + breadcrumb ═══════════════════════════════════════════ */
+.pagination { display: flex; align-items: center; gap: var(--sp-sm); flex-wrap: wrap; }
+.pagination__item {
+  display: grid; place-items: center;
+  min-width: 44px; height: 44px; padding-inline: var(--sp-md);
+  border-radius: var(--radius-md);
+  color: var(--color-support); font-size: 16px; line-height: 24px;
+  transition: background-color var(--duration-scale) var(--ease-standard);
+}
+.pagination__item:hover { background: var(--color-support-container); }
+.pagination__item[aria-current='page'] { background: var(--color-support); color: var(--color-on-support); font-weight: 700; }
+.pagination__item--ellipsis { pointer-events: none; }
+.pagination__arrow { display: grid; place-items: center; width: 44px; height: 44px; border-radius: var(--radius-md); }
+.pagination__arrow[disabled] { opacity: 0.4; cursor: not-allowed; }
+.pagination__arrow img { width: 16px; height: 16px; }
+.breadcrumb { display: flex; align-items: center; gap: var(--sp-sm); }
+.breadcrumb img { width: 16px; height: 16px; }
+.breadcrumb a { text-decoration: underline; }
+
+/* ═══ Footer SEO ════════════════════════════════════════════════════════ */
+.seo { background: var(--color-background-variant); margin-top: var(--sp-3xl); }
+.seo__block { max-width: 1052px; margin-inline: auto; padding: var(--sp-xl) var(--sp-lg); }
+.seo__cols { columns: 4; column-gap: var(--sp-xl); }
+.seo__section { break-inside: avoid; padding-bottom: var(--sp-lg); margin-bottom: var(--sp-lg); border-bottom: var(--border-sm) solid var(--color-outline-rebrand); }
+.seo__section h3 { font-size: 12px; line-height: 16px; font-weight: 700; margin-bottom: var(--sp-md); }
+.seo__section li { font-size: 12px; line-height: 24px; }
+.seo__section a:hover { text-decoration: underline; }
+
+/* ═══ Footer ════════════════════════════════════════════════════════════ */
+.footer { background: var(--footer-bg); color: #ffffff; }
+.footer__inner { max-width: var(--page-max); margin-inline: auto; padding: 20px var(--sp-lg); display: flex; flex-direction: column; gap: var(--sp-xl); }
+.footer__cols { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--sp-xl); }
+.footer__col { display: flex; flex-direction: column; gap: var(--sp-xl); }
+.footer__group h3 { font-size: 16px; line-height: 24px; font-weight: 700; padding-bottom: var(--sp-md); border-bottom: var(--border-sm) solid rgba(255, 255, 255, 0.24); margin-bottom: var(--sp-md); }
+.footer__group li { font-size: 14px; line-height: 20px; margin-bottom: var(--sp-md); }
+.footer__group a:hover { text-decoration: underline; }
+.footer__stores { display: flex; flex-direction: column; gap: var(--sp-md); }
+.footer__stores img { height: 40px; width: auto; border-radius: var(--radius-sm); background: rgba(0, 0, 0, 0.8); }
+.footer__select {
+  display: flex; align-items: center; gap: var(--sp-md);
+  width: 244px; max-width: 100%; height: 40px; padding-inline: var(--sp-md);
+  background: var(--color-surface); color: var(--color-on-surface-rebrand);
+  border-radius: var(--radius-md);
+}
+.footer__select img:first-child { width: 24px; height: 24px; }
+.footer__select img:last-child  { width: 16px; height: 16px; margin-left: auto; }
+.footer__group-companies { padding-block: var(--sp-lg); border-top: var(--border-sm) solid #1d1f2a; border-bottom: var(--border-sm) solid #1d1f2a; text-align: center; }
+.footer__signature { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--sp-lg); }
+.footer__trustpilot { display: flex; align-items: center; gap: var(--sp-md); font-size: 12px; }
+.footer__trustpilot img { height: 20px; width: auto; }
+.footer__social { display: flex; align-items: center; gap: var(--sp-md); font-size: 12px; }
+.footer__social img { width: 24px; height: 24px; }
+
+/* ═══ Tab bar mobile (Figma pHxiy… 4328:38015) ══════════════════════════ */
+.tabbar { display: none; }
+
+/* ═══ Bottom sheet « Que pensez-vous de ce bien ? » (Figma 4328:41212) ══ */
+.sheet { position: fixed; inset: 0; z-index: 120; display: flex; flex-direction: column; justify-content: flex-end; }
+.sheet[hidden] { display: none; }
+.sheet__scrim { position: absolute; inset: 0; background: rgba(21, 34, 51, 0.72); }
+.sheet__content {
+  position: relative;
+  display: flex; flex-direction: column; gap: var(--sp-xl);
+  padding: var(--sp-md) var(--sp-lg) var(--sp-lg);
+  padding-bottom: calc(var(--sp-lg) + env(safe-area-inset-bottom));
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  background: var(--color-surface);
+}
+.sheet__handle {
+  width: 32px; height: 4px; margin: 0 auto;
+  border-radius: var(--radius-full);
+  background: var(--color-on-surface-dim-3);
+}
+.sheet__title { font-size: 20px; line-height: 28px; font-weight: 700; }
+/* Le bottom sheet reprend la même carte que la popover, en version 71×69 */
+.sheet .featured-ad { margin-top: 0; }
+.sheet .featured-ad__thumb { width: 71px; height: 69px; }
+.sheet__cta { width: 100%; }
+
+/* ═══ Responsive ════════════════════════════════════════════════════════ */
+@media (max-width: 1023px) {
+  .results { grid-template-columns: minmax(0, 1fr); }
+  .results__aside { flex-direction: row; flex-wrap: wrap; justify-content: center; position: static; }
+  .seo__cols { columns: 2; }
+  .footer__cols { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 767px) {
+  .header__nav .header__nav-item span { display: none; }
+  .header__nav-item { min-width: 44px; }
+  .adcard { flex-direction: column; }
+  .adcard__media { width: 100%; }
+  .seo__cols { columns: 1; }
+  .footer__cols { grid-template-columns: minmax(0, 1fr); }
+
+  /* ── Page de résultats mobile — Figma 4328:38007 ────────────────────────
+     Le header perd tout le mobilier desktop : il ne reste que la flèche retour
+     et la barre de recherche (loupe, photo, voix). Les raccourcis de compte
+     sont déjà portés par la tab bar, le bandeau pub disparaît. */
+  .header__logo,
+  .header__top > .btn--filled-main,
+  .header__nav,
+  .header__categories,
+  .pubs,
+  .header__submit { display: none; }
+  .header__top { gap: var(--sp-md); min-height: 56px; }
+  .header__back { display: grid; place-items: center; flex: none; width: 24px; height: 24px; }
+  .header__back img { width: 24px; height: 24px; }
+  .header__search {
+    max-width: none; height: 40px;
+    padding: var(--sp-sm) var(--sp-md);
+    border-radius: var(--radius-full);
+  }
+  .header__search-icon { display: block; flex: none; width: 20px; height: 20px; }
+  .header__search input { font-size: 14px; line-height: 20px; }
+  .header__search-tool { display: grid; place-items: center; flex: none; width: 24px; height: 24px; }
+  .header__search-tool img { width: 20px; height: 20px; }
+
+  /* ── Barre de filtres : une seule ligne défilante ────────────────────────
+     Figma 4328:38009 — chips de 32px, ordre Carte / Filtres / localisation,
+     puis les filtres appliqués à la suite. `display: contents` fait remonter
+     les enfants des deux conteneurs dans la même ligne, d'où le `order`.
+     « Type de bien » et « Prix » sortent : sur mobile ils sont repliés dans
+     « Filtres », comme sur le board. */
+  .filters-bar {
+    display: flex; flex-wrap: nowrap; gap: var(--sp-md);
+    overflow-x: auto; scrollbar-width: none;
+    /* Le bandeau pub, qui aérait le dessous du header en desktop, est masqué
+       ici : sans marge, la ligne de chips se collerait au filet du header. */
+    margin-top: var(--sp-lg);
+    margin-inline: calc(-1 * var(--sp-lg));
+    padding-inline: var(--sp-lg);
+  }
+  .filters-bar::-webkit-scrollbar { display: none; }
+  .filters, .applied-filters { display: contents; }
+  .filters > .btn { order: 1; }
+  .filters > .field--strong { order: 2; }
+  .filters__location { order: 3; flex: none; }
+  .applied-filters > .chip { order: 4; }
+  .filters > .field--compact { display: none; }
+  /* Le champ de localisation est un cran plus profond que les autres filtres
+     (`.filters > .filters__location > .field`) : sans sa propre ligne ici, il
+     échappait au gabarit pill et gardait la taille desktop du `.field`. Seul
+     l'état fermé est visé — ouvert, il devient la barre de recherche de la vue
+     plein écran et reprend sa hauteur normale. */
+  .filters-bar > * > .btn,
+  .filters-bar > * > .field,
+  .filters-bar .filters__location:not(:has(.popover[data-open='true'])) > .field,
+  .filters-bar .chip {
+    flex: none; height: 32px; padding-inline: var(--sp-md);
+    border-radius: var(--radius-full);
+    font-size: 14px; line-height: 20px;
+  }
+  .filters__location > .field { width: auto; }
+  /* Fermée, la pill se cale sur son libellé — un input garde sinon sa largeur
+     intrinsèque et déborde la ligne. Ouverte, il reprend toute la largeur. */
+  .filters__location:not(:has(.popover[data-open='true'])) > .field input {
+    field-sizing: content; max-width: 40vw;
+    /* `.field__input` fixe sa police en dur : il faut la redescendre en body 2,
+       sinon le texte dépasse la hauteur de 32px de la pill. */
+    font-size: 14px; line-height: 20px;
+  }
+  /* Ouverte, la feuille passe en `position: fixed` : le conteneur défilant ne
+     doit pas la retenir. */
+  .filters-bar:has(.popover[data-open='true']) { overflow: visible; }
+
+  /* Le titre de catégorie et la pub inline n'existent pas sur mobile : seul le
+     compteur annonce la liste (Figma 4328:38010). */
+  .results-head { display: none; }
+  .results-count { margin-top: var(--sp-lg); }
+
+  /* ── Tab bar mobile — Figma 4328:38015 ─────────────────────────────────
+     Sur mobile la notification et la carte annonce passent sur l'onglet
+     « Compte » : on retire donc la pastille et la popover du header pour ne
+     pas dédoubler le signal. */
+  .header__nav .nav-badge, .nav-pop { display: none; }
+  .tabbar {
+    position: fixed; inset: auto 0 0 0; z-index: 90;
+    display: flex; align-items: stretch; gap: var(--sp-sm);
+    padding: var(--sp-sm) var(--sp-md);
+    padding-bottom: calc(var(--sp-sm) + env(safe-area-inset-bottom));
+    background: var(--color-surface);
+    /* Dim/Neutral Dim 4 (Low Elements) = #3a475729 */
+    border-top: var(--border-sm) solid rgba(58, 71, 87, 0.16);
+  }
+  .tabbar__item {
+    position: relative;
+    display: flex; flex: 1 1 0; min-width: 0;
+    flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+    padding: var(--sp-sm);
+    font-size: 12px; line-height: 16px; color: var(--color-on-surface);
+    text-align: center;
+  }
+  .tabbar__item--active { font-weight: 700; }
+  .tabbar__item img { width: 24px; height: 24px; }
+  /* Badge Danger sans compteur → simple point de 12px, aligné sur l'icône */
+  .tabbar__badge {
+    position: absolute; top: var(--sp-sm); left: calc(50% + 4px);
+    width: 12px; height: 12px;
+    border: var(--border-md) solid var(--color-surface);
+    border-radius: var(--radius-full);
+    background: var(--color-error);
+  }
+  /* Réserve la place de la tab bar sous le footer */
+  body { padding-bottom: 60px; }
+  /* Les vues plein écran (localisation, dessin) passent devant : on masque la
+     tab bar pour ne pas la laisser dépasser sous elles. */
+  body:has(.popover[data-open='true']) .tabbar,
+  body:has(.draw:not([hidden])) .tabbar { display: none; }
+
+  /* ── Localisation mobile : vue plein écran, pas un dropdown ────────────
+     Réf. Figma 11636:319476 (rayon 5), 11636:319266 (rayon 0),
+     11636:335515 (2 loc.), 11984:80151 (France), 11984:83006 (autour de moi). */
+  body:has(.popover[data-open='true']) { overflow: hidden; }
+
+  .filters__location:has(.popover[data-open='true']) {
+    position: fixed; inset: 0; z-index: 100;
+    display: flex; flex-direction: column;
+    background: var(--color-surface);
+  }
+  /* ── Barre de titre — Figma 12213:184404 ─────────────────────────────────
+     La V6 posait un bouton retour flottant sur une carte plein écran ; le board
+     final remet la carte dans la feuille, donc la barre de titre revient. */
+  .filters__location:has(.popover[data-open='true']) .loc-topbar {
+    display: flex; align-items: center; gap: var(--sp-md);
+    flex: none; height: 56px; padding-inline: var(--sp-lg);
+  }
+  .loc-topbar__title { flex: 1 1 auto; text-align: center; }
+  .loc-topbar button,
+  .loc-topbar__spacer { display: grid; place-items: center; flex: none; width: 24px; height: 24px; }
+  .loc-topbar button img { width: 24px; height: 24px; }
+
+  /* Le champ devient une pill neutral-container sans bordure ni chevron */
+  .filters__location:has(.popover[data-open='true']) > .field {
+    flex: none; width: auto; margin-inline: var(--sp-lg);
+    border: 0; border-radius: var(--radius-full);
+    background: var(--color-neutral-container);
+    padding-inline: var(--sp-lg);
+  }
+  .filters__location:has(.popover[data-open='true']) > .field:focus-within { box-shadow: none; }
+  .filters__location:has(.popover[data-open='true']) #locationChevron { display: none; }
+
+  .filters__location:has(.popover[data-open='true']) > .popover {
+    position: static; z-index: auto;
+    display: flex; flex-direction: column;
+    flex: 1 1 auto; min-height: 0;
+    width: auto; max-width: none;
+    border-radius: 0; box-shadow: none;
+  }
+  .filters__location .popover__body {
+    flex: 1 1 auto; max-height: none;
+    padding-top: var(--sp-lg);
+  }
+
+  /* Sticky bar actions : Valider occupe la largeur restante */
+  .popover__sticky {
+    flex: none;
+    height: 76px; gap: var(--sp-lg);
+    border-top: 0; border-radius: 0;
+    /* Figma déclare 0 1px 2px : inversé ici pour que l'ombre soit visible au-dessus */
+    box-shadow: 0 -1px 2px 0 var(--color-shadow);
+  }
+  #locSubmit { flex: 1 1 auto; }
+  #locClear { flex: none; }
+
+  /* ── Carte Rayon mobile : deux tailles ────────────────────────────────────
+     Notes Tech du board — S (12213:243380) : hauteur = 0,5 × largeur, zone =
+     0,75 × hauteur ; M (12213:240933) : hauteur = 0,75 × largeur, zone = 2/3 ×
+     hauteur. La taille S sert quand la feuille a autre chose à montrer sous la
+     carte (alternatives + récents), M quand la carte reste seule. Les deux
+     facteurs sont posés par le JS et la hauteur est animée : c'est ce que
+     demande la note 12230:244598 (« transition map S > M smooth »).
+     34px = les 2 × 16px de padding de la feuille et les 2 × 1px de bordure. */
+  .radius-card { border-color: var(--color-outline-dim-2); }
+  .filters__location:has(.popover[data-open='true']) .radius-map {
+    height: calc(var(--map-scale, 0.5) * (100vw - 34px));
+    transition: height 280ms var(--ease-standard);
+  }
+  /* Le cercle est en pixels, pas en pourcentage : c'est lui qui sert à calculer
+     le niveau de zoom, et Leaflet a besoin d'une valeur mesurable au moment du
+     calcul. `is-resizing` masque les couches vectorielles le temps que la
+     hauteur du conteneur se stabilise, sinon elles se posent de travers. */
+  .filters__location:has(.popover[data-open='true']) .radius-map__circle {
+    width: auto; aspect-ratio: 1;
+    height: calc(var(--zone-scale, 0.75) * var(--map-scale, 0.5) * (100vw - 34px));
+    transition: height 280ms var(--ease-standard);
+  }
+  .radius-map.is-resizing .leaflet-overlay-pane,
+  .radius-map.is-resizing .leaflet-marker-pane { visibility: hidden; }
+  /* Mobile : la carte reprend sa place au-dessus du réglage (Figma 12213:240881) */
+  .radius-control { order: 0; gap: 12px; }
+
+  /* SousCat mobile — Figma 11636:319512 : 100px de haut, icône 20px */
+  .souscat__card {
+    height: 100px; padding: var(--sp-lg) var(--sp-md);
+    border-color: var(--color-outline-dim-2);
+  }
+  .souscat__card img { width: 20px; height: 20px; }
+  /* Feuille compacte : les cartes se réduisent pour laisser la place aux récents
+     sous une carte qui ne fait plus qu'un tiers d'écran — Figma 12154:108125 */
+  .filters__location.is-compact .souscat__card { height: 80px; }
+
+  /* Clavier — repris de la V7. Il n'est là que pour la fidélité de l'écran de
+     saisie (Figma 12213:180892) : c'est une image, pas une vraie saisie. */
+  .filters__location:has(.popover[data-open='true']) .loc-keyboard:not([hidden]) {
+    display: block; flex: none; width: 100%;
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════ HEADER ══════════════════════════ -->
+<header class="header">
+  <div class="shell header__top">
+    <a href="#" aria-label="leboncoin, accueil">
+      <img class="header__logo" src="assets/logo-leboncoin.svg" alt="leboncoin" />
+    </a>
+    <a class="btn btn--filled-main" href="#">
+      <img class="btn__icon" src="assets/icon-plus.svg" alt="" />
+      Déposer une annonce
+    </a>
+    <!-- Retour, loupe, appareil photo et micro n'existent que sur mobile
+         (Figma 4328:38008) : le desktop garde le bouton de soumission orange. -->
+    <button class="header__back" type="button" aria-label="Retour">
+      <img src="assets/icon-arrow-left.svg" alt="" />
+    </button>
+    <form class="header__search" role="search" onsubmit="return false">
+      <img class="header__search-icon" src="assets/icon-search-dim.svg" alt="" />
+      <input type="search" placeholder="Rechercher sur leboncoin" aria-label="Rechercher sur leboncoin" />
+      <button class="header__search-tool" type="button" aria-label="Rechercher par photo">
+        <img src="assets/icon-camera-ai.svg" alt="" />
+      </button>
+      <button class="header__search-tool" type="button" aria-label="Rechercher à la voix">
+        <img src="assets/icon-mic-ai.svg" alt="" />
+      </button>
+      <button class="header__submit" type="submit" aria-label="Lancer la recherche">
+        <img src="assets/icon-search.svg" alt="" />
+      </button>
+    </form>
+    <nav class="header__nav" aria-label="Compte et raccourcis">
+      <div class="nav-slot">
+        <button class="header__nav-item header__nav-item--active" type="button" id="navSearchesBtn"
+                aria-expanded="false" aria-controls="navSearchesPop">
+          <img src="assets/nav-searches.svg" alt="" />
+          <span>Mes recherches</span>
+          <span class="nav-badge" aria-label="1 notification">1</span>
+        </button>
+        <div class="nav-pop" id="navSearchesPop" hidden>
+          <div class="nav-pop__tip" aria-hidden="true"></div>
+          <div class="nav-pop__container" role="dialog" aria-labelledby="navPopTitle">
+            <p class="nav-pop__title" id="navPopTitle">Que pensez-vous de ce bien&nbsp;?</p>
+            <button class="nav-pop__close" type="button" id="navSearchesClose" aria-label="Fermer">
+              <img src="assets/icon-close.svg" alt="" />
+            </button>
+            <a class="featured-ad" href="../media-experience/adview.html">
+              <img class="featured-ad__thumb" data-ad="thumb" src="" alt="" />
+              <span class="featured-ad__body">
+                <span class="featured-ad__price">
+                  <span class="featured-ad__amount" data-ad="price"></span>
+                  <span class="featured-ad__sqm" data-ad="sqm"></span>
+                </span>
+                <span class="featured-ad__desc" data-ad="desc"></span>
+                <span class="featured-ad__loc" data-ad="loc"></span>
+              </span>
+            </a>
+          </div>
+        </div>
+      </div>
+      <a class="header__nav-item" href="#"><img src="assets/nav-favorites.svg" alt="" /><span>Favoris</span></a>
+      <a class="header__nav-item" href="#"><img src="assets/nav-messages.svg" alt="" /><span>Messages</span></a>
+      <a class="header__nav-item" href="#"><img src="assets/nav-account.svg" alt="" /><span>Se connecter</span></a>
+    </nav>
+  </div>
+  <nav class="shell header__categories" aria-label="Catégories">
+    <a href="#">Immobilier</a><span aria-hidden="true">·</span>
+    <a href="#">Véhicules</a><span aria-hidden="true">·</span>
+    <a href="#">Locations de vacances</a><span aria-hidden="true">·</span>
+    <a href="#">Emploi</a><span aria-hidden="true">·</span>
+    <a href="#">Mode</a><span aria-hidden="true">·</span>
+    <a href="#">Maison &amp; Jardin</a><span aria-hidden="true">·</span>
+    <a href="#">Famille</a><span aria-hidden="true">·</span>
+    <a href="#">Electronique</a><span aria-hidden="true">·</span>
+    <a href="#">Loisirs</a><span aria-hidden="true">·</span>
+    <a href="#">Autres</a>
+  </nav>
+</header>
+
+<!-- ══════════════════════════ BANDEAU PUB ══════════════════════════ -->
+<div class="pubs">
+  <img src="assets/pub-banner-edf.png" alt="Publicité" width="970" height="250" />
+</div>
+
+<main class="shell">
+
+  <!-- ══════════════════════════ FILTRES ══════════════════════════ -->
+  <!-- `.filters-bar` n'est qu'un conteneur pour mobile, où filtres et filtres
+       appliqués tiennent sur une seule ligne défilante (Figma 4328:38009). En
+       desktop il est en `display: contents` : la mise en page ne bouge pas. -->
+  <div class="filters-bar">
+  <div class="filters">
+    <button class="btn btn--outlined-neutral" type="button">
+      <img class="btn__icon" src="assets/icon-map.svg" alt="" />
+      Carte
+    </button>
+
+    <div class="filters__location" id="locWrap">
+      <!-- Barre de titre mobile — Figma 12213:184404. Masquée en desktop, où le
+           popover est un dropdown ancré au champ. Pas de croix : la flèche est le
+           seul retour, sur tous les écrans de la feuille. Le vide à droite garde
+           le titre centré sur la largeur. -->
+      <header class="loc-topbar" id="locTopbar">
+        <button type="button" id="locBack" aria-label="Retour">
+          <img src="assets/icon-arrow-left.svg" alt="" />
+        </button>
+        <h2 class="loc-topbar__title t-body-1-hl">Où cherchez-vous&nbsp;?</h2>
+        <span class="loc-topbar__spacer" aria-hidden="true"></span>
+      </header>
+
+      <div class="field field--filled" id="locationField">
+        <img class="field__icon" src="assets/icon-pin.svg" alt="" />
+        <input class="field__input" id="locationInput" type="text" autocomplete="off"
+               placeholder="Choisir une localisation" aria-label="Choisir une localisation"
+               role="combobox" aria-expanded="false" aria-controls="locationPopover" aria-autocomplete="list" />
+        <img class="field__icon" src="assets/icon-chevron-horizontal.svg" alt="" id="locationChevron" />
+      </div>
+
+      <!-- Popover localisation -->
+      <div class="popover" id="locationPopover" data-open="false">
+        <!-- États « navigation » : par défaut, localisation choisie, toute la France -->
+        <div class="popover__body" id="popoverDefault">
+          <!-- Bloc loc+radius : visible dès qu'une localisation est choisie -->
+          <div class="popover__group" id="locSelected" hidden>
+            <div class="loc-chips" id="locChips"></div>
+            <div class="radius-card" id="radiusCard">
+              <div class="radius-map" id="radiusMap">
+                <div class="radius-map__view" id="radiusMapView" role="img"
+                     aria-label="Carte de la zone de recherche"></div>
+                <div class="radius-map__circle" id="radiusCircle"></div>
+                <div class="radius-map__drawn" id="radiusDrawn" hidden></div>
+                <img class="radius-map__pin" src="assets/map-pin-geoloc.svg" alt="" id="radiusPin" />
+              </div>
+              <div class="radius-control" id="radiusControl">
+                <div class="radius-control__head">
+                  <span class="t-body-1">Dans un rayon de</span>
+                  <span class="radius-control__value" id="radiusValue">5 km</span>
+                </div>
+                <div class="radius-slider">
+                  <input type="range" id="radiusRange" min="0" max="16" step="1" value="5"
+                         aria-label="Rayon de recherche en kilomètres" />
+                  <div class="radius-slider__scale"><span>0 km</span><span>200 km</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Entrée « dessin » en ligne — Figma 12213:184404 / 12246:250597.
+               Les écrans qui arrivent d'une saisie de texte remplacent les trois
+               cartes d'alternatives par cette seule ligne. -->
+          <button class="drawrow" type="button" id="locDrawRow" hidden>
+            <img class="drawrow__icon" src="assets/icon-draw-map.svg" alt="" />
+            <span class="drawrow__label t-body-1">Dessiner sur la carte</span>
+            <img class="drawrow__chevron" src="assets/icon-chevron-vertical.svg" alt="" />
+          </button>
+
+          <!-- Alternatives et récents s'escamotent ensemble : « Autour de moi »
+               les retire tous les deux pour laisser la carte passer de S à M
+               (Figma 12213:242276 → 12213:243417). -->
+          <div class="collapsible" id="locCollapsible" data-open="true">
+            <div>
+              <!-- Sous-catégories de recherche -->
+              <div class="souscat" id="locSouscat">
+                <button class="souscat__card" type="button" aria-pressed="false" data-mode="draw">
+                  <img src="assets/icon-draw-map.svg" alt="" />
+                  <span>Dessin<br />sur la carte</span>
+                </button>
+                <button class="souscat__card" type="button" aria-pressed="false" data-mode="around">
+                  <img src="assets/icon-around-me.svg" alt="" />
+                  <span>Autour de moi</span>
+                </button>
+                <button class="souscat__card" type="button" aria-pressed="false" data-mode="france">
+                  <img src="assets/icon-france.svg" alt="" />
+                  <span>Toute<br />la France</span>
+                </button>
+              </div>
+
+              <!-- Recherches récentes — Figma 12154:108125 / 12253:284951. Les lignes
+                   sont construites par renderRecents() à partir des recherches
+                   validées : trois au maximum, la plus récente en tête. Le « + 1 »
+                   du libellé compte les autres localisations de la recherche. -->
+              <div class="popover__group" id="locRecents">
+                <p class="t-body-1-hl">Récents</p>
+                <div class="popover__group" id="locRecentsList"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- État saisie : autocomplétion (pas de footer sticky) -->
+        <div class="popover__body popover__results" id="popoverResults" role="listbox"
+             aria-label="Suggestions de localisation" hidden></div>
+
+        <div class="popover__sticky" id="popoverSticky">
+          <button class="btn btn--outlined-support" type="button" id="locClear">Effacer</button>
+          <button class="btn btn--filled-main" type="button" id="locSubmit">Valider (100+)</button>
+        </div>
+      </div>
+
+      <!-- Clavier de l'écran de saisie — Figma 12213:180892. Image, pas une
+           vraie saisie : la frappe se fait au clavier physique. -->
+      <img class="loc-keyboard" id="locKeyboard" src="assets/keyboard-azerty.png" alt="" hidden />
+    </div>
+
+    <button class="field field--compact" type="button">
+      <span class="field__value">Type de bien</span>
+      <img class="field__icon" src="assets/icon-chevron-vertical.svg" alt="" />
+    </button>
+    <button class="field field--compact" type="button">
+      <span class="field__value">Prix</span>
+      <img class="field__icon" src="assets/icon-chevron-vertical.svg" alt="" />
+    </button>
+    <button class="field field--strong" type="button">
+      <img class="field__icon" src="assets/icon-filter.svg" alt="" />
+      <span class="field__value">Filtres</span>
+    </button>
+  </div>
+
+  <!-- ══════════════════════════ FILTRES APPLIQUÉS ══════════════════════════ -->
+  <div class="applied-filters">
+    <button class="chip" type="button">
+      Ventes immobilières
+      <img class="chip__icon" src="assets/icon-delete.svg" alt="Retirer ce filtre" />
+    </button>
+    <button class="chip" type="button">
+      Tri : Plus récentes
+      <img class="chip__icon" src="assets/icon-delete.svg" alt="Retirer ce filtre" />
+    </button>
+  </div>
+  </div>
+
+  <!-- ══════════════════════════ TITRE + COMPTEUR ══════════════════════════ -->
+  <div class="results-head">
+    <h1 class="t-display-3">Annonces Ventes immobilières</h1>
+    <a class="results-head__pub" href="#">
+      <img src="assets/pub-inline-logo.png" alt="" />
+      <span>Deeply Pro. Disponible chez Bouygues Telecom</span>
+    </a>
+  </div>
+  <p class="results-count t-body-1" id="resultsCount">100+ annonces</p>
+
+  <!-- ══════════════════════════ RÉSULTATS ══════════════════════════ -->
+  <div class="results">
+
+    <div class="results__list">
+
+      <!-- Awareness banner -->
+      <section class="awareness">
+        <div class="awareness__text">
+          <p class="t-subhead">Estimez votre bien gratuitement en ligne et vendez-le plus vite&nbsp;!</p>
+          <p class="t-body-2">Quel type de bien vendez-vous&nbsp;?</p>
+        </div>
+        <div class="awareness__options">
+          <button class="awareness__option" type="button">
+            <img src="assets/banner-house.svg" alt="" />
+            <span class="t-body-2-hl">Maison</span>
+          </button>
+          <button class="awareness__option" type="button">
+            <img src="assets/banner-appartment.svg" alt="" />
+            <span class="t-body-2-hl">Appartement</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- Annonce 1 -->
+      <article class="adcard">
+        <div class="adcard__media">
+          <img src="assets/card1-photo-b.png" alt="Appartement, 2 pièces, 43 m², Montpellier" />
+          <div class="adcard__media-top">
+            <div class="adcard__premium"><span class="tag tag--accent">À la une</span></div>
+            <button class="adcard__fav" type="button" aria-label="Ajouter aux favoris"><img src="assets/icon-like.svg" alt="" /></button>
+          </div>
+        </div>
+        <div class="adcard__body">
+          <div>
+            <div class="adcard__price">
+              <span class="adcard__price-main">
+                <span class="t-caption">à partir de</span>
+                <span class="t-body-1-hl">340 000 €</span>
+              </span>
+              <span class="t-caption dim">5 667 €/m²</span>
+            </div>
+            <p class="adcard__title t-body-2-hl">Appartement · 2 pièces · 43 m²</p>
+          </div>
+          <div class="adcard__criteria">
+            <span class="dpe"><img src="assets/dpe-badge.svg" alt="DPE" /><span>D</span></span>
+            <span class="adcard__sep t-body-2">·</span>
+            <span class="adcard__criterion"><img src="assets/icon-balcon.svg" alt="" /><span class="t-body-2">Balcon</span></span>
+            <span class="adcard__sep t-body-2">·</span>
+            <span class="adcard__criterion"><img src="assets/icon-dernier-etage.svg" alt="" /><span class="t-body-2">Dernier étage</span></span>
+          </div>
+          <div class="adcard__tags"><span class="tag tag--outlined-support">Pro</span></div>
+          <p class="adcard__place t-body-2">Montpellier 34000</p>
+          <div class="adcard__meta"><span class="t-caption dim">Aujourd’hui 12:34</span></div>
+        </div>
+      </article>
+      <hr class="divider" />
+
+      <!-- Annonce 2 -->
+      <article class="adcard adcard--drop">
+        <div class="adcard__media">
+          <img src="assets/card2-photo.png" alt="Appartement, 2 pièces, 43 m², Montpellier" />
+          <div class="adcard__media-top">
+            <div class="adcard__premium">
+              <span class="tag tag--accent">À la une</span>
+              <span class="tag tag--main">Urgent</span>
+            </div>
+            <button class="adcard__fav" type="button" aria-label="Ajouter aux favoris"><img src="assets/icon-like.svg" alt="" /></button>
+          </div>
+        </div>
+        <div class="adcard__body">
+          <div>
+            <div class="adcard__price">
+              <span class="adcard__price-main">
+                <span class="t-body-1-hl">318 000</span>
+                <img src="assets/icon-price-down.svg" alt="Prix en baisse" />
+              </span>
+              <span class="t-caption dim">4 240 €/m²</span>
+            </div>
+            <p class="adcard__title t-body-2-hl">Appartement · 2 pièces · 43 m²</p>
+          </div>
+          <div class="adcard__criteria">
+            <span class="adcard__criterion"><img src="assets/icon-terrasse.svg" alt="" /><span class="t-body-2">Terrasse</span></span>
+            <span class="adcard__sep t-body-2">·</span>
+            <span class="adcard__criterion"><img src="assets/icon-parking.svg" alt="" /><span class="t-body-2">Parking</span></span>
+          </div>
+          <div class="adcard__tags">
+            <span class="tag tag--outlined-support">Pro</span>
+            <span class="tag tag--outlined-neutral">Neuf</span>
+          </div>
+          <p class="adcard__place t-body-2">Montpellier 34000</p>
+          <div class="adcard__meta"><span class="t-caption dim">Aujourd’hui 12:34</span></div>
+        </div>
+      </article>
+      <hr class="divider" />
+
+      <!-- Annonce 3 — promoteur, visite virtuelle, déjà vue -->
+      <article class="adcard">
+        <div class="adcard__media">
+          <img src="assets/card3-photo.png" alt="Appartement, 2 pièces, 43 m², Montpellier" />
+          <div class="adcard__media-top">
+            <div class="adcard__premium"></div>
+            <button class="adcard__fav" type="button" aria-label="Ajouter aux favoris"><img src="assets/icon-like.svg" alt="" /></button>
+          </div>
+          <div class="adcard__media-bottom">
+            <span class="adcard__vv" aria-label="Visite virtuelle disponible"><img src="assets/icon-virtual-visit.svg" alt="" /></span>
+            <span class="tag tag--surface"><img src="assets/icon-viewed.svg" alt="" width="12" height="12" />Déjà vu</span>
+          </div>
+        </div>
+        <div class="adcard__body">
+          <div>
+            <div class="adcard__price">
+              <span class="adcard__price-main"><span class="t-body-1-hl">350 000 €</span></span>
+              <span class="t-caption dim">5 667 €/m²</span>
+            </div>
+            <p class="adcard__title t-body-2-hl">Appartement · 2 pièces · 43 m²</p>
+          </div>
+          <div class="adcard__criteria">
+            <span class="dpe"><img src="assets/dpe-b.svg" alt="DPE" /><span style="color:#ffffff">B</span></span>
+            <span class="adcard__sep t-body-2">·</span>
+            <span class="adcard__criterion"><img src="assets/icon-terrasse.svg" alt="" /><span class="t-body-2">Terrasse</span></span>
+            <span class="adcard__sep t-body-2">·</span>
+            <span class="adcard__criterion"><img src="assets/icon-parking.svg" alt="" /><span class="t-body-2">Parking</span></span>
+          </div>
+          <div class="adcard__tags"><span class="tag tag--outlined-support">Pro</span></div>
+          <p class="adcard__place t-body-2">Montpellier 34000</p>
+          <div class="adcard__meta">
+            <img class="adcard__meta-logo" src="assets/pro-logo-kaufman.png" alt="" />
+            <span class="t-caption dim">Par <strong>Kaufman &amp; Broad</strong> · Aujourd'hui 12h34</span>
+          </div>
+        </div>
+      </article>
+      <hr class="divider" />
+
+      <!-- Emplacement publicitaire dans la liste -->
+      <img class="ad-visual" src="assets/ad-native-hertz.png" alt="Publicité" style="width: 100%; height: auto" />
+      <hr class="divider" />
+
+      <!-- Annonce 4 -->
+      <article class="adcard">
+        <div class="adcard__media">
+          <img src="assets/card4-photo.png" alt="Appartement, 2 pièces, 43 m², Montpellier" />
+          <div class="adcard__media-top">
+            <div class="adcard__premium"></div>
+            <button class="adcard__fav" type="button" aria-label="Ajouter aux favoris"><img src="assets/icon-like.svg" alt="" /></button>
+          </div>
+        </div>
+        <div class="adcard__body">
+          <div>
+            <div class="adcard__price">
+              <span class="adcard__price-main"><span class="t-body-1-hl">435 000 €</span></span>
+              <span class="t-caption dim">7 909 €/m²</span>
+            </div>
+            <p class="adcard__title t-body-2-hl">Appartement · 2 pièces · 43 m²</p>
+          </div>
+          <div class="adcard__criteria">
+            <span class="adcard__criterion"><img src="assets/icon-balcon.svg" alt="" /><span class="t-body-2">Balcon</span></span>
+          </div>
+          <div class="adcard__tags"><span class="tag tag--outlined-support">Pro</span></div>
+          <p class="adcard__place t-body-2">Montpellier 34000</p>
+          <div class="adcard__meta"><span class="t-caption dim">Aujourd’hui 12:34</span></div>
+        </div>
+      </article>
+      <hr class="divider" />
+
+      <!-- Annonce 5 — location -->
+      <article class="adcard">
+        <div class="adcard__media">
+          <img src="assets/card5-photo.png" alt="Appartement, 2 pièces, 43 m², Montpellier" />
+          <div class="adcard__media-top">
+            <div class="adcard__premium"></div>
+            <button class="adcard__fav" type="button" aria-label="Ajouter aux favoris"><img src="assets/icon-like.svg" alt="" /></button>
+          </div>
+          <div class="adcard__media-bottom">
+            <span class="adcard__vv" aria-label="Visite virtuelle disponible"><img src="assets/icon-virtual-visit.svg" alt="" /></span>
+          </div>
+        </div>
+        <div class="adcard__body">
+          <div>
+            <div class="adcard__price">
+              <span class="adcard__price-main"><span class="t-body-1-hl">950 €</span></span>
+            </div>
+            <p class="adcard__title t-body-2-hl">Appartement · 2 pièces · 43 m²</p>
+          </div>
+          <p class="adcard__place t-body-2">Montpellier 34000</p>
+          <div class="adcard__meta"><span class="t-caption dim">Aujourd’hui 12:34</span></div>
+        </div>
+      </article>
+      <hr class="divider" />
+
+      <!-- Carrousel pro -->
+      <section class="pro-carousel">
+        <div class="pro-carousel__head">
+          <img class="pro-carousel__logo" src="assets/carousel-logo-exp.png" alt="" />
+          <div>
+            <p class="t-subhead">eXp International</p>
+            <p class="t-caption dim">Pro</p>
+          </div>
+          <a class="pro-carousel__cta" href="#">
+            Voir toutes ses annonces
+            <img src="assets/carousel-cta-arrow.svg" alt="" />
+          </a>
+        </div>
+        <div class="pro-carousel__track">
+          <article class="pro-card">
+            <img class="pro-card__photo" src="assets/carousel-1.png" alt="" />
+            <p class="t-body-1-hl">185 000 €</p>
+            <p class="t-body-2">Appartement · 2 pièces · 39 m<sup>2</sup></p>
+            <div class="pro-card__criteria">
+              <span class="dpe"><img src="assets/carousel-dpe-d.svg" alt="DPE" /><span>D</span></span>
+              <span class="adcard__criterion"><img src="assets/icon-balcon-carousel.svg" alt="" /><span class="t-body-2">Balcon</span></span>
+            </div>
+            <p class="t-caption dim">Paris 75002</p>
+          </article>
+          <article class="pro-card">
+            <img class="pro-card__photo" src="assets/carousel-2.png" alt="" />
+            <p class="t-body-1-hl">945 000 €</p>
+            <p class="t-body-2">Appartement · 4 pièces · 115 m<sup>2</sup></p>
+            <div class="pro-card__criteria">
+              <span class="adcard__criterion"><img src="assets/icon-balcon-carousel.svg" alt="" /><span class="t-body-2">Balcon</span></span>
+            </div>
+            <p class="t-caption dim">Paris 75002</p>
+          </article>
+          <article class="pro-card">
+            <img class="pro-card__photo" src="assets/carousel-3.png" alt="" />
+            <p class="t-body-1-hl">299 000 €</p>
+            <p class="t-body-2">Appartement · 70 m<sup>2</sup> · Nice</p>
+            <div class="pro-card__criteria">
+              <span class="adcard__criterion"><img src="assets/icon-balcon-carousel.svg" alt="" /><span class="t-body-2">Balcon</span></span>
+            </div>
+            <p class="t-caption dim">Paris 75002</p>
+          </article>
+        </div>
+      </section>
+
+      <!-- Annonce 6 -->
+      <article class="adcard adcard--drop">
+        <div class="adcard__media">
+          <img src="assets/card6-photo.png" alt="Appartement, 2 pièces, 43 m², Montpellier" />
+          <div class="adcard__media-top">
+            <div class="adcard__premium"></div>
+            <button class="adcard__fav" type="button" aria-label="Ajouter aux favoris"><img src="assets/icon-like.svg" alt="" /></button>
+          </div>
+          <div class="adcard__media-bottom">
+            <span class="adcard__vv" aria-label="Visite virtuelle disponible"><img src="assets/icon-virtual-visit.svg" alt="" /></span>
+          </div>
+        </div>
+        <div class="adcard__body">
+          <div>
+            <div class="adcard__price">
+              <span class="adcard__price-main">
+                <span class="t-body-1-hl">5 667</span>
+                <img src="assets/icon-price-down.svg" alt="Prix en baisse" />
+              </span>
+              <span class="t-caption dim">5 667 €/m²</span>
+            </div>
+            <p class="adcard__title t-body-2-hl">Appartement · 2 pièces · 43 m²</p>
+          </div>
+          <div class="adcard__criteria">
+            <span class="dpe"><img src="assets/dpe-d.svg" alt="DPE" /><span>D</span></span>
+          </div>
+          <p class="adcard__place t-body-2">Montpellier 34000</p>
+          <div class="adcard__meta"><span class="t-caption dim">Aujourd’hui 12:34</span></div>
+        </div>
+      </article>
+      <hr class="divider" />
+
+      <!-- Emplacement publicitaire 580×320 -->
+      <div style="display: flex; justify-content: center">
+        <div class="ad-slot" style="width: 580px; max-width: 100%; height: 320px; background: var(--color-neutral-container); display: grid; place-items: center">
+          <img src="assets/ad-inline-logo.svg" alt="Espace publicitaire" style="width: 139px; height: 42px; position: relative; z-index: 1" />
+        </div>
+      </div>
+      <hr class="divider" />
+
+      <!-- Annonce 7 -->
+      <article class="adcard">
+        <div class="adcard__media">
+          <img src="assets/card7-photo.png" alt="Appartement, 2 pièces, 43 m², Montpellier" />
+          <div class="adcard__media-top">
+            <div class="adcard__premium"></div>
+            <button class="adcard__fav" type="button" aria-label="Ajouter aux favoris"><img src="assets/icon-like.svg" alt="" /></button>
+          </div>
+          <div class="adcard__media-bottom">
+            <span class="adcard__vv" aria-label="Visite virtuelle disponible"><img src="assets/icon-virtual-visit.svg" alt="" /></span>
+          </div>
+        </div>
+        <div class="adcard__body">
+          <div>
+            <div class="adcard__price">
+              <span class="adcard__price-main"><span class="t-body-1-hl">1 350 000 €</span></span>
+              <span class="t-caption dim">6 085 €/m²</span>
+            </div>
+            <p class="adcard__title t-body-2-hl">Appartement · 2 pièces · 43 m²</p>
+          </div>
+          <div class="adcard__criteria">
+            <span class="dpe"><img src="assets/dpe-c.svg" alt="DPE" /><span>C</span></span>
+            <span class="adcard__sep t-body-2">·</span>
+            <span class="adcard__criterion"><img src="assets/icon-balcon.svg" alt="" /><span class="t-body-2">Balcon</span></span>
+            <span class="adcard__sep t-body-2">·</span>
+            <span class="adcard__criterion"><img src="assets/icon-cave.svg" alt="" /><span class="t-body-2">Cave</span></span>
+          </div>
+          <div class="adcard__tags"><span class="tag tag--outlined-support">Pro</span></div>
+          <p class="adcard__place t-body-2">Montpellier 34000</p>
+          <div class="adcard__meta">
+            <span class="adcard__meta-logo"></span>
+            <span class="t-caption dim">Par <strong>Adevinta</strong> · Aujourd'hui 12h34</span>
+          </div>
+        </div>
+      </article>
+      <hr class="divider" />
+
+      <!-- Annonce 8 -->
+      <article class="adcard adcard--drop">
+        <div class="adcard__media">
+          <img src="assets/card8-photo.png" alt="Appartement, 2 pièces, 43 m², Montpellier" />
+          <div class="adcard__media-top">
+            <div class="adcard__premium"></div>
+            <button class="adcard__fav" type="button" aria-label="Ajouter aux favoris"><img src="assets/icon-like.svg" alt="" /></button>
+          </div>
+        </div>
+        <div class="adcard__body">
+          <div>
+            <div class="adcard__price">
+              <span class="adcard__price-main">
+                <span class="t-body-1-hl">259 000</span>
+                <img src="assets/icon-price-down.svg" alt="Prix en baisse" />
+              </span>
+              <span class="t-caption dim">5 078 €/m²</span>
+            </div>
+            <p class="adcard__title t-body-2-hl">Appartement · 2 pièces · 43 m²</p>
+          </div>
+          <div class="adcard__criteria">
+            <span class="dpe"><img src="assets/dpe-d.svg" alt="DPE" /><span>D</span></span>
+          </div>
+          <div class="adcard__tags"><span class="tag tag--outlined-support">Pro</span></div>
+          <p class="adcard__place t-body-2">Montpellier 34000</p>
+          <div class="adcard__meta">
+            <span class="adcard__meta-logo"></span>
+            <span class="t-caption dim">Par <strong>Adevinta</strong> · Aujourd'hui 12h34</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- Pagination -->
+      <nav class="pagination" aria-label="Pagination des résultats">
+        <button class="pagination__arrow" type="button" disabled aria-label="Page précédente">
+          <img src="assets/icon-page-prev.svg" alt="" />
+        </button>
+        <a class="pagination__item" href="#" aria-current="page">1</a>
+        <a class="pagination__item" href="#">2</a>
+        <a class="pagination__item" href="#">3</a>
+        <a class="pagination__item" href="#">4</a>
+        <a class="pagination__item" href="#">5</a>
+        <a class="pagination__item" href="#">6</a>
+        <a class="pagination__item" href="#">7</a>
+        <a class="pagination__item" href="#">8</a>
+        <a class="pagination__item" href="#">9</a>
+        <a class="pagination__item" href="#">10</a>
+        <a class="pagination__item" href="#">11</a>
+        <span class="pagination__item pagination__item--ellipsis">...</span>
+        <a class="pagination__item" href="#">80</a>
+        <button class="pagination__arrow" type="button" aria-label="Page suivante">
+          <img src="assets/icon-page-next.svg" alt="" />
+        </button>
+      </nav>
+
+      <hr class="divider" />
+      <nav class="breadcrumb" aria-label="Fil d'ariane">
+        <a class="t-caption dim" href="#">Accueil</a>
+        <img src="assets/icon-breadcrumb-sep.svg" alt="" />
+        <span class="t-caption-hl">Ventes immobilières</span>
+      </nav>
+    </div>
+
+    <!-- Colonne publicitaire -->
+    <aside class="results__aside" aria-label="Publicités">
+      <img class="ad-visual" src="assets/pub-rail-orange.png" alt="Publicité" width="298" height="599" />
+    </aside>
+  </div>
+</main>
+
+<!-- ══════════════════════════ FOOTER SEO ══════════════════════════ -->
+<section class="seo" aria-label="Toutes les catégories">
+  <div class="seo__block">
+    <div class="seo__cols">
+      <div class="seo__section"><h3>EMPLOI</h3><ul>
+        <li><a href="#">Offres d’emploi</a></li><li><a href="#">Formations professionnelles</a></li>
+      </ul></div>
+      <div class="seo__section"><h3>VEHICULES</h3><ul>
+        <li><a href="#">Voitures</a></li><li><a href="#">Motos</a></li><li><a href="#">Caravaning</a></li>
+        <li><a href="#">Utilitaires</a></li><li><a href="#">Camion</a></li><li><a href="#">Nautisme</a></li>
+        <li><a href="#">Équipement auto</a></li><li><a href="#">Équipement moto</a></li>
+        <li><a href="#">Équipement caravaning</a></li><li><a href="#">Équipement nautisme</a></li>
+      </ul></div>
+      <div class="seo__section"><h3>IMMOBILIER</h3><ul>
+        <li><a href="#">Ventes immobilières</a></li><li><a href="#">Locations</a></li><li><a href="#">Colocations</a></li>
+        <li><a href="#">Bureaux &amp; Commerces</a></li><li><a href="#">Immobilier Neuf</a></li>
+      </ul></div>
+      <div class="seo__section"><h3>MODE</h3><ul>
+        <li><a href="#">Vêtements</a></li><li><a href="#">Chaussures</a></li>
+        <li><a href="#">Accessoires &amp; Bagagerie</a></li><li><a href="#">Montres &amp; Bijoux</a></li>
+      </ul></div>
+      <div class="seo__section"><h3>LOCATIONS DE VACANCES</h3><ul>
+        <li><a href="#">Locations saisonnières</a></li><li><a href="#">Hôtels</a></li>
+        <li><a href="#">Ventes flash vacances</a></li><li><a href="#">Locations en Espagne</a></li>
+        <li><a href="#">Locations en Europe</a></li>
+      </ul></div>
+      <div class="seo__section"><h3>LOISIRS</h3><ul>
+        <li><a href="#">Antiquités</a></li><li><a href="#">Collection</a></li><li><a href="#">CD - Musique</a></li>
+        <li><a href="#">Instruments de musique</a></li><li><a href="#">Livres</a></li><li><a href="#">Modélisme</a></li>
+        <li><a href="#">Vins &amp; Gastronomie</a></li><li><a href="#">Jeux &amp; Jouets</a></li>
+        <li><a href="#">Loisirs créatifs</a></li><li><a href="#">Sport &amp; Plein air</a></li>
+        <li><a href="#">Vélos</a></li><li><a href="#">Équipement vélos</a></li>
+      </ul></div>
+      <div class="seo__section"><h3>ANIMAUX</h3><ul>
+        <li><a href="#">Animaux</a></li><li><a href="#">Accessoires animaux</a></li><li><a href="#">Animaux perdus</a></li>
+      </ul></div>
+      <div class="seo__section"><h3>ELECTRONIQUE</h3><ul>
+        <li><a href="#">Ordinateurs</a></li><li><a href="#">Accessoires informatiques</a></li>
+        <li><a href="#">Tablettes &amp; Liseuses</a></li><li><a href="#">Photo, audio &amp; vidéo</a></li>
+        <li><a href="#">Téléphones &amp; Objets connectés</a></li>
+        <li><a href="#">Accessoires téléphone &amp; Objets connectés</a></li>
+        <li><a href="#">Consoles</a></li><li><a href="#">Jeux vidéo</a></li>
+      </ul></div>
+      <div class="seo__section"><h3>SERVICES</h3><ul>
+        <li><a href="#">Artistes &amp; Musiciens</a></li><li><a href="#">Baby-Sitting</a></li><li><a href="#">Billeterie</a></li>
+        <li><a href="#">Covoiturage</a></li><li><a href="#">Cours particuliers</a></li>
+        <li><a href="#">Entraide entre voisins</a></li><li><a href="#">Evènements</a></li>
+        <li><a href="#">Services à la personne</a></li><li><a href="#">Services aux animaux</a></li>
+        <li><a href="#">Services de déménagement</a></li>
+        <li><a href="#">Services de réparations électroniques</a></li>
+        <li><a href="#">Services de réparations mécaniques</a></li>
+        <li><a href="#">Services de jardinerie &amp; bricolage</a></li>
+        <li><a href="#">Services évènementiels</a></li><li><a href="#">Autres services</a></li>
+      </ul></div>
+      <div class="seo__section"><h3>FAMILLE</h3><ul>
+        <li><a href="#">Equipement bébé</a></li><li><a href="#">Mobilier enfant</a></li><li><a href="#">Vêtement bébé</a></li>
+      </ul></div>
+      <div class="seo__section"><h3>MAISON &amp; JARDIN</h3><ul>
+        <li><a href="#">Ameublement</a></li><li><a href="#">Papeterie &amp; Fournitures scolaires</a></li>
+        <li><a href="#">Electroménager</a></li><li><a href="#">Arts de la table</a></li>
+        <li><a href="#">Décoration</a></li><li><a href="#">Linge de maison</a></li>
+        <li><a href="#">Bricolage</a></li><li><a href="#">Jardin &amp; Plantes</a></li>
+      </ul></div>
+      <div class="seo__section"><h3>MATERIEL PROFESSIONNEL</h3><ul>
+        <li><a href="#">Tracteurs</a></li><li><a href="#">Matériel agricole</a></li>
+        <li><a href="#">BTP - Chantier gros-oeuvre</a></li><li><a href="#">Poids lourds</a></li>
+        <li><a href="#">Manutention - Levage</a></li><li><a href="#">Equipements industriels</a></li>
+        <li><a href="#">Équipements pour restaurants &amp; hôtels</a></li>
+        <li><a href="#">Équipements &amp; Fournitures de bureau</a></li>
+        <li><a href="#">Équipements pour commerces &amp; marchés</a></li><li><a href="#">Matériel médical</a></li>
+      </ul></div>
+      <div class="seo__section"><h3>DIVERS</h3><ul><li><a href="#">Autres</a></li></ul></div>
+    </div>
+  </div>
+  <hr class="divider" />
+  <div class="seo__block">
+    <div class="seo__cols">
+      <div class="seo__section"><h3>OUEST</h3><ul>
+        <li><a href="#">Basse-Normandie</a></li><li><a href="#">Bretagne</a></li>
+        <li><a href="#">Pays de la Loire</a></li><li><a href="#">Poitou-Charentes</a></li>
+      </ul></div>
+      <div class="seo__section"><h3>SUD-OUEST</h3><ul>
+        <li><a href="#">Aquitaine</a></li><li><a href="#">Midi-Pyrénées</a></li>
+      </ul></div>
+      <div class="seo__section"><h3>SUD-EST</h3><ul>
+        <li><a href="#">Corse</a></li><li><a href="#">Languedoc-Roussillon</a></li>
+        <li><a href="#">Provence-Alpes-Côte d'Azur</a></li><li><a href="#">Rhône-Alpes</a></li>
+      </ul></div>
+      <div class="seo__section"><h3>EST</h3><ul>
+        <li><a href="#">Alsace</a></li><li><a href="#">Bourgogne</a></li><li><a href="#">Champagne-Ardenne</a></li>
+        <li><a href="#">Franche-Comté</a></li><li><a href="#">Lorraine</a></li>
+      </ul></div>
+      <div class="seo__section"><h3>NORD</h3><ul>
+        <li><a href="#">Haute-Normandie</a></li><li><a href="#">Nord-Pas-de-Calais</a></li><li><a href="#">Picardie</a></li>
+      </ul></div>
+      <div class="seo__section"><h3>CENTRE</h3><ul>
+        <li><a href="#">Auvergne</a></li><li><a href="#">Centre</a></li>
+        <li><a href="#">Ile-de-France</a></li><li><a href="#">Limousin</a></li>
+      </ul></div>
+      <div class="seo__section"><h3>DROM</h3><ul>
+        <li><a href="#">Guadeloupe</a></li><li><a href="#">Martinique</a></li>
+        <li><a href="#">Guyane</a></li><li><a href="#">Réunion</a></li>
+      </ul></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════ FOOTER ══════════════════════════ -->
+<footer class="footer">
+  <div class="footer__inner">
+    <div class="footer__cols">
+      <div class="footer__col">
+        <div class="footer__group">
+          <h3>À PROPOS DE POLARIS</h3>
+          <ul>
+            <li><a href="#">Qui sommes-nous&nbsp;?</a></li><li><a href="#">Recrutement</a></li>
+            <li><a href="#">Nos engagements</a></li><li><a href="#">L’Aveniradubon.fr</a></li>
+            <li><a href="#">Espace presse</a></li>
+          </ul>
+        </div>
+        <div class="footer__group">
+          <h3>NOS APPLICATIONS</h3>
+          <div class="footer__stores">
+            <img src="assets/store-badge-1.svg" alt="Télécharger sur l'App Store" />
+            <img src="assets/store-badge-3.svg" alt="Disponible sur Google Play" />
+          </div>
+        </div>
+      </div>
+      <div class="footer__col">
+        <div class="footer__group">
+          <h3>INFORMATIONS LÉGALES</h3>
+          <ul>
+            <li><a href="#">Conditions générales d'utilisation</a></li><li><a href="#">Règles de classement des annonces</a></li>
+            <li><a href="#">Conditions générales de vente</a></li><li><a href="#">Vie privée&nbsp;/ Cookies</a></li>
+            <li><a href="#">Vos droits et obligations</a></li><li><a href="#">Avis des utilisateurs</a></li>
+            <li><a href="#">Charte de bonne conduite</a></li><li><a href="#">Paiement en plusieurs fois</a></li>
+            <li><a href="#">Accessibility</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer__col">
+        <div class="footer__group">
+          <h3>PROFESSIONNELS</h3>
+          <ul>
+            <li><a href="#">Publicité</a></li><li><a href="#">Professionnels de l'immobilier</a></li>
+            <li><a href="#">Vos recrutements</a></li><li><a href="#">Professionnels de l'automobile</a></li>
+            <li><a href="#">Professionnels du voyage</a></li><li><a href="#">Autres solutions professionnelles</a></li>
+            <li><a href="#">Annuaire des professionnels</a></li>
+            <li><a href="#">Offre d'emploi gratuite pour les TPE</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer__col">
+        <div class="footer__group">
+          <h3>UNE QUESTION&nbsp;?</h3>
+          <ul>
+            <li><a href="#">Aide</a></li>
+            <li><a href="#">Paiement en ligne et expédition sécurisée</a></li>
+            <li><a href="#">Le portefeuille</a></li><li><a href="#">Réservation en ligne pour les hôtes</a></li>
+            <li><a href="#">Votre dossier de location en ligne</a></li><li><a href="#">Votre espace propriétaire</a></li>
+            <li><a href="#">État de nos services</a></li>
+          </ul>
+        </div>
+        <div class="footer__group">
+          <h3>VOUS ÊTES À L’ÉTRANGER&nbsp;?</h3>
+          <button class="footer__select" type="button">
+            <img src="assets/flag-france.svg" alt="" />
+            <span class="t-body-1">France</span>
+            <img src="assets/icon-chevron-select.svg" alt="" />
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer__group-companies t-body-1">
+      leboncoin Groupe : AVendreALouer • leboncoin Immobilier Neuf • L'argus • Paycar •
+      Agriaffaires • MachineryZone • Locasun • Locasun-vp • Pilgo • Videdressing •
+      LeDénicheur • Younited Credit
+    </div>
+
+    <div class="footer__signature">
+      <span class="t-caption">Polaris 2024</span>
+      <div class="footer__trustpilot">
+        <img src="assets/trustpilot-1.svg" alt="Excellent" />
+        <img src="assets/trustpilot-2.svg" alt="" />
+        <span>93 378 avis</span>
+        <img src="assets/trustpilot-3.svg" alt="Trustpilot" />
+      </div>
+      <div class="footer__social">
+        <span>Retrouvez-nous sur</span>
+        <a href="#" aria-label="Facebook"><img src="assets/social-facebook.svg" alt="" /></a>
+        <a href="#" aria-label="Twitter"><img src="assets/social-twitter.svg" alt="" /></a>
+        <a href="#" aria-label="Instagram"><img src="assets/social-instagram.svg" alt="" /></a>
+        <a href="#" aria-label="Pinterest"><img src="assets/social-pinterest.svg" alt="" /></a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- ══════════════════════ DESSIN SUR LA CARTE ══════════════════════
+     Trois écrans plein écran, dans l'ordre du board : tracé (12235:249497),
+     zone validée (12248:251532), listing cartographique (12248:251388).
+     Le tracé lui-même n'est pas fonctionnel — hors périmètre demandé : le CTA
+     orange fait avancer d'un écran et la zone est un SVG figé. -->
+<section class="draw" id="drawStep" hidden aria-label="Dessiner sur la carte">
+  <header class="draw__topbar">
+    <button type="button" id="drawBack" aria-label="Retour">
+      <img src="assets/icon-arrow-left.svg" alt="" />
+    </button>
+    <h2 class="draw__title t-body-1-hl">Où cherchez-vous&nbsp;?</h2>
+    <span class="loc-topbar__spacer" aria-hidden="true"></span>
+  </header>
+  <div class="draw__canvas">
+    <div class="draw__hint" id="drawHint">
+      <p class="t-body-2">Déplacez-vous sur la carte puis dessinez votre zone de recherche.</p>
+      <button type="button" id="drawHintClose" aria-label="Masquer la consigne">
+        <img src="assets/icon-close.svg" alt="" />
+      </button>
+    </div>
+    <button class="draw__tool draw__tool--layers" type="button" aria-label="Changer de fond de carte">
+      <img src="assets/icon-layers.svg" alt="" />
+    </button>
+    <button class="btn btn--filled-main draw__cta" type="button" id="drawStart">Dessiner la zone</button>
+  </div>
+</section>
+
+<section class="draw" id="drawValid" hidden aria-label="Zone de recherche dessinée">
+  <header class="draw__topbar">
+    <button type="button" id="drawValidBack" aria-label="Retour">
+      <img src="assets/icon-arrow-left.svg" alt="" />
+    </button>
+    <h2 class="draw__title t-body-1-hl">Dessiner la zone de recherche</h2>
+    <span class="loc-topbar__spacer" aria-hidden="true"></span>
+  </header>
+  <div class="draw__canvas">
+    <button class="draw__tool draw__tool--layers" type="button" aria-label="Changer de fond de carte">
+      <img src="assets/icon-layers.svg" alt="" />
+    </button>
+    <div class="draw__area">
+      <div class="draw__zone"></div>
+      <img class="draw__check" src="assets/icon-circle-check.svg" alt="Zone valide" />
+      <button class="draw__tool draw__tool--trash" type="button" id="drawTrash" aria-label="Supprimer la zone">
+        <img src="assets/icon-trash.svg" alt="" />
+      </button>
+    </div>
+  </div>
+  <div class="draw__bar">
+    <button class="btn btn--filled-main" type="button" id="drawSubmit">Valider cette zone</button>
+  </div>
+</section>
+
+<section class="draw" id="drawList" hidden aria-label="Résultats sur la carte">
+  <div class="draw__canvas">
+    <div class="maplist__chips">
+      <button class="maplist__chip" type="button" id="mapListBack" aria-label="Retour">
+        <img src="assets/icon-arrow-left.svg" alt="" />
+      </button>
+      <button class="maplist__chip" type="button">
+        <img src="assets/icon-map.svg" alt="" />Liste
+      </button>
+      <button class="maplist__chip" type="button" id="mapListZone">Personnalisée</button>
+      <button class="maplist__chip" type="button">
+        <img src="assets/icon-filter.svg" alt="" />Filtres
+      </button>
+    </div>
+    <!-- Les pins portent un nombre d'annonces regroupées, pas un prix
+         (Figma 12248:251397 « Pin RE 11 », 251398 « Pin RE 6 »…) -->
+    <span class="maplist__pin" style="top: 32%; left: 30%">11</span>
+    <span class="maplist__pin" style="top: 40%; left: 56%">6</span>
+    <span class="maplist__pin" style="top: 46%; left: 76%">22</span>
+    <span class="maplist__pin" style="top: 54%; left: 44%">15</span>
+    <span class="maplist__pin" style="top: 36%; left: 66%">29</span>
+    <span class="maplist__pin" style="top: 62%; left: 66%">18</span>
+    <button class="maplist__fab" type="button" aria-label="Créer une alerte">
+      <img src="assets/icon-bell-white.svg" alt="" />
+    </button>
+    <div class="maplist__sheet">
+      <p class="t-subhead" id="mapListCount">22 639 annonces</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════ TAB BAR MOBILE ══════════════════════
+     Figma pHxiy4fAFmdojTSoAYRVsy?node-id=4328-38015 — cinq onglets, « Recherche »
+     actif, pastille de notification sur « Compte ». -->
+<nav class="tabbar" aria-label="Navigation principale">
+  <a class="tabbar__item tabbar__item--active" href="#" aria-current="page">
+    <img src="assets/tab-search.svg" alt="" /><span>Recherche</span>
+  </a>
+  <a class="tabbar__item" href="#"><img src="assets/tab-favorites.svg" alt="" /><span>Favoris</span></a>
+  <a class="tabbar__item" href="#"><img src="assets/tab-post.svg" alt="" /><span>Publier</span></a>
+  <a class="tabbar__item" href="#"><img src="assets/tab-messages.svg" alt="" /><span>Messages</span></a>
+  <button class="tabbar__item" type="button" id="tabAccount" aria-haspopup="dialog" aria-expanded="false">
+    <img src="assets/tab-account.svg" alt="" /><span>Compte</span>
+    <span class="tabbar__badge" aria-label="1 notification"></span>
+  </button>
+</nav>
+
+<!-- ══════════════════════ BOTTOM SHEET ANNONCE ══════════════════════
+     Figma pHxiy4fAFmdojTSoAYRVsy?node-id=4341-48013 — équivalent mobile de la
+     popover desktop : même annonce, plus un CTA « Découvrir » pleine largeur. -->
+<div class="sheet" id="adSheet" hidden>
+  <div class="sheet__scrim" data-sheet-close></div>
+  <div class="sheet__content" role="dialog" aria-modal="true" aria-labelledby="adSheetTitle">
+    <div class="sheet__handle" aria-hidden="true"></div>
+    <p class="sheet__title" id="adSheetTitle">Que pensez-vous de ce bien&nbsp;?</p>
+    <a class="featured-ad" href="../media-experience/adview.html">
+      <img class="featured-ad__thumb" data-ad="thumb" src="" alt="" />
+      <span class="featured-ad__body">
+        <span class="featured-ad__price">
+          <span class="featured-ad__amount" data-ad="price"></span>
+          <span class="featured-ad__sqm" data-ad="sqm"></span>
+        </span>
+        <span class="featured-ad__desc" data-ad="desc"></span>
+        <span class="featured-ad__loc" data-ad="loc"></span>
+      </span>
+    </a>
+    <a class="btn btn--filled-support sheet__cta" href="../media-experience/adview.html">Découvrir</a>
+  </div>
+</div>
+
+<script>
+  const field = document.getElementById('locationField');
+  const input = document.getElementById('locationInput');
+  const chevron = document.getElementById('locationChevron');
+  const popover = document.getElementById('locationPopover');
+  const paneDefault = document.getElementById('popoverDefault');
+  const paneResults = document.getElementById('popoverResults');
+  const sticky = document.getElementById('popoverSticky');
+
+  // Jeu de localisations issu du nœud Figma 8544:69386 (état saisie « Loire »)
+  // + du bloc Autocomplete masqué 8544:69492 (« Paris »).
+  const LOCATIONS = [
+    { label: 'Châteaux de la Loire', kind: 'Lieu d’intérêt' },
+    { label: 'Loirette (44370)', kind: 'Quartier' },
+    { label: 'Pays de la Loire', kind: 'Région' },
+    { label: 'Pays de la Loire et régions voisines', kind: null },
+    { label: 'Eure-et-Loire (28)', kind: 'Département' },
+    { label: 'Eure-et-Loire et départements voisins', kind: null },
+    { label: 'Paris (Toute la ville)', kind: null },
+    { label: 'Paris (75001)', kind: null },
+    { label: 'Paris (75002)', kind: null },
+    { label: 'Paris (75003)', kind: null },
+  ];
+
+  const normalize = (value) =>
+    value.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+
+  function setPopover(open) {
+    popover.dataset.open = String(open);
+    input.setAttribute('aria-expanded', String(open));
+    // Menu déployé → champ en état « Actived » (Figma 12324:137539)
+    field.classList.toggle('field--actived', open);
+    // Le placeholder dépend de l'ouverture, et sync() passe parfois avant elle
+    syncPlaceholder();
+  }
+
+  // La sous-chaîne saisie reste en Regular (<mark>), le reste du libellé est en Bold.
+  function buildLabel(label, at, length) {
+    const node = document.createElement('span');
+    node.className = 'popover__option-label';
+    if (at < 0) {
+      node.textContent = label;
+      return node;
+    }
+    const before = label.slice(0, at);
+    const match = label.slice(at, at + length);
+    const after = label.slice(at + length);
+    if (before) node.append(document.createTextNode(before));
+    const marked = document.createElement('mark');
+    marked.textContent = match;
+    node.append(marked);
+    if (after) node.append(document.createTextNode(after));
+    return node;
+  }
+
+  /* ── Métadonnées de zone — réf. Figma 4220:7441 ──────────────────────────
+     Aucune valeur n'est estimée. `prix` = médiane des ventes d'appartements 2024
+     (DVF Etalab, fichiers geo-dvf par code INSEE). `lignes` = les 3 lignes
+     lourdes ayant le plus d'emprise dans le polygone geo.api.gouv.fr de la zone,
+     métro d'abord puis tram, avec leur couleur officielle : référentiel IDFM
+     pour Paris, tags OSM `colour` (via Overpass) pour Lyon / Marseille /
+     Toulouse. La couleur est portée par la ligne car les refs se recoupent d'une
+     ville à l'autre (A = rose à Lyon, rouge à Toulouse). Seuls `tags` sont
+     éditoriaux : uniquement de la forme urbaine ou de la composition observable
+     (Verdoyant, Pavillonnaire, Portuaire, Étudiant…), jamais de jugement social ni
+     de valorisation — pas de « populaire », « prisé », « bourgeois »,
+     « métissé », « abordable ». Le prix est déjà affiché, le tag ne le commente
+     pas.
+     Toulouse n'a pas d'arrondissements : le prix est calculé par code postal
+     mais les lignes restent au niveau communal.
+     Hors des 51 zones couvertes, la ligne de métadonnées ne s'affiche pas. */
+  const ZONES = {
+    '75001': { insee: '75101', prix: 12700, lignes: [['1', '#ffbe00'], ['4', '#a0006e'], ['7', '#ff82b4']], tags: ['Central', 'Commerçant'] },
+    '75002': { insee: '75102', prix: 11400, lignes: [['3', '#6e6e00'], ['8', '#d282be'], ['9', '#d2d200']], tags: ['Commerçant', 'Affaires'] },
+    '75003': { insee: '75103', prix: 11860, lignes: [['3', '#6e6e00'], ['8', '#d282be'], ['11', '#6e491e']], tags: ['Historique', 'Culturel'] },
+    '75004': { insee: '75104', prix: 12770, lignes: [['1', '#ffbe00'], ['7', '#ff82b4'], ['11', '#6e491e']], tags: ['Central', 'Culturel'] },
+    '75005': { insee: '75105', prix: 11860, lignes: [['7', '#ff82b4'], ['10', '#dc9600']], tags: ['Étudiant', 'Historique'] },
+    '75006': { insee: '75106', prix: 14800, lignes: [['4', '#a0006e'], ['10', '#dc9600'], ['12', '#00643c']], tags: ['Historique', 'Commerçant'] },
+    '75007': { insee: '75107', prix: 13860, lignes: [['8', '#d282be'], ['12', '#00643c'], ['13', '#82c8e6']], tags: ['Calme', 'Culturel'] },
+    '75008': { insee: '75108', prix: 12230, lignes: [['3', '#6e6e00'], ['9', '#d2d200'], ['13', '#82c8e6']], tags: ['Affaires', 'Commerçant'] },
+    '75009': { insee: '75109', prix: 10620, lignes: [['7', '#ff82b4'], ['9', '#d2d200'], ['12', '#00643c']], tags: ['Commerçant', 'Animé'] },
+    '75010': { insee: '75110', prix: 9240, lignes: [['2', '#0055c8'], ['4', '#a0006e'], ['5', '#ff5a00']], tags: ['Animé', 'Canaux'] },
+    '75011': { insee: '75111', prix: 9820, lignes: [['5', '#ff5a00'], ['8', '#d282be'], ['9', '#d2d200']], tags: ['Animé', 'Nocturne'] },
+    '75012': { insee: '75112', prix: 8880, lignes: [['1', '#ffbe00'], ['6', '#82dc73'], ['8', '#d282be']], tags: ['Familial', 'Verdoyant'] },
+    '75013': { insee: '75113', prix: 8630, lignes: [['5', '#ff5a00'], ['6', '#82dc73'], ['7', '#ff82b4']], tags: ['Moderne', 'Étudiant'] },
+    '75014': { insee: '75114', prix: 9280, lignes: [['4', '#a0006e'], ['6', '#82dc73'], ['13', '#82c8e6']], tags: ['Calme', 'Verdoyant'] },
+    '75015': { insee: '75115', prix: 9450, lignes: [['6', '#82dc73'], ['8', '#d282be'], ['12', '#00643c']], tags: ['Familial', 'Paisible'] },
+    '75016': { insee: '75116', prix: 10840, lignes: [['6', '#82dc73'], ['9', '#d2d200'], ['10', '#dc9600']], tags: ['Verdoyant', 'Calme'] },
+    '75017': { insee: '75117', prix: 10000, lignes: [['2', '#0055c8'], ['3', '#6e6e00'], ['13', '#82c8e6']], tags: ['Familial', 'Commerçant'] },
+    '75018': { insee: '75118', prix: 8690, lignes: [['2', '#0055c8'], ['4', '#a0006e'], ['12', '#00643c']], tags: ['Animé', 'Culturel'] },
+    '75019': { insee: '75119', prix: 7840, lignes: [['5', '#ff5a00'], ['7', '#ff82b4'], ['7B', '#82dc73']], tags: ['Verdoyant', 'Canaux'] },
+    '75020': { insee: '75120', prix: 8310, lignes: [['2', '#0055c8'], ['3B', '#82c8e6'], ['9', '#d2d200']], tags: ['Vivant', 'Verdoyant'] },
+    '13001': { insee: '13201', prix: 3160, lignes: [['M1', '#0075be'], ['M2', '#e30513'], ['T2', '#f5e615']], tags: ['Central', 'Commerçant'] },
+    '13002': { insee: '13202', prix: 3340, lignes: [['M1', '#0075be'], ['M2', '#e30513'], ['T3', '#96be0d']], tags: ['Portuaire', 'Historique'] },
+    '13003': { insee: '13203', prix: 1800, lignes: [['M1', '#0075be'], ['M2', '#e30513'], ['T3', '#96be0d']], tags: ['Moderne', 'Culturel'] },
+    '13004': { insee: '13204', prix: 2820, lignes: [['M1', '#0075be'], ['T1', '#f18e00'], ['T2', '#f5e615']], tags: ['Familial', 'Calme'] },
+    '13005': { insee: '13205', prix: 3450, lignes: [['M1', '#0075be'], ['T1', '#f18e00']], tags: ['Étudiant', 'Central'] },
+    '13006': { insee: '13206', prix: 3740, lignes: [['M1', '#0075be'], ['M2', '#e30513'], ['T3', '#96be0d']], tags: ['Commerçant', 'Animé'] },
+    '13007': { insee: '13207', prix: 5000, lignes: [], tags: ['Balnéaire', 'Calme'] },
+    '13008': { insee: '13208', prix: 4420, lignes: [['M2', '#e30513'], ['T3', '#96be0d']], tags: ['Balnéaire', 'Verdoyant'] },
+    '13009': { insee: '13209', prix: 3200, lignes: [['M2', '#e30513'], ['T3', '#96be0d']], tags: ['Verdoyant', 'Familial'] },
+    '13010': { insee: '13210', prix: 2700, lignes: [['T3', '#96be0d']], tags: ['Pavillonnaire', 'Familial'] },
+    '13011': { insee: '13211', prix: 3050, lignes: [['T1', '#f18e00']], tags: ['Pavillonnaire', 'Calme'] },
+    '13012': { insee: '13212', prix: 3600, lignes: [['M1', '#0075be'], ['T1', '#f18e00']], tags: ['Familial', 'Verdoyant'] },
+    '13013': { insee: '13213', prix: 3050, lignes: [['M1', '#0075be']], tags: ['Pavillonnaire', 'Verdoyant'] },
+    '13014': { insee: '13214', prix: 1690, lignes: [], tags: ['Familial', 'Moderne'] },
+    '13015': { insee: '13215', prix: 1750, lignes: [['M2', '#e30513'], ['T3', '#96be0d']], tags: ['Portuaire', 'Familial'] },
+    '13016': { insee: '13216', prix: 3050, lignes: [], tags: ['Balnéaire', 'Village'] },
+    '31000': { insee: '31555', prix: 4600, lignes: [['A', '#DB001B'], ['B', '#FFD900'], ['T1', '#004687']], tags: ['Central', 'Commerçant'] },
+    '31100': { insee: '31555', prix: 2400, lignes: [['A', '#DB001B'], ['B', '#FFD900'], ['T1', '#004687']], tags: ['Étudiant', 'Familial'] },
+    '31200': { insee: '31555', prix: 2750, lignes: [['A', '#DB001B'], ['B', '#FFD900'], ['T1', '#004687']], tags: ['Familial', 'Commerçant'] },
+    '31300': { insee: '31555', prix: 3300, lignes: [['A', '#DB001B'], ['B', '#FFD900'], ['T1', '#004687']], tags: ['Animé', 'Familial'] },
+    '31400': { insee: '31555', prix: 3550, lignes: [['A', '#DB001B'], ['B', '#FFD900'], ['T1', '#004687']], tags: ['Étudiant', 'Verdoyant'] },
+    '31500': { insee: '31555', prix: 3330, lignes: [['A', '#DB001B'], ['B', '#FFD900'], ['T1', '#004687']], tags: ['Familial', 'Calme'] },
+    '69001': { insee: '69381', prix: 5120, lignes: [['A', '#e03f89'], ['C', '#eb6736']], tags: ['Animé', 'Nocturne'] },
+    '69002': { insee: '69382', prix: 5450, lignes: [['A', '#e03f89'], ['D', '#489e43'], ['T1', '#0d4f9f']], tags: ['Central', 'Commerçant'] },
+    '69003': { insee: '69383', prix: 4530, lignes: [['B', '#2575bc'], ['D', '#489e43'], ['T3', '#44a3a6']], tags: ['Affaires', 'Commerçant'] },
+    '69004': { insee: '69384', prix: 4920, lignes: [['C', '#eb6736']], tags: ['Village', 'Marchés'] },
+    '69005': { insee: '69385', prix: 3920, lignes: [['D', '#489e43']], tags: ['Historique', 'Culturel'] },
+    '69006': { insee: '69386', prix: 5280, lignes: [['A', '#e03f89'], ['B', '#2575bc'], ['T1', '#0d4f9f']], tags: ['Calme', 'Verdoyant'] },
+    '69007': { insee: '69387', prix: 4490, lignes: [['B', '#2575bc'], ['D', '#489e43'], ['T1', '#0d4f9f']], tags: ['Étudiant', 'Moderne'] },
+    '69008': { insee: '69388', prix: 4100, lignes: [['D', '#489e43'], ['T2', '#6ba230'], ['T6', '#f191a3']], tags: ['Familial', 'Moderne'] },
+    '69009': { insee: '69389', prix: 3770, lignes: [['D', '#489e43']], tags: ['Familial', 'Paisible'] },
+  };
+
+  function sep() {
+    const node = document.createElement('span');
+    node.className = 'meta-sep';
+    node.setAttribute('aria-hidden', 'true');
+    return node;
+  }
+
+  // Texte noir ou blanc selon la luminance relative du fond (WCAG 2.1 §1.4.3) :
+  // les référentiels transport ne fournissent pas tous une couleur de texte.
+  function onColor(hex) {
+    const channel = (i) => {
+      const c = parseInt(hex.slice(1 + i * 2, 3 + i * 2), 16) / 255;
+      return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+    };
+    const l = 0.2126 * channel(0) + 0.7152 * channel(1) + 0.0722 * channel(2);
+    return l > 0.179 ? '#000000' : '#ffffff';
+  }
+
+  function buildMeta(label) {
+    const postcode = label.match(/\((\d{5})\)/);
+    const zone = postcode && ZONES[postcode[1]];
+    if (!zone) return null;
+
+    const meta = document.createElement('span');
+    meta.className = 'popover__option-meta';
+
+    // « ~ » : c'est une médiane, pas un prix de marché exact
+    const price = document.createElement('span');
+    price.append(document.createTextNode('~' + zone.prix.toLocaleString('fr-FR') + ' \u20ac / m'));
+    const exp = document.createElement('sup');
+    exp.textContent = '2';
+    price.append(exp);
+    meta.append(price);
+
+    // Certaines zones n'ont ni métro ni tram (Marseille 7e, 14e, 16e) : on saute
+    // le groupe de pastilles ET son filet plutôt que d'afficher un vide.
+    if (zone.lignes.length) {
+      const lines = document.createElement('span');
+      lines.className = 'meta-lines';
+      lines.setAttribute('role', 'img');
+      lines.setAttribute('aria-label', 'Desservi par ' + zone.lignes.map((l) => l[0]).join(', '));
+      for (const [ref, background] of zone.lignes) {
+        const badge = document.createElement('span');
+        badge.className = 'metro';
+        badge.style.background = background;
+        badge.style.color = onColor(background);
+        badge.textContent = ref;
+        lines.append(badge);
+      }
+      meta.append(sep(), lines);
+    }
+
+    const tags = document.createElement('span');
+    tags.className = 'meta-tags';
+    for (const text of zone.tags) {
+      const tag = document.createElement('span');
+      tag.className = 'tag-l';
+      tag.textContent = text;
+      tags.append(tag);
+    }
+    meta.append(sep(), tags);
+
+    return meta;
+  }
+
+  function renderOptions(locations, query, emptyText) {
+    const needle = normalize(query);
+    paneResults.replaceChildren();
+
+    if (!locations.length) {
+      const empty = document.createElement('p');
+      empty.className = 'popover__empty t-body-1';
+      empty.textContent = emptyText;
+      paneResults.append(empty);
+      return;
+    }
+
+    for (const location of locations) {
+      const at = normalize(location.label).indexOf(needle);
+      const option = document.createElement('button');
+      option.type = 'button';
+      option.className = 'popover__option';
+      option.setAttribute('role', 'option');
+      option.setAttribute('aria-selected', 'false');
+
+      const icon = document.createElement('span');
+      icon.className = 'popover__option-icon';
+      const img = document.createElement('img');
+      img.src = 'assets/icon-pin-suggestion.svg';
+      img.alt = '';
+      icon.append(img);
+
+      const text = document.createElement('span');
+      text.className = 'popover__option-text';
+      text.append(buildLabel(location.label, at, query.length));
+      const meta = buildMeta(location.label);
+      if (meta) text.append(meta);
+      else if (location.kind) {
+        const kind = document.createElement('span');
+        kind.className = 'popover__option-kind';
+        kind.textContent = location.kind;
+        text.append(kind);
+      }
+
+      option.append(icon, text);
+      // Sélection depuis l'autocomplétion : le popover reste ouvert sur l'état rayon
+      option.addEventListener('click', () => {
+        // Sélection venue d'une saisie : la feuille montre alors la ligne
+        // « Dessiner sur la carte » et non les trois cartes — Figma 12213:184404
+        state.fromTyping = true;
+        selectLocation(location.label, location.commune);
+      });
+      paneResults.append(option);
+    }
+  }
+
+  /* ── Autocomplétion adossée à geo.api.gouv.fr ────────────────────────────
+     Données réelles (communes, codes postaux, département, région) pour que
+     n'importe quelle ville saisie renvoie des suggestions justes. La structure
+     des lignes reproduit le pattern Figma 8544:69386 : commune → codes postaux
+     → département (+ voisins) → région (+ voisines).
+     Sans réseau, on retombe sur le jeu LOCATIONS extrait du Figma.           */
+  const GEO_API = 'https://geo.api.gouv.fr/communes';
+  const MAX_POSTCODES = 20;
+
+  function localMatches(query) {
+    const needle = normalize(query);
+    return LOCATIONS.filter((location) => normalize(location.label).includes(needle));
+  }
+
+  function toSuggestions(communes) {
+    const suggestions = [];
+    for (const commune of communes) {
+      const codes = commune.codesPostaux || [];
+      if (codes.length > 1) {
+        suggestions.push({ label: commune.nom + ' (Toute la ville)', kind: 'Ville', commune });
+        for (const code of codes.slice(0, MAX_POSTCODES)) {
+          suggestions.push({ label: commune.nom + ' (' + code + ')', kind: 'Ville', commune });
+        }
+      } else {
+        suggestions.push({
+          label: commune.nom + (codes[0] ? ' (' + codes[0] + ')' : ''),
+          kind: 'Ville',
+          commune,
+        });
+      }
+    }
+
+    // Département et région : rattachés à la commune la plus peuplée du résultat
+    // Département et région : pas de contour communal, seulement un recentrage
+    const first = communes[0];
+    const around = first ? { centre: first.centre } : null;
+    if (first && first.departement) {
+      suggestions.push({
+        label: first.departement.nom + ' (' + first.departement.code + ')',
+        kind: 'Département', commune: around,
+      });
+      suggestions.push({ label: first.departement.nom + ' et départements voisins', kind: null, commune: around });
+    }
+    if (first && first.region) {
+      suggestions.push({ label: first.region.nom, kind: 'Région', commune: around });
+      suggestions.push({ label: first.region.nom + ' et régions voisines', kind: null, commune: around });
+    }
+    return suggestions;
+  }
+
+  let geoTimer = null;
+  let geoAbort = null;
+
+  function requestResults(query) {
+    const local = localMatches(query);
+    renderOptions(local, query, 'Recherche des localisations…');
+
+    if (geoTimer) clearTimeout(geoTimer);
+    if (geoAbort) geoAbort.abort();
+    geoAbort = new AbortController();
+    const signal = geoAbort.signal;
+
+    geoTimer = setTimeout(async () => {
+      const url =
+        GEO_API +
+        '?nom=' + encodeURIComponent(query) +
+        '&fields=nom,code,codesPostaux,departement,region,centre&boost=population&limit=5';
+      try {
+        const response = await fetch(url, { signal });
+        if (!response.ok) throw new Error('HTTP ' + response.status);
+        const communes = await response.json();
+        // La réponse peut arriver après que l'utilisateur a quitté la saisie
+        if (signal.aborted || input.value.trim() !== query) return;
+        renderOptions(
+          toSuggestions(communes),
+          query,
+          'Aucune localisation ne correspond à « ' + query + ' »'
+        );
+      } catch (error) {
+        if (signal.aborted) return;
+        // Réseau indisponible : on reste sur le jeu de données local
+        renderOptions(local, query, 'Aucune localisation ne correspond à « ' + query + ' »');
+      }
+    }, 200);
+  }
+
+  /* ── États « localisation choisie » ──────────────────────────────────────
+     mode : null (défaut) · 'draw' · 'around' (autour de moi) · 'france'
+     Le rayon pilote la carte : 0 km = contour de la commune seul
+     (Figma 11636:336057), > 0 km = cercle (Figma 11984:82914).            */
+  const locSelected = document.getElementById('locSelected');
+  const locRecents = document.getElementById('locRecents');
+  const recentsList = document.getElementById('locRecentsList');
+  const locChips = document.getElementById('locChips');
+  const locSubmit = document.getElementById('locSubmit');
+  const locClear = document.getElementById('locClear');
+  const radiusRange = document.getElementById('radiusRange');
+  const radiusValue = document.getElementById('radiusValue');
+  const radiusCircle = document.getElementById('radiusCircle');
+  const radiusPin = document.getElementById('radiusPin');
+  const radiusDrawn = document.getElementById('radiusDrawn');
+  const radiusCard = document.getElementById('radiusCard');
+  const radiusControl = document.getElementById('radiusControl');
+  const souscat = document.getElementById('locSouscat');
+  const souscatCards = document.querySelectorAll('.souscat__card');
+  const locWrap = document.getElementById('locWrap');
+  const radiusMap = document.getElementById('radiusMap');
+  const drawRow = document.getElementById('locDrawRow');
+  const collapsible = document.getElementById('locCollapsible');
+  const keyboard = document.getElementById('locKeyboard');
+  const mobile = window.matchMedia('(max-width: 767px)');
+
+  const resultsCount = document.getElementById('resultsCount');
+  const mapListCount = document.getElementById('mapListCount');
+
+  /* Valeurs relevées sur les maquettes, sauf l'état sans localisation : un volume
+     national exact n'y apprend rien, il est arrondi en « 100+ ».
+     880 150 pour toute la France, 290 pour une ville, 22 639 pour une zone
+     dessinée (12213:243380). Le compteur ne se contente plus du bouton Valider :
+     la validation le répercute sur le bandeau des résultats et sur la feuille de
+     l'écran carte, sinon le proto annonce 290 dans la modale et 17 500 derrière. */
+  const COUNTS = { default: '100+', france: '880 150', located: '290', drawn: '22 639' };
+  const searchCount = () => (
+    state.mode === 'france' ? COUNTS.france
+      : state.drawn ? COUNTS.drawn
+      : state.chips.length ? COUNTS.located : COUNTS.default
+  );
+  function renderCounts() {
+    const label = searchCount() + ' annonces';
+    resultsCount.textContent = label;
+    mapListCount.textContent = label;
+  }
+  /* Granularité du rayon — reco de la note 12213:184730 (« ajouter plus de
+     granularité : 15 km, 25, 40 »). Le slider reste un range 0-200 pour la
+     poignée et la piste, mais il indexe ces paliers : deux crans suffisent pour
+     passer de 5 à 15 km, alors qu'un pas de 1 km en demandait dix.
+     À confirmer avec Damien — la note n'est pas tranchée. */
+  const RADIUS_STEPS = [0, 1, 2, 3, 4, 5, 10, 15, 20, 25, 30, 40, 50, 75, 100, 150, 200];
+  const stepIndex = (km) => {
+    let best = 0;
+    RADIUS_STEPS.forEach((value, index) => {
+      if (Math.abs(value - km) < Math.abs(RADIUS_STEPS[best] - km)) best = index;
+    });
+    return best;
+  };
+  const DEFAULT_RADIUS = 5;
+  // editing = l'utilisateur est en train de saisir ; sinon le champ affiche la valeur validée
+  const state = {
+    chips: [], mode: null, radius: DEFAULT_RADIUS, editing: false,
+    center: null, contour: null,
+    // Contours mémorisés par libellé de chip, pour l'état multi
+    contours: {},
+    // focus : le champ a la main, donc le clavier occupe l'écran — la feuille
+    // repasse en état recherche et la carte se replie (Figma 12154:114101).
+    focus: false,
+    // zone : un cercle ou un contour est affiché ; sinon la carte cadre la France
+    zone: false,
+    /* recents : les recherches validées, la plus récente en tête, 3 au maximum
+       (Figma 12154:108524 / 12253:284951 en montrent trois). La toute première
+       recherche n'en a aucun, et la carte occupe la place laissée libre —
+       12154:107141. Chaque entrée : { labels, mode, radius }. */
+    recents: [],
+    /* V8 — fromTyping : la localisation vient d'être saisie au clavier. Le board
+       remplace alors les trois cartes d'alternatives par la seule ligne
+       « Dessiner sur la carte » (12213:184404, 12246:250597), là où l'ouverture
+       depuis le listing garde les trois cartes (12213:242276). Deux entrées pour
+       une même fonction : signalé comme incohérence. */
+    fromTyping: false,
+    /* drawn : la zone vient d'un tracé sur la carte. La chip s'appelle alors
+       « Personnalisée » et il n'y a pas de rayon à régler — Figma 12235:249560. */
+    drawn: false,
+    // Taille de carte courante, S ou M (notes Tech 12213:243380 / 12213:240933)
+    mapSize: null,
+  };
+
+  // Libellé affiché dans le champ en état filled (Figma 12003:97998 « Lyon (toute la ville) - 1km »)
+  function committedLabel() {
+    if (state.mode === 'france') return 'Toute la France';
+    if (state.chips.length > 1) return state.chips.length + ' localisations';
+    if (state.drawn) return state.chips[0];
+    if (state.chips.length) return state.chips[0] + ' - ' + state.radius + 'km';
+    return '';
+  }
+
+  /* ── Passerelle vers l'adview ──────────────────────────────────────────────
+     La recherche validée est déposée à chaque commit pour que le retour depuis
+     l'adview (logo du header) retombe sur ces résultats-là, et non sur un
+     listing vierge. On stocke la même forme que les récents — { labels, mode,
+     radius } — puisque `replayRecent` sait déjà la rejouer telle quelle.
+     `sessionStorage` et non `localStorage` : la mémoire vaut pour la session de
+     démo en cours, une recherche d'hier n'a pas à ressusciter dans celle de
+     demain.                                                                   */
+  const SEARCH_KEY = 'search-funnel-v8:last';
+  function saveSearch() {
+    try {
+      sessionStorage.setItem(SEARCH_KEY, JSON.stringify({
+        entry: currentEntry(), recents: state.recents,
+      }));
+    } catch (error) {
+      // Stockage refusé (Safari en file://, navigation privée) : la passerelle
+      // retombe simplement sur le listing vierge, rien d'autre ne casse.
+    }
+  }
+
+  /* ── Le listing bouge quand la localisation change ─────────────────────────
+     Les annonces du proto sont les mêmes quelle que soit la ville. Sans ça, un
+     participant de test qui valide une nouvelle localisation retombe sur une
+     liste au mot près identique et conclut que sa recherche n'a rien changé. On
+     rebat donc leur ordre : les annonces s'échangent leurs créneaux, les autres
+     blocs de la colonne (bloc vendeur, carte pro, pagination) ne bougent pas. */
+  const resultsList = document.querySelector('.results__list');
+  let lastCommitted = '';
+  let resuming = false;
+  const ORDER_KEY = 'search-funnel-v8:order';
+  const listCards = () => [...resultsList.querySelectorAll(':scope > .adcard')];
+  listCards().forEach((card, index) => { card.dataset.slot = index; });
+
+  /* Réordonne en place : chaque annonce laisse un commentaire à sa place, puis
+     les annonces reprennent les créneaux dans le nouvel ordre. On déplace les
+     nœuds au lieu de les cloner, sinon les favoris perdent leurs écouteurs. */
+  function applyOrder(cards) {
+    // Les créneaux se relèvent dans l'ordre du document, pas dans celui de
+    // `cards` — sinon chaque annonce reprend le sien et rien ne bouge.
+    const slots = listCards().map((card) => {
+      const slot = document.createComment('');
+      card.replaceWith(slot);
+      return slot;
+    });
+    slots.forEach((slot, i) => slot.replaceWith(cards[i]));
+  }
+
+  function shuffleResults() {
+    const cards = listCards();
+    for (let i = cards.length - 1; i > 0; i -= 1) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [cards[i], cards[j]] = [cards[j], cards[i]];
+    }
+    applyOrder(cards);
+    /* L'ordre survit à l'aller-retour vers l'adview : revenir sur ses pas ne doit
+       pas rebattre la liste une deuxième fois. */
+    try { sessionStorage.setItem(ORDER_KEY, cards.map((c) => c.dataset.slot).join(',')); }
+    catch (error) { /* stockage refusé : le retour repart de l'ordre du markup */ }
+  }
+
+  function restoreOrder() {
+    let saved = null;
+    try { saved = sessionStorage.getItem(ORDER_KEY); }
+    catch (error) { return; }
+    if (!saved) return;
+    const bySlot = new Map(listCards().map((card) => [card.dataset.slot, card]));
+    const cards = saved.split(',').map((slot) => bySlot.get(slot));
+    if (cards.length !== bySlot.size || cards.includes(undefined)) return;
+    applyOrder(cards);
+  }
+
+  function commit() {
+    state.editing = false;
+    state.focus = false;
+    /* La feuille rouverte depuis le listing repart sur les trois alternatives,
+       pas sur la ligne « Dessiner sur la carte » : celle-ci n'appartient qu'au
+       parcours qui vient d'une saisie (12213:184404 vs 12213:242276). */
+    state.fromTyping = false;
+    pushRecent();
+    saveSearch();
+    const label = committedLabel();
+    const locationChanged = label !== lastCommitted;
+    lastCommitted = label;
+    if (locationChanged && !resuming) shuffleResults();
+    input.value = label;
+    setPopover(false);
+    renderCounts();
+    sync();
+  }
+
+  /* Un périmètre n'existe qu'autour d'une localisation unique : ni sur « Toute la
+     France » (le pays n'a pas de centre à cercler) ni sur une multi-sélection. */
+  const hasPerimeter = () =>
+    state.chips.length === 1 && state.mode !== 'france' && !state.drawn;
+
+  /* ── Recherches récentes ───────────────────────────────────────────────────
+     Historique réel, alimenté à chaque validation et plafonné à trois entrées —
+     c'est ce que montrent les boards (12154:108524, 12253:284951). Une entrée
+     rejoue la recherche telle quelle : ses localisations, son mode et son rayon.
+     Le rayon n'apparaît plus sur la chip mais reste lisible ici et dans le champ
+     de la vue listing.                                                        */
+  const RECENTS_MAX = 3;
+  const recentKey = (entry) => (entry.mode || '') + '|' + entry.labels.join('|') + '|' + entry.radius;
+  const currentEntry = () => ({
+    labels: state.chips.slice(), mode: state.mode, radius: state.radius,
+  });
+
+  function recentLabel(entry) {
+    if (entry.mode === 'france') return 'Toute la France';
+    const suffix = entry.mode !== 'draw' && entry.labels.length === 1 && entry.radius > 0
+      ? ' + ' + entry.radius + ' km' : '';
+    const extra = entry.labels.length - 1;
+    return entry.labels[0] + (extra > 0 ? ', + ' + extra : '') + suffix;
+  }
+
+  function pushRecent() {
+    const entry = currentEntry();
+    if (!entry.labels.length && entry.mode !== 'france') return;
+    const key = recentKey(entry);
+    state.recents = [entry, ...state.recents.filter((item) => recentKey(item) !== key)]
+      .slice(0, RECENTS_MAX);
+  }
+
+  /* La recherche en cours n'est pas listée sous elle-même : la chip juste au-dessus
+     la porte déjà. Les récents ne montrent donc que les recherches précédentes,
+     ce qui explique qu'il n'y en ait aucun à la toute première validation. */
+  function renderRecents() {
+    const current = recentKey(currentEntry());
+    const list = state.recents.filter((entry) => recentKey(entry) !== current);
+    recentsList.replaceChildren();
+    list.forEach((entry) => {
+      const row = document.createElement('button');
+      row.type = 'button';
+      row.className = 'popover__option';
+      const icon = document.createElement('span');
+      icon.className = 'popover__option-icon';
+      const img = document.createElement('img');
+      img.src = 'assets/icon-clock.svg';
+      img.alt = '';
+      icon.append(img);
+      const text = document.createElement('span');
+      text.textContent = recentLabel(entry);
+      row.append(icon, text);
+      row.addEventListener('click', () => replayRecent(entry));
+      recentsList.append(row);
+    });
+    return list.length;
+  }
+
+  /* Un récent relance la recherche : la feuille se referme et on retombe sur les
+     résultats, sans repasser par Valider. C'est déjà le geste de la production,
+     et l'utilisateur qui rappelle une recherche passée ne cherche pas à la
+     retoucher — s'il veut affiner, il rouvre le champ. commit() remonte l'entrée
+     en tête de l'historique au passage. */
+  function replayRecent(entry) {
+    state.fromTyping = false;
+    state.drawn = entry.mode === 'draw';
+    state.contours = {};
+    // Les modes exclusifs se rejouent tels quels : rien à géocoder
+    if (entry.mode) {
+      state.chips = entry.labels.slice();
+      state.mode = entry.mode;
+      state.radius = entry.radius;
+      state.contour = null;
+      commit();
+      return;
+    }
+    state.chips = [];
+    state.mode = null;
+    entry.labels.forEach((label) => selectLocation(label));
+    state.radius = entry.radius;
+    commit();
+  }
+
+  function renderChips() {
+    locChips.replaceChildren();
+    /* La chip reste nue : le rayon ne s'affiche que dans le champ de la vue
+       listing et dans les récents. Dans la feuille ouverte, le slider juste
+       dessous porte déjà la valeur. */
+    state.chips.forEach((label, index) => {
+      const chip = document.createElement('span');
+      chip.className = 'loc-chip';
+      chip.append(document.createTextNode(label));
+
+      /* Toujours la croix (Figma 9172:22118) : dans la feuille ouverte, la chip se
+         retire, elle ne rouvre rien. Le crayon de la V7 n'avait plus d'objet — le
+         slider de rayon est déjà là, sous la carte. */
+      const action = document.createElement('button');
+      action.type = 'button';
+      action.setAttribute('aria-label', 'Supprimer ' + label);
+      const img = document.createElement('img');
+      img.src = 'assets/icon-chip-delete.svg';
+      img.alt = '';
+      action.append(img);
+      action.addEventListener('click', () => {
+        state.chips.splice(index, 1);
+        if (!state.chips.length) {
+          state.mode = null;
+          state.drawn = false;
+        }
+        sync();
+      });
+
+      chip.append(action);
+      locChips.append(chip);
+    });
+  }
+
+  function renderRadius() {
+    const index = stepIndex(state.radius);
+    radiusValue.textContent = state.radius + ' km';
+    radiusRange.value = String(index);
+    radiusRange.style.setProperty(
+      '--radius-progress', (index / (RADIUS_STEPS.length - 1)) * 100 + '%'
+    );
+    radiusCircle.hidden = state.radius === 0;
+    scheduleMap();
+  }
+
+  /* ── Mapview réelle : Leaflet + tuiles OpenStreetMap (aucune clé requise) ──
+     Le cercle est fixe en pixels ; c'est le niveau de zoom qui est calculé pour
+     que le rayon en km tombe exactement dessus — la carte se dézoome donc quand
+     le rayon augmente, conformément au comportement attendu.
+     Centres et contours de communes : geo.api.gouv.fr.                       */
+  const mapHost = document.getElementById('radiusMapView');
+  const FALLBACK_CENTER = [48.8566, 2.3522];
+  // Cadrage France métropolitaine, utilisé tant qu'aucune zone n'est définie
+  const FRANCE_BOUNDS = [[41.31, -5.2], [51.12, 9.66]];
+  let map = null;
+  let contourLayer = null;
+  let drawnContour = null;
+
+  function ensureMap() {
+    if (map) return map;
+    if (!window.L || !mapHost.offsetWidth) return null;
+    map = L.map(mapHost, {
+      zoomControl: false,
+      dragging: false, scrollWheelZoom: false, doubleClickZoom: false,
+      touchZoom: false, keyboard: false, boxZoom: false,
+      zoomSnap: 0,
+    }).setView(FALLBACK_CENTER, 12);
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '&copy; OpenStreetMap',
+    }).addTo(map);
+    return map;
+  }
+
+  // Web Mercator : 156543,03392 m/px à l'équateur au zoom 0
+  // Zoom pour que `meters` occupent `px` pixels à l'écran.
+  function zoomForSpan(meters, lat, px) {
+    const metersPerPixel = meters / Math.max(px, 1);
+    const zoom = Math.log2((156543.03392 * Math.cos((lat * Math.PI) / 180)) / metersPerPixel);
+    return Math.max(3, Math.min(18, zoom));
+  }
+  function zoomForRadius(km, lat) {
+    const px = (radiusCircle.getBoundingClientRect().width || 108) / 2;
+    return zoomForSpan(km * 1000, lat, px);
+  }
+
+  /* Accepte un contour ou plusieurs : l'état multi les dessine tous, c'est ce
+     que demande la note 12246:250764 (« rendre le multiloc visible ») et ce que
+     montre 12246:250597 — deux communes cerclées dans la même carte. */
+  function drawContour(geojson) {
+    if (!map) return;
+    if (contourLayer) {
+      contourLayer.remove();
+      contourLayer = null;
+    }
+    if (!geojson || (Array.isArray(geojson) && !geojson.length)) return;
+    contourLayer = L.geoJSON(geojson, {
+      interactive: false,
+      style: { color: '#202730', weight: 2, fillColor: '#35376a', fillOpacity: 0.16 },
+    }).addTo(map);
+  }
+
+  /* Carte dépliée : le zoom n'est plus dérivé du rayon, un overlay à taille
+     fixe ne vaudrait donc plus la valeur choisie. Le rayon passe en couche
+     Leaflet : il reste ancré au terrain et à la valeur du slider, et suit donc
+     le déplacement et le zoom — il grossit à l'écran quand on zoome. */
+  let zoneLayer = null;
+  function drawZone(on) {
+    if (zoneLayer) {
+      zoneLayer.remove();
+      zoneLayer = null;
+    }
+    if (!on || !map) return;
+    const center = state.center || FALLBACK_CENTER;
+    zoneLayer = L.layerGroup().addTo(map);
+    // 0 km : pas de cercle, c'est le contour de la commune qui fait la zone
+    if (state.radius > 0) {
+      L.circle(center, {
+        radius: state.radius * 1000,
+        interactive: false,
+        color: '#202730', weight: 2, fillColor: '#35376a', fillOpacity: 0.16,
+      }).addTo(zoneLayer);
+    }
+    L.marker(center, {
+      interactive: false, keyboard: false,
+      icon: L.icon({ iconUrl: 'assets/map-pin-geoloc.svg', iconSize: [24, 23], iconAnchor: [12, 12] }),
+    }).addTo(zoneLayer);
+  }
+
+  function updateMap() {
+    if (!ensureMap()) return;
+    map.invalidateSize(false);
+    // Aucune zone (pas de localisation, ou toute la France) : la carte cadre le
+    // pays — Figma 12154:107141 et 12154:108524.
+    if (!state.zone) {
+      if (drawnContour) {
+        drawContour(null);
+        drawnContour = null;
+      }
+      map.fitBounds(FRANCE_BOUNDS, { animate: false });
+      return;
+    }
+    /* Zone dessinée : pas de rayon dont dériver le zoom. On cadre sur une
+       vingtaine de kilomètres, l'ordre de grandeur d'un tracé à la main. */
+    if (state.drawn) {
+      if (drawnContour) {
+        drawContour(null);
+        drawnContour = null;
+      }
+      const center = state.center || FALLBACK_CENTER;
+      const width = radiusMap.getBoundingClientRect().width || 328;
+      map.setView(center, zoomForSpan(20000, center[0], width), { animate: false });
+      return;
+    }
+    /* Plusieurs localisations : pas de rayon, donc pas de zoom à dériver. On
+       dessine tous les contours connus et on cadre leur union — Figma
+       12246:250597. Tant qu'un contour n'est pas revenu de l'API, la carte
+       recadre à chaque arrivée. */
+    if (state.chips.length > 1) {
+      const geos = state.chips.map((label) => state.contours[label]).filter(Boolean);
+      const key = 'multi:' + state.chips.join('|') + ':' + geos.length;
+      if (key !== drawnContour) {
+        drawContour(geos);
+        drawnContour = key;
+      }
+      if (contourLayer) map.fitBounds(contourLayer.getBounds(), { padding: [12, 12], animate: false });
+      else map.setView(state.center || FALLBACK_CENTER, 10, { animate: false });
+      return;
+    }
+    // Le contour de la commune ne s'affiche qu'à 0 km ; dès qu'il y a un rayon,
+    // seuls le cercle et le pin matérialisent la zone.
+    const contour = state.radius === 0 ? state.contour : null;
+    if (contour !== drawnContour) {
+      drawContour(contour);
+      drawnContour = contour;
+    }
+    const center = state.center || FALLBACK_CENTER;
+    // 0 km = la commune seule : on cadre son contour au lieu d'un rayon
+    if (state.radius === 0 && contourLayer) {
+      map.fitBounds(contourLayer.getBounds(), { padding: [8, 8], animate: false });
+      return;
+    }
+    // animate:false — le dézoom suit le slider image par image
+    map.setView(center, zoomForRadius(Math.max(state.radius, 0.5), center[0]), { animate: false });
+  }
+
+  let mapFrame = null;
+  function scheduleMap() {
+    if (mapFrame) cancelAnimationFrame(mapFrame);
+    mapFrame = requestAnimationFrame(updateMap);
+  }
+
+  function applyCommune(commune, label) {
+    if (!commune) return;
+    if (commune.centre) {
+      state.center = [commune.centre.coordinates[1], commune.centre.coordinates[0]];
+    }
+    state.contour = commune.contour || null;
+    // Mémorisé par libellé : l'état multi a besoin de tous les contours à la fois
+    if (label && commune.contour) state.contours[label] = commune.contour;
+    scheduleMap();
+  }
+
+  // Contour précis de la commune sélectionnée (non demandé dans l'autocomplétion
+  // pour ne pas alourdir chaque frappe)
+  async function loadCommune(code, label) {
+    try {
+      const response = await fetch(GEO_API + '/' + encodeURIComponent(code) + '?fields=centre,contour');
+      if (!response.ok) return;
+      applyCommune(await response.json(), label);
+    } catch (error) {
+      // Réseau indisponible : la carte reste sur la vue courante
+    }
+  }
+
+  // Les récents et les libellés sans code INSEE sont géocodés par leur nom
+  async function geocode(label) {
+    const name = label.split(' (')[0];
+    try {
+      const response = await fetch(
+        GEO_API + '?nom=' + encodeURIComponent(name) +
+        '&fields=centre,contour&boost=population&limit=1'
+      );
+      if (!response.ok) return;
+      const [commune] = await response.json();
+      applyCommune(commune, label);
+    } catch (error) {
+      // Réseau indisponible : la carte reste sur la vue courante
+    }
+  }
+
+  // Sélection cumulative : une 2e localisation s'ajoute et fait basculer sur
+  // l'état multi (Figma 11636:335515), qui n'affiche plus le rayon.
+  function selectLocation(label, commune) {
+    // « Autour de moi » et « Toute la France » sont exclusifs d'une ville :
+    // choisir une localisation remplace leur chip au lieu de s'y ajouter
+    if (state.mode === 'around' || state.mode === 'france') state.chips = [];
+    if (!state.chips.includes(label)) state.chips.push(label);
+    state.mode = null;
+    state.radius = DEFAULT_RADIUS;
+    state.editing = false;
+    state.focus = false;
+    input.value = '';
+    sync();
+    // Un arrondissement a son propre code INSEE : il primerait sur celui de la
+    // commune parente, sinon la carte cadrerait Paris entier au lieu du 10e.
+    const postcode = label.match(/\((\d{5})\)/);
+    const zone = postcode && ZONES[postcode[1]];
+    if (zone) loadCommune(zone.insee, label);
+    else if (commune && commune.code) loadCommune(commune.code, label);
+    else if (commune && commune.centre) applyCommune({ centre: commune.centre }, label);
+    else geocode(label);
+  }
+
+  /* Taille de carte — notes Tech du board. M dès que la carte est le seul contenu
+     sous la chip, S quand alternatives et récents l'accompagnent. C'est ce qui
+     fait la transition de « Autour de moi » : les blocs du dessous s'escamotent,
+     donc la carte passe de S à M (12213:242276 → 12213:243417, note
+     12230:244598). Le zoom est dérivé du diamètre du cercle, mesuré en pixels :
+     il faut le recalculer une fois la hauteur stabilisée, pas pendant. */
+  let sizeTimer = null;
+  function setMapSize(size) {
+    if (size === state.mapSize) return;
+    const first = state.mapSize === null;
+    state.mapSize = size;
+    locWrap.style.setProperty('--map-scale', size === 'M' ? '0.75' : '0.5');
+    locWrap.style.setProperty('--zone-scale', size === 'M' ? String(2 / 3) : '0.75');
+    if (first) return;
+    radiusMap.classList.add('is-resizing');
+    clearTimeout(sizeTimer);
+    sizeTimer = setTimeout(() => {
+      radiusMap.classList.remove('is-resizing');
+      scheduleMap();
+    }, 300);
+  }
+
+  function sync() {
+    const query = input.value.trim();
+    const typing = state.editing && query.length > 0;
+    const hasLocation = state.chips.length > 0;
+    /* La sélection reste affichée tant qu'on ne tape pas : reprendre le champ
+       pour ajouter une 2e ville ne doit pas faire disparaître la 1re, sinon
+       l'écran n'affiche plus aucune localisation alors qu'il y en a une. Seule la
+       saisie en cours la masque, parce que la liste de résultats prend la
+       feuille entière (Figma 12213:184404, où la rangée de chips est éteinte). */
+    const showSelected = hasLocation && !typing;
+    const multi = state.chips.length > 1;
+
+    paneDefault.hidden = typing;
+    paneResults.hidden = !typing;
+    chevron.hidden = typing;
+    if (typing) requestResults(query);
+
+    /* V8 — la carte est visible dès qu'il y a une localisation, y compris à
+       plusieurs (Figma 12246:250597 montre les deux contours). Ce qui disparaît à
+       partir de 2 localisations, ou sur une zone dessinée, c'est le seul réglage
+       du rayon : il n'a plus de centre unique à cercler.
+       Exception « Toute la France » : pas de carte du tout, le pays n'est pas un
+       périmètre qu'on règle. */
+    const showMap = showSelected && state.mode !== 'france';
+    const showRadius = showMap && !multi && !state.drawn;
+    /* Desktop en édition : ni récents ni actions alternatives dès qu'une
+       localisation est posée. Le popover est ancré sous le champ et sortirait du
+       viewport (note « À confirmer avec @Damien », 12253:297335). Les deux blocs ne
+       reviennent qu'à l'état vide — première recherche (12248:264774) ou après
+       « Effacer » (12253:284951). Le mobile, lui, les garde sous la sélection
+       (12213:242276) : c'est la seule divergence de règle entre les deux. */
+    const desktopEdit = !mobile.matches && showSelected;
+    /* Alternatives et récents : escamotés quand la localisation est exclusive
+       (« Autour de moi »), qui n'a rien à proposer sous elle — Figma 12213:243417.
+       Ils reviennent partout ailleurs, réglage du rayon compris : c'est la
+       différence avec la V6, où le rayon prenait tout l'écran. */
+    const showAlternatives = !typing && !desktopEdit
+      && !(showSelected && state.mode === 'around');
+    /* Une porte d'entrée vers le dessin à la fois : la ligne quand on arrive
+       d'une saisie, les trois cartes sinon. Aucun écran du board ne montre les
+       deux — signalé comme incohérence. */
+    const showDrawRow = showSelected && state.fromTyping && !state.drawn;
+    const compact = showSelected && !showRadius;
+
+    locSelected.hidden = !showSelected;
+    drawRow.hidden = !showDrawRow;
+    collapsible.dataset.open = String(showAlternatives);
+    souscat.hidden = showDrawRow;
+    /* Pas de récents avant la première recherche validée (Figma 12213:178499),
+       ni sur le parcours qui vient d'une saisie : ces écrans n'ont que la carte
+       et la ligne « Dessiner sur la carte » sous les chips (12213:184404,
+       12246:250597). */
+    locRecents.hidden = !renderRecents() || showDrawRow || desktopEdit;
+    radiusCard.hidden = !showMap;
+    // La carte reste bordée mais perd son bloc de réglage quand il n'y a pas de
+    // rayon à régler — Figma 12235:249560 (zone dessinée), 12246:250597 (2 loc.)
+    radiusControl.hidden = !showRadius;
+    /* Une alternative ne s'efface que quand elle est l'état courant : il n'y a
+       rien à reprendre, et la retirer se fait par sa chip. Les autres restent
+       proposées même sous une sélection — « Autour de moi » sur une ville reste un
+       choix valide, il remplace la sélection comme le fait déjà le clic sur une
+       autre ville. « Dessin » ne s'efface jamais : c'est un toggle, le masquer
+       rendrait la désélection impossible. */
+    souscatCards.forEach((card) => {
+      const mode = card.dataset.mode;
+      const exclusive = mode === 'around' || mode === 'france';
+      card.hidden = showSelected && exclusive && mode === state.mode;
+      /* Aucune des trois n'a d'état sélectionné : « Dessin » ouvre un plein écran
+         (ce n'est plus un toggle), et les deux autres se retirent de la liste
+         quand elles sont l'état courant. Le board les montre toutes normales,
+         même sous une zone dessinée — 12235:249560. */
+      card.setAttribute('aria-pressed', 'false');
+    });
+    locWrap.classList.toggle('is-compact', compact);
+
+    /* Barre d'actions : rien à valider sans localisation — l'écran de première
+       recherche n'en a pas (Figma 12213:178499). Le board la garde en revanche
+       après un « Effacer » (12248:251215), alors qu'il n'y a plus rien à valider
+       ni à effacer : signalé comme incohérence, et non reproduit ici.
+       « Effacer » apparaît dès qu'il y a quelque chose à retirer. */
+    sticky.hidden = typing || !showSelected;
+    locClear.hidden = !showSelected;
+    locSubmit.hidden = !showSelected;
+
+    keyboard.hidden = !mobile.matches || (!typing && !state.focus);
+    /* Carte S ou M — déduit des hauteurs mesurées sur le board. S (0,5 × largeur,
+       165 px) dans le seul cas où la feuille est pleine : le bloc de réglage du
+       rayon sous la carte ET les alternatives + récents en dessous
+       (12213:242276). Partout ailleurs M (0,75, ~240 px) : quand le rayon n'est
+       suivi que de la ligne de dessin (12213:240964, 12213:184404), quand rien ne
+       le suit (12213:243417), ou quand il n'y a pas de rayon du tout mais des
+       alternatives (12235:249560, zone dessinée). C'est la place prise par le bloc
+       rayon qui décide, pas le nombre de blocs. */
+    setMapSize(showRadius && showAlternatives && !showDrawRow ? 'S' : 'M');
+    state.zone = showMap;
+    radiusCircle.hidden = !showMap || state.radius === 0 || state.drawn || multi;
+    radiusPin.hidden = !showMap || state.drawn || multi;
+    radiusDrawn.hidden = !showMap || !state.drawn;
+
+    if (showSelected) renderChips();
+    // Le rayon pilote le zoom même quand son réglage est masqué : le cercle, lui,
+    // reste à l'écran.
+    if (showRadius) renderRadius();
+    else scheduleMap();
+
+    syncPlaceholder(showSelected);
+
+    locSubmit.textContent = 'Valider (' + searchCount() + ')';
+  }
+
+  souscatCards.forEach((card) => {
+    card.addEventListener('click', () => {
+      const mode = card.dataset.mode;
+      state.editing = false;
+      state.focus = false;
+        if (mode === 'around') {
+        state.chips = ['Autour de moi'];
+        state.mode = 'around';
+        state.radius = DEFAULT_RADIUS;
+        input.value = '';
+        sync();
+        // Pas de contour de commune dans cet état : seul le rayon compte
+        state.contour = null;
+        scheduleMap();
+        navigator.geolocation?.getCurrentPosition((position) => {
+          state.center = [position.coords.latitude, position.coords.longitude];
+          scheduleMap();
+        });
+      } else if (mode === 'france') {
+        /* « Toute la France » lance la recherche directement : le champ garde le
+           wording dans la vue listing. Pas de chip pour autant — rouvrir la
+           localisation ramène l'écran de recherche nu, avec ses trois
+           alternatives (Figma 12154:108524). */
+        state.chips = [];
+        state.mode = 'france';
+        state.radius = DEFAULT_RADIUS;
+        commit();
+      } else {
+        openDraw();
+      }
+    });
+  });
+
+  drawRow.addEventListener('click', openDraw);
+
+  // Le range est un index de palier, pas un nombre de km — cf. RADIUS_STEPS
+  radiusRange.addEventListener('input', () => {
+    state.radius = RADIUS_STEPS[Number(radiusRange.value)];
+    renderRadius();
+  });
+
+  locSubmit.addEventListener('click', commit);
+
+  locClear.addEventListener('click', () => {
+    state.chips = [];
+    state.mode = null;
+    state.radius = DEFAULT_RADIUS;
+    state.editing = false;
+    state.drawn = false;
+    state.fromTyping = false;
+    state.contours = {};
+    input.value = '';
+    sync();
+  });
+
+  // Retour : conserve la sélection en cours et ramène au listing
+  document.getElementById('locBack').addEventListener('click', commit);
+
+  /* ── Dessin de zone ────────────────────────────────────────────────────────
+     Trois plein-écrans qui se succèdent : consigne (12235:249497), zone dessinée
+     validable (12248:251532), résultats sur la carte (12248:251388). Le tracé
+     lui-même n'est pas interactif — le CTA orange passe à l'écran suivant, comme
+     demandé. La zone est donc toujours la même forme, dessinée en CSS. */
+  const drawStep = document.getElementById('drawStep');
+  const drawValid = document.getElementById('drawValid');
+  const drawList = document.getElementById('drawList');
+  const drawHint = document.getElementById('drawHint');
+  // Libellé de la chip d'une zone dessinée — Figma 12235:249560
+  const DRAW_LABEL = 'Personnalisée';
+
+  function showDraw(screen) {
+    [drawStep, drawValid, drawList].forEach((section) => { section.hidden = section !== screen; });
+    // Les plein-écrans couvrent la feuille : on empêche le scroll dessous
+    document.documentElement.style.overflow = screen ? 'hidden' : '';
+  }
+  function openDraw() {
+    state.editing = false;
+    state.focus = false;
+    input.value = '';
+    drawHint.hidden = false;
+    showDraw(drawStep);
+  }
+  function closeDraw() {
+    showDraw(null);
+    sync();
+  }
+
+  document.getElementById('drawHintClose').addEventListener('click', () => { drawHint.hidden = true; });
+  document.getElementById('drawStart').addEventListener('click', () => showDraw(drawValid));
+  // Corbeille : la zone est effacée, on revient à l'écran de tracé vierge
+  document.getElementById('drawTrash').addEventListener('click', () => {
+    drawHint.hidden = false;
+    showDraw(drawStep);
+  });
+  document.getElementById('drawSubmit').addEventListener('click', () => {
+    /* La zone dessinée remplace toute localisation : elle n'est ni cumulable ni
+       « rayonnable ». Elle mène directement aux résultats sur la carte
+       (12248:251388), pas au listing en liste. */
+    state.chips = [DRAW_LABEL];
+    state.mode = 'draw';
+    state.drawn = true;
+    state.fromTyping = false;
+    pushRecent();
+    input.value = DRAW_LABEL;
+    setPopover(false);
+    renderCounts();
+    sync();
+    showDraw(drawList);
+  });
+  document.getElementById('drawBack').addEventListener('click', closeDraw);
+  document.getElementById('drawValidBack').addEventListener('click', closeDraw);
+  // Résultats carte : la flèche revient au listing, la chip « Personnalisée »
+  // rouvre la feuille de localisation sur la zone dessinée
+  document.getElementById('mapListBack').addEventListener('click', () => {
+    showDraw(null);
+    commit();
+  });
+  document.getElementById('mapListZone').addEventListener('click', () => {
+    showDraw(null);
+    // La feuille rouverte présente un champ vide : c'est la chip qui porte la zone
+    input.value = '';
+    setPopover(true);
+    sync();
+  });
+
+  /* Feuille fermée, le champ annonce la portée de la recherche : sans localisation
+     choisie, le listing porte sur « Toute la France ». Feuille ouverte, il invite à
+     saisir, et le verbe change selon qu'on part de zéro ou qu'on complète une
+     sélection — Figma 12154:107141 (« Saisissez ») vs 12154:108125 (« Ajoutez »). */
+  let placeholderAdding = false;
+  const syncPlaceholder = (adding) => {
+    if (adding !== undefined) placeholderAdding = adding;
+    const text = popover.dataset.open !== 'true' ? 'Toute la France'
+      : !mobile.matches ? 'Choisir une localisation'
+      : placeholderAdding ? 'Ajoutez une ville, quartier, arrondissement…'
+      : 'Saisissez une ville, quartier, arrondissement…';
+    input.placeholder = text;
+    input.setAttribute('aria-label', text);
+  };
+  mobile.addEventListener('change', () => {
+    sync();
+    // Le conteneur change de taille : Leaflet doit recalculer, et le zoom est
+    // dérivé du diamètre du cercle qui n'est pas le même aux deux breakpoints.
+    scheduleMap();
+  });
+
+  /* Le focus efface la valeur validée pour laisser taper, replie la carte et
+     remet la feuille en état recherche — Figma 12154:114101. La saisie, elle, ne
+     commence qu'à la première frappe : tant que rien n'est tapé, les récents
+     restent affichés. */
+  input.addEventListener('focus', () => {
+    state.focus = true;
+    state.editing = false;
+    input.value = '';
+    sync();
+    setPopover(true);
+  });
+  input.addEventListener('blur', () => {
+    state.focus = false;
+    sync();
+  });
+  input.addEventListener('input', () => {
+    state.editing = true;
+    sync();
+    setPopover(true);
+  });
+
+  /* Mobile : l'ouverture depuis le funnel n'appelle pas le clavier — la feuille
+     montre d'abord l'état « retour des résultats », carte comprise (Figma
+     12154:108125). preventDefault sur pointerdown empêche le champ de prendre le
+     focus ; il faut retaper dedans pour saisir. */
+  let openedByTap = false;
+  field.addEventListener('pointerdown', (event) => {
+    if (!mobile.matches || popover.dataset.open === 'true') return;
+    event.preventDefault();
+    openedByTap = true;
+    input.value = '';
+    sync();
+    setPopover(true);
+  });
+  field.addEventListener('click', () => {
+    if (openedByTap) {
+      openedByTap = false;
+      return;
+    }
+    input.focus();
+  });
+
+  /* Le blur du champ redéplie la carte, donc déplace tout le contenu de la
+     feuille. Si le geste part d'un bouton, on garde le focus jusqu'au clic :
+     sinon la cible glisse sous le doigt entre pointerdown et pointerup, et le
+     clic n'atteint plus le bouton visé. */
+  paneDefault.addEventListener('pointerdown', (event) => {
+    if (state.focus && event.target.closest('button')) event.preventDefault();
+  });
+
+  /* Fermeture au clic extérieur. On teste le bloc localisation entier et pas
+     seulement le champ et le popover : le bandeau carte, la poignée et les
+     couches Leaflet en sont des enfants sans être dans le popover, et chaque
+     glissé sur la carte fermait donc la modale. Les boutons valider / retour,
+     eux, appellent commit() directement.
+
+     En capture, et non en bulle : les chips sont reconstruites par renderChips(),
+     donc le bouton cliqué (croix ou crayon) est détaché du DOM par son propre
+     handler. En bulle, `contains` répondrait faux sur un nœud déjà détaché et le
+     clic serait pris pour un clic extérieur — la feuille se fermait. En capture,
+     document est atteint avant le handler de la chip, donc avant le re-render. */
+  document.addEventListener('click', (event) => {
+    if (locWrap.contains(event.target)) return;
+    if (popover.dataset.open === 'true') commit();
+  }, true);
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && popover.dataset.open === 'true') {
+      commit();
+      input.blur();
+    }
+  });
+
+  /* ══════════════════ ANNONCE MISE EN AVANT ══════════════════════════════
+     Une seule source pour la popover desktop (Figma 4328:33799) et le bottom
+     sheet mobile (4341:48013). Les valeurs par défaut recopient l'annonce du
+     prototype média ; `hydrateFeaturedAd()` va ensuite la relire directement
+     dans ../media-experience/index.html pour qu'un changement là-bas se
+     répercute ici sans double saisie.
+
+     `city` est vide : le prototype média ne porte aucune ville (aucune chaîne
+     de localisation ni code postal dans son markup). La ligne est masquée tant
+     qu'elle n'est pas renseignée — rien n'est inventé. */
+  const AD_URL = '../media-experience/index.html';
+  const FEATURED_AD = {
+    thumb: 'assets/featured-ad.jpg',
+    price: '240 000 €',
+    surface: 58,
+    desc: 'Appartement 3 pièces 58 m²',
+    city: '',
+  };
+
+  const euro = new Intl.NumberFormat('fr-FR');
+
+  function pricePerSqm(ad) {
+    const amount = Number(String(ad.price).replace(/[^\d]/g, ''));
+    if (!amount || !ad.surface) return '';
+    return euro.format(Math.round(amount / ad.surface)) + ' €/m²';
+  }
+
+  function renderFeaturedAd() {
+    document.querySelectorAll('[data-ad]').forEach((node) => {
+      const key = node.dataset.ad;
+      if (key === 'thumb') { node.src = FEATURED_AD.thumb; return; }
+      const value = key === 'sqm' ? pricePerSqm(FEATURED_AD)
+                  : key === 'loc' ? FEATURED_AD.city
+                  : FEATURED_AD[key];
+      node.textContent = value;
+      node.hidden = !value;
+    });
+  }
+
+  /* Relit le bloc `.listing` du pied de l'adview média. Ne marche que si les
+     deux prototypes sont servis depuis la même origine — c'est le cas sur
+     http://127.0.0.1:8766/ (racine /design), pas sur le port dédié à la V8. */
+  async function hydrateFeaturedAd() {
+    try {
+      const html = await (await fetch(AD_URL)).text();
+      const doc = new DOMParser().parseFromString(html, 'text/html');
+      const listing = doc.querySelector('.adview__footer .listing');
+      if (!listing) return;
+      const lines = [...listing.querySelectorAll('.listing__text p')].map((p) => p.textContent.trim());
+      const thumb = listing.querySelector('.listing__thumb');
+      if (lines[0]) {
+        FEATURED_AD.desc = lines[0];
+        const surface = lines[0].match(/(\d+(?:[.,]\d+)?)\s*m²/);
+        if (surface) FEATURED_AD.surface = Number(surface[1].replace(',', '.'));
+      }
+      if (lines[1]) FEATURED_AD.price = lines[1].replace(/€$/, ' €').replace(/\s+/g, ' ');
+      if (thumb) FEATURED_AD.thumb = new URL(thumb.getAttribute('src'), new URL(AD_URL, location.href)).href;
+      renderFeaturedAd();
+    } catch (error) {
+      /* Origine différente ou fichier absent : on garde les valeurs par défaut. */
+    }
+  }
+
+  /* ── Popover « Mes recherches » (desktop) ─────────────────────────────── */
+  const navBtn = document.getElementById('navSearchesBtn');
+  const navPop = document.getElementById('navSearchesPop');
+
+  function setNavPop(open) {
+    navPop.hidden = !open;
+    navBtn.setAttribute('aria-expanded', String(open));
+  }
+
+  navBtn.addEventListener('click', () => setNavPop(navPop.hidden));
+  document.getElementById('navSearchesClose').addEventListener('click', () => setNavPop(false));
+  document.addEventListener('click', (event) => {
+    if (!navPop.hidden && !navBtn.closest('.nav-slot').contains(event.target)) setNavPop(false);
+  });
+
+  /* ── Bottom sheet annonce (mobile, onglet « Compte ») ─────────────────── */
+  const adSheet = document.getElementById('adSheet');
+  const tabAccount = document.getElementById('tabAccount');
+
+  function setAdSheet(open) {
+    adSheet.hidden = !open;
+    tabAccount.setAttribute('aria-expanded', String(open));
+    document.body.style.overflow = open ? 'hidden' : '';
+  }
+
+  tabAccount.addEventListener('click', () => setAdSheet(true));
+  adSheet.querySelector('[data-sheet-close]').addEventListener('click', () => setAdSheet(false));
+  document.addEventListener('keydown', (event) => {
+    if (event.key !== 'Escape') return;
+    if (!adSheet.hidden) setAdSheet(false);
+    else if (!navPop.hidden) setNavPop(false);
+  });
+
+  renderFeaturedAd();
+  hydrateFeaturedAd();
+
+  // État initial : écran de filtres, modale localisation fermée
+  sync();
+
+  /* ?resume — retour depuis l'adview par le logo du header. On rejoue la
+     recherche déposée à la validation : quelqu'un qui n'a fait qu'aller voir une
+     annonce ne doit pas retrouver ses filtres perdus. Conditionné au paramètre :
+     sans lui, le proto doit s'ouvrir sur son état de première visite, sans
+     localisation ni récents (Figma 12154:107141). */
+  if (new URLSearchParams(location.search).has('resume')) {
+    let saved = null;
+    try { saved = JSON.parse(sessionStorage.getItem(SEARCH_KEY) || 'null'); }
+    catch (error) { /* illisible ou stockage refusé : état de première visite */ }
+    if (saved && saved.entry) {
+      state.recents = Array.isArray(saved.recents) ? saved.recents : [];
+      /* On revient sur ses pas : la liste se remet dans l'ordre quittée, elle ne
+         se rebat pas. Sinon le participant croit que son retour a relancé une
+         recherche. */
+      resuming = true;
+      replayRecent(saved.entry);
+      resuming = false;
+      restoreOrder();
+    }
+  }
+</script>
+</body>
+</html>

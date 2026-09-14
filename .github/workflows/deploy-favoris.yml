@@ -3,7 +3,12 @@ name: Deploy Favoris to GitHub Pages
 on:
   push:
     branches: [main]
-    paths: ['favoris/**', '.github/workflows/deploy-favoris.yml']
+    paths:
+      - 'favoris/**'
+      - 'immo-parcours-complet/**'
+      - '.github/workflows/deploy-favoris.yml'
+  # Permet de republier sans avoir à pousser un commit.
+  workflow_dispatch:
 
 jobs:
   deploy:

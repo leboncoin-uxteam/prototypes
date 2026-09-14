@@ -1,0 +1,2365 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Appartement 3 pièces 58 m² — Caluire-et-Cuire | leboncoin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,400;0,6..12,700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --color-main: #ec5a13;
+    --color-on-main: #ffffff;
+    --color-main-hovered: #f07b42;
+    --color-main-container: #ffe9de;
+    --color-on-main-container: #89380f;
+
+    --color-support: #094171;
+    --color-on-support: #ffffff;
+    --color-support-hovered: #0c5291;
+    --color-support-container: #e6f2fd;
+    --color-on-support-container: #152233;
+
+    --color-neutral: #3a4757;
+    --color-on-neutral: #ffffff;
+    --color-neutral-container: #f0f2f5;
+    --color-on-neutral-container: #3a4757;
+    --color-neutral-container-hovered: #f6f8f9;
+
+    --color-success: #1d6340;
+    --color-success-container: #e0f2e9;
+    --color-alert-container: #ffeecc;
+    --color-on-alert-container: #664400;
+
+    --color-background: #ffffff;
+    --color-background-variant: #f4f9fe;
+    --color-surface: #ffffff;
+    --color-on-surface: #152233;
+    --color-surface-hovered: #f6f8f9;
+    --color-on-surface-dim-1: rgba(21, 34, 51, 0.72);
+
+    --opacity-dim-2: 0.56;
+
+    --color-outline: #acb8c7;
+    --color-shadow: rgba(108, 129, 157, 0.5);
+    --color-focus: #0000ff;
+
+    --spacing-none: 0px;
+    --spacing-sm: 4px;
+    --spacing-md: 8px;
+    --spacing-lg: 16px;
+    --spacing-xl: 24px;
+    --spacing-2xl: 32px;
+    --spacing-3xl: 40px;
+
+    --rounded-sm: 4px;
+    --rounded-md: 8px;
+    --rounded-lg: 16px;
+    --rounded-xl: 24px;
+    --rounded-full: 99999px;
+
+    --border-sm: 1px;
+    --border-md: 2px;
+    --border-lg: 4px;
+
+    --duration-short: 150ms;
+    --duration-medium: 250ms;
+    --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+
+    /* Trame de la maquette : colonne principale 672 + 18 + colonne droite 330 */
+    --page-width: 1020px;
+    --header-width: 1066px;
+    --main-col: 672px;
+    --aside-col: 330px;
+    --col-gap: 18px;
+  }
+
+  :where(a, button, input, [tabindex]):focus-visible {
+    outline: var(--border-md) solid var(--color-focus);
+    outline-offset: 2px;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--color-surface);
+    font-family: "Nunito Sans", system-ui, sans-serif;
+    font-variation-settings: "YTLC" 500, "wdth" 100;
+    color: var(--color-on-surface);
+    font-size: 14px;
+    line-height: 20px;
+  }
+
+  img { display: block; }
+
+  /* ---------- Header ---------- */
+  .header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: var(--color-surface);
+    border-bottom: var(--border-sm) solid var(--color-outline);
+    box-shadow: 0 4px 4px var(--color-shadow);
+  }
+  .header__main {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-lg);
+    width: 100%;
+    max-width: var(--header-width);
+    padding-inline: var(--spacing-lg);
+  }
+  .header__logo { flex: none; padding-right: var(--spacing-lg); }
+  .header__logo img { width: 164px; height: 30px; }
+
+  .header__search {
+    display: flex;
+    flex: 1 1 0;
+    min-width: 0;
+    align-items: center;
+    gap: var(--spacing-lg);
+  }
+  .searchbar {
+    display: flex;
+    flex: 1 1 0;
+    min-width: 0;
+    align-items: center;
+    gap: var(--spacing-md);
+    height: 44px;
+    padding: var(--spacing-md) var(--spacing-md) var(--spacing-md) var(--spacing-lg);
+    border: 0;
+    border-radius: var(--rounded-full);
+    background: var(--color-neutral-container);
+    font: inherit;
+    font-size: 16px;
+    line-height: 24px;
+    color: var(--color-on-neutral-container);
+    cursor: pointer;
+    text-align: left;
+  }
+  .searchbar__label { flex: 1 1 0; min-width: 0; }
+  .searchbar__submit {
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-md);
+    border-radius: var(--rounded-full);
+    background: var(--color-main);
+  }
+  .searchbar__submit img { width: 16px; height: 16px; }
+
+  .header__nav {
+    flex: none;
+    display: flex;
+    align-items: flex-start;
+  }
+  .header__item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-sm);
+    padding: 0 var(--spacing-md) var(--spacing-md);
+    border: 0;
+    background: var(--color-surface);
+    font: inherit;
+    font-size: 12px;
+    line-height: 16px;
+    color: var(--color-on-surface);
+    white-space: nowrap;
+    cursor: pointer;
+  }
+  .header__item-icon { display: flex; align-items: flex-end; height: 32px; }
+  .header__item-icon img { width: 24px; height: 24px; }
+
+  .header__categories {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    max-width: var(--header-width);
+    height: 50px;
+    padding-inline: var(--spacing-lg);
+    overflow: hidden;
+  }
+  .header__category {
+    color: var(--color-on-surface);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .header__category:hover { text-decoration: underline; }
+  .header__category--highlight { font-weight: 700; }
+  .header__categories span {
+    font-weight: 700;
+    color: var(--color-on-surface-dim-1);
+    padding-inline: var(--spacing-md);
+  }
+
+  /* ---------- Boutons ---------- */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-md);
+    height: 44px;
+    padding-inline: var(--spacing-lg);
+    border: 0;
+    border-radius: var(--rounded-full);
+    font: inherit;
+    font-size: 16px;
+    line-height: 24px;
+    font-weight: 700;
+    white-space: nowrap;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background-color var(--duration-short) var(--ease-standard);
+  }
+  .btn img { width: 16px; height: 16px; }
+  .btn--main { background: var(--color-main); color: var(--color-on-main); }
+  .btn--main:hover { background: var(--color-main-hovered); }
+  .btn--support { background: var(--color-support); color: var(--color-on-support); }
+  .btn--support:hover { background: var(--color-support-hovered); }
+  .btn--outlined {
+    background: transparent;
+    color: var(--color-support);
+    box-shadow: inset 0 0 0 var(--border-sm) var(--color-support);
+  }
+  .btn--outlined:hover { background: var(--color-support-container); }
+  .btn--full { width: 100%; }
+
+  /* ---------- Barre de rappel affichée au scroll ---------- */
+  .stickybar {
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 0;
+    z-index: 4;
+    background: var(--color-surface);
+    box-shadow: 0 4px 4px var(--color-shadow);
+    transform: translateY(-100%);
+    transition: transform var(--duration-medium) var(--ease-standard);
+  }
+  .stickybar--shown { transform: translateY(0); }
+  .stickybar__summary {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-lg);
+    width: 100%;
+    max-width: var(--page-width);
+    height: 64px;
+    margin-inline: auto;
+    padding-inline: var(--spacing-lg);
+  }
+  .stickybar__cover {
+    flex: none;
+    width: 64px;
+    height: 40px;
+    border-radius: var(--rounded-sm);
+    object-fit: cover;
+  }
+  .stickybar__text { flex: 1 1 0; min-width: 0; }
+  .stickybar__text b,
+  .stickybar__text span {
+    display: block;
+    font-size: 16px;
+    line-height: 24px;
+    font-weight: 700;
+  }
+  .stickybar__text b { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+  .stickybar__fav {
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border: 0;
+    border-radius: var(--rounded-full);
+    background: none;
+    cursor: pointer;
+  }
+  .stickybar__fav:hover { background: var(--color-surface-hovered); }
+  .stickybar__fav img { width: 24px; height: 24px; }
+  /* Retour et partage n'existent que dans la barre mobile */
+  .stickybar__back, .stickybar__share { display: none; }
+  .stickybar__tabs {
+    display: flex;
+    width: 100%;
+    max-width: var(--page-width);
+    height: 40px;
+    margin-inline: auto;
+    padding-inline: var(--spacing-lg);
+    border-top: var(--border-sm) solid var(--color-neutral-container);
+  }
+  .stickybar__tabs a {
+    display: flex;
+    align-items: center;
+    padding-inline: var(--spacing-lg);
+    border-bottom: var(--border-md) solid transparent;
+    font-size: 16px;
+    line-height: 24px;
+    color: var(--color-on-surface);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .stickybar__tabs a:hover { text-decoration: underline; }
+  .stickybar__tabs a[aria-current="true"] {
+    border-bottom-color: var(--color-support);
+    color: var(--color-support);
+    font-weight: 700;
+  }
+  /* La barre recouvre 104px : les ancres doivent s'arrêter en dessous */
+  [id^="sec-"] { scroll-margin-top: 120px; }
+
+  /* ---------- Layout page ---------- */
+  .page {
+    display: grid;
+    grid-template-columns: var(--main-col) var(--aside-col);
+    gap: var(--col-gap);
+    width: 100%;
+    max-width: var(--page-width);
+    margin-inline: auto;
+    padding: var(--spacing-xl) var(--spacing-lg) var(--spacing-3xl);
+  }
+  .page__main { min-width: 0; grid-column: 1; }
+  .page__aside { min-width: 0; grid-column: 2; }
+
+  .breadcrumb {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--spacing-sm);
+    grid-column: 1 / -1;
+    margin-bottom: var(--spacing-xl);
+    font-size: 12px;
+    line-height: 16px;
+    font-weight: 700;
+    color: var(--color-neutral);
+  }
+  .breadcrumb a {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    color: inherit;
+  }
+  .breadcrumb img { width: 8px; height: 8px; }
+
+  /* ---------- Hero galerie ---------- */
+  .hero { display: flex; flex-direction: column; gap: var(--spacing-lg); }
+
+  .hero__mosaic {
+    position: relative;
+    display: flex;
+    gap: var(--spacing-sm);
+    height: 324px;
+  }
+  .hero__col {
+    flex: none;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    width: 225px;
+  }
+  .hero__shot { flex: none; border: 0; padding: 0; background: none; cursor: pointer; }
+  .hero__col .hero__shot { flex: 1 1 0; min-height: 0; }
+  .hero__shot--wide { flex: 1 1 0; min-width: 0; }
+  .hero__shot img { width: 100%; height: 100%; object-fit: cover; }
+  .hero__shot:first-child img { border-top-left-radius: var(--rounded-md); }
+  .hero__col .hero__shot:last-child img { border-bottom-left-radius: var(--rounded-md); }
+  .hero__shot--wide img {
+    border-top-right-radius: var(--rounded-md);
+    border-bottom-right-radius: var(--rounded-md);
+  }
+
+  .hero__actions {
+    position: absolute;
+    top: var(--spacing-lg);
+    right: var(--spacing-lg);
+    display: flex;
+    gap: var(--spacing-md);
+  }
+  .icon-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border: 0;
+    border-radius: var(--rounded-lg);
+    background: var(--color-surface);
+    cursor: pointer;
+    transition: background-color var(--duration-short) var(--ease-standard);
+  }
+  .icon-btn:hover { background: var(--color-surface-hovered); }
+  .icon-btn img { width: 16px; height: 16px; }
+
+  /* Retour posé sur la photo : mobile seulement. La barre collée, qui porte
+     l'autre retour, n'apparaît qu'au scroll — en haut de page il n'y a donc
+     rien pour revenir à la liste. */
+  .hero__back {
+    position: absolute;
+    top: var(--spacing-lg);
+    left: var(--spacing-lg);
+    display: none;
+  }
+
+  /* Point d'entrée vers la media experience */
+  .hero__medias {
+    position: absolute;
+    right: var(--spacing-lg);
+    bottom: var(--spacing-lg);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    height: 32px;
+    padding: var(--spacing-sm) var(--spacing-md) var(--spacing-sm) var(--spacing-sm);
+    border-radius: var(--rounded-lg);
+    background: var(--color-surface);
+    font-size: 16px;
+    line-height: 24px;
+    font-weight: 700;
+    color: var(--color-on-support-container);
+    text-decoration: none;
+    transition: background-color var(--duration-short) var(--ease-standard);
+  }
+  .hero__medias:hover { background: var(--color-surface-hovered); }
+  .hero__medias-icons { display: flex; align-items: center; }
+  .hero__medias-icons span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border: var(--border-sm) solid rgba(172, 184, 199, 0.4);
+    border-radius: var(--rounded-full);
+    background: var(--color-surface);
+  }
+  /* Pastilles empilées : la première passe devant */
+  .hero__medias-icons span:not(:last-child) { margin-right: -4px; }
+  .hero__medias-icons span:nth-child(1) { z-index: 3; }
+  .hero__medias-icons span:nth-child(2) { z-index: 2; }
+  .hero__medias-icons span:nth-child(3) { z-index: 1; }
+  .hero__medias-icons img { width: 16px; height: 16px; }
+
+  /* ---------- Titre, prix, critères ---------- */
+  .hero__summary { display: flex; flex-direction: column; gap: var(--spacing-2xl); }
+  .summary__features {
+    margin: 0;
+    font-size: 16px;
+    line-height: 24px;
+    font-weight: 700;
+  }
+  .summary__price {
+    display: flex;
+    align-items: baseline;
+    gap: var(--spacing-md);
+    margin: var(--spacing-md) 0 0;
+  }
+  .summary__price b { font-size: 24px; line-height: 32px; }
+  .summary__price small {
+    font-size: 12px;
+    line-height: 16px;
+    color: var(--color-on-surface-dim-1);
+  }
+  .summary__price-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-lg);
+    /* Sans ça, la marge par défaut du <p> s'ajoute au gap de .hero__summary et
+       décroche les critères du bloc prix. */
+    margin: var(--spacing-md) 0 0;
+  }
+  .summary__price-actions > * { display: flex; align-items: center; gap: var(--spacing-md); }
+  .summary__price-actions img { width: 16px; height: 16px; }
+
+  /* ---------- Popover (tooltip au survol) ---------- */
+  .tip { position: relative; display: inline-flex; }
+  .tip__btn {
+    display: inline-flex;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+  }
+  .tip__bubble {
+    position: absolute;
+    top: 50%;
+    left: calc(100% + var(--spacing-md));
+    z-index: 3;
+    width: 328px;
+    padding: var(--spacing-lg);
+    border-radius: var(--rounded-md);
+    background: var(--color-surface);
+    box-shadow: 0 2px 8px var(--color-shadow);
+    font-size: 16px;
+    line-height: 24px;
+    font-weight: 400;
+    text-align: left;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-50%);
+    transition: opacity var(--duration-short) var(--ease-standard),
+                visibility var(--duration-short) var(--ease-standard);
+  }
+  .tip__bubble::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: -8px;
+    width: 0;
+    height: 0;
+    border-width: 8px 8px 8px 0;
+    border-style: solid;
+    border-color: transparent var(--color-surface) transparent transparent;
+    transform: translateY(-50%);
+  }
+  .tip:hover .tip__bubble,
+  .tip:focus-within .tip__bubble { opacity: 1; visibility: visible; }
+  .link {
+    font-size: 14px;
+    line-height: 20px;
+    font-weight: 700;
+    color: var(--color-neutral);
+  }
+  .summary__divider {
+    width: var(--border-sm);
+    height: 18px;
+    background: var(--color-outline);
+  }
+
+  .summary__keyinfo { display: flex; flex-direction: column; gap: var(--spacing-md); }
+  .keyinfo__row { display: flex; align-items: flex-start; gap: var(--spacing-md); margin: 0; }
+  .keyinfo__icon {
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    margin-top: 2px;
+    border-radius: var(--rounded-sm);
+    background: var(--color-background-variant);
+  }
+  .keyinfo__icon img { width: 16px; height: 16px; }
+  .keyinfo__text {
+    flex: 1 1 0;
+    min-width: 0;
+    font-size: 16px;
+    line-height: 24px;
+  }
+
+  /* ---------- Titres de section ---------- */
+  .section__title {
+    margin: 0 0 var(--spacing-lg);
+    font-size: 18px;
+    line-height: 24px;
+    font-weight: 700;
+  }
+  .link--block {
+    display: inline-block;
+    font-size: 16px;
+    line-height: 24px;
+    font-weight: 700;
+    color: var(--color-on-surface);
+  }
+
+  /* ---------- Description ---------- */
+  .description p {
+    margin: 0;
+    font-size: 16px;
+    line-height: 24px;
+    white-space: pre-wrap;
+  }
+  /* Replié par défaut : « Voir plus » déplie le texte complet */
+  .description__text {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 6;
+    overflow: hidden;
+  }
+  .description.is-open .description__text { -webkit-line-clamp: unset; overflow: visible; }
+  .description__more {
+    margin-top: var(--spacing-sm);
+    border: 0;
+    padding: 0;
+    background: none;
+    font: inherit;
+    font-size: 16px;
+    line-height: 24px;
+    font-weight: 700;
+    color: var(--color-on-surface);
+    text-decoration: underline;
+    cursor: pointer;
+  }
+
+  /* ---------- Bande médias (entrées vers la galerie) ---------- */
+  .medias { display: flex; flex-wrap: wrap; gap: var(--spacing-lg); }
+  .media-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+    width: 144px;
+    color: inherit;
+    text-decoration: none;
+  }
+  .media-card__visual {
+    position: relative;
+    height: 104px;
+    border: var(--border-lg) solid var(--color-surface);
+    border-radius: var(--rounded-md);
+    background: var(--color-surface);
+    box-shadow: 0 1px 2px var(--color-shadow);
+    transition: transform var(--duration-short) var(--ease-standard);
+  }
+  .media-card:hover .media-card__visual { transform: translateY(-2px); }
+  .media-card__visual > img {
+    width: 100%;
+    height: 100%;
+    border-radius: var(--rounded-sm);
+    object-fit: cover;
+  }
+  /* Pile de photos : la carte du dessous dépasse en rotation */
+  .media-card__behind {
+    position: absolute;
+    inset: -8px -8px auto -1px;
+    z-index: -1;
+    height: 104px;
+    border: var(--border-lg) solid var(--color-surface);
+    border-radius: var(--rounded-md);
+    box-shadow: 0 1px 2px var(--color-shadow);
+    transform: rotate(5deg);
+    overflow: hidden;
+  }
+  .media-card__behind img { width: 100%; height: 100%; object-fit: cover; }
+  .media-card__visual > .media-card__play {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 40px;
+    height: 40px;
+    transform: translate(-50%, -50%);
+  }
+  .media-card__label { font-size: 14px; line-height: 20px; }
+
+  /* ---------- Diagnostics ---------- */
+  .diags { display: flex; flex-wrap: wrap; gap: var(--spacing-lg); }
+  .diag { display: flex; gap: var(--spacing-md); width: 330px; }
+  .diag__icon { flex: none; width: 24px; height: 24px; }
+  .diag__label {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    margin: 0 0 var(--spacing-md);
+    font-size: 12px;
+    line-height: 16px;
+    color: var(--color-on-surface-dim-1);
+  }
+  .diag__label img { width: 12px; height: 12px; }
+
+  .scale { display: flex; align-items: center; gap: 1px; }
+  .scale__step {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1px 3px;
+    font-family: "Open Sans", system-ui, sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--color-on-surface);
+  }
+  .scale__step--active {
+    padding: 5px 4px;
+    border: var(--border-sm) solid var(--color-surface);
+    border-radius: var(--rounded-sm);
+    font-family: inherit;
+    font-size: 16px;
+    line-height: 24px;
+    font-weight: 700;
+  }
+
+  /* ---------- Informations clés ---------- */
+  .keys {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 324px));
+    gap: var(--spacing-xl);
+    margin-bottom: var(--spacing-xl);
+  }
+  .keys__item { display: flex; align-items: center; gap: var(--spacing-md); margin: 0; }
+  .keys__item img { flex: none; width: 24px; height: 24px; }
+  .keys__item span { font-size: 16px; line-height: 24px; font-weight: 700; }
+  .keys__col { display: flex; flex-direction: column; gap: var(--spacing-xl); }
+  .keys__item--more { display: none; }
+  .keys--expanded .keys__item--more { display: flex; }
+  .keys__toggle {
+    padding: 0;
+    border: 0;
+    background: none;
+    font: inherit;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+
+  /* ---------- Localisation ---------- */
+  .section__title--lg { font-size: 20px; line-height: 28px; }
+  .locality { margin: 0 0 var(--spacing-lg); }
+  .locality b { display: block; font-size: 16px; line-height: 24px; }
+  .locality span { font-size: 14px; line-height: 20px; }
+
+  .map {
+    position: relative;
+    aspect-ratio: 670 / 396;
+    border-radius: var(--rounded-md);
+    overflow: hidden;
+  }
+  /* Grille de 9 tuiles OSM de 256 px (zoom 15, tuile centrale 16826/11681).
+     L'offset place lat 45.816013 / lng 4.8600535 au centre du cadre :
+     351.45 = 256 + 95.45 px dans la tuile, 427.53 = 256 + 171.53 px. */
+  .map__tiles {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    display: grid;
+    grid-template-columns: repeat(3, 256px);
+    grid-auto-rows: 256px;
+    transform: translate(-351.45px, -427.53px);
+  }
+  .map__tiles img { width: 256px; height: 256px; }
+  .map__pin {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 32px;
+    height: 32px;
+    transform: translate(-50%, -100%);
+  }
+  .map__credit {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    margin: 0;
+    padding: 2px var(--spacing-sm);
+    background: rgba(255, 255, 255, 0.8);
+    font-size: 10px;
+    line-height: 14px;
+    color: var(--color-neutral);
+  }
+  /* ---------- Transports ---------- */
+  .transports { display: flex; flex-direction: column; gap: 12px; }
+  .transport { display: flex; align-items: center; gap: var(--spacing-md); }
+  .transport span { font-size: 16px; line-height: 24px; }
+  .transport b { font-size: 16px; line-height: 24px; }
+  .line-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border-radius: var(--rounded-sm);
+    font-size: 16px;
+    line-height: 20px;
+    font-weight: 700;
+    color: var(--color-on-support);
+  }
+
+  /* ---------- Temps de trajet ---------- */
+  .trip__from { display: flex; align-items: center; gap: var(--spacing-md); }
+  .trip__from img { width: 16px; height: 16px; }
+  .trip__from b { font-size: 16px; line-height: 24px; }
+  .trip__link { width: 8px; height: 24px; margin-left: var(--spacing-sm); }
+  .trip__to { display: flex; gap: var(--spacing-md); }
+  .trip__to > img { flex: none; width: 16px; height: 16px; margin-top: 4px; }
+  .trip__field { flex: 1 1 0; min-width: 0; }
+  .trip__field label {
+    display: block;
+    margin-bottom: var(--spacing-md);
+    font-size: 16px;
+    line-height: 24px;
+    font-weight: 700;
+  }
+  .trip__field label i { color: var(--color-neutral); font-style: normal; }
+  .trip__field input {
+    width: 100%;
+    height: 44px;
+    padding-inline: var(--spacing-lg);
+    border: var(--border-sm) solid var(--color-outline);
+    border-radius: var(--rounded-full);
+    background: var(--color-surface);
+    font: inherit;
+    font-size: 16px;
+    color: var(--color-on-surface);
+  }
+  .trip__field input::placeholder { color: var(--color-neutral); }
+  .trip__results {
+    display: flex;
+    gap: var(--spacing-lg);
+    margin-top: var(--spacing-xl);
+    text-align: center;
+  }
+  .trip__result { flex: 1 1 0; }
+  .trip__result img { width: 16px; height: 16px; margin: 0 auto var(--spacing-md); }
+  .trip__result b { font-size: 16px; line-height: 24px; }
+
+  /* ---------- Bandeau promo intercalaire ---------- */
+  .promo-band { display: block; width: 257px; max-width: 100%; margin-inline: auto; }
+  .promo-band img { display: block; width: 100%; height: auto; }
+
+  /* ---------- Localisation : badge + accordéons ---------- */
+  .map__badge {
+    position: absolute;
+    top: var(--spacing-lg);
+    left: var(--spacing-lg);
+    padding: 2px var(--spacing-md);
+    border-radius: var(--rounded-sm);
+    background: var(--color-support);
+    font-size: 12px;
+    line-height: 20px;
+    font-weight: 700;
+    color: var(--color-on-support);
+  }
+  .locality__panels {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+    margin-top: var(--spacing-xl);
+  }
+  .panel {
+    border: var(--border-sm) solid var(--color-outline);
+    border-radius: var(--rounded-md);
+    background: var(--color-surface);
+  }
+  .panel__head {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-lg);
+    padding: var(--spacing-md) var(--spacing-lg);
+    cursor: pointer;
+    list-style: none;
+  }
+  .panel__head::-webkit-details-marker { display: none; }
+  .panel__icon {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: var(--rounded-md);
+    background: var(--color-support-container);
+  }
+  .panel__icon img { width: 20px; height: 20px; }
+  .panel__text { flex: 1 1 0; min-width: 0; }
+  .panel__text b { display: block; font-size: 16px; line-height: 24px; }
+  .panel__text span { font-size: 14px; line-height: 20px; color: var(--color-on-surface-dim-1); }
+  /* Chevron dessiné en masque : l'asset est monochrome, la couleur vient du token */
+  .panel__chevron {
+    flex: none;
+    width: 16px;
+    height: 16px;
+    background: var(--color-neutral);
+    opacity: var(--opacity-dim-2);
+    -webkit-mask: url(assets/icon-chevron-down.svg) center / contain no-repeat;
+    mask: url(assets/icon-chevron-down.svg) center / contain no-repeat;
+    transition: transform var(--duration-short) var(--ease-standard);
+  }
+  .panel[open] .panel__chevron { transform: rotate(180deg); }
+  .panel__body { padding: 0 var(--spacing-lg) var(--spacing-lg) 72px; }
+  .panel--link { display: block; color: inherit; text-decoration: none; }
+  .panel__arrow { flex: none; width: 20px; height: 20px; transform: rotate(-45deg); }
+
+  /* ---------- Coût du projet ---------- */
+  .cost { display: flex; flex-direction: column; gap: var(--spacing-lg); }
+  .cost__card {
+    padding: var(--spacing-lg);
+    border: var(--border-sm) solid var(--color-outline);
+    border-radius: var(--rounded-md);
+  }
+  .cost__title { margin: 0; font-size: 16px; line-height: 24px; font-weight: 700; }
+  .cost__card > .cost__title { margin-bottom: var(--spacing-lg); }
+  .cost__row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--spacing-lg);
+  }
+  .cost__row + .cost__row { margin-top: var(--spacing-lg); }
+  .cost__label { margin: 0; display: flex; align-items: center; gap: var(--spacing-sm); font-size: 14px; line-height: 20px; }
+  .cost__label img { width: 16px; height: 16px; }
+  .cost__amount { margin: 0; font-size: 16px; line-height: 24px; font-weight: 700; text-align: right; white-space: nowrap; }
+  .cost__amount small { display: block; font-size: 12px; line-height: 16px; font-weight: 400; color: var(--color-on-surface-dim-1); }
+  .cost__note {
+    margin: var(--spacing-lg) 0;
+    padding: var(--spacing-md) var(--spacing-lg);
+    border-radius: var(--rounded-md);
+    background: var(--color-support-container);
+    font-size: 14px;
+    line-height: 20px;
+  }
+  .cost__sep { height: 1px; margin: var(--spacing-lg) 0; border: 0; background: var(--color-outline); }
+  .cost__edf { margin: var(--spacing-lg) 0 0; }
+  .cost__edf .btn { width: 100%; gap: var(--spacing-md); }
+  .cost__edf .btn img { width: auto; height: 20px; }
+  .cost__sponsor { margin: var(--spacing-sm) 0 0; font-size: 12px; line-height: 16px; text-align: right; color: var(--color-on-surface-dim-1); }
+  .cost__legal { margin: 0; font-size: 12px; line-height: 16px; color: var(--color-on-surface-dim-1); }
+  .cost__aid {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-lg);
+    margin-top: var(--spacing-lg);
+  }
+  .cost__aid a { font-size: 16px; line-height: 24px; font-weight: 700; color: var(--color-support); }
+  .cost__logo { margin: var(--spacing-lg) 0 0; }
+  .cost__logo img { width: 250px; height: auto; }
+
+  /* Jauge « prix au m² par rapport au secteur » */
+  .market { margin-top: var(--spacing-2xl); }
+  .market__title { margin: 0; display: flex; align-items: center; gap: var(--spacing-md); font-size: 16px; line-height: 24px; }
+  .market__title img { width: 16px; height: 16px; }
+  .market__hint { margin: var(--spacing-sm) 0 56px; font-size: 12px; line-height: 16px; color: var(--color-on-surface-dim-1); }
+  .market__gauge {
+    position: relative;
+    height: 6px;
+    border-radius: var(--rounded-full);
+    background: linear-gradient(90deg, #1d6340 0%, #7fa8c4 40%, #b34a3a 100%);
+  }
+  .market__cursor {
+    position: absolute;
+    top: -6px;
+    width: 18px;
+    height: 18px;
+    border: var(--border-md) solid var(--color-on-surface);
+    border-radius: var(--rounded-full);
+    background: var(--color-surface);
+    transform: translateX(-50%);
+  }
+  .market__bubble {
+    position: absolute;
+    bottom: 22px;
+    padding: var(--spacing-sm) var(--spacing-lg);
+    border-radius: var(--rounded-full);
+    background: var(--color-surface);
+    box-shadow: 0 2px 8px var(--color-shadow);
+    font-size: 16px;
+    line-height: 24px;
+    font-weight: 700;
+    white-space: nowrap;
+    transform: translateX(-50%);
+  }
+  .market__bounds { display: flex; justify-content: space-between; margin: var(--spacing-lg) 0 0; }
+  .market__bounds b { display: block; font-size: 14px; line-height: 20px; }
+  .market__bounds span { font-size: 14px; line-height: 20px; color: var(--color-on-surface-dim-1); }
+  .market__bounds div:last-child { text-align: right; }
+  .market__verdict { margin: var(--spacing-lg) 0 0; font-size: 16px; line-height: 24px; }
+
+  /* ---------- Carrousels d'annonces ---------- */
+  .more__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--spacing-md) var(--spacing-lg);
+    margin-bottom: var(--spacing-lg);
+  }
+  .more__head .section__title { margin: 0; }
+  .more__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    font-size: 16px;
+    line-height: 24px;
+    font-weight: 700;
+    color: var(--color-support);
+    white-space: nowrap;
+  }
+  .more__cta img { width: 20px; height: 20px; }
+  .more__scroller { position: relative; }
+  .more__track {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 208px;
+    gap: var(--spacing-lg);
+    overflow-x: auto;
+    padding-bottom: var(--spacing-md);
+    scrollbar-width: none;
+  }
+  .more__track::-webkit-scrollbar { display: none; }
+  .more__next {
+    position: absolute;
+    top: 46px;
+    right: -12px;
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border: 0;
+    border-radius: var(--rounded-full);
+    background: var(--color-surface);
+    box-shadow: 0 2px 8px var(--color-shadow);
+    cursor: pointer;
+  }
+  .more__next img { width: 24px; height: 24px; }
+  .mini { display: block; color: inherit; text-decoration: none; }
+  .mini__media {
+    position: relative;
+    display: block;
+    aspect-ratio: 208 / 139;
+    border-radius: var(--rounded-md);
+    overflow: hidden;
+  }
+  .mini__media img { width: 100%; height: 100%; object-fit: cover; }
+  .mini__fav {
+    position: absolute;
+    top: var(--spacing-md);
+    right: var(--spacing-md);
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border: 0;
+    border-radius: var(--rounded-full);
+    background: rgba(255, 255, 255, 0.9);
+    cursor: pointer;
+  }
+  .mini__fav img { width: 20px; height: 20px; }
+  .mini__price { display: flex; align-items: center; gap: var(--spacing-md); margin: var(--spacing-md) 0 var(--spacing-sm); }
+  .mini__price b { font-size: 16px; line-height: 24px; }
+  .mini__price small { font-size: 12px; line-height: 16px; color: var(--color-on-surface-dim-1); }
+  .mini__price .tag--pro { margin-left: auto; }
+  .mini p { margin: 0; font-size: 14px; line-height: 20px; }
+  .mini__type { font-weight: 700; }
+  .mini__where { color: var(--color-on-surface-dim-1); }
+
+  /* ---------- Signaler / droits ---------- */
+  .report { display: flex; flex-wrap: wrap; gap: var(--spacing-lg) var(--spacing-2xl); }
+  .report a {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    font-size: 14px;
+    line-height: 20px;
+    font-weight: 700;
+    color: var(--color-support);
+  }
+  .report img { width: 16px; height: 16px; }
+
+  /* ---------- Financement (simulateur statique) ---------- */
+  .finance__subtitle {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    margin: 0 0 var(--spacing-lg);
+    font-size: 16px;
+    line-height: 24px;
+    font-weight: 700;
+  }
+  .tag {
+    padding: 2px var(--spacing-md);
+    border-radius: var(--rounded-sm);
+    box-shadow: inset 0 0 0 var(--border-sm) var(--color-support);
+    font-size: 12px;
+    line-height: 16px;
+    font-weight: 700;
+    color: var(--color-support);
+  }
+  .finance {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 323px;
+    gap: var(--spacing-xl);
+  }
+  .finance__fields { display: flex; flex-direction: column; gap: var(--spacing-xl); }
+  .field label {
+    display: block;
+    margin-bottom: var(--spacing-sm);
+    font-size: 14px;
+    line-height: 20px;
+  }
+  .field__control {
+    display: flex;
+    align-items: stretch;
+    height: 44px;
+    border: var(--border-sm) solid var(--color-outline);
+    border-radius: var(--rounded-lg);
+    overflow: hidden;
+  }
+  .field__control input {
+    flex: 1 1 0;
+    min-width: 0;
+    border: 0;
+    padding-inline: var(--spacing-lg);
+    background: var(--color-surface);
+    font: inherit;
+    font-size: 16px;
+    color: var(--color-on-surface);
+  }
+  .field__suffix {
+    display: flex;
+    align-items: center;
+    padding-inline: var(--spacing-lg);
+    border-left: var(--border-sm) solid var(--color-outline);
+    font-size: 16px;
+  }
+  .field__helper {
+    margin: var(--spacing-sm) 0 0;
+    font-size: 12px;
+    line-height: 16px;
+    color: var(--color-neutral);
+  }
+
+  /* Sliders statiques : position figée, valeur affichée au-dessus du handle */
+  .slider { position: relative; padding-top: var(--spacing-2xl); }
+  .slider__track {
+    position: relative;
+    height: var(--border-lg);
+    border-radius: var(--rounded-sm);
+    background: rgba(58, 71, 87, 0.16);
+  }
+  .slider__fill {
+    height: 100%;
+    border-radius: var(--rounded-sm);
+    background: var(--color-support);
+  }
+  .slider__handle {
+    position: absolute;
+    top: 50%;
+    width: 24px;
+    height: 24px;
+    transform: translate(-50%, -50%);
+  }
+  .slider__value {
+    position: absolute;
+    top: 0;
+    transform: translateX(-50%);
+    font-size: 14px;
+    line-height: 20px;
+    font-weight: 700;
+    color: var(--color-support);
+    white-space: nowrap;
+  }
+  .slider__bounds {
+    display: flex;
+    justify-content: space-between;
+    margin-top: var(--spacing-lg);
+    font-size: 12px;
+    line-height: 16px;
+    color: var(--color-neutral);
+  }
+
+  .results {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+    padding: var(--spacing-lg);
+    border-radius: var(--rounded-md);
+    background: var(--color-support-container);
+  }
+  .results__row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--spacing-lg);
+  }
+  .results__row dt { font-size: 14px; line-height: 20px; }
+  .results__row dt small { display: block; font-size: 12px; line-height: 16px; }
+  .results__row dd { margin: 0; font-size: 16px; line-height: 24px; font-weight: 700; }
+  .results__total dt { font-size: 16px; line-height: 24px; font-weight: 700; }
+  .results__total dd { font-size: 20px; line-height: 28px; }
+  .results__total dd span { font-size: 16px; font-weight: 400; }
+  .results dl { display: flex; flex-direction: column; gap: var(--spacing-md); margin: 0; }
+  .results__divider { height: 1px; border: 0; margin: 0; background: var(--color-outline); }
+  .results__pitch p { margin: 0 0 var(--spacing-md); }
+  .results__pitch b { font-size: 16px; line-height: 24px; }
+  .results__pitch span { font-size: 14px; line-height: 20px; }
+  .logo-mt { display: block; position: relative; width: 200px; height: 50px; margin-top: var(--spacing-md); }
+  .logo-mt img:first-child { position: absolute; top: 12.6px; left: 0; width: 57.6px; height: 24.9px; }
+  .logo-mt img:last-child { position: absolute; top: 16.4px; left: 69.5px; width: 130.5px; height: 17.2px; }
+  .finance__legal {
+    margin: var(--spacing-lg) 0 0;
+    font-size: 12px;
+    line-height: 16px;
+    color: var(--color-neutral);
+  }
+  .finance__legal a { color: inherit; }
+
+  /* ---------- Bloc agence ---------- */
+  .agency {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-lg);
+    padding-top: var(--spacing-xl);
+    border-top: var(--border-sm) solid var(--color-neutral-container);
+  }
+  .agency__id { display: flex; align-items: center; gap: var(--spacing-lg); }
+  .agency__pic {
+    flex: none;
+    width: 104px;
+    height: 104px;
+    border-radius: var(--rounded-md);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12), 0 -1px 4px rgba(0, 0, 0, 0.08);
+    object-fit: cover;
+  }
+  .agency__name { margin: 0 0 var(--spacing-md); font-size: 18px; line-height: 24px; font-weight: 700; }
+  .agency__siret { margin: 0; font-size: 16px; line-height: 24px; }
+
+  /* ---------- Colonne droite ---------- */
+  .page__aside { display: flex; flex-direction: column; gap: var(--spacing-xl); }
+  .contact-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-lg);
+    padding: var(--spacing-xl) var(--spacing-lg);
+    border-radius: var(--rounded-md);
+    background: var(--color-surface);
+    box-shadow: 0 4px 8px var(--color-shadow);
+  }
+  .contact-card__pro {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-lg);
+    color: inherit;
+    text-decoration: none;
+  }
+  .contact-card__pic {
+    flex: none;
+    width: 70px;
+    height: 72px;
+    border-radius: var(--rounded-md);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12), 0 -1px 4px rgba(0, 0, 0, 0.08);
+    object-fit: cover;
+  }
+  .contact-card__body { flex: 1 1 0; min-width: 0; }
+  .contact-card__body p { margin: 0; }
+  .contact-card__over { font-size: 12px; line-height: 16px; }
+  .contact-card__name { font-size: 16px; line-height: 24px; font-weight: 700; }
+  .rating { display: flex; align-items: center; gap: var(--spacing-sm); }
+  .rating img { width: 12px; height: 12px; }
+  .rating b { font-size: 16px; line-height: 24px; }
+  .contact-card__chevron { flex: none; width: 16px; height: 16px; margin-top: var(--spacing-md); }
+  .contact-card__ads { margin-top: var(--spacing-sm); font-size: 16px; line-height: 24px; }
+  .tag--pro {
+    display: inline-block;
+    margin: var(--spacing-sm) 0;
+    padding: 2px var(--spacing-md);
+    border-radius: var(--rounded-sm);
+    box-shadow: inset 0 0 0 var(--border-sm) var(--color-support);
+    font-size: 12px;
+    line-height: 16px;
+    font-weight: 700;
+    color: var(--color-support);
+  }
+  .promo { display: block; }
+  .promo img { width: 100%; height: auto; }
+
+  /* ---------- Footer ---------- */
+  .footer {
+    padding: var(--spacing-xl) var(--spacing-lg) var(--spacing-3xl);
+    background: #2b3441;
+    color: #fff;
+    font-size: 16px;
+    line-height: 24px;
+  }
+  .footer__inner { width: 100%; max-width: var(--page-width); margin-inline: auto; }
+  .footer__cols {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 237px));
+    gap: var(--spacing-xl);
+    justify-content: space-between;
+  }
+  .footer h2 {
+    margin: 0 0 var(--spacing-md);
+    padding-bottom: var(--spacing-md);
+    border-bottom: var(--border-sm) solid #dae6f1;
+    font-size: 16px;
+    line-height: 24px;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+  .footer ul { margin: 0; padding: 0; list-style: none; }
+  .footer a { color: inherit; text-decoration: none; }
+  .footer a:hover { text-decoration: underline; }
+  .footer__extra {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--spacing-xl);
+    margin-top: var(--spacing-3xl);
+  }
+  .footer__apps { display: flex; gap: var(--spacing-md); }
+  .footer__apps img { height: 34px; width: auto; }
+  .footer__country {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    width: 237px;
+    height: 35px;
+    padding-inline: var(--spacing-lg);
+    border: 0;
+    border-radius: var(--rounded-sm);
+    background: var(--color-surface);
+    font: inherit;
+    font-size: 16px;
+    color: var(--color-support);
+    cursor: pointer;
+  }
+  .footer__country img:first-child { width: 20px; height: 14px; }
+  .footer__country img:last-child { width: 16px; height: 16px; margin-left: auto; }
+  .footer__partners {
+    margin: var(--spacing-3xl) 0 0;
+    padding: var(--spacing-lg) 0;
+    border-top: var(--border-sm) solid #dae6f1;
+    border-bottom: var(--border-sm) solid #dae6f1;
+    text-align: center;
+  }
+  .footer__legal {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-lg);
+    margin-top: var(--spacing-xl);
+  }
+  .footer__social { display: flex; align-items: center; gap: var(--spacing-md); }
+  .footer__social img { width: 24px; height: 24px; }
+
+  /* ---------- Séparateurs de sections ---------- */
+  .rule {
+    height: 0;
+    margin: var(--spacing-xl) 0;
+    border: 0;
+    border-top: var(--border-sm) solid var(--color-neutral-container);
+  }
+
+  @media (max-width: 1059px) {
+    .page {
+      grid-template-columns: minmax(0, 1fr);
+      max-width: 720px;
+    }
+    .page__main, .page__aside { grid-column: 1; }
+    .page__aside { margin-top: var(--spacing-3xl); }
+  }
+
+  /* ---------- Mobile ---------- */
+  @media (max-width: 767px) {
+    /* La maquette mobile n'a pas de header : la photo occupe le haut de l'écran */
+    .header, .breadcrumb { display: none; }
+    /* Barre collée en haut : retour + titre + partage + favori, puis les onglets */
+    .stickybar__summary {
+      gap: var(--spacing-md);
+      height: 60px;
+      padding-inline: 0;
+    }
+    .stickybar__cover,
+    .stickybar__summary .btn,
+    .stickybar__text span { display: none; }
+    .stickybar__back, .stickybar__share { display: flex; }
+    .stickybar__tabs {
+      padding-inline: 0;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .stickybar__tabs::-webkit-scrollbar { display: none; }
+    .tip__bubble {
+      top: calc(100% + var(--spacing-md));
+      right: 0;
+      left: auto;
+      width: min(328px, calc(100vw - 2 * var(--spacing-lg)));
+      transform: none;
+    }
+    .tip__bubble::before {
+      top: -8px;
+      right: 12px;
+      left: auto;
+      border-width: 0 8px 8px;
+      border-color: transparent transparent var(--color-surface);
+      transform: none;
+    }
+
+    .page { padding: 0 0 96px; }
+    .page__main > *, .page__aside > * { padding-inline: var(--spacing-lg); }
+    .hero { gap: 0; padding-inline: 0; }
+
+    /* Galerie : carrousel plein écran au doigt */
+    .hero__mosaic {
+      display: flex;
+      gap: 0;
+      height: 333px;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scrollbar-width: none;
+    }
+    .hero__mosaic::-webkit-scrollbar { display: none; }
+    .hero__col { display: contents; }
+    .hero__shot, .hero__col .hero__shot, .hero__shot--wide {
+      flex: 0 0 100%;
+      scroll-snap-align: start;
+    }
+    .hero__shot img { border-radius: 0; }
+    .hero__back { display: flex; }
+    /* Abandonné sur mobile : la bande médias plus bas fait l'entrée de galerie */
+    .hero__medias { display: none; }
+
+    /* La fiche remonte sur la photo */
+    .hero__summary {
+      position: relative;
+      z-index: 1;
+      gap: var(--spacing-xl);
+      margin-top: -24px;
+      padding: var(--spacing-xl) var(--spacing-lg) 0;
+      border-radius: var(--rounded-xl) var(--rounded-xl) 0 0;
+      background: var(--color-surface);
+    }
+    .summary__features, .summary__price, .summary__price-actions { justify-content: center; text-align: center; }
+
+    .keys { grid-template-columns: minmax(0, 1fr); gap: var(--spacing-lg); }
+    .keys__col { gap: var(--spacing-lg); }
+
+    /* Bande médias défilable au doigt */
+    .medias { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
+    .medias::-webkit-scrollbar { display: none; }
+    .media-card { flex: 0 0 144px; }
+    .finance { grid-template-columns: minmax(0, 1fr); }
+
+    /* Carte au format portrait */
+    .map { aspect-ratio: 343 / 400; }
+
+    .cost__amount { white-space: normal; }
+    /* Le pavé 300x600 ne doit pas être étiré à la largeur de l'écran */
+    .promo { max-width: 300px; margin-inline: auto; }
+    .footer__cols { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .report { flex-direction: column; gap: var(--spacing-lg); }
+    .more__next { display: none; }
+
+    /* Les deux actions de contact deviennent la barre collée en bas */
+    .page__aside { margin-top: var(--spacing-xl); }
+    .contact-card {
+      position: fixed;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 2;
+      flex-direction: row;
+      gap: var(--spacing-lg);
+      padding: var(--spacing-lg);
+      border: 0;
+      border-radius: 0;
+      box-shadow: 0 -2px 8px var(--color-shadow);
+    }
+    .contact-card__pro { display: none; }
+    .contact-card .btn { flex: 1 1 0; min-width: 0; }
+  }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header__main">
+    <!-- Passerelle : le logo ramène à la page de résultats en rejouant la
+         recherche validée avant d'entrer sur l'annonce (`?resume`). -->
+    <a class="header__logo" href="../search-funnel-v8/index.html?resume=1"
+       aria-label="leboncoin, retour aux résultats">
+      <img src="assets/lbc-logo.svg" alt="leboncoin">
+    </a>
+    <div class="header__search">
+      <a class="btn btn--main" href="#">
+        <img src="assets/icon-add-square.svg" alt="">
+        Déposer une annonce
+      </a>
+      <button class="searchbar" type="button">
+        <span class="searchbar__label">Rechercher sur leboncoin</span>
+        <span class="searchbar__submit"><img src="assets/icon-magnifier.svg" alt=""></span>
+      </button>
+    </div>
+    <nav class="header__nav" aria-label="Mon compte">
+      <button class="header__item" type="button">
+        <span class="header__item-icon"><img src="assets/icon-bell.svg" alt=""></span>
+        Mes recherches
+      </button>
+      <button class="header__item" type="button">
+        <span class="header__item-icon"><img src="assets/icon-heart.svg" alt=""></span>
+        Favoris
+      </button>
+      <button class="header__item" type="button">
+        <span class="header__item-icon"><img src="assets/icon-bubble-text.svg" alt=""></span>
+        Messages
+      </button>
+      <button class="header__item" type="button">
+        <span class="header__item-icon"><img src="assets/icon-user.svg" alt=""></span>
+        Se connecter
+      </button>
+    </nav>
+  </div>
+  <nav class="header__categories" aria-label="Catégories">
+    <a class="header__category" href="#">Immobilier</a><span>·</span>
+    <a class="header__category" href="#">Véhicules</a><span>·</span>
+    <a class="header__category" href="#">Vacances</a><span>·</span>
+    <a class="header__category" href="#">Emploi</a><span>·</span>
+    <a class="header__category" href="#">Mode</a><span>·</span>
+    <a class="header__category" href="#">Maison &amp; Jardin</a><span>·</span>
+    <a class="header__category" href="#">Famille</a><span>·</span>
+    <a class="header__category" href="#">Électronique</a><span>·</span>
+    <a class="header__category" href="#">Loisirs</a><span>·</span>
+    <a class="header__category" href="#">Autres</a><span>·</span>
+    <a class="header__category header__category--highlight" href="#">Bon plans !</a>
+  </nav>
+</header>
+
+<div class="stickybar" id="stickybar">
+  <div class="stickybar__summary">
+    <button class="stickybar__fav stickybar__back" type="button" aria-label="Revenir à la liste"
+            onclick="location.assign('../search-funnel-v8/index.html?resume=1')">
+      <img src="assets/icon-arrow-left.svg" alt="">
+    </button>
+    <img class="stickybar__cover" src="assets/ad/photo-01.jpg" alt="">
+    <p class="stickybar__text">
+      <b>Appartement · 58 m² · 3 pièces</b>
+      <span>240 000 €</span>
+    </p>
+    <a class="btn btn--support" href="#">Envoyer un message</a>
+    <button class="stickybar__fav stickybar__share" type="button" aria-label="Partager l'annonce">
+      <img src="assets/icon-share.svg" alt="">
+    </button>
+    <button class="stickybar__fav" type="button" aria-label="Ajouter aux favoris">
+      <img src="assets/icon-heart-outline.svg" alt="">
+    </button>
+  </div>
+  <nav class="stickybar__tabs" aria-label="Sections de l’annonce">
+    <a href="#sec-description">Description</a>
+    <a href="#sec-diag">Diagnostic</a>
+    <a href="#sec-keys">Infos clés</a>
+    <a href="#sec-localisation">Localisation</a>
+    <a href="#sec-transports">Transports en commun</a>
+    <a href="#sec-finance">Financements</a>
+  </nav>
+</div>
+
+<div class="page">
+
+  <nav class="breadcrumb" aria-label="Fil d'ariane">
+    <a href="#">Accueil <img src="assets/icon-chevron-right.svg" alt=""></a>
+    <a href="#">Ventes immobilières <img src="assets/icon-chevron-right.svg" alt=""></a>
+    <a href="#">Rhône-Alpes <img src="assets/icon-chevron-right.svg" alt=""></a>
+    <a href="#">Caluire-et-Cuire <img src="assets/icon-chevron-right.svg" alt=""></a>
+    <span aria-current="page">Vente appartement 3 pièces, 58 m²</span>
+  </nav>
+
+  <main class="page__main">
+
+    <section class="hero">
+      <div class="hero__mosaic">
+        <div class="hero__col">
+          <a class="hero__shot" href="index.html"><img src="assets/ad/photo-02.jpg" alt="Cuisine équipée semi-ouverte"></a>
+          <a class="hero__shot" href="index.html"><img src="assets/ad/photo-03.jpg" alt="Balcon exposé plein sud"></a>
+        </div>
+        <a class="hero__shot hero__shot--wide" href="index.html">
+          <img src="assets/ad/photo-01.jpg" alt="Séjour traversant du T3">
+        </a>
+
+        <!-- Même passerelle que le logo : `?resume` plutôt que `history.back()`,
+             qui ramènerait la galerie si on arrive de là, et un listing vierge. -->
+        <button class="icon-btn hero__back" type="button" aria-label="Revenir à la liste"
+                onclick="location.assign('../search-funnel-v8/index.html?resume=1')">
+          <img src="assets/icon-arrow-left.svg" alt="">
+        </button>
+
+        <div class="hero__actions">
+          <button class="icon-btn" type="button" aria-label="Partager l'annonce">
+            <img src="assets/icon-share.svg" alt="">
+          </button>
+          <button class="icon-btn" type="button" aria-label="Ajouter aux favoris">
+            <img src="assets/icon-heart-outline.svg" alt="">
+          </button>
+        </div>
+
+        <a class="hero__medias" href="index.html">
+          <span class="hero__medias-icons">
+            <span><img src="assets/icon-plan.svg" alt=""></span>
+            <span><img src="assets/icon-play-small.svg" alt=""></span>
+            <span><img src="assets/icon-3d-small.svg" alt=""></span>
+          </span>
+          Voir les médias
+        </a>
+      </div>
+
+      <div class="hero__summary">
+        <div>
+          <h1 class="summary__features">Appartement · 58 m² · 3 pièces</h1>
+          <p class="summary__price">
+            <b>240 000 €</b>
+            <small>4 138 € / m²</small>
+          </p>
+          <p class="summary__price-actions">
+            <a class="link" href="#">Voir le détail du prix</a>
+            <span class="summary__divider" aria-hidden="true"></span>
+            <span>
+              <a class="link" href="#">Simuler mon prêt</a>
+              <span class="tip">
+                <button class="tip__btn" type="button" aria-label="En savoir plus sur la simulation de prêt">
+                  <img src="assets/icon-info.svg" alt="">
+                </button>
+                <span class="tip__bubble" role="tooltip">Ce service gratuit est proposé par notre partenaire Crédit Agricole.</span>
+              </span>
+            </span>
+          </p>
+        </div>
+
+        <div class="summary__keyinfo">
+          <p class="keyinfo__row">
+            <span class="keyinfo__icon"><img src="assets/icon-check-toggle.svg" alt=""></span>
+            <span class="keyinfo__text">
+              Balcon · Cave · Étage 2/4 · Sans ascenseur ·
+              <a class="link keyinfo__more" href="#sec-keys">+8</a>
+            </span>
+          </p>
+          <p class="keyinfo__row">
+            <span class="keyinfo__icon"><img src="assets/icon-map-pin.svg" alt=""></span>
+            <span class="keyinfo__text">
+              Caluire-et-Cuire 69300 · Quartier Le Vernay ·
+              <a class="link" href="#sec-localisation">Voir le plan</a>
+            </span>
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <hr class="rule">
+
+    <a class="promo-band" href="#"><img src="assets/promo-simuler-pret.png" alt="Publicité — Je simule mon prêt immobilier"></a>
+
+    <hr class="rule">
+
+    <section class="description" id="sec-description">
+      <h2 class="section__title">Description</h2>
+      <p class="description__text">iad France - Carole Vigne vous propose : NOUVEAUTÉ EN EXCLUSIVITÉ – CALUIRE VERNAY – T3 TRAVERSANT AVEC BALCON SUD – ENVIRONNEMENT VERDOYANT EXCEPTIONNEL
+
+Situé dans le secteur très prisé du Vernay à Caluire-et-Cuire, ce bel appartement T3 traversant, au 2ᵉ étage sur 4, vous séduira par son calme, sa luminosité et sa qualité de vie rare.
+
+Au cœur d’une résidence sécurisée, arborée et parfaitement entretenue, vous profitez d’un cadre privilégié à seulement quelques pas de la voie verte, idéal pour les balades, le sport et les déplacements doux, et à proximité immédiate du Parc de la Tête d’Or, véritable poumon vert de la métropole lyonnaise.
+
+Les commerces, écoles et transports en commun (lignes de bus desservant rapidement Lyon et ses quartiers centraux) sont également accessibles à pied.
+
+L’appartement, en très bon état et sans aucun travaux à prévoir, se compose de :
+
+Un séjour / salle à manger lumineux ouvrant sur un balcon exposé plein sud
+Une cuisine entièrement équipée, semi-ouverte sur le séjour, offrant un espace convivial et fonctionnel
+Deux chambres, dont une avec dressing
+Un cellier pratique et bien agencé
+Une salle de bain
+Un WC séparé
+
+En complément : une cave et des places de stationnement libres dans la copropriété.
+
+Les atouts majeurs :
+
+Appartement traversant et très lumineux
+Résidence calme et sécurisée
+Accès direct à la voie verte
+Aucun travaux à prévoir
+Emplacement recherché et cadre de vie privilégié
+Idéal résidence principale ou investissement
+Proximité du Parc de la Tête d’Or
+
+Un bien rare sur le secteur – à visiter sans tarder !
+Coup de cœur assuré : vous n’avez plus qu’à poser vos valises !
+
+La présente annonce immobilière vise 2 lots situés dans une copropriété de 99 lots au total et ne faisant l’objet d’aucune procédure en cours citée à l’article L. 721-1 du code de la construction et de l’habitation. Montant moyen mensuel de charges déclaré par le vendeur : 171.9 € par mois (soit 2062.84 € annuel). Honoraires d’agence à la charge du vendeur.
+
+À propos de la copropriété : pas de procédure en cours. Nombre de lots : 99. Date de réalisation du diagnostic énergétique : 13/03/2026. Consommation énergie primaire : 319 kWh/m²/an. Consommation énergie finale : non communiqué.
+
+Montant estimé des dépenses annuelles d’énergie pour un usage standard : entre 1 610 € et 2 220 € sur les années 2021, 2022 et 2023 (abonnements compris).
+
+Les informations sur les risques auxquels ce bien est exposé, y compris l’obligation légale de débroussaillement, sont disponibles sur le site Géorisques : georisques.gouv.fr</p>
+      <button class="description__more" type="button">Voir plus</button>
+    </section>
+
+    <hr class="rule">
+
+    <section class="medias">
+      <a class="media-card" href="index.html?media=plan">
+        <span class="media-card__visual"><img src="assets/media-plan.png" alt=""></span>
+        <span class="media-card__label">Plan</span>
+      </a>
+      <a class="media-card" href="index.html?media=tour">
+        <span class="media-card__visual">
+          <span class="media-card__behind" aria-hidden="true"><img src="assets/ad/photo-05.jpg" alt=""></span>
+          <img src="assets/ad/photo-04.jpg" alt="">
+        </span>
+        <span class="media-card__label">Photos par pièce</span>
+      </a>
+      <a class="media-card" href="index.html?media=video">
+        <span class="media-card__visual">
+          <img src="assets/media-video.png" alt="">
+          <img class="media-card__play" src="assets/icon-play-circle.svg" alt="">
+        </span>
+        <span class="media-card__label">Vidéo</span>
+      </a>
+    </section>
+
+    <hr class="rule">
+
+    <section id="sec-diag">
+      <h2 class="section__title">Diagnostics</h2>
+      <div class="diags">
+        <div class="diag">
+          <img class="diag__icon" src="assets/icon-crit-class.svg" alt="">
+          <div>
+            <p class="diag__label">Classe énergie <img src="assets/icon-info-12.svg" alt=""></p>
+            <p class="scale">
+              <span class="scale__step" style="background:#549641">A</span>
+              <span class="scale__step" style="background:#69c74c">B</span>
+              <span class="scale__step" style="background:#d8fa5e">C</span>
+              <span class="scale__step" style="background:#f9e967">D</span>
+              <span class="scale__step scale__step--active" style="background:#f3ca52">E</span>
+              <span class="scale__step" style="background:#ef9f4c">F</span>
+              <span class="scale__step" style="background:#e63a30">G</span>
+            </p>
+          </div>
+        </div>
+        <div class="diag">
+          <img class="diag__icon" src="assets/icon-crit-class.svg" alt="">
+          <div>
+            <p class="diag__label">GES <img src="assets/icon-info-12.svg" alt=""></p>
+            <p class="scale">
+              <span class="scale__step" style="background:#f4edfd">A</span>
+              <span class="scale__step" style="background:#dfc9f7">B</span>
+              <span class="scale__step" style="background:#ccafec">C</span>
+              <span class="scale__step" style="background:#c29eea">D</span>
+              <span class="scale__step scale__step--active" style="background:#aa7dde">E</span>
+              <span class="scale__step" style="background:#9b61e1">F</span>
+              <span class="scale__step" style="background:#7d41d1">G</span>
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <hr class="rule">
+
+    <section id="sec-keys">
+      <h2 class="section__title">Informations clés</h2>
+      <div class="keys" id="keys">
+        <div class="keys__col">
+          <p class="keys__item"><img src="assets/icon-crit-clock.svg" alt=""><span>Publié le 31/07/2026</span></p>
+          <p class="keys__item"><img src="assets/icon-crit-buildings.svg" alt=""><span><a class="link--block" href="#">Appartement</a></span></p>
+          <p class="keys__item"><img src="assets/icon-crit-measures.svg" alt=""><span>58 m²</span></p>
+          <p class="keys__item keys__item--more"><img src="assets/icon-crit-rooms.svg" alt=""><span>3 pièces</span></p>
+          <p class="keys__item keys__item--more"><img src="assets/icon-crit-bath.svg" alt=""><span>1 salle de bain</span></p>
+          <p class="keys__item keys__item--more"><img src="assets/icon-crit-balcony.svg" alt=""><span>Balcon</span></p>
+          <p class="keys__item keys__item--more"><img src="assets/icon-crit-features.svg" alt=""><span>Cave · Interphone</span></p>
+        </div>
+        <div class="keys__col">
+          <p class="keys__item"><img src="assets/icon-crit-bed.svg" alt=""><span>2 chambres</span></p>
+          <p class="keys__item"><img src="assets/icon-crit-stairs.svg" alt=""><span>Étage 2/4</span></p>
+          <p class="keys__item"><img src="assets/icon-crit-lift.svg" alt=""><span>Sans ascenseur</span></p>
+          <p class="keys__item keys__item--more"><img src="assets/icon-crit-heating.svg" alt=""><span>Chauffage collectif au gaz</span></p>
+          <p class="keys__item keys__item--more"><img src="assets/icon-crit-year.svg" alt=""><span>Construit en 1964</span></p>
+          <p class="keys__item keys__item--more"><img src="assets/icon-crit-condition.svg" alt=""><span>Bon état</span></p>
+          <p class="keys__item keys__item--more"><img src="assets/icon-crit-charges.svg" alt=""><span>2 063 € de charges / an</span></p>
+        </div>
+      </div>
+      <button class="link--block keys__toggle" type="button" aria-expanded="false" aria-controls="keys"
+              data-label-more="Voir les 8 critères supplémentaires" data-label-less="Voir moins">
+        Voir les 8 critères supplémentaires
+      </button>
+    </section>
+
+    <hr class="rule">
+
+    <section id="sec-localisation">
+      <h2 class="section__title section__title--lg">Localisation</h2>
+      <p class="locality">
+        <b>Quartier Le Vernay</b>
+        <span>Caluire-et-Cuire (69300)</span>
+      </p>
+      <!-- Carte statique : tuiles OpenStreetMap zoom 15 centrées sur 45.816013, 4.8600535 -->
+      <div class="map">
+        <div class="map__tiles" aria-label="Carte du quartier Le Vernay à Caluire-et-Cuire" role="img">
+          <img src="assets/map/t-16825-11680.png" alt="">
+          <img src="assets/map/t-16826-11680.png" alt="">
+          <img src="assets/map/t-16827-11680.png" alt="">
+          <img src="assets/map/t-16825-11681.png" alt="">
+          <img src="assets/map/t-16826-11681.png" alt="">
+          <img src="assets/map/t-16827-11681.png" alt="">
+          <img src="assets/map/t-16825-11682.png" alt="">
+          <img src="assets/map/t-16826-11682.png" alt="">
+          <img src="assets/map/t-16827-11682.png" alt="">
+        </div>
+        <img class="map__pin" src="assets/icon-pin-filled.svg" alt="">
+        <p class="map__credit">© OpenStreetMap</p>
+        <span class="map__badge">Localisation exacte</span>
+      </div>
+
+      <div class="locality__panels">
+        <a class="panel panel--link" href="#">
+          <span class="panel__head">
+            <span class="panel__icon"><img src="assets/icon-3d-small.svg" alt=""></span>
+            <span class="panel__text">
+              <b>Ouvrir street View</b>
+              <span>Explorer virtuellement le quartier</span>
+            </span>
+            <img class="panel__arrow" src="assets/icon-arrow-right.svg" alt="">
+          </span>
+        </a>
+
+        <details class="panel" id="sec-transports">
+          <summary class="panel__head">
+            <span class="panel__icon"><img src="assets/icon-map-train.svg" alt=""></span>
+            <span class="panel__text">
+              <b>Transports à proximité</b>
+              <span>Connaître les transports aux alentours</span>
+            </span>
+            <span class="panel__chevron" aria-hidden="true"></span>
+          </summary>
+          <div class="panel__body">
+            <!-- Les arrêts sont chargés côté client sur lbc : absents du HTML de l'annonce, donc non injectés -->
+            <div class="transports">
+              <p class="transport"><span>Données transport non disponibles pour cette annonce</span></p>
+            </div>
+          </div>
+        </details>
+
+        <details class="panel">
+          <summary class="panel__head">
+            <span class="panel__icon"><img src="assets/icon-map-pin.svg" alt=""></span>
+            <span class="panel__text">
+              <b>Temps de trajet</b>
+              <span>Simuler un trajet (école, travail, etc.)</span>
+            </span>
+            <span class="panel__chevron" aria-hidden="true"></span>
+          </summary>
+          <div class="panel__body">
+            <p class="trip__from"><img src="assets/icon-pin-filled.svg" alt=""> <b>Adresse du bien</b></p>
+            <img class="trip__link" src="assets/icon-pin-dotted-line.svg" alt="">
+            <div class="trip__to">
+              <img src="assets/icon-pin-outline.svg" alt="">
+              <p class="trip__field">
+                <label for="trip-to">Saisissez l’adresse d’arrivée <i>*</i></label>
+                <input id="trip-to" type="text" placeholder="Nom de rue, ville">
+              </p>
+            </div>
+            <div class="trip__results">
+              <p class="trip__result"><img src="assets/icon-map-car.svg" alt="Voiture"><b>-</b></p>
+              <p class="trip__result"><img src="assets/icon-map-train.svg" alt="Transports en commun"><b>-</b></p>
+              <p class="trip__result"><img src="assets/icon-map-bike.svg" alt="Vélo"><b>-</b></p>
+              <p class="trip__result"><img src="assets/icon-map-walk.svg" alt="À pied"><b>-</b></p>
+            </div>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <hr class="rule">
+
+    <section>
+      <h2 class="section__title section__title--lg">Coût du projet</h2>
+
+      <div class="cost">
+        <div class="cost__card">
+          <div class="cost__row">
+            <h3 class="cost__title">Prix du bien</h3>
+            <p class="cost__amount">240 000 €<small>4 138 € / m²</small></p>
+          </div>
+          <p class="cost__note">Les honoraires sont à la charge du vendeur.</p>
+          <div class="cost__row">
+            <p class="cost__label">Frais de notaire estimés <img src="assets/icon-info-12.svg" alt="En savoir plus"></p>
+            <p class="cost__amount">19 200 €</p>
+          </div>
+          <hr class="cost__sep">
+          <div class="cost__row">
+            <h3 class="cost__title">Montant estimé du projet</h3>
+            <p class="cost__amount">259 200 €</p>
+          </div>
+        </div>
+
+        <div class="cost__card">
+          <h3 class="cost__title">Charges futures du bien</h3>
+          <!-- Taxe foncière : absente de l'annonce, valeur reprise de la maquette Figma -->
+          <div class="cost__row">
+            <p class="cost__label">Taxe foncière</p>
+            <p class="cost__amount">609 € / an</p>
+          </div>
+          <div class="cost__row">
+            <p class="cost__label">Estimation de la facture énergétique</p>
+            <p class="cost__amount">entre 1&nbsp;610 et 2&nbsp;220 €&nbsp;/&nbsp;an</p>
+          </div>
+          <p class="cost__edf">
+            <button class="btn btn--outlined" type="button">
+              Préciser l’estimation avec <img src="assets/logo-edf.png" alt="EDF"> *
+            </button>
+          </p>
+          <p class="cost__sponsor">Sponsorisé</p>
+        </div>
+
+        <p class="cost__legal">
+          * L’estimation affichée est fournie par le déposant. L’estimation EDF est calculée
+          indépendamment selon ses propres critères.
+        </p>
+
+        <div class="cost__card">
+          <div class="cost__row">
+            <h3 class="cost__title">Aides de l’État</h3>
+            <p class="cost__amount">240 000 €<small>4 138 € / m²</small></p>
+          </div>
+          <div class="cost__aid">
+            <p class="cost__label">Aides à la rénovation énergétique</p>
+            <a class="link" href="#">Estimer</a>
+          </div>
+          <p class="cost__logo"><img src="assets/logo-mesaides-reno.png" alt="Mes Aides Réno, un service de France Rénov’"></p>
+        </div>
+      </div>
+
+      <!-- Fourchette de prix au m² du secteur : absente de l'annonce, valeurs reprises de la maquette Figma -->
+      <div class="market">
+        <h3 class="market__title">Prix au m² par rapport au secteur <img src="assets/icon-info-12.svg" alt="En savoir plus"></h3>
+        <p class="market__hint">Ces données sont indicatives.</p>
+        <div class="market__gauge">
+          <span class="market__bubble" style="left: 50%">4 138 € / m²</span>
+          <span class="market__cursor" style="left: 50%"></span>
+        </div>
+        <div class="market__bounds">
+          <div><b>Prix bas</b><span>3 100 € / m²</span></div>
+          <div><b>Prix haut</b><span>5 200 € / m²</span></div>
+        </div>
+        <p class="market__verdict">À 4 138 € / m², le bien est dans la moyenne par rapport au secteur.</p>
+      </div>
+    </section>
+
+    <hr class="rule">
+
+    <!-- Simulateur statique : sliders et résultats non calculés dans le proto -->
+    <section id="sec-finance">
+      <h2 class="section__title section__title--lg">Financement</h2>
+      <p class="finance__subtitle">Calculer mes mensualités <span class="tag">Sponsorisé</span></p>
+
+      <div class="finance">
+        <div class="finance__fields">
+          <div class="field">
+            <label for="fin-price">Prix du bien</label>
+            <div class="field__control">
+              <input id="fin-price" type="text" value="240 000">
+              <span class="field__suffix">€</span>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="fin-down">Apport personnel</label>
+            <div class="field__control">
+              <input id="fin-down" type="text" value="48 000">
+              <span class="field__suffix">€</span>
+            </div>
+          </div>
+          <p class="field__helper">20% du prix total recommandé.</p>
+
+          <div class="field">
+            <label>Durée du prêt</label>
+            <div class="slider">
+              <span class="slider__value" style="left:75%">20 ans</span>
+              <div class="slider__track">
+                <div class="slider__fill" style="width:75%"></div>
+                <img class="slider__handle" src="assets/slider-handle.svg" style="left:75%" alt="">
+              </div>
+              <p class="slider__bounds"><span>5 ans</span><span>25 ans</span></p>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Taux d’intérêt</label>
+            <div class="slider">
+              <span class="slider__value" style="left:37%">3,48%</span>
+              <div class="slider__track">
+                <div class="slider__fill" style="width:37%"></div>
+                <img class="slider__handle" src="assets/slider-handle.svg" style="left:37%" alt="">
+              </div>
+              <p class="slider__bounds"><span>0 %</span><span>10 %</span></p>
+            </div>
+            <p class="field__helper">Actuellement le taux d’intérêt annuel moyen : 3,48%</p>
+          </div>
+
+          <div class="field">
+            <label>Taux d’assurance</label>
+            <div class="slider">
+              <span class="slider__value" style="left:23%">0,34%</span>
+              <div class="slider__track">
+                <div class="slider__fill" style="width:23%"></div>
+                <img class="slider__handle" src="assets/slider-handle.svg" style="left:23%" alt="">
+              </div>
+              <p class="slider__bounds"><span>0 %</span><span>10 %</span></p>
+            </div>
+          </div>
+        </div>
+
+        <div class="results">
+          <dl>
+            <div class="results__row results__total">
+              <dt>Mensualités :</dt>
+              <dd>1 283 € <span>/ mois*</span></dd>
+            </div>
+          </dl>
+          <hr class="results__divider">
+          <dl>
+            <div class="results__row">
+              <dt>Montant de l’emprunt :</dt>
+              <dd>211 200 €</dd>
+            </div>
+            <div class="results__row">
+              <dt>Coût des intérêts : <small>(d’après le taux d’intérêt renseigné)</small></dt>
+              <dd>82 249 €</dd>
+            </div>
+            <div class="results__row">
+              <dt>Coût d’assurance : <small>(d’après le taux d’assurance renseigné)</small></dt>
+              <dd>14 362 €</dd>
+            </div>
+            <div class="results__row">
+              <dt>Frais de notaire : <small>(8% du prix de vente dans l’ancien)</small></dt>
+              <dd>19 200 €</dd>
+            </div>
+          </dl>
+          <hr class="results__divider">
+          <div class="results__pitch">
+            <p><b>Vous avez un projet d’achat ?</b></p>
+            <p><span>Personnalisez votre simulation en ligne et sans engagement, grâce à notre partenaire</span></p>
+            <span class="logo-mt">
+              <img src="assets/logo-mt-mark.svg" alt="">
+              <img src="assets/logo-mt-word.svg" alt="Meilleurtaux">
+            </span>
+          </div>
+          <a class="btn btn--outlined btn--full" href="#">Personnaliser ma simulation</a>
+        </div>
+      </div>
+
+      <p class="finance__legal">
+        *<a href="#">Les données de ce simulateur sont indicatives et non contractuelles</a>. Calcul hors assurance
+        et frais de garantie. Sous réserve d’acceptation de votre dossier de prêt&nbsp;…
+      </p>
+    </section>
+
+    <hr class="rule">
+
+    <section class="agency">
+      <div class="agency__id">
+        <img class="agency__pic" src="assets/ad/store-logo.jpg" alt="Carole Vigne - IAD France">
+        <div>
+          <p class="agency__name">Carole Vigne - IAD France</p>
+          <p class="agency__siret">N° SIREN : 877597617</p>
+        </div>
+      </div>
+      <button class="btn btn--outlined" type="button">Suivre</button>
+    </section>
+
+    <hr class="rule">
+
+    <!-- Annonces de vitrine : non présentes dans le HTML de l'annonce, visuels repris de la galerie -->
+    <section class="more">
+      <div class="more__head">
+        <h2 class="section__title">D’autres annonces de Carole Vigne - IAD France</h2>
+        <a class="more__cta" href="#">Voir plus d’annonces <img src="assets/icon-arrow-right.svg" alt=""></a>
+      </div>
+      <div class="more__scroller">
+        <div class="more__track">
+          <a class="mini" href="#">
+            <span class="mini__media">
+              <img src="assets/ad/photo-04.jpg" alt="">
+              <span class="mini__fav"><img src="assets/icon-heart-outline.svg" alt="Ajouter aux favoris"></span>
+            </span>
+            <p class="mini__price"><b>232 000 €</b><small>4 296 € / m²</small><span class="tag--pro">Pro</span></p>
+            <p class="mini__type">Appartement</p>
+            <p>3 pièces · 54 m²</p>
+            <p class="mini__where">Caluire-et-Cuire 69300</p>
+          </a>
+          <a class="mini" href="#">
+            <span class="mini__media">
+              <img src="assets/ad/photo-06.jpg" alt="">
+              <span class="mini__fav"><img src="assets/icon-heart-outline.svg" alt="Ajouter aux favoris"></span>
+            </span>
+            <p class="mini__price"><b>289 000 €</b><small>4 353 € / m²</small><span class="tag--pro">Pro</span></p>
+            <p class="mini__type">Appartement</p>
+            <p>4 pièces · 66 m²</p>
+            <p class="mini__where">Lyon 69004</p>
+          </a>
+          <a class="mini" href="#">
+            <span class="mini__media">
+              <img src="assets/ad/photo-09.jpg" alt="">
+              <span class="mini__fav"><img src="assets/icon-heart-outline.svg" alt="Ajouter aux favoris"></span>
+            </span>
+            <p class="mini__price"><b>178 500 €</b><small>4 462 € / m²</small><span class="tag--pro">Pro</span></p>
+            <p class="mini__type">Appartement</p>
+            <p>2 pièces · 40 m²</p>
+            <p class="mini__where">Rillieux-la-Pape 69140</p>
+          </a>
+          <a class="mini" href="#">
+            <span class="mini__media">
+              <img src="assets/ad/photo-12.jpg" alt="">
+              <span class="mini__fav"><img src="assets/icon-heart-outline.svg" alt="Ajouter aux favoris"></span>
+            </span>
+            <p class="mini__price"><b>415 000 €</b><small>3 953 € / m²</small><span class="tag--pro">Pro</span></p>
+            <p class="mini__type">Maison</p>
+            <p>5 pièces · 105 m²</p>
+            <p class="mini__where">Sathonay-Camp 69580</p>
+          </a>
+        </div>
+        <button class="more__next" type="button" aria-label="Annonces suivantes">
+          <img src="assets/icon-chevron-right.svg" alt="">
+        </button>
+      </div>
+    </section>
+
+    <hr class="rule">
+
+    <p class="report">
+      <a href="#"><img src="assets/icon-flag.svg" alt="">Signaler l’annonce</a>
+      <a href="#"><img src="assets/icon-info-12.svg" alt="">Vos droits et obligations</a>
+    </p>
+
+    <hr class="rule">
+
+    <!-- Recommandations : non présentes dans le HTML de l'annonce, visuels repris de la galerie -->
+    <section class="more">
+      <div class="more__head">
+        <h2 class="section__title">Ces annonces peuvent vous intéresser</h2>
+      </div>
+      <div class="more__scroller">
+        <div class="more__track">
+          <a class="mini" href="#">
+            <span class="mini__media">
+              <img src="assets/ad/photo-02.jpg" alt="">
+              <span class="mini__fav"><img src="assets/icon-heart-outline.svg" alt="Ajouter aux favoris"></span>
+            </span>
+            <p class="mini__price"><b>245 000 €</b><small>4 273 € / m²</small><span class="tag--pro">Pro</span></p>
+            <p class="mini__type">Appartement</p>
+            <p>3 pièces · 57 m²</p>
+            <p class="mini__where">Caluire-et-Cuire 69300</p>
+          </a>
+          <a class="mini" href="#">
+            <span class="mini__media">
+              <img src="assets/ad/photo-05.jpg" alt="">
+              <span class="mini__fav"><img src="assets/icon-heart-outline.svg" alt="Ajouter aux favoris"></span>
+            </span>
+            <p class="mini__price"><b>259 000 €</b><small>4 116 € / m²</small><span class="tag--pro">Pro</span></p>
+            <p class="mini__type">Appartement</p>
+            <p>3 pièces · 63 m²</p>
+            <p class="mini__where">Lyon 69004</p>
+          </a>
+          <a class="mini" href="#">
+            <span class="mini__media">
+              <img src="assets/ad/photo-08.jpg" alt="">
+              <span class="mini__fav"><img src="assets/icon-heart-outline.svg" alt="Ajouter aux favoris"></span>
+            </span>
+            <p class="mini__price"><b>198 000 €</b><small>4 043 € / m²</small><span class="tag--pro">Pro</span></p>
+            <p class="mini__type">Appartement</p>
+            <p>2 pièces · 49 m²</p>
+            <p class="mini__where">Villeurbanne 69100</p>
+          </a>
+          <a class="mini" href="#">
+            <span class="mini__media">
+              <img src="assets/ad/photo-11.jpg" alt="">
+              <span class="mini__fav"><img src="assets/icon-heart-outline.svg" alt="Ajouter aux favoris"></span>
+            </span>
+            <p class="mini__price"><b>320 000 €</b><small>4 000 € / m²</small><span class="tag--pro">Pro</span></p>
+            <p class="mini__type">Appartement</p>
+            <p>4 pièces · 80 m²</p>
+            <p class="mini__where">Caluire-et-Cuire 69300</p>
+          </a>
+        </div>
+        <button class="more__next" type="button" aria-label="Annonces suivantes">
+          <img src="assets/icon-chevron-right.svg" alt="">
+        </button>
+      </div>
+    </section>
+
+  </main>
+
+  <aside class="page__aside">
+    <div class="contact-card">
+      <a class="contact-card__pro" href="#">
+        <img class="contact-card__pic" src="assets/ad/store-logo.jpg" alt="Carole Vigne - IAD France">
+        <div class="contact-card__body">
+          <p class="contact-card__over">En exclusivité par</p>
+          <p class="contact-card__name">Carole Vigne - IAD France</p>
+          <p class="rating">
+            <img src="assets/icon-star.svg" alt="">
+            <img src="assets/icon-star.svg" alt="">
+            <img src="assets/icon-star.svg" alt="">
+            <img src="assets/icon-star.svg" alt="">
+            <img src="assets/icon-star.svg" alt="">
+            <b>4,9 (18)</b>
+          </p>
+          <span class="tag--pro">Pro</span>
+          <!-- Nombre d'annonces : chargé côté client sur lbc, absent du HTML de l'annonce -->
+          <p class="contact-card__ads">1199 annonces</p>
+        </div>
+        <img class="contact-card__chevron" src="assets/icon-chevron-vertical.svg" alt="">
+      </a>
+      <a class="btn btn--support btn--full" href="#">Envoyer un message</a>
+      <button class="btn btn--outlined btn--full" type="button">Voir le numéro</button>
+    </div>
+
+    <a class="promo" href="#"><img src="assets/ad-bouygues.png" alt="Publicité Bouygues"></a>
+    <a class="promo" href="#"><img src="assets/ad-edf.png" alt="Publicité EDF"></a>
+    <a class="promo" href="#"><img src="assets/ad-galeries.png" alt="Publicité Galeries Lafayette"></a>
+  </aside>
+
+</div>
+
+<footer class="footer">
+  <div class="footer__inner">
+    <div class="footer__cols">
+      <nav>
+        <h2>À propos du bon coin</h2>
+        <ul>
+          <li><a href="#">Qui sommes-nous ?</a></li>
+          <li><a href="#">Nous rejoindre</a></li>
+          <li><a href="#">Acteur responsable de l’économie française</a></li>
+          <li><a href="#">L’Avenir a du bon</a></li>
+          <li><a href="#">Le bon observatoire</a></li>
+        </ul>
+      </nav>
+      <nav>
+        <h2>Informations légales</h2>
+        <ul>
+          <li><a href="#">Conditions générales d’utilisation</a></li>
+          <li><a href="#">Règles de diffusion, de référencement et de déréférencement</a></li>
+          <li><a href="#">Conditions générales de vente</a></li>
+          <li><a href="#">Vie privée / cookies</a></li>
+          <li><a href="#">Vos droits et obligations</a></li>
+          <li><a href="#">Critères de classement</a></li>
+          <li><a href="#">Décisions de justice</a></li>
+        </ul>
+      </nav>
+      <nav>
+        <h2>Professionnels</h2>
+        <ul>
+          <li><a href="#">Publicité</a></li>
+          <li><a href="#">Professionnels de l’immobilier</a></li>
+          <li><a href="#">Vos recrutements</a></li>
+          <li><a href="#">Professionnels de l’auto</a></li>
+          <li><a href="#">Professionnels du tourisme</a></li>
+          <li><a href="#">Autres solutions professionnelles</a></li>
+          <li><a href="#">Annuaire des professionnels</a></li>
+          <li><a href="#">Dépôt gratuit d’emploi pour les TPE</a></li>
+        </ul>
+      </nav>
+      <nav>
+        <h2>Des questions ?</h2>
+        <ul>
+          <li><a href="#">Aide</a></li>
+          <li><a href="#">Le service de paiement sécurisé et la livraison</a></li>
+          <li><a href="#">Le service de réservation de vacances en ligne pour les hôtes</a></li>
+          <li><a href="#">Demandez conseil à la Communauté</a></li>
+          <li><a href="#">Statut de nos services</a></li>
+        </ul>
+      </nav>
+    </div>
+
+    <div class="footer__extra">
+      <div>
+        <h2>Nos applications</h2>
+        <p class="footer__apps">
+          <a href="#"><img src="assets/badge-appstore.svg" alt="Télécharger sur l’App Store"></a>
+          <a href="#"><img src="assets/badge-playstore.png" alt="Disponible sur Google Play"></a>
+        </p>
+      </div>
+      <div>
+        <h2>Vous êtes à l’étranger ?</h2>
+        <button class="footer__country" type="button">
+          <img src="assets/flag-fr.svg" alt="">
+          France
+          <img src="assets/icon-chevron-down.svg" alt="">
+        </button>
+      </div>
+    </div>
+
+    <p class="footer__partners">
+      leboncoin Groupe : AVendreALouer • leboncoin Immobilier Neuf • L'argus • Paycar • Agriaffaires •
+      MachineryZone • Locasun • Locasun-vp • Pilgo • Videdressing • LeDénicheur • Younited Credit
+    </p>
+
+    <div class="footer__legal">
+      <span>leboncoin 2006-2023</span>
+      <span class="footer__social">
+        Retrouvez-nous sur :
+        <a href="#"><img src="assets/icon-facebook.svg" alt="Facebook"></a>
+        <a href="#"><img src="assets/icon-twitter.svg" alt="Twitter"></a>
+        <a href="#"><img src="assets/icon-instagram.svg" alt="Instagram"></a>
+        <a href="#"><img src="assets/icon-pinterest.svg" alt="Pinterest"></a>
+      </span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  const description = document.querySelector('.description');
+  const moreBtn = description.querySelector('.description__more');
+  moreBtn.addEventListener('click', () => {
+    const open = description.classList.toggle('is-open');
+    moreBtn.textContent = open ? 'Voir moins' : 'Voir plus';
+  });
+
+  const keys = document.getElementById('keys');
+  const keysToggle = document.querySelector('.keys__toggle');
+  function setKeysExpanded(open) {
+    keys.classList.toggle('keys--expanded', open);
+    keysToggle.setAttribute('aria-expanded', String(open));
+    keysToggle.textContent = open ? keysToggle.dataset.labelLess : keysToggle.dataset.labelMore;
+  }
+  keysToggle.addEventListener('click', () => {
+    setKeysExpanded(!keys.classList.contains('keys--expanded'));
+  });
+
+  // Le récap « +8 » ancre sur Informations clés, déjà déployé à l'arrivée
+  document.querySelector('.keyinfo__more').addEventListener('click', () => setKeysExpanded(true));
+
+  const stickybar = document.getElementById('stickybar');
+  const hero = document.querySelector('.hero');
+  const heroTitle = document.querySelector('.summary__features');
+  const mobile = window.matchMedia('(max-width: 767px)');
+  const tabs = Array.from(document.querySelectorAll('.stickybar__tabs a'));
+  const sections = tabs.map(tab => document.querySelector(tab.getAttribute('href')));
+
+  tabs.forEach((tab, i) => {
+    tab.addEventListener('click', () => {
+      const target = sections[i];
+      if (target && target.tagName === 'DETAILS') target.open = true;
+    });
+  });
+
+  let activeTab = -1;
+
+  function syncStickybar() {
+    // Sur mobile la fiche fait partie du hero : on déclenche dès que le titre sort
+    const ref = mobile.matches ? heroTitle : hero;
+    stickybar.classList.toggle('stickybar--shown', ref.getBoundingClientRect().bottom < 0);
+    // Les onglets ne suivent pas l'ordre du DOM : on retient la dernière
+    // section franchie, pas le dernier onglet dont la section est passée.
+    let current = -1;
+    let closest = -Infinity;
+    sections.forEach((section, i) => {
+      if (!section) return;
+      const top = section.getBoundingClientRect().top;
+      if (top <= 120 && top > closest) {
+        closest = top;
+        current = i;
+      }
+    });
+    tabs.forEach((tab, i) => {
+      if (i === current) tab.setAttribute('aria-current', 'true');
+      else tab.removeAttribute('aria-current');
+    });
+    // La barre d'onglets déborde sur mobile : on ramène l'onglet actif dans le champ
+    if (current !== activeTab) {
+      activeTab = current;
+      if (current !== -1) {
+        const tab = tabs[current];
+        const nav = tab.parentElement;
+        nav.scrollTo({ left: tab.offsetLeft - 16, behavior: 'smooth' });
+      }
+    }
+  }
+
+  syncStickybar();
+  window.addEventListener('scroll', syncStickybar, { passive: true });
+  window.addEventListener('resize', syncStickybar);
+</script>
+
+</body>
+</html>
