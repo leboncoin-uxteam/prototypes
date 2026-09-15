@@ -158,15 +158,38 @@
     font-weight: 700;
   }
 
-  /* Transparent hors mobile : les chips et le toggle restent des enfants
-     directs de la colonne, dont le gap continue de s'appliquer. Le wrapper ne
-     devient une vraie boîte que sous 768px, pour y être collé au scroll. */
-  .side__filters { display: contents; }
+  /* Chips et toggle restent à portée pendant tout le scroll de la galerie : ils
+     se collent en haut de la colonne. Fond opaque et gouttière négative pour
+     courir d'un bord à l'autre, sinon les photos défileraient dans les marges. */
+  .side__filters {
+    position: sticky;
+    top: 0;
+    /* Au-dessus des vignettes, qui suivent dans le flux de la même colonne. */
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    /* `inherit` reprend le gap de la colonne, qui change selon les paliers :
+       pas de valeur à maintenir en double. */
+    gap: inherit;
+    margin-inline: calc(-1 * var(--gutter));
+    padding: var(--spacing-md) var(--gutter);
+    background: var(--color-surface);
+    transition: box-shadow var(--duration-short) var(--ease-standard);
+  }
+  /* L'ombre ne marque que l'état collé : au repos la barre fait partie de la
+     colonne, une ombre y ferait flotter une carte. Aucun sélecteur CSS ne décrit
+     cet état, d'où la classe posée au scroll. */
+  .side__filters.is-stuck { box-shadow: 0 6px 12px var(--color-shadow); }
 
   /* ---------- Chips (Spark) ---------- */
   .chips {
     display: flex;
     gap: var(--spacing-md);
+    /* La colonne est trop etroite pour les quatre filtres sous 1200px : ils
+       passent a la ligne. En bande defilante, « Visite virtuelle » serait
+       tronquee et le filtre inatteignable, faute de geste horizontal a la
+       souris et de barre de defilement visible. */
+    flex-wrap: wrap;
     overflow-x: auto;
     /* Empêche le geste horizontal de se propager au document une fois la
        bande au bout : sans ça iOS décale toute la page et l'écran semble
@@ -883,27 +906,12 @@
     .side__eyebrow,
     .side__title { display: none; }
 
-    /* Chips et toggle restent à portée pendant tout le parcours de la galerie :
-       ils se collent sous la navbar, dont la hauteur est fixe (8px de padding
-       x 2 + 40px de bouton). Fond opaque et gouttière négative pour courir d'un
-       bord à l'autre, sinon les photos défileraient dans les marges. */
-    .side__filters {
-      position: sticky;
-      top: 56px;
-      /* Sous le z-index 2 de la navbar, au-dessus des vignettes. */
-      z-index: 1;
-      display: flex;
-      flex-direction: column;
-      /* `inherit` reprend le gap de la colonne, qui change au palier 599 :
-         pas de valeur à maintenir en double. */
-      gap: inherit;
-      margin-inline: calc(-1 * var(--gutter));
-      padding: var(--spacing-md) var(--gutter);
-      background: var(--color-surface);
-      /* L'ombre passe de la navbar à cette barre : les deux étant collées, une
-         seule ombre marque le bas du groupe sticky. */
-      box-shadow: 0 6px 12px var(--color-shadow);
-    }
+    /* La barre des filtres se cale sous la navbar, dont la hauteur est fixe
+       (8px de padding x 2 + 40px de bouton). Une fois collée, son ombre marque le
+       bas du groupe des deux barres — la navbar n'en porte pas. */
+    .side__filters { top: 56px; }
+    /* Le pouce fait defiler la bande : pas de retour a la ligne sur mobile. */
+    .chips { flex-wrap: nowrap; }
 
     .adview__topbar {
       position: sticky;
@@ -1070,21 +1078,74 @@
     gap: var(--spacing-sm);
     padding: var(--spacing-lg);
   }
-  .focus[data-view="photo"] .focus__foot { align-items: center; }
-  /* Le pied centre le bouton « Redécorer » : le signal, lui, court sur toute la
-     largeur et reste aligné à gauche. Il respire davantage que les autres lignes
-     du pied : collé au bouton, le verdict se lisait comme son sous-titre. */
+  /* Les trois actions s'empilent et se collent a droite, l'icone apres le
+     libelle (Figma 4444:13953). */
+  .focus__actions {
+    align-self: stretch;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: var(--spacing-md);
+  }
+  /* Le signal court sur toute la largeur et reste aligne a gauche, sous la
+     colonne d'actions. Il respire davantage que les autres lignes du pied :
+     colle aux boutons, le verdict se lisait comme leur sous-titre. */
   .focus__ai { align-self: stretch; margin-top: var(--spacing-md); }
   /* La décoration virtuelle et le verdict IA ne valent que sur une photo de pièce */
-  .focus:not([data-media="photo"]) .focus__redecorate,
+  .focus:not([data-media="photo"]) .focus__actions,
   .focus:not([data-media="photo"]) .focus__ai { display: none; }
   .focus[data-view="photo"] .focus__feedback,
   .focus[data-view="photo"] .focus__legal,
-  .focus[data-view="staging"] .focus__redecorate,
+  .focus[data-view="staging"] .focus__actions,
   /* En décoration virtuelle, l'image regardée est justement générée : le verdict
      sur la photo d'origine n'y a plus de sens, la mention légale prend le relais. */
   .focus[data-view="staging"] .focus__ai,
   .focus[data-view="staging"] .focus__pagination { display: none; }
+
+  /* Ecran scinde (Figma 4444:14054) : demi-photo en haut, plan en bas. */
+  .focus__plan {
+    flex: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0 var(--spacing-lg) var(--spacing-lg);
+    border-top: var(--border-sm) solid rgba(172, 184, 199, 0.4);
+    border-radius: var(--rounded-md) var(--rounded-md) 0 0;
+    background: var(--color-surface);
+    /* Ombre vers le haut : le panneau est colle au bas de l'ecran, une ombre
+       descendante tomberait hors du viewport. */
+    box-shadow: 0 -8px 16px var(--color-shadow);
+  }
+  .focus__plan[hidden] { display: none; }
+  /* Le plan prend la place des actions : on le referme par la poignee. */
+  .focus[data-plan="on"] .focus__foot { display: none; }
+  /* Poignee : seule sortie du mode scinde, donc large a viser. */
+  .focus__plan-close {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    padding: var(--spacing-md) 0 var(--spacing-lg);
+    border: 0;
+    background: none;
+    cursor: pointer;
+  }
+  .focus__plan-handle {
+    width: 32px;
+    height: 4px;
+    border-radius: var(--rounded-full);
+    background: var(--color-outline);
+  }
+  .focus__plan-img {
+    display: block;
+    width: 100%;
+    /* Hauteur du Figma, plafonnee : sur un ecran court la photo doit garder
+       la moitie haute. */
+    height: 213px;
+    max-height: 30vh;
+    border: var(--border-sm) solid rgba(172, 184, 199, 0.4);
+    border-radius: var(--rounded-sm);
+    object-fit: contain;
+  }
 
   .btn--outlined {
     border: var(--border-sm) solid var(--color-support);
@@ -1690,10 +1751,20 @@
   </div>
 
   <div class="focus__foot">
-    <button class="btn btn--small btn--outlined focus__redecorate" type="button">
-      <img class="btn__icon" src="assets/icon-paintbrush-ai.svg" alt="">
-      Redécorer
-    </button>
+    <div class="focus__actions">
+      <button class="btn btn--small btn--outlined focus__plan-btn" type="button" aria-expanded="false" aria-controls="focus-plan">
+        Voir le plan
+        <img class="btn__icon" src="assets/icon-floorplan.svg" alt="">
+      </button>
+      <button class="btn btn--small btn--outlined focus__redecorate" type="button">
+        Redécorer
+        <img class="btn__icon" src="assets/icon-paintbrush-ai.svg" alt="">
+      </button>
+      <button class="btn btn--small btn--outlined focus__empty" type="button">
+        Vider la pièce
+        <img class="btn__icon" src="assets/icon-broom-ai.svg" alt="">
+      </button>
+    </div>
     <div class="ai-signal focus__ai" data-state="authentic">
       <span class="ai-signal__badge">
         <img class="ai-signal__icon ai-signal__icon--authentic" src="assets/icon-ai-authentic.svg" alt="">
@@ -1717,6 +1788,15 @@
       </span>
     </div>
     <p class="focus__legal">Les visuels produits sont générés par un système d’intelligence artificielle, à partir des photos publiées par l’annonceur du bien immobilier. <a href="#">En savoir plus.</a></p>
+  </div>
+
+  <!-- Ecran scinde : le plan s'installe sous la photo et y reste pendant qu'on
+       continue de faire defiler les photos. -->
+  <div class="focus__plan" id="focus-plan" hidden>
+    <button class="focus__plan-close" type="button" aria-label="Masquer le plan">
+      <span class="focus__plan-handle"></span>
+    </button>
+    <img class="focus__plan-img" src="assets/ad-lomme/plan.jpg" alt="Plan de la maison" data-vsrc="plan2d">
   </div>
 </div>
 
@@ -2021,6 +2101,18 @@
 
   /* ---------- Popover « Extrait de la description » ---------- */
   const side = document.querySelector('.side');
+
+  /* Ombre de la barre de filtres : posée seulement quand elle est collée, c'est
+     à dire quand elle a rejoint son offset sticky. */
+  const sideFilters = document.querySelector('.side__filters');
+  const syncFiltersStuck = () => {
+    const offset = parseFloat(getComputedStyle(sideFilters).top) || 0;
+    const stuck = sideFilters.getBoundingClientRect().top <= offset + 0.5;
+    sideFilters.classList.toggle('is-stuck', stuck);
+  };
+  addEventListener('scroll', syncFiltersStuck, { passive: true });
+  addEventListener('resize', syncFiltersStuck);
+  syncFiltersStuck();
   const excerptPop = document.getElementById('excerpt-pop');
   const excerptTip = excerptPop.querySelector('.excerpt-pop__tip');
   const excerptBody = excerptPop.querySelector('.excerpt-pop__body');
@@ -2272,6 +2364,10 @@
   const focusPagination = focusScreen.querySelector('.focus__pagination');
   const focusAi = focusScreen.querySelector('.focus__ai');
   const focusSegments = [...focusScreen.querySelectorAll('.segmented__item')];
+  const focusEmpty = focusScreen.querySelector('.focus__empty');
+  const focusPlanBtn = focusScreen.querySelector('.focus__plan-btn');
+  const focusPlanPanel = focusScreen.querySelector('.focus__plan');
+  const focusPlanClose = focusScreen.querySelector('.focus__plan-close');
   let focusTile = null;
 
   function setFocusVariant(variant, animate) {
@@ -2299,6 +2395,7 @@
     focusPhoto.alt = img.alt;
     focusAi.dataset.state = aiState(img.src);
     setStagingButton(focusRedecorate, img.src);
+    setStagingButton(focusEmpty, img.src);
     originalMedia = { src: img.src, alt: img.alt };
   }
 
@@ -2306,6 +2403,7 @@
     lastFocused = document.activeElement;
     focusScreen.dataset.view = 'photo';
     focusScreen.dataset.variant = 'original';
+    setPlan(false);
     renderFocus(tile);
     focusScreen.hidden = false;
     focusScreen.classList.add('is-open');
@@ -2325,6 +2423,10 @@
   // Depuis la décoration virtuelle, le retour ramène à la photo d'origine
   // avant de quitter le focus.
   function focusBackStep() {
+    if (focusScreen.dataset.plan === 'on') {
+      setPlan(false);
+      return;
+    }
     if (focusScreen.dataset.view === 'staging') {
       focusScreen.dataset.view = 'photo';
       setFocusVariant('original');
@@ -2345,15 +2447,30 @@
   focusBack.addEventListener('click', focusBackStep);
   focusSegments.forEach(s => s.addEventListener('click', () => setFocusVariant(s.dataset.variant)));
 
-  // Même mise en scène que sur desktop : on part du réel, la projection arrive.
-  function openStaging() {
+  /* Même mise en scène que sur desktop : on part du réel, la projection arrive.
+     Chaque bouton ouvre directement sa variante ; le segmented control garde
+     les trois options pour passer de l'une à l'autre ensuite. */
+  function openStaging(variant) {
+    setPlan(false);
     focusScreen.dataset.view = 'staging';
     setFocusVariant('original');
-    if (reduceMotion.matches) setFocusVariant('redecorated');
-    else setTimeout(() => setFocusVariant('redecorated', true), 400);
+    if (reduceMotion.matches) setFocusVariant(variant);
+    else setTimeout(() => setFocusVariant(variant, true), 400);
   }
 
-  focusRedecorate.addEventListener('click', openStaging);
+  focusRedecorate.addEventListener('click', () => openStaging('redecorated'));
+  focusEmpty.addEventListener('click', () => openStaging('empty'));
+
+  /* Écran scindé : le plan reste en place pendant qu'on fait défiler les photos,
+     puisque seul le haut de l'écran est rendu par le focus média. */
+  function setPlan(on) {
+    focusScreen.dataset.plan = on ? 'on' : 'off';
+    focusPlanPanel.hidden = !on;
+    focusPlanBtn.setAttribute('aria-expanded', String(on));
+  }
+
+  focusPlanBtn.addEventListener('click', () => setPlan(true));
+  focusPlanClose.addEventListener('click', () => setPlan(false));
 
 
   focusScreen.querySelectorAll('.focus__feedback .icon-btn').forEach(btn => {

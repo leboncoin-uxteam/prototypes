@@ -2975,6 +2975,10 @@ ul { list-style: none; }
     /* drawn : la zone vient d'un tracé sur la carte. La chip s'appelle alors
        « Personnalisée » et il n'y a pas de rayon à régler — Figma 12235:249560. */
     drawn: false,
+    /* picked : la localisation vient d'etre choisie dans l'autocompletion et
+       n'est pas encore validee. Distingue la saisie fraiche de l'edit d'une
+       recherche deja lancee, qui n'affichent pas la meme feuille sur mobile. */
+    picked: false,
     // Taille de carte courante, S ou M (notes Tech 12213:243380 / 12213:240933)
     mapSize: null,
   };
@@ -3062,6 +3066,7 @@ ul { list-style: none; }
   function commit() {
     state.editing = false;
     state.focus = false;
+    state.picked = false;
     pushRecent();
     saveSearch();
     const label = committedLabel();
@@ -3391,6 +3396,7 @@ ul { list-style: none; }
   // Sélection cumulative : une 2e localisation s'ajoute et fait basculer sur
   // l'état multi (Figma 11636:335515), qui n'affiche plus le rayon.
   function selectLocation(label, commune) {
+    state.picked = true;
     // « Autour de moi » et « Toute la France » sont exclusifs d'une ville :
     // choisir une localisation remplace leur chip au lieu de s'y ajouter
     if (state.mode === 'around' || state.mode === 'france') state.chips = [];
@@ -3457,17 +3463,24 @@ ul { list-style: none; }
        périmètre qu'on règle. */
     const showMap = showSelected && state.mode !== 'france';
     const showRadius = showMap && !multi && !state.drawn;
-    /* Une localisation posée fait basculer la feuille en édition : la seule
-       action secondaire proposée est alors la ligne « Dessiner sur la carte »,
-       sur mobile (Figma 12506:183376) comme sur desktop (12506:189329). Les
-       trois cartes d'alternatives et les récents ne reviennent qu'à l'état vide
-       — première recherche (12248:264774) ou après « Effacer » (12253:284951). */
-    const showAlternatives = !typing && !showSelected;
+    /* Deux frames du board décrivent l'état « une localisation posée » de deux
+       façons : ce sont deux moments différents. Arrivée du listing pour retoucher
+       une recherche validée, mobile suit « Edit localisation avec historique »
+       (12506:183467) — les trois cartes et les récents restent sous la carte,
+       comme à l'état vide (12248:264774, 12253:284951). Localisation tout juste
+       saisie et pas encore validée, une seule ligne « Dessiner sur la carte » les
+       remplace (12506:183376, 12213:184404) : d'où `state.picked`. Desktop garde
+       cette ligne dans les deux cas (12506:189329), où la place manque.
+       « Autour de moi » et « Toute la France » n'ont rien à proposer sous leur
+       carte : ils escamotent l'ensemble aux deux breakpoints (12213:243417). */
+    const showAlternatives = !typing && (!showSelected
+      || (mobile.matches && !state.picked
+          && state.mode !== 'around' && state.mode !== 'france'));
     /* Les deux modes exclusifs n'ont pas de périmètre à retoucher : « Autour de
        moi » n'affiche rien sous sa carte (12213:243417) et « Toute la France »
        n'a pas de carte du tout. Une zone déjà dessinée non plus : elle se
        remplace par sa chip, pas en redessinant depuis la feuille (12235:249560). */
-    const showDrawRow = showSelected && !state.drawn
+    const showDrawRow = showSelected && !state.drawn && !showAlternatives
       && state.mode !== 'around' && state.mode !== 'france';
     const compact = showSelected && !showRadius;
 
@@ -3691,6 +3704,8 @@ ul { list-style: none; }
     if (!mobile.matches || popover.dataset.open === 'true') return;
     event.preventDefault();
     openedByTap = true;
+    // Ouverture depuis le listing : on retouche une recherche déjà validée.
+    state.picked = false;
     input.value = '';
     sync();
     setPopover(true);
