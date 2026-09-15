@@ -882,8 +882,10 @@ ul { list-style: none; }
 .adcard__price-main img { width: 16px; height: 16px; align-self: center; }
 .adcard--drop .adcard__price-main { color: var(--color-success); }
 .adcard__title { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.adcard__criteria { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-lg); }
-.adcard__criteria img { width: 24px; height: 24px; }
+/* Masqués : les critères portés par les cartes (DPE, balcon, dernier étage…)
+   ne correspondent ni aux photos ni à la recherche du proto — même raison que
+   la ville, plus bas. */
+.adcard__criteria, .pro-card__criteria { display: none; }
 .adcard__criterion { display: flex; align-items: center; gap: var(--sp-sm); }
 .adcard__sep { color: var(--color-on-surface); }
 .adcard__tags { display: flex; flex-wrap: wrap; gap: var(--sp-md); }
@@ -912,8 +914,6 @@ ul { list-style: none; }
 .pro-carousel__track { display: flex; gap: var(--sp-lg); overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: var(--sp-sm); }
 .pro-card { flex: none; width: 239px; scroll-snap-align: start; display: flex; flex-direction: column; gap: var(--sp-md); }
 .pro-card img.pro-card__photo { width: 239px; height: 176px; object-fit: cover; border-radius: var(--radius-md); background: var(--color-neutral-container); }
-.pro-card__criteria { display: flex; align-items: center; gap: var(--sp-md); }
-.pro-card__criteria img { width: 24px; height: 24px; }
 
 /* ═══ Pagination + breadcrumb ═══════════════════════════════════════════ */
 .pagination { display: flex; align-items: center; gap: var(--sp-sm); flex-wrap: wrap; }
