@@ -1013,9 +1013,18 @@
     align-items: center;
     justify-content: center;
     overflow: hidden;
+    /* Le glissé horizontal nous appartient. Sans ça le navigateur mobile prend
+       le geste pour un défilement, annule le pointeur (`pointercancel`) et le
+       changement de photo ne part jamais. `pan-y` laisse le défilement vertical. */
+    touch-action: pan-y;
   }
   .focus__visual { position: relative; width: 100%; max-height: 100%; overflow: hidden; }
-  .focus__photo { display: block; width: 100%; max-height: 100%; object-fit: contain; }
+  .focus__photo {
+    display: block; width: 100%; max-height: 100%; object-fit: contain;
+    /* Un appui maintenu sur une image ouvre le menu « Enregistrer » d'iOS et
+       interrompt le glissé. */
+    user-select: none; -webkit-user-select: none; -webkit-touch-callout: none;
+  }
   .focus__photo--incoming { height: 100%; }
   .focus__video { display: none; width: 100%; aspect-ratio: 16 / 9; border: 0; }
   .focus[data-media="video"] .focus__visual { display: none; }
@@ -2328,15 +2337,20 @@
   let swipeFrom = null;
 
   focusContent.addEventListener('pointerdown', e => {
-    swipeFrom = focusScreen.dataset.view === 'staging' ? null : e.clientX;
+    swipeFrom = !e.isPrimary || focusScreen.dataset.view === 'staging'
+      ? null : { x: e.clientX, y: e.clientY };
   });
-  focusContent.addEventListener('pointerup', e => {
-    if (swipeFrom === null) return;
-    const dx = e.clientX - swipeFrom;
+  /* Écoute sur la fenêtre et pas sur l'image : le doigt se lève souvent hors de
+     la photo, et le `pointerup` partirait alors sur un autre élément. */
+  window.addEventListener('pointerup', e => {
+    if (!swipeFrom) return;
+    const dx = e.clientX - swipeFrom.x;
+    const dy = e.clientY - swipeFrom.y;
     swipeFrom = null;
-    if (Math.abs(dx) > 40) focusStep(dx < 0 ? 1 : -1);
+    // Un glissé oblique est une tentative de défilement, pas un changement de photo.
+    if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) focusStep(dx < 0 ? 1 : -1);
   });
-  focusContent.addEventListener('pointercancel', () => { swipeFrom = null; });
+  window.addEventListener('pointercancel', () => { swipeFrom = null; });
   // Sans ça, le geste est interprété comme un drag d'image par le navigateur
   focusContent.addEventListener('dragstart', e => e.preventDefault());
 
