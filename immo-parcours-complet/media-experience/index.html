@@ -158,11 +158,21 @@
     font-weight: 700;
   }
 
+  /* Transparent hors mobile : les chips et le toggle restent des enfants
+     directs de la colonne, dont le gap continue de s'appliquer. Le wrapper ne
+     devient une vraie boîte que sous 768px, pour y être collé au scroll. */
+  .side__filters { display: contents; }
+
   /* ---------- Chips (Spark) ---------- */
   .chips {
     display: flex;
     gap: var(--spacing-md);
     overflow-x: auto;
+    /* Empêche le geste horizontal de se propager au document une fois la
+       bande au bout : sans ça iOS décale toute la page et l'écran semble
+       s'élargir. */
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
     padding-bottom: 2px;
   }
@@ -868,9 +878,32 @@
     /* Le media focus n'existe pas sur mobile : le clic sur une photo
        ouvrira un écran dédié (maquette à venir). */
     .viewer-col { display: none; }
-    .side { order: 1; padding-top: var(--spacing-md); }
+    /* La respiration du haut est reprise par le padding de la barre sticky. */
+    .side { order: 1; padding-top: 0; }
     .side__eyebrow,
     .side__title { display: none; }
+
+    /* Chips et toggle restent à portée pendant tout le parcours de la galerie :
+       ils se collent sous la navbar, dont la hauteur est fixe (8px de padding
+       x 2 + 40px de bouton). Fond opaque et gouttière négative pour courir d'un
+       bord à l'autre, sinon les photos défileraient dans les marges. */
+    .side__filters {
+      position: sticky;
+      top: 56px;
+      /* Sous le z-index 2 de la navbar, au-dessus des vignettes. */
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      /* `inherit` reprend le gap de la colonne, qui change au palier 599 :
+         pas de valeur à maintenir en double. */
+      gap: inherit;
+      margin-inline: calc(-1 * var(--gutter));
+      padding: var(--spacing-md) var(--gutter);
+      background: var(--color-surface);
+      /* L'ombre passe de la navbar à cette barre : les deux étant collées, une
+         seule ombre marque le bas du groupe sticky. */
+      box-shadow: 0 6px 12px var(--color-shadow);
+    }
 
     .adview__topbar {
       position: sticky;
@@ -881,7 +914,6 @@
       width: 100%;
       padding: var(--spacing-md);
       background: var(--color-surface);
-      box-shadow: 0 6px 12px var(--color-shadow);
     }
     .adview__topbar .adview__back { display: flex; }
     .adview__topbar .adview__close { display: none; }
@@ -1276,35 +1308,37 @@
         <h1 class="side__title">Médias</h1>
       </div>
 
-      <div class="chips" role="group" aria-label="Filtrer les médias">
-        <button class="chip" type="button" aria-pressed="true" data-filter="all">
-          <img class="chip__icon" src="assets/icon-check.svg" alt="">
-          Tous
-        </button>
-        <button class="chip" type="button" aria-pressed="false" data-filter="plan">
-          <img class="chip__icon" src="assets/icon-check.svg" alt="">
-          Plan
-        </button>
-        <button class="chip" type="button" aria-pressed="false" data-filter="video">
-          <img class="chip__icon" src="assets/icon-check.svg" alt="">
-          Vidéo
-        </button>
-        <button class="chip" type="button" aria-pressed="false" data-filter="virtual">
-          <img class="chip__icon" src="assets/icon-check.svg" alt="">
-          Visite virtuelle
-        </button>
-      </div>
+      <div class="side__filters">
+        <div class="chips" role="group" aria-label="Filtrer les médias">
+          <button class="chip" type="button" aria-pressed="true" data-filter="all">
+            <img class="chip__icon" src="assets/icon-check.svg" alt="">
+            Tous
+          </button>
+          <button class="chip" type="button" aria-pressed="false" data-filter="plan">
+            <img class="chip__icon" src="assets/icon-check.svg" alt="">
+            Plan
+          </button>
+          <button class="chip" type="button" aria-pressed="false" data-filter="video">
+            <img class="chip__icon" src="assets/icon-check.svg" alt="">
+            Vidéo
+          </button>
+          <button class="chip" type="button" aria-pressed="false" data-filter="virtual">
+            <img class="chip__icon" src="assets/icon-check.svg" alt="">
+            Visite virtuelle
+          </button>
+        </div>
 
-      <div class="tour-intro">
-        <label class="switch-label">
-          <input class="switch__input" type="checkbox">
-          <span class="switch">
-            <img class="switch__handle switch__handle--off" src="assets/switch-handle.svg" alt="">
-            <img class="switch__handle switch__handle--on" src="assets/switch-handle-on.svg" alt="">
-          </span>
-          <span class="switch-label__text">Visite photo</span>
-        </label>
-        <p class="tour-intro__disclaimer">Notre système d’IA classifie automatiquement les photos de l’annonce, et les associe à des extraits de la description. L’IA peut commettre des erreurs.</p>
+        <div class="tour-intro">
+          <label class="switch-label">
+            <input class="switch__input" type="checkbox">
+            <span class="switch">
+              <img class="switch__handle switch__handle--off" src="assets/switch-handle.svg" alt="">
+              <img class="switch__handle switch__handle--on" src="assets/switch-handle-on.svg" alt="">
+            </span>
+            <span class="switch-label__text">Organiser par pièce</span>
+          </label>
+          <p class="tour-intro__disclaimer">Notre système d’IA classifie automatiquement les photos de l’annonce, et les associe à des extraits de la description. L’IA peut commettre des erreurs.</p>
+        </div>
       </div>
 
       <!-- Les rangées pleine largeur vont aux pièces qui portent la décision, par
@@ -2366,5 +2400,7 @@
   });
 </script>
 
+<!-- Point vert au doigt, pour suivre les appuis en partage d'écran -->
+<script src="../click-dot.js"></script>
 </body>
 </html>
