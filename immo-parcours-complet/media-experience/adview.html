@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Appartement 3 pièces 58 m² — Caluire-et-Cuire | leboncoin</title>
+<title data-v="title">Maison 3 pièces 61 m² — Lille Lomme | leboncoin</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,400;0,6..12,700&display=swap" rel="stylesheet">
@@ -714,9 +714,12 @@
     border-radius: var(--rounded-md);
     overflow: hidden;
   }
-  /* Grille de 9 tuiles OSM de 256 px (zoom 15, tuile centrale 16826/11681).
-     L'offset place lat 45.816013 / lng 4.8600535 au centre du cadre :
-     351.45 = 256 + 95.45 px dans la tuile, 427.53 = 256 + 171.53 px. */
+  /* Grille de 9 tuiles OSM de 256 px, zoom 15. L'offset amène les coordonnées de
+     l'annonce sous le pin, qui est fixe au centre du cadre : il vaut 256 px (la
+     tuile qui précède) plus la position du point dans sa tuile centrale.
+     Variante 1, Lomme 50.63003 / 3.0026312, tuile 16657/11023 -> 334,38 / 329,92.
+     Variante 2, Carquefou 47.278316 / -1.4916236, tuile 16248/11488 -> 314,65 / 287,36
+     (appliqué par le script de variantes, cf. data-vtransform). */
   .map__tiles {
     position: absolute;
     top: 50%;
@@ -724,7 +727,7 @@
     display: grid;
     grid-template-columns: repeat(3, 256px);
     grid-auto-rows: 256px;
-    transform: translate(-351.45px, -427.53px);
+    transform: translate(-334.38px, -329.92px);
   }
   .map__tiles img { width: 256px; height: 256px; }
   .map__pin {
@@ -1511,10 +1514,10 @@
             onclick="location.assign('../search-funnel-v8/index.html?resume=1')">
       <img src="assets/icon-arrow-left.svg" alt="">
     </button>
-    <img class="stickybar__cover" src="assets/ad/photo-01.jpg" alt="">
+    <img class="stickybar__cover" src="assets/ad-lomme/photo-01.jpg" alt="" data-vsrc="cover">
     <p class="stickybar__text">
-      <b>Appartement · 58 m² · 3 pièces</b>
-      <span>240 000 €</span>
+      <b data-v="features">Maison · 61 m² · 3 pièces</b>
+      <span data-v="price">182 500 €</span>
     </p>
     <a class="btn btn--support" href="#">Envoyer un message</a>
     <button class="stickybar__fav stickybar__share" type="button" aria-label="Partager l'annonce">
@@ -1539,9 +1542,9 @@
   <nav class="breadcrumb" aria-label="Fil d'ariane">
     <a href="#">Accueil <img src="assets/icon-chevron-right.svg" alt=""></a>
     <a href="#">Ventes immobilières <img src="assets/icon-chevron-right.svg" alt=""></a>
-    <a href="#">Rhône-Alpes <img src="assets/icon-chevron-right.svg" alt=""></a>
-    <a href="#">Caluire-et-Cuire <img src="assets/icon-chevron-right.svg" alt=""></a>
-    <span aria-current="page">Vente appartement 3 pièces, 58 m²</span>
+    <a href="#"><span data-v="region">Hauts-de-France</span> <img src="assets/icon-chevron-right.svg" alt=""></a>
+    <a href="#"><span data-v="city">Lille</span> <img src="assets/icon-chevron-right.svg" alt=""></a>
+    <span aria-current="page" data-v="breadcrumb">Vente maison 3 pièces, 61 m²</span>
   </nav>
 
   <main class="page__main">
@@ -1549,11 +1552,11 @@
     <section class="hero">
       <div class="hero__mosaic">
         <div class="hero__col">
-          <a class="hero__shot" href="index.html"><img src="assets/ad/photo-02.jpg" alt="Cuisine équipée semi-ouverte"></a>
-          <a class="hero__shot" href="index.html"><img src="assets/ad/photo-03.jpg" alt="Balcon exposé plein sud"></a>
+          <a class="hero__shot" href="index.html"><img src="assets/ad-lomme/photo-02.jpg" alt="Séjour ouvert sur la cuisine" data-vsrc="hero1" data-valt="hero1Alt"></a>
+          <a class="hero__shot" href="index.html"><img src="assets/ad-lomme/photo-03.jpg" alt="Cuisine équipée ouvrant sur la cour" data-vsrc="hero2" data-valt="hero2Alt"></a>
         </div>
         <a class="hero__shot hero__shot--wide" href="index.html">
-          <img src="assets/ad/photo-01.jpg" alt="Séjour traversant du T3">
+          <img src="assets/ad-lomme/photo-01.jpg" alt="Façade en brique de la maison 1930" data-vsrc="hero0" data-valt="hero0Alt">
         </a>
 
         <!-- Même passerelle que le logo : `?resume` plutôt que `history.back()`,
@@ -1584,10 +1587,10 @@
 
       <div class="hero__summary">
         <div>
-          <h1 class="summary__features">Appartement · 58 m² · 3 pièces</h1>
+          <h1 class="summary__features" data-v="features">Maison · 61 m² · 3 pièces</h1>
           <p class="summary__price">
-            <b>240 000 €</b>
-            <small>4 138 € / m²</small>
+            <b data-v="price">182 500 €</b>
+            <small data-v="ppm">2 992 € / m²</small>
           </p>
           <p class="summary__price-actions">
             <a class="link" href="#">Voir le détail du prix</a>
@@ -1608,14 +1611,14 @@
           <p class="keyinfo__row">
             <span class="keyinfo__icon"><img src="assets/icon-check-toggle.svg" alt=""></span>
             <span class="keyinfo__text">
-              Balcon · Cave · Étage 2/4 · Sans ascenseur ·
+              <span data-v="keyinfo">Cour · Cave · Cuisine équipée · 2 niveaux</span> ·
               <a class="link keyinfo__more" href="#sec-keys">+8</a>
             </span>
           </p>
           <p class="keyinfo__row">
             <span class="keyinfo__icon"><img src="assets/icon-map-pin.svg" alt=""></span>
             <span class="keyinfo__text">
-              Caluire-et-Cuire 69300 · Quartier Le Vernay ·
+              <span data-v="where">Lille 59160 · Quartier Lomme</span> ·
               <a class="link" href="#sec-localisation">Voir le plan</a>
             </span>
           </p>
@@ -1631,45 +1634,40 @@
 
     <section class="description" id="sec-description">
       <h2 class="section__title">Description</h2>
-      <p class="description__text">iad France - Carole Vigne vous propose : NOUVEAUTÉ EN EXCLUSIVITÉ – CALUIRE VERNAY – T3 TRAVERSANT AVEC BALCON SUD – ENVIRONNEMENT VERDOYANT EXCEPTIONNEL
+      <p class="description__text" data-v="desc">Imko Lille - Hugues Olivry vous propose : LILLE EURATECHNOLOGIES – MAISON 1930 EN PARFAIT ÉTAT – COUR EXPOSÉE SUD
 
-Situé dans le secteur très prisé du Vernay à Caluire-et-Cuire, ce bel appartement T3 traversant, au 2ᵉ étage sur 4, vous séduira par son calme, sa luminosité et sa qualité de vie rare.
+Lille Euratechnologies, rue Anatole France. Maison 1930 de 61 m² environ avec cour, en parfait état (dont façade refaite en 2020).
 
-Au cœur d’une résidence sécurisée, arborée et parfaitement entretenue, vous profitez d’un cadre privilégié à seulement quelques pas de la voie verte, idéal pour les balades, le sport et les déplacements doux, et à proximité immédiate du Parc de la Tête d’Or, véritable poumon vert de la métropole lyonnaise.
+Cette maison comprend :
 
-Les commerces, écoles et transports en commun (lignes de bus desservant rapidement Lyon et ses quartiers centraux) sont également accessibles à pied.
-
-L’appartement, en très bon état et sans aucun travaux à prévoir, se compose de :
-
-Un séjour / salle à manger lumineux ouvrant sur un balcon exposé plein sud
-Une cuisine entièrement équipée, semi-ouverte sur le séjour, offrant un espace convivial et fonctionnel
-Deux chambres, dont une avec dressing
-Un cellier pratique et bien agencé
-Une salle de bain
+Une entrée
+Un séjour lumineux en façade
+Une cuisine équipée ouvrant sur la cour
+Deux chambres
+Une salle de douche
 Un WC séparé
+Une cave
 
-En complément : une cave et des places de stationnement libres dans la copropriété.
+À proximité d’Euratechnologies, des commerces, des transports en commun et des écoles. Idéal primo-accédant.
 
 Les atouts majeurs :
 
-Appartement traversant et très lumineux
-Résidence calme et sécurisée
-Accès direct à la voie verte
-Aucun travaux à prévoir
-Emplacement recherché et cadre de vie privilégié
-Idéal résidence principale ou investissement
-Proximité du Parc de la Tête d’Or
+Maison 1930 en parfait état, sans travaux à prévoir
+Façade refaite en 2020
+Cour exposée sud
+Cuisine équipée
+Cave
+Quartier Euratechnologies, à pied des commerces et des écoles
 
-Un bien rare sur le secteur – à visiter sans tarder !
-Coup de cœur assuré : vous n’avez plus qu’à poser vos valises !
+Honoraires à la charge de l’acquéreur : 5,26 % du prix hors honoraires, soit 173 400 € hors honoraires et 9 100 € d’honoraires. Barème disponible sur demande.
 
-La présente annonce immobilière vise 2 lots situés dans une copropriété de 99 lots au total et ne faisant l’objet d’aucune procédure en cours citée à l’article L. 721-1 du code de la construction et de l’habitation. Montant moyen mensuel de charges déclaré par le vendeur : 171.9 € par mois (soit 2062.84 € annuel). Honoraires d’agence à la charge du vendeur.
+Date de réalisation du diagnostic énergétique : 27/11/2025. Consommation énergie primaire : 225 kWh/m²/an. Consommation énergie finale : 220 kWh/m²/an.
 
-À propos de la copropriété : pas de procédure en cours. Nombre de lots : 99. Date de réalisation du diagnostic énergétique : 13/03/2026. Consommation énergie primaire : 319 kWh/m²/an. Consommation énergie finale : non communiqué.
+Montant estimé des dépenses annuelles d’énergie pour un usage standard : entre 1 270 € et 1 770 € (abonnements compris).
 
-Montant estimé des dépenses annuelles d’énergie pour un usage standard : entre 1 610 € et 2 220 € sur les années 2021, 2022 et 2023 (abonnements compris).
+Référence : VM4921-IMKO
 
-Les informations sur les risques auxquels ce bien est exposé, y compris l’obligation légale de débroussaillement, sont disponibles sur le site Géorisques : georisques.gouv.fr</p>
+Les informations sur les risques auxquels ce bien est exposé sont disponibles sur le site Géorisques : georisques.gouv.fr</p>
       <button class="description__more" type="button">Voir plus</button>
     </section>
 
@@ -1677,13 +1675,15 @@ Les informations sur les risques auxquels ce bien est exposé, y compris l’obl
 
     <section class="medias">
       <a class="media-card" href="index.html?media=plan">
-        <span class="media-card__visual"><img src="assets/media-plan.png" alt=""></span>
+        <span class="media-card__visual">
+          <img src="assets/ad-lomme/plan.jpg" alt="" data-vsrc="plan2d">
+        </span>
         <span class="media-card__label">Plan</span>
       </a>
       <a class="media-card" href="index.html?media=tour">
         <span class="media-card__visual">
-          <span class="media-card__behind" aria-hidden="true"><img src="assets/ad/photo-05.jpg" alt=""></span>
-          <img src="assets/ad/photo-04.jpg" alt="">
+          <span class="media-card__behind" aria-hidden="true"><img src="assets/ad-lomme/photo-05.jpg" alt="" data-vsrc="tour1"></span>
+          <img src="assets/ad-lomme/photo-02.jpg" alt="" data-vsrc="tour0">
         </span>
         <span class="media-card__label">Photos par pièce</span>
       </a>
@@ -1705,12 +1705,12 @@ Les informations sur les risques auxquels ce bien est exposé, y compris l’obl
           <img class="diag__icon" src="assets/icon-crit-class.svg" alt="">
           <div>
             <p class="diag__label">Classe énergie <img src="assets/icon-info-12.svg" alt=""></p>
-            <p class="scale">
+            <p class="scale" data-vscale="dpe">
               <span class="scale__step" style="background:#549641">A</span>
               <span class="scale__step" style="background:#69c74c">B</span>
               <span class="scale__step" style="background:#d8fa5e">C</span>
-              <span class="scale__step" style="background:#f9e967">D</span>
-              <span class="scale__step scale__step--active" style="background:#f3ca52">E</span>
+              <span class="scale__step scale__step--active" style="background:#f9e967">D</span>
+              <span class="scale__step" style="background:#f3ca52">E</span>
               <span class="scale__step" style="background:#ef9f4c">F</span>
               <span class="scale__step" style="background:#e63a30">G</span>
             </p>
@@ -1720,12 +1720,12 @@ Les informations sur les risques auxquels ce bien est exposé, y compris l’obl
           <img class="diag__icon" src="assets/icon-crit-class.svg" alt="">
           <div>
             <p class="diag__label">GES <img src="assets/icon-info-12.svg" alt=""></p>
-            <p class="scale">
+            <p class="scale" data-vscale="ges">
               <span class="scale__step" style="background:#f4edfd">A</span>
               <span class="scale__step" style="background:#dfc9f7">B</span>
               <span class="scale__step" style="background:#ccafec">C</span>
-              <span class="scale__step" style="background:#c29eea">D</span>
-              <span class="scale__step scale__step--active" style="background:#aa7dde">E</span>
+              <span class="scale__step scale__step--active" style="background:#c29eea">D</span>
+              <span class="scale__step" style="background:#aa7dde">E</span>
               <span class="scale__step" style="background:#9b61e1">F</span>
               <span class="scale__step" style="background:#7d41d1">G</span>
             </p>
@@ -1740,22 +1740,22 @@ Les informations sur les risques auxquels ce bien est exposé, y compris l’obl
       <h2 class="section__title">Informations clés</h2>
       <div class="keys" id="keys">
         <div class="keys__col">
-          <p class="keys__item"><img src="assets/icon-crit-clock.svg" alt=""><span>Publié le 31/07/2026</span></p>
-          <p class="keys__item"><img src="assets/icon-crit-buildings.svg" alt=""><span><a class="link--block" href="#">Appartement</a></span></p>
-          <p class="keys__item"><img src="assets/icon-crit-measures.svg" alt=""><span>58 m²</span></p>
-          <p class="keys__item keys__item--more"><img src="assets/icon-crit-rooms.svg" alt=""><span>3 pièces</span></p>
-          <p class="keys__item keys__item--more"><img src="assets/icon-crit-bath.svg" alt=""><span>1 salle de bain</span></p>
-          <p class="keys__item keys__item--more"><img src="assets/icon-crit-balcony.svg" alt=""><span>Balcon</span></p>
-          <p class="keys__item keys__item--more"><img src="assets/icon-crit-features.svg" alt=""><span>Cave · Interphone</span></p>
+          <p class="keys__item"><img src="assets/icon-crit-clock.svg" alt=""><span>Publié le 05/08/2026</span></p>
+          <p class="keys__item"><img src="assets/icon-crit-buildings.svg" alt=""><span><a class="link--block" href="#">Maison</a></span></p>
+          <p class="keys__item"><img src="assets/icon-crit-measures.svg" alt=""><span data-v="surface">61 m²</span></p>
+          <p class="keys__item keys__item--more"><img src="assets/icon-crit-rooms.svg" alt=""><span data-v="rooms">3 pièces</span></p>
+          <p class="keys__item keys__item--more"><img src="assets/icon-crit-bath.svg" alt=""><span data-v="bathroom">1 salle de douche</span></p>
+          <p class="keys__item keys__item--more"><img src="assets/icon-crit-balcony.svg" alt=""><span data-v="outside">Cour</span></p>
+          <p class="keys__item keys__item--more"><img src="assets/icon-crit-features.svg" alt=""><span data-v="feat">Cave · Cuisine équipée</span></p>
         </div>
         <div class="keys__col">
-          <p class="keys__item"><img src="assets/icon-crit-bed.svg" alt=""><span>2 chambres</span></p>
-          <p class="keys__item"><img src="assets/icon-crit-stairs.svg" alt=""><span>Étage 2/4</span></p>
-          <p class="keys__item"><img src="assets/icon-crit-lift.svg" alt=""><span>Sans ascenseur</span></p>
-          <p class="keys__item keys__item--more"><img src="assets/icon-crit-heating.svg" alt=""><span>Chauffage collectif au gaz</span></p>
-          <p class="keys__item keys__item--more"><img src="assets/icon-crit-year.svg" alt=""><span>Construit en 1964</span></p>
-          <p class="keys__item keys__item--more"><img src="assets/icon-crit-condition.svg" alt=""><span>Bon état</span></p>
-          <p class="keys__item keys__item--more"><img src="assets/icon-crit-charges.svg" alt=""><span>2 063 € de charges / an</span></p>
+          <p class="keys__item"><img src="assets/icon-crit-bed.svg" alt=""><span data-v="beds">2 chambres</span></p>
+          <p class="keys__item"><img src="assets/icon-crit-stairs.svg" alt=""><span data-v="levels">2 niveaux</span></p>
+          <p class="keys__item"><img src="assets/icon-crit-lift.svg" alt=""><span data-v="orient">Orientation sud</span></p>
+          <p class="keys__item keys__item--more"><img src="assets/icon-crit-heating.svg" alt=""><span>Chauffage individuel au gaz</span></p>
+          <p class="keys__item keys__item--more"><img src="assets/icon-crit-year.svg" alt=""><span data-v="year">Construit en 1930</span></p>
+          <p class="keys__item keys__item--more"><img src="assets/icon-crit-condition.svg" alt=""><span data-v="cond">Parfait état</span></p>
+          <p class="keys__item keys__item--more"><img src="assets/icon-crit-charges.svg" alt=""><span>Honoraires à la charge de l’acquéreur</span></p>
         </div>
       </div>
       <button class="link--block keys__toggle" type="button" aria-expanded="false" aria-controls="keys"
@@ -1769,21 +1769,24 @@ Les informations sur les risques auxquels ce bien est exposé, y compris l’obl
     <section id="sec-localisation">
       <h2 class="section__title section__title--lg">Localisation</h2>
       <p class="locality">
-        <b>Quartier Le Vernay</b>
-        <span>Caluire-et-Cuire (69300)</span>
+        <b data-v="localityName">Quartier Lomme</b>
+        <span data-v="localityAdmin">Lille (59160)</span>
       </p>
-      <!-- Carte statique : tuiles OpenStreetMap zoom 15 centrées sur 45.816013, 4.8600535 -->
+      <!-- Carte statique, tuiles OpenStreetMap zoom 15, centrée sur les coordonnées
+           de l'annonce source : variante 1 à Lomme (50.63003, 3.0026312), variante 2
+           à Carquefou (47.278316, -1.4916236). -->
       <div class="map">
-        <div class="map__tiles" aria-label="Carte du quartier Le Vernay à Caluire-et-Cuire" role="img">
-          <img src="assets/map/t-16825-11680.png" alt="">
-          <img src="assets/map/t-16826-11680.png" alt="">
-          <img src="assets/map/t-16827-11680.png" alt="">
-          <img src="assets/map/t-16825-11681.png" alt="">
-          <img src="assets/map/t-16826-11681.png" alt="">
-          <img src="assets/map/t-16827-11681.png" alt="">
-          <img src="assets/map/t-16825-11682.png" alt="">
-          <img src="assets/map/t-16826-11682.png" alt="">
-          <img src="assets/map/t-16827-11682.png" alt="">
+        <div class="map__tiles" data-valabel="mapLabel" data-vtransform="mapOffset"
+             aria-label="Carte du quartier de Lomme à Lille" role="img">
+          <img src="assets/map/t-16656-11022.png" alt="" data-vsrc="map0">
+          <img src="assets/map/t-16657-11022.png" alt="" data-vsrc="map1">
+          <img src="assets/map/t-16658-11022.png" alt="" data-vsrc="map2">
+          <img src="assets/map/t-16656-11023.png" alt="" data-vsrc="map3">
+          <img src="assets/map/t-16657-11023.png" alt="" data-vsrc="map4">
+          <img src="assets/map/t-16658-11023.png" alt="" data-vsrc="map5">
+          <img src="assets/map/t-16656-11024.png" alt="" data-vsrc="map6">
+          <img src="assets/map/t-16657-11024.png" alt="" data-vsrc="map7">
+          <img src="assets/map/t-16658-11024.png" alt="" data-vsrc="map8">
         </div>
         <img class="map__pin" src="assets/icon-pin-filled.svg" alt="">
         <p class="map__credit">© OpenStreetMap</p>
@@ -1858,30 +1861,32 @@ Les informations sur les risques auxquels ce bien est exposé, y compris l’obl
         <div class="cost__card">
           <div class="cost__row">
             <h3 class="cost__title">Prix du bien</h3>
-            <p class="cost__amount">240 000 €<small>4 138 € / m²</small></p>
+            <p class="cost__amount"><span data-v="price">182 500 €</span><small data-v="ppm">2 992 € / m²</small></p>
           </div>
-          <p class="cost__note">Les honoraires sont à la charge du vendeur.</p>
+          <p class="cost__note" data-v="honoraires">Honoraires de 5,26 % à la charge de l’acquéreur, soit 9 100 € inclus dans le prix.</p>
           <div class="cost__row">
             <p class="cost__label">Frais de notaire estimés <img src="assets/icon-info-12.svg" alt="En savoir plus"></p>
-            <p class="cost__amount">19 200 €</p>
+            <p class="cost__amount" data-v="notaire">13 900 €</p>
           </div>
           <hr class="cost__sep">
           <div class="cost__row">
             <h3 class="cost__title">Montant estimé du projet</h3>
-            <p class="cost__amount">259 200 €</p>
+            <p class="cost__amount" data-v="total">196 400 €</p>
           </div>
         </div>
 
         <div class="cost__card">
           <h3 class="cost__title">Charges futures du bien</h3>
-          <!-- Taxe foncière : absente de l'annonce, valeur reprise de la maquette Figma -->
+          <!-- Taxe foncière : absente de l'annonce de la variante 1, valeur reprise de la
+               maquette Figma. La variante 2 reprend celle de son annonce source (1 460 €
+               pour 95 m²), ramenée au prorata de la surface. -->
           <div class="cost__row">
             <p class="cost__label">Taxe foncière</p>
-            <p class="cost__amount">609 € / an</p>
+            <p class="cost__amount" data-v="taxe">609 € / an</p>
           </div>
           <div class="cost__row">
             <p class="cost__label">Estimation de la facture énergétique</p>
-            <p class="cost__amount">entre 1&nbsp;610 et 2&nbsp;220 €&nbsp;/&nbsp;an</p>
+            <p class="cost__amount" data-v="energie">entre 1&nbsp;270 et 1&nbsp;770 €&nbsp;/&nbsp;an</p>
           </div>
           <p class="cost__edf">
             <button class="btn btn--outlined" type="button">
@@ -1899,7 +1904,7 @@ Les informations sur les risques auxquels ce bien est exposé, y compris l’obl
         <div class="cost__card">
           <div class="cost__row">
             <h3 class="cost__title">Aides de l’État</h3>
-            <p class="cost__amount">240 000 €<small>4 138 € / m²</small></p>
+            <p class="cost__amount"><span data-v="price">182 500 €</span><small data-v="ppm">2 992 € / m²</small></p>
           </div>
           <div class="cost__aid">
             <p class="cost__label">Aides à la rénovation énergétique</p>
@@ -1909,19 +1914,23 @@ Les informations sur les risques auxquels ce bien est exposé, y compris l’obl
         </div>
       </div>
 
-      <!-- Fourchette de prix au m² du secteur : absente de l'annonce, valeurs reprises de la maquette Figma -->
+      <!-- Fourchette de prix au m² du secteur : absente de l'annonce. Calculée sur les
+           ventes de maisons 2024 dans les fichiers DVF geo-dvf Etalab. « Prix bas » et
+           « Prix haut » sont les 1er et 9e déciles, pas des bornes estimées.
+           Variante 1, Lomme (commune 59350) : n = 213, médiane 2 725 €/m².
+           Variante 2, Carquefou (commune 44026) : n = 99, médiane 3 234 €/m². -->
       <div class="market">
         <h3 class="market__title">Prix au m² par rapport au secteur <img src="assets/icon-info-12.svg" alt="En savoir plus"></h3>
         <p class="market__hint">Ces données sont indicatives.</p>
         <div class="market__gauge">
-          <span class="market__bubble" style="left: 50%">4 138 € / m²</span>
-          <span class="market__cursor" style="left: 50%"></span>
+          <span class="market__bubble" style="left: 63%" data-v="ppm" data-vleft="gaugeLeft">2 992 € / m²</span>
+          <span class="market__cursor" style="left: 63%" data-vleft="gaugeLeft"></span>
         </div>
         <div class="market__bounds">
-          <div><b>Prix bas</b><span>3 100 € / m²</span></div>
-          <div><b>Prix haut</b><span>5 200 € / m²</span></div>
+          <div><b>Prix bas</b><span data-v="mktLow">1 625 € / m²</span></div>
+          <div><b>Prix haut</b><span data-v="mktHigh">3 779 € / m²</span></div>
         </div>
-        <p class="market__verdict">À 4 138 € / m², le bien est dans la moyenne par rapport au secteur.</p>
+        <p class="market__verdict" data-v="verdict">À 2 992 € / m², le bien est au-dessus de la médiane du secteur (2 725 € / m²).</p>
       </div>
     </section>
 
@@ -1937,7 +1946,7 @@ Les informations sur les risques auxquels ce bien est exposé, y compris l’obl
           <div class="field">
             <label for="fin-price">Prix du bien</label>
             <div class="field__control">
-              <input id="fin-price" type="text" value="240 000">
+              <input id="fin-price" type="text" value="182 500" data-vval="finPrice">
               <span class="field__suffix">€</span>
             </div>
           </div>
@@ -1945,7 +1954,7 @@ Les informations sur les risques auxquels ce bien est exposé, y compris l’obl
           <div class="field">
             <label for="fin-down">Apport personnel</label>
             <div class="field__control">
-              <input id="fin-down" type="text" value="48 000">
+              <input id="fin-down" type="text" value="36 500" data-vval="finDown">
               <span class="field__suffix">€</span>
             </div>
           </div>
@@ -2038,10 +2047,11 @@ Les informations sur les risques auxquels ce bien est exposé, y compris l’obl
 
     <section class="agency">
       <div class="agency__id">
-        <img class="agency__pic" src="assets/ad/store-logo.jpg" alt="Carole Vigne - IAD France">
+        <img class="agency__pic" src="assets/ad-lomme/store-logo.jpg" alt="Imko Lille"
+             data-vsrc="agencyLogo" data-valt="agencyName">
         <div>
-          <p class="agency__name">Carole Vigne - IAD France</p>
-          <p class="agency__siret">N° SIREN : 877597617</p>
+          <p class="agency__name" data-v="agencyName">Imko Lille</p>
+          <p class="agency__siret" data-v="agencySiren">N° SIREN : 849442439</p>
         </div>
       </div>
       <button class="btn btn--outlined" type="button">Suivre</button>
@@ -2049,53 +2059,99 @@ Les informations sur les risques auxquels ce bien est exposé, y compris l’obl
 
     <hr class="rule">
 
-    <!-- Annonces de vitrine : non présentes dans le HTML de l'annonce, visuels repris de la galerie -->
+    <!-- Annonces de vitrine : non présentes dans le HTML de l'annonce, visuels repris de la
+         galerie. Ce sont des annonces de décor, pas des biens réels ; leurs prix au m² se
+         tiennent dans la fourchette interdécile DVF 2024 du secteur de chaque variante
+         (Lomme 1 625–3 779 €/m², Carquefou 2 551–4 036 €/m²). Chaque variante a son propre
+         jeu de cartes : les deux annonces sources n'ont ni la même agence ni la même
+         région, on ne peut pas partager le décor. -->
     <section class="more">
       <div class="more__head">
-        <h2 class="section__title">D’autres annonces de Carole Vigne - IAD France</h2>
+        <h2 class="section__title" data-v="agencyOthers">D’autres annonces de Imko Lille</h2>
         <a class="more__cta" href="#">Voir plus d’annonces <img src="assets/icon-arrow-right.svg" alt=""></a>
       </div>
       <div class="more__scroller">
         <div class="more__track">
-          <a class="mini" href="#">
+          <a class="mini" href="#" data-vonly="1">
             <span class="mini__media">
-              <img src="assets/ad/photo-04.jpg" alt="">
+              <img src="assets/ad-lomme/photo-01.jpg" alt="">
               <span class="mini__fav"><img src="assets/icon-heart-outline.svg" alt="Ajouter aux favoris"></span>
             </span>
-            <p class="mini__price"><b>232 000 €</b><small>4 296 € / m²</small><span class="tag--pro">Pro</span></p>
-            <p class="mini__type">Appartement</p>
-            <p>3 pièces · 54 m²</p>
-            <p class="mini__where">Caluire-et-Cuire 69300</p>
+            <p class="mini__price"><b>249 000 €</b><small>3 037 € / m²</small><span class="tag--pro">Pro</span></p>
+            <p class="mini__type">Maison</p>
+            <p>4 pièces · 82 m²</p>
+            <p class="mini__where">Lille 59160</p>
           </a>
-          <a class="mini" href="#">
+          <a class="mini" href="#" data-vonly="1">
             <span class="mini__media">
-              <img src="assets/ad/photo-06.jpg" alt="">
+              <img src="assets/ad-lomme/photo-06.jpg" alt="">
               <span class="mini__fav"><img src="assets/icon-heart-outline.svg" alt="Ajouter aux favoris"></span>
             </span>
-            <p class="mini__price"><b>289 000 €</b><small>4 353 € / m²</small><span class="tag--pro">Pro</span></p>
-            <p class="mini__type">Appartement</p>
-            <p>4 pièces · 66 m²</p>
-            <p class="mini__where">Lyon 69004</p>
+            <p class="mini__price"><b>315 000 €</b><small>2 917 € / m²</small><span class="tag--pro">Pro</span></p>
+            <p class="mini__type">Maison</p>
+            <p>5 pièces · 108 m²</p>
+            <p class="mini__where">Lambersart 59130</p>
           </a>
-          <a class="mini" href="#">
+          <a class="mini" href="#" data-vonly="1">
             <span class="mini__media">
-              <img src="assets/ad/photo-09.jpg" alt="">
+              <img src="assets/ad-lomme/photo-10.jpg" alt="">
               <span class="mini__fav"><img src="assets/icon-heart-outline.svg" alt="Ajouter aux favoris"></span>
             </span>
-            <p class="mini__price"><b>178 500 €</b><small>4 462 € / m²</small><span class="tag--pro">Pro</span></p>
-            <p class="mini__type">Appartement</p>
-            <p>2 pièces · 40 m²</p>
-            <p class="mini__where">Rillieux-la-Pape 69140</p>
+            <p class="mini__price"><b>189 000 €</b><small>2 700 € / m²</small><span class="tag--pro">Pro</span></p>
+            <p class="mini__type">Maison</p>
+            <p>3 pièces · 70 m²</p>
+            <p class="mini__where">Haubourdin 59320</p>
           </a>
-          <a class="mini" href="#">
+          <a class="mini" href="#" data-vonly="1">
             <span class="mini__media">
-              <img src="assets/ad/photo-12.jpg" alt="">
+              <img src="assets/ad-lomme/photo-04.jpg" alt="">
               <span class="mini__fav"><img src="assets/icon-heart-outline.svg" alt="Ajouter aux favoris"></span>
             </span>
-            <p class="mini__price"><b>415 000 €</b><small>3 953 € / m²</small><span class="tag--pro">Pro</span></p>
+            <p class="mini__price"><b>165 000 €</b><small>3 438 € / m²</small><span class="tag--pro">Pro</span></p>
+            <p class="mini__type">Appartement</p>
+            <p>2 pièces · 48 m²</p>
+            <p class="mini__where">Lille 59000</p>
+          </a>
+
+          <a class="mini" href="#" data-vonly="2">
+            <span class="mini__media">
+              <img src="assets/ad-carquefou/photo-01.jpg" alt="">
+              <span class="mini__fav"><img src="assets/icon-heart-outline.svg" alt="Ajouter aux favoris"></span>
+            </span>
+            <p class="mini__price"><b>398 000 €</b><small>3 790 € / m²</small><span class="tag--pro">Pro</span></p>
             <p class="mini__type">Maison</p>
             <p>5 pièces · 105 m²</p>
-            <p class="mini__where">Sathonay-Camp 69580</p>
+            <p class="mini__where">Carquefou 44470</p>
+          </a>
+          <a class="mini" href="#" data-vonly="2">
+            <span class="mini__media">
+              <img src="assets/ad-carquefou/photo-03.jpg" alt="">
+              <span class="mini__fav"><img src="assets/icon-heart-outline.svg" alt="Ajouter aux favoris"></span>
+            </span>
+            <p class="mini__price"><b>315 000 €</b><small>3 580 € / m²</small><span class="tag--pro">Pro</span></p>
+            <p class="mini__type">Maison</p>
+            <p>4 pièces · 88 m²</p>
+            <p class="mini__where">Sainte-Luce-sur-Loire 44980</p>
+          </a>
+          <a class="mini" href="#" data-vonly="2">
+            <span class="mini__media">
+              <img src="assets/ad-carquefou/photo-10.jpg" alt="">
+              <span class="mini__fav"><img src="assets/icon-heart-outline.svg" alt="Ajouter aux favoris"></span>
+            </span>
+            <p class="mini__price"><b>249 000 €</b><small>3 458 € / m²</small><span class="tag--pro">Pro</span></p>
+            <p class="mini__type">Maison</p>
+            <p>3 pièces · 72 m²</p>
+            <p class="mini__where">Thouaré-sur-Loire 44470</p>
+          </a>
+          <a class="mini" href="#" data-vonly="2">
+            <span class="mini__media">
+              <img src="assets/ad-carquefou/photo-09.jpg" alt="">
+              <span class="mini__fav"><img src="assets/icon-heart-outline.svg" alt="Ajouter aux favoris"></span>
+            </span>
+            <p class="mini__price"><b>165 000 €</b><small>3 511 € / m²</small><span class="tag--pro">Pro</span></p>
+            <p class="mini__type">Appartement</p>
+            <p>2 pièces · 47 m²</p>
+            <p class="mini__where">Nantes 44300</p>
           </a>
         </div>
         <button class="more__next" type="button" aria-label="Annonces suivantes">
@@ -2120,45 +2176,86 @@ Les informations sur les risques auxquels ce bien est exposé, y compris l’obl
       </div>
       <div class="more__scroller">
         <div class="more__track">
-          <a class="mini" href="#">
+          <a class="mini" href="#" data-vonly="1">
             <span class="mini__media">
-              <img src="assets/ad/photo-02.jpg" alt="">
+              <img src="assets/ad-lomme/photo-05.jpg" alt="">
               <span class="mini__fav"><img src="assets/icon-heart-outline.svg" alt="Ajouter aux favoris"></span>
             </span>
-            <p class="mini__price"><b>245 000 €</b><small>4 273 € / m²</small><span class="tag--pro">Pro</span></p>
-            <p class="mini__type">Appartement</p>
-            <p>3 pièces · 57 m²</p>
-            <p class="mini__where">Caluire-et-Cuire 69300</p>
+            <p class="mini__price"><b>219 000 €</b><small>2 920 € / m²</small><span class="tag--pro">Pro</span></p>
+            <p class="mini__type">Maison</p>
+            <p>4 pièces · 75 m²</p>
+            <p class="mini__where">Lille 59160</p>
           </a>
-          <a class="mini" href="#">
+          <a class="mini" href="#" data-vonly="1">
             <span class="mini__media">
-              <img src="assets/ad/photo-05.jpg" alt="">
+              <img src="assets/ad-lomme/photo-03.jpg" alt="">
               <span class="mini__fav"><img src="assets/icon-heart-outline.svg" alt="Ajouter aux favoris"></span>
             </span>
-            <p class="mini__price"><b>259 000 €</b><small>4 116 € / m²</small><span class="tag--pro">Pro</span></p>
-            <p class="mini__type">Appartement</p>
-            <p>3 pièces · 63 m²</p>
-            <p class="mini__where">Lyon 69004</p>
+            <p class="mini__price"><b>289 000 €</b><small>2 890 € / m²</small><span class="tag--pro">Pro</span></p>
+            <p class="mini__type">Maison</p>
+            <p>5 pièces · 100 m²</p>
+            <p class="mini__where">Sequedin 59320</p>
           </a>
-          <a class="mini" href="#">
+          <a class="mini" href="#" data-vonly="1">
             <span class="mini__media">
-              <img src="assets/ad/photo-08.jpg" alt="">
+              <img src="assets/ad-lomme/photo-09.jpg" alt="">
               <span class="mini__fav"><img src="assets/icon-heart-outline.svg" alt="Ajouter aux favoris"></span>
             </span>
-            <p class="mini__price"><b>198 000 €</b><small>4 043 € / m²</small><span class="tag--pro">Pro</span></p>
-            <p class="mini__type">Appartement</p>
-            <p>2 pièces · 49 m²</p>
-            <p class="mini__where">Villeurbanne 69100</p>
+            <p class="mini__price"><b>178 000 €</b><small>2 738 € / m²</small><span class="tag--pro">Pro</span></p>
+            <p class="mini__type">Maison</p>
+            <p>3 pièces · 65 m²</p>
+            <p class="mini__where">Loos 59120</p>
           </a>
-          <a class="mini" href="#">
+          <a class="mini" href="#" data-vonly="1">
             <span class="mini__media">
-              <img src="assets/ad/photo-11.jpg" alt="">
+              <img src="assets/ad-lomme/photo-08.jpg" alt="">
               <span class="mini__fav"><img src="assets/icon-heart-outline.svg" alt="Ajouter aux favoris"></span>
             </span>
-            <p class="mini__price"><b>320 000 €</b><small>4 000 € / m²</small><span class="tag--pro">Pro</span></p>
-            <p class="mini__type">Appartement</p>
-            <p>4 pièces · 80 m²</p>
-            <p class="mini__where">Caluire-et-Cuire 69300</p>
+            <p class="mini__price"><b>349 000 €</b><small>2 908 € / m²</small><span class="tag--pro">Pro</span></p>
+            <p class="mini__type">Maison</p>
+            <p>6 pièces · 120 m²</p>
+            <p class="mini__where">Lambersart 59130</p>
+          </a>
+
+          <a class="mini" href="#" data-vonly="2">
+            <span class="mini__media">
+              <img src="assets/ad-carquefou/photo-04.jpg" alt="">
+              <span class="mini__fav"><img src="assets/icon-heart-outline.svg" alt="Ajouter aux favoris"></span>
+            </span>
+            <p class="mini__price"><b>359 000 €</b><small>3 779 € / m²</small><span class="tag--pro">Pro</span></p>
+            <p class="mini__type">Maison</p>
+            <p>4 pièces · 95 m²</p>
+            <p class="mini__where">Vertou 44120</p>
+          </a>
+          <a class="mini" href="#" data-vonly="2">
+            <span class="mini__media">
+              <img src="assets/ad-carquefou/photo-11.jpg" alt="">
+              <span class="mini__fav"><img src="assets/icon-heart-outline.svg" alt="Ajouter aux favoris"></span>
+            </span>
+            <p class="mini__price"><b>429 000 €</b><small>3 636 € / m²</small><span class="tag--pro">Pro</span></p>
+            <p class="mini__type">Maison</p>
+            <p>5 pièces · 118 m²</p>
+            <p class="mini__where">Basse-Goulaine 44115</p>
+          </a>
+          <a class="mini" href="#" data-vonly="2">
+            <span class="mini__media">
+              <img src="assets/ad-carquefou/photo-08.jpg" alt="">
+              <span class="mini__fav"><img src="assets/icon-heart-outline.svg" alt="Ajouter aux favoris"></span>
+            </span>
+            <p class="mini__price"><b>232 000 €</b><small>3 412 € / m²</small><span class="tag--pro">Pro</span></p>
+            <p class="mini__type">Maison</p>
+            <p>3 pièces · 68 m²</p>
+            <p class="mini__where">Sucé-sur-Erdre 44240</p>
+          </a>
+          <a class="mini" href="#" data-vonly="2">
+            <span class="mini__media">
+              <img src="assets/ad-carquefou/photo-06.jpg" alt="">
+              <span class="mini__fav"><img src="assets/icon-heart-outline.svg" alt="Ajouter aux favoris"></span>
+            </span>
+            <p class="mini__price"><b>495 000 €</b><small>3 750 € / m²</small><span class="tag--pro">Pro</span></p>
+            <p class="mini__type">Maison</p>
+            <p>6 pièces · 132 m²</p>
+            <p class="mini__where">Saint-Sébastien-sur-Loire 44230</p>
           </a>
         </div>
         <button class="more__next" type="button" aria-label="Annonces suivantes">
@@ -2172,21 +2269,25 @@ Les informations sur les risques auxquels ce bien est exposé, y compris l’obl
   <aside class="page__aside">
     <div class="contact-card">
       <a class="contact-card__pro" href="#">
-        <img class="contact-card__pic" src="assets/ad/store-logo.jpg" alt="Carole Vigne - IAD France">
+        <img class="contact-card__pic" src="assets/ad-lomme/store-logo.jpg" alt="Imko Lille"
+             data-vsrc="agencyLogo" data-valt="agencyName">
         <div class="contact-card__body">
-          <p class="contact-card__over">En exclusivité par</p>
-          <p class="contact-card__name">Carole Vigne - IAD France</p>
+          <!-- Type de mandat repris de l'annonce : simple pour la variante 1
+               (mandate_type: simple), exclusif pour la variante 2. -->
+          <p class="contact-card__over" data-v="proposedBy">Proposé par</p>
+          <p class="contact-card__name" data-v="agencyName">Imko Lille</p>
+          <!-- Note et nombre d'avis : absents du HTML de l'annonce, valeurs de décor -->
           <p class="rating">
             <img src="assets/icon-star.svg" alt="">
             <img src="assets/icon-star.svg" alt="">
             <img src="assets/icon-star.svg" alt="">
             <img src="assets/icon-star.svg" alt="">
             <img src="assets/icon-star.svg" alt="">
-            <b>4,9 (18)</b>
+            <b>4,8 (34)</b>
           </p>
           <span class="tag--pro">Pro</span>
           <!-- Nombre d'annonces : chargé côté client sur lbc, absent du HTML de l'annonce -->
-          <p class="contact-card__ads">1199 annonces</p>
+          <p class="contact-card__ads">87 annonces</p>
         </div>
         <img class="contact-card__chevron" src="assets/icon-chevron-vertical.svg" alt="">
       </a>
@@ -2286,6 +2387,205 @@ Les informations sur les risques auxquels ce bien est exposé, y compris l’obl
     </div>
   </div>
 </footer>
+
+<!--
+  Variantes participants. Un seul code, deux jeux de valeurs, chacun adossé à une
+  annonce réelle différente :
+    ?p=1 — annonce 3214064492, maison 1930 à Lille Lomme (59160), ramenée à
+           61 m² / 3 pièces / 182 500 € ;
+    ?p=2 — annonce 3214673441, maison contemporaine de 2023 à Carquefou (44470),
+           ramenée à 92 m² / 4 pièces (2 chambres + bureau) / 409 500 €.
+  La variante est mémorisée pour que la navigation adview <-> galerie <-> listing la
+  conserve sans param dans chaque lien. Le HTML porte la variante 1 en dur : sans JS
+  la page reste cohérente.
+  Aucun chiffre n'est estimé : tous les montants dérivés reprennent les ratios de leur
+  propre annonce source. Variante 1 : honoraires 5,26 % du prix hors honoraires, notaire
+  7,60 % du prix. Variante 2 : honoraires 2,51 % (11 000 € sur 438 000 € hors honoraires),
+  notaire 7,80 % (35 040 € sur 449 000 €), taxe foncière et budget énergie de l'annonce
+  ramenés au prorata de la surface (95 m² -> 92 m²). Apport = 20 % du prix. Le curseur du
+  marché est la position du prix au m² entre les 1er et 9e déciles DVF du secteur, borné à
+  100 % (Lomme 1 625 / 3 779, Carquefou 2 551 / 4 036 €/m²).
+  Chaque variante garde l'agence, le type de mandat, le DPE et les photos de SON annonce :
+  ce sont des données réelles, on ne les remplace pas par des valeurs inventées.
+-->
+<script>
+  const VARIANTS = {
+    '2': {
+      title: 'Maison 4 pièces 92 m² — Carquefou | leboncoin',
+      features: 'Maison · 92 m² · 4 pièces',
+      breadcrumb: 'Vente maison 4 pièces, 92 m²',
+      region: 'Pays de la Loire',
+      city: 'Carquefou',
+      where: 'Carquefou 44470',
+      localityName: 'Carquefou',
+      localityAdmin: 'Loire-Atlantique (44470)',
+      mapLabel: 'Carte du secteur de la maison à Carquefou',
+      mktLow: '2 551 € / m²',
+      mktHigh: '4 036 € / m²',
+      price: '409 500 €',
+      ppm: '4 451 € / m²',
+      keyinfo: 'Terrasse · Jardin · Garage · Cuisine ouverte',
+      surface: '92 m²',
+      rooms: '4 pièces',
+      beds: '2 chambres',
+      levels: '2 niveaux',
+      bathroom: '1 salle de bains',
+      outside: 'Terrasse · Jardin',
+      feat: 'Terrain de 370 m² · Garage · Cuisine ouverte',
+      orient: 'Orientation nord-est',
+      year: 'Construit en 2023',
+      cond: 'Construction récente',
+      honoraires: 'Honoraires de 2,51 % à la charge de l’acquéreur, soit 10 000 € inclus dans le prix.',
+      notaire: '32 000 €',
+      total: '441 500 €',
+      taxe: '1 415 € / an',
+      energie: 'entre 550 et 760 € / an',
+      verdict: 'À 4 451 € / m², le bien est au-dessus de la fourchette du secteur (médiane 3 234 € / m²).',
+      proposedBy: 'Proposé en exclusivité par',
+      agencyName: 'Estelle Girardin – Propriétés Privées',
+      agencySiren: 'N° SIREN : 850714106',
+      agencyOthers: 'D’autres annonces de Estelle Girardin',
+      desc: `Estelle Girardin - Propriétés Privées vous propose : CARQUEFOU – MAISON CONTEMPORAINE DE 2023 – DOMAINE SÉCURISÉ
+
+Carquefou, dans un domaine sécurisé. Maison contemporaine de 2023 de 92 m² sur deux niveaux, sur un terrain clos et arboré de 370 m².
+
+Dès l’entrée, vous découvrirez une belle cuisine aménagée et équipée ouverte sur une agréable pièce de vie tournée vers le jardin et sa vaste terrasse en bois exotique. À l’étage, le palier dessert deux chambres, un bureau, une salle de bains ainsi que des toilettes indépendants.
+
+Cette maison comprend :
+
+Une entrée
+Une cuisine ouverte sur la pièce de vie
+Une buanderie avec accès au jardin
+Un WC au rez-de-chaussée
+Deux chambres
+Un bureau
+Une salle de bains
+Un WC indépendant à l’étage
+Un garage avec porte motorisée
+
+De nombreux rangements, une place de stationnement privative devant le garage, la domotique et des matériaux de qualité complètent ce bien.
+
+Les atouts majeurs :
+
+Construction 2023 à la norme RE2020, DPE B et GES B
+Chauffage au sol au gaz et ballon thermodynamique
+Domaine sécurisé, jardin arboré sans vis-à-vis direct
+Terrasse en bois exotique et sauna tonneau
+Garage avec porte motorisée et place de stationnement privative
+Domotique et matériaux de qualité
+
+À proximité du centre de Carquefou, des commerces, des transports en commun et des écoles.
+
+Honoraires à la charge de l’acquéreur : 2,51 % du prix hors honoraires, soit 399 500 € hors honoraires et 10 000 € d’honoraires. Barème disponible sur demande.
+
+Mandat exclusif. Estelle GIRARDIN, agent commercial, RSAC Nantes 850714106, auprès de la SAS PROPRIÉTÉS PRIVÉES, ZAC Le Chêne Ferré, 44 allée des Cinq Continents, 44120 Vertou.
+
+Date de réalisation du diagnostic énergétique : 11/04/2023.
+
+Montant estimé des dépenses annuelles d’énergie pour un usage standard : entre 550 € et 760 € (abonnements compris).
+
+Référence : 454549EGS
+
+Les informations sur les risques auxquels ce bien est exposé sont disponibles sur le site Géorisques : georisques.gouv.fr`,
+      scale: { dpe: 'B', ges: 'B' },
+      alt: {
+        hero0Alt: 'Façade arrière et terrasse en bois donnant sur le jardin',
+        hero1Alt: 'Pièce de vie ouverte sur le jardin',
+        hero2Alt: 'Cuisine ouverte sur la salle à manger'
+      },
+      src: {
+        plan2d: 'assets/ad-carquefou/plan.jpg',
+        cover: 'assets/ad-carquefou/photo-01.jpg',
+        hero0: 'assets/ad-carquefou/photo-01.jpg',
+        hero1: 'assets/ad-carquefou/photo-03.jpg',
+        hero2: 'assets/ad-carquefou/photo-02.jpg',
+        tour0: 'assets/ad-carquefou/photo-03.jpg',
+        tour1: 'assets/ad-carquefou/photo-02.jpg',
+        agencyLogo: 'assets/ad-carquefou/store-logo.jpg',
+        map0: 'assets/map/t-16247-11487.png', map1: 'assets/map/t-16248-11487.png',
+        map2: 'assets/map/t-16249-11487.png', map3: 'assets/map/t-16247-11488.png',
+        map4: 'assets/map/t-16248-11488.png', map5: 'assets/map/t-16249-11488.png',
+        map6: 'assets/map/t-16247-11489.png', map7: 'assets/map/t-16248-11489.png',
+        map8: 'assets/map/t-16249-11489.png'
+      },
+      left: { gaugeLeft: '100%' },
+      transform: { mapOffset: 'translate(-314.65px, -287.36px)' },
+      val: { finPrice: '409 500', finDown: '81 900' }
+    }
+  };
+
+  const VARIANT_KEY = 'lbc-proto:participant';
+
+  function currentVariant() {
+    const asked = new URLSearchParams(location.search).get('p');
+    if (asked === '1' || asked === '2') {
+      try { localStorage.setItem(VARIANT_KEY, asked); } catch (e) {}
+      return asked;
+    }
+    try { return localStorage.getItem(VARIANT_KEY) || '1'; } catch (e) { return '1'; }
+  }
+
+  function applyVariant(v) {
+    const data = VARIANTS[v];
+    if (!data) return;
+    for (const [key, text] of Object.entries(data)) {
+      if (key === 'src' || key === 'left' || key === 'val' ||
+          key === 'alt' || key === 'scale' || key === 'transform') continue;
+      if (key === 'title') { document.title = text; continue; }
+      // Certaines clés ne décrivent pas du texte visible mais un aria-label.
+      document.querySelectorAll('[data-valabel="' + key + '"]').forEach(el => {
+        el.setAttribute('aria-label', text);
+      });
+      document.querySelectorAll('[data-valt="' + key + '"]').forEach(el => { el.alt = text; });
+      document.querySelectorAll('[data-v="' + key + '"]').forEach(el => { el.textContent = text; });
+    }
+    // Le curseur du DPE et du GES : on deplace la classe active sur la lettre voulue.
+    for (const [key, letter] of Object.entries(data.scale || {})) {
+      document.querySelectorAll('[data-vscale="' + key + '"]').forEach(p => {
+        p.querySelectorAll('.scale__step').forEach(s => {
+          s.classList.toggle('scale__step--active', s.textContent.trim() === letter);
+        });
+      });
+    }
+    for (const [key, tr] of Object.entries(data.transform || {})) {
+      document.querySelectorAll('[data-vtransform="' + key + '"]').forEach(el => { el.style.transform = tr; });
+    }
+    for (const [key, src] of Object.entries(data.src)) {
+      document.querySelectorAll('[data-vsrc="' + key + '"]').forEach(el => { el.src = src; });
+    }
+    for (const [key, left] of Object.entries(data.left)) {
+      document.querySelectorAll('[data-vleft="' + key + '"]').forEach(el => { el.style.left = left; });
+    }
+    for (const [key, value] of Object.entries(data.val)) {
+      document.querySelectorAll('[data-vval="' + key + '"]').forEach(el => { el.value = value; });
+    }
+  }
+
+  // Les liens internes reportent la variante : le lien envoyé au participant reste
+  // valable même si son navigateur bloque le stockage local.
+  function propagateVariant(v) {
+    document.querySelectorAll('a[href]').forEach(a => {
+      const href = a.getAttribute('href');
+      if (!href || /^(#|https?:|mailto:|tel:)/.test(href)) return;
+      // On manipule la chaîne, pas une URL absolue, pour garder le lien relatif :
+      // le proto est servi sous un préfixe de chemin sur GitHub Pages.
+      const hash = href.includes('#') ? href.slice(href.indexOf('#')) : '';
+      const [path, query = ''] = href.slice(0, href.length - hash.length).split('?');
+      const params = new URLSearchParams(query);
+      params.set('p', v);
+      a.setAttribute('href', path + '?' + params + hash);
+    });
+  }
+
+  const variant = currentVariant();
+  // Hors applyVariant : la variante 1 est le defaut ecrit en dur dans le HTML et
+  // n'a donc pas d'entree dans VARIANTS, mais ses blocs propres doivent survivre.
+  document.querySelectorAll('[data-vonly]').forEach(el => {
+    if (el.dataset.vonly !== variant) el.remove();
+  });
+  applyVariant(variant);
+  propagateVariant(variant);
+</script>
 
 <script>
   const description = document.querySelector('.description');

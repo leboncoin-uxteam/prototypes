@@ -720,6 +720,9 @@
   .btn--contrast:hover { background: var(--color-surface-hovered); }
   .btn--support { background: var(--color-support); color: var(--color-on-support); }
   .btn--support:hover { background: var(--color-support-hovered); }
+  /* `display: flex` ci-dessus l'emporterait sur la feuille par défaut : sans cette
+     règle, un bouton masqué par l'attribut `hidden` resterait visible. */
+  .btn[hidden] { display: none; }
   .btn { transition: background-color var(--duration-short) var(--ease-standard); }
   .btn__icon { display: block; width: 16px; height: 16px; }
 
@@ -1250,7 +1253,7 @@
     <button class="icon-btn adview__back" type="button" aria-label="Retour à l’annonce">
       <img class="icon-btn__icon" src="assets/icon-arrow-left.svg" alt="">
     </button>
-    <p class="adview__topbar-title">Appartement 3 pièces 58 m²</p>
+    <p class="adview__topbar-title" data-v="titleshort">Maison 3 pièces 61 m²</p>
     <button class="icon-btn icon-btn--bare adview__close" type="button" aria-label="Fermer la galerie">
       <img class="icon-btn__icon" src="assets/icon-cross.svg" alt="">
     </button>
@@ -1260,7 +1263,7 @@
 
     <div class="side">
       <div>
-        <p class="side__eyebrow">Appartement 3 pièces 58 m²</p>
+        <p class="side__eyebrow" data-v="titleshort">Maison 3 pièces 61 m²</p>
         <h1 class="side__title">Médias</h1>
       </div>
 
@@ -1299,46 +1302,77 @@
            ordre de priorité : séjour, extérieur, cuisine, salle de bain. Les
            chambres et le balcon se partagent les rangées à deux. -->
       <div class="masonry">
-        <div class="masonry__row masonry__row--hero">
+        <div class="masonry__row masonry__row--hero" data-vonly="1">
           <button class="tile tile--selected" type="button" aria-current="true" data-media="photo" data-room="Séjour">
-            <img src="assets/ad/photo-02.jpg" alt="Séjour / salle à manger ouvert sur la cuisine">
+            <img src="assets/ad-lomme/photo-02.jpg" alt="Séjour ouvert sur la cuisine">
           </button>
         </div>
 
-        <div class="masonry__row masonry__row--mixed">
-          <button class="tile tile--narrow tile--tall" type="button" data-media="photo" data-room="Séjour"><img src="assets/ad/photo-09.jpg" alt="Coin salon avec canapé d’angle"></button>
+        <div class="masonry__row masonry__row--mixed" data-vonly="1">
+          <button class="tile tile--narrow tile--tall" type="button" data-media="photo" data-room="Séjour"><img src="assets/ad-lomme/photo-04.jpg" alt="Séjour vu depuis l’entrée"></button>
           <div class="masonry__stack">
-            <button class="tile" type="button" data-media="photo" data-room="Chambre"><img src="assets/ad/photo-12.jpg" alt="Chambre principale"></button>
-            <button class="tile" type="button" data-media="photo" data-room="Cuisine"><img src="assets/ad/photo-04.jpg" alt="Cuisine semi-ouverte avec four encastré"></button>
+            <button class="tile" type="button" data-media="photo" data-room="Chambre"><img src="assets/ad-lomme/photo-07.jpg" alt="Chambre principale à l’étage"></button>
+            <button class="tile" type="button" data-media="photo" data-room="Cuisine"><img src="assets/ad-lomme/photo-03.jpg" alt="Cuisine équipée ouvrant sur la cour"></button>
           </div>
         </div>
 
-        <div class="masonry__row masonry__row--hero">
+        <div class="masonry__row masonry__row--hero" data-vonly="1">
           <button class="tile" type="button" data-media="photo" data-room="Extérieur">
-            <img src="assets/ad/photo-15.jpg" alt="Résidence arborée et voie verte">
+            <img src="assets/ad-lomme/photo-01.jpg" alt="Façade en brique de la maison 1930">
           </button>
         </div>
 
-        <div class="masonry__row masonry__row--pair">
-          <button class="tile" type="button" data-media="photo" data-room="Balcon"><img src="assets/ad/photo-08.jpg" alt="Balcon exposé plein sud"></button>
-          <button class="tile" type="button" data-media="photo" data-room="Chambre"><img src="assets/ad/photo-13.jpg" alt="Seconde chambre"></button>
+        <div class="masonry__row masonry__row--pair" data-vonly="1">
+          <button class="tile" type="button" data-media="photo" data-room="Chambre"><img src="assets/ad-lomme/photo-08.jpg" alt="Seconde chambre"></button>
+          <button class="tile" type="button" data-media="photo" data-room="Extérieur"><img src="assets/ad-lomme/photo-10.jpg" alt="Cour arrière exposée sud"></button>
         </div>
 
-        <div class="masonry__row masonry__row--hero">
-          <button class="tile" type="button" data-media="photo" data-room="Cuisine">
-            <img src="assets/ad/photo-05.jpg" alt="Cuisine équipée avec plan de travail et hotte">
+        <div class="masonry__row masonry__row--pair" data-vonly="1">
+          <button class="tile" type="button" data-media="photo" data-room="Séjour"><img src="assets/ad-lomme/photo-05.jpg" alt="Séjour et accès à la cuisine"></button>
+          <button class="tile" type="button" data-media="photo" data-room="Séjour"><img src="assets/ad-lomme/photo-06.jpg" alt="Séjour, coin salon"></button>
+        </div>
+
+        <!-- Les deux variantes reposent sur deux annonces réelles distinctes, qui ne
+             partagent aucune photo : les rangées sont dédoublées plutôt que
+             re-sourcées, et le script en retire celles de l'autre participant. -->
+        <div class="masonry__row masonry__row--hero" data-vonly="2">
+          <button class="tile tile--selected" type="button" aria-current="true" data-media="photo" data-room="Pièce de vie">
+            <img src="assets/ad-carquefou/photo-03.jpg" alt="Pièce de vie ouverte sur le jardin">
           </button>
+        </div>
+
+        <div class="masonry__row masonry__row--mixed" data-vonly="2">
+          <button class="tile tile--narrow tile--tall" type="button" data-media="photo" data-room="Pièce de vie"><img src="assets/ad-carquefou/photo-07.jpg" alt="Pièce de vie et escalier bois"></button>
+          <div class="masonry__stack">
+            <button class="tile" type="button" data-media="photo" data-room="Chambre"><img src="assets/ad-carquefou/photo-08.jpg" alt="Chambre à l’étage"></button>
+            <button class="tile" type="button" data-media="photo" data-room="Cuisine"><img src="assets/ad-carquefou/photo-02.jpg" alt="Cuisine ouverte sur la salle à manger"></button>
+          </div>
+        </div>
+
+        <div class="masonry__row masonry__row--hero" data-vonly="2">
+          <button class="tile" type="button" data-media="photo" data-room="Extérieur">
+            <img src="assets/ad-carquefou/photo-01.jpg" alt="Façade arrière et terrasse en bois donnant sur le jardin">
+          </button>
+        </div>
+
+        <div class="masonry__row masonry__row--pair" data-vonly="2">
+          <button class="tile" type="button" data-media="photo" data-room="Chambre"><img src="assets/ad-carquefou/photo-10.jpg" alt="Seconde chambre"></button>
+          <button class="tile" type="button" data-media="photo" data-room="Salle de bains"><img src="assets/ad-carquefou/photo-09.jpg" alt="Salle de bains avec baignoire et double vasque"></button>
+        </div>
+
+        <div class="masonry__row masonry__row--pair" data-vonly="2">
+          <button class="tile" type="button" data-media="photo" data-room="Cuisine"><img src="assets/ad-carquefou/photo-05.jpg" alt="Cuisine en U aménagée et équipée"></button>
+          <button class="tile" type="button" data-media="photo" data-room="Pièce de vie"><img src="assets/ad-carquefou/photo-06.jpg" alt="Vue de la salle à manger vers la pièce de vie"></button>
+        </div>
+
+        <div class="masonry__row masonry__row--pair" data-vonly="2">
+          <button class="tile" type="button" data-media="photo" data-room="Extérieur"><img src="assets/ad-carquefou/photo-04.jpg" alt="Terrasse, sauna tonneau et jardin"></button>
+          <button class="tile" type="button" data-media="photo" data-room="Extérieur"><img src="assets/ad-carquefou/photo-11.jpg" alt="Grande terrasse et jardin arboré"></button>
         </div>
 
         <div class="masonry__row masonry__row--plan">
           <button class="tile tile--plan" type="button" data-media="plan" data-room="Plan">
-            <img src="assets/plan.png" alt="Plan de l'appartement">
-          </button>
-        </div>
-
-        <div class="masonry__row masonry__row--hero">
-          <button class="tile" type="button" data-media="photo" data-room="Salle de bain">
-            <img src="assets/ad/photo-14.jpg" alt="Salle de bain avec baignoire et vasque">
+            <img src="assets/ad-lomme/plan.jpg" alt="Plan de la maison" data-vsrc="plan2d">
           </button>
         </div>
 
@@ -1355,80 +1389,122 @@
       </div>
 
       <div class="tour">
-        <section class="tour__section">
+        <section class="tour__section" data-vonly="1">
           <div>
             <h2 class="tour__title">Séjour</h2>
-            <p class="tour__quote">« d’un <strong>séjour / salle à manger lumineux ouvrant sur un balcon exposé plein sud</strong>…»<button class="tour__more" type="button" aria-expanded="false" aria-label="Voir l’extrait de la description associé au séjour" data-match="séjour / salle à manger lumineux ouvrant sur un balcon exposé plein sud"><img src="assets/icon-three-dots.svg" alt=""></button></p>
+            <p class="tour__quote">« Cette maison comprend une entrée, <strong>un séjour lumineux en façade</strong>…»<button class="tour__more" type="button" aria-expanded="false" aria-label="Voir l’extrait de la description associé au séjour" data-match="un séjour lumineux en façade"><img src="assets/icon-three-dots.svg" alt=""></button></p>
           </div>
           <div class="masonry__row masonry__row--hero">
             <button class="tile tile--selected" type="button" aria-current="true" data-media="photo" data-room="Séjour">
-              <img src="assets/ad/photo-02.jpg" alt="Séjour / salle à manger ouvert sur la cuisine">
+              <img src="assets/ad-lomme/photo-02.jpg" alt="Séjour ouvert sur la cuisine">
             </button>
           </div>
           <div class="masonry__row masonry__row--mixed">
-            <button class="tile tile--narrow tile--tall" type="button" data-media="photo" data-room="Séjour"><img src="assets/ad/photo-09.jpg" alt="Coin salon avec canapé d’angle"></button>
+            <button class="tile tile--narrow tile--tall" type="button" data-media="photo" data-room="Séjour"><img src="assets/ad-lomme/photo-04.jpg" alt="Séjour vu depuis l’entrée"></button>
             <div class="masonry__stack">
-              <button class="tile" type="button" data-media="photo" data-room="Séjour"><img src="assets/ad/photo-07.jpg" alt="Séjour traversant avec table à manger"></button>
-              <button class="tile" type="button" data-media="photo" data-room="Séjour"><img src="assets/ad/photo-01.jpg" alt="Séjour avec bibliothèque et rangements"></button>
+              <button class="tile" type="button" data-media="photo" data-room="Séjour"><img src="assets/ad-lomme/photo-05.jpg" alt="Séjour et accès à la cuisine"></button>
+              <button class="tile" type="button" data-media="photo" data-room="Séjour"><img src="assets/ad-lomme/photo-06.jpg" alt="Séjour, coin salon"></button>
             </div>
-          </div>
-          <!-- Pile à gauche cette fois : la trame s'inverse d'une rangée mixte à l'autre -->
-          <div class="masonry__row masonry__row--mixed">
-            <div class="masonry__stack">
-              <button class="tile" type="button" data-media="photo" data-room="Séjour"><img src="assets/ad/photo-06.jpg" alt="Séjour ouvrant sur le balcon"></button>
-              <button class="tile" type="button" data-media="photo" data-room="Séjour"><img src="assets/ad/photo-03.jpg" alt="Séjour vu depuis l’entrée"></button>
-            </div>
-            <button class="tile tile--narrow tile--tall" type="button" data-media="photo" data-room="Séjour"><img src="assets/ad/photo-10.jpg" alt="Séjour et accès à la cuisine"></button>
-          </div>
-          <div class="masonry__row masonry__row--hero">
-            <button class="tile" type="button" data-media="photo" data-room="Séjour">
-              <img src="assets/ad/photo-11.jpg" alt="Entrée du séjour et cuisine semi-ouverte">
-            </button>
           </div>
         </section>
 
-        <section class="tour__section">
+        <section class="tour__section" data-vonly="1">
           <div>
             <h2 class="tour__title">Cuisine</h2>
-            <p class="tour__quote">« d’une <strong>cuisine entièrement équipée, semi-ouverte sur le séjour</strong>…»<button class="tour__more" type="button" aria-expanded="false" aria-label="Voir l’extrait de la description associé à la cuisine" data-match="cuisine entièrement équipée, semi-ouverte sur le séjour"><img src="assets/icon-three-dots.svg" alt=""></button></p>
-          </div>
-          <div class="masonry__row masonry__row--pair">
-            <button class="tile" type="button" data-media="photo" data-room="Cuisine"><img src="assets/ad/photo-05.jpg" alt="Cuisine équipée avec plan de travail et hotte"></button>
-            <button class="tile" type="button" data-media="photo" data-room="Cuisine"><img src="assets/ad/photo-04.jpg" alt="Cuisine semi-ouverte avec four encastré"></button>
-          </div>
-        </section>
-
-        <section class="tour__section">
-          <div>
-            <h2 class="tour__title">Chambres</h2>
-            <p class="tour__quote">« de <strong>deux chambres dont une avec dressing</strong>…»<button class="tour__more" type="button" aria-expanded="false" aria-label="Voir l’extrait de la description associé aux chambres" data-match="deux chambres dont une avec dressing"><img src="assets/icon-three-dots.svg" alt=""></button></p>
-          </div>
-          <div class="masonry__row masonry__row--pair">
-            <button class="tile" type="button" data-media="photo" data-room="Chambre"><img src="assets/ad/photo-12.jpg" alt="Chambre principale"></button>
-            <button class="tile" type="button" data-media="photo" data-room="Chambre"><img src="assets/ad/photo-13.jpg" alt="Seconde chambre"></button>
-          </div>
-        </section>
-
-        <section class="tour__section">
-          <div>
-            <h2 class="tour__title">Salle de bain</h2>
-            <p class="tour__quote">« d’une <strong>salle de bain et d’un WC séparé</strong>…»<button class="tour__more" type="button" aria-expanded="false" aria-label="Voir l’extrait de la description associé à la salle de bain" data-match="salle de bain et d’un WC séparé"><img src="assets/icon-three-dots.svg" alt=""></button></p>
+            <p class="tour__quote">« <strong>une cuisine équipée ouvrant sur la cour</strong>…»<button class="tour__more" type="button" aria-expanded="false" aria-label="Voir l’extrait de la description associé à la cuisine" data-match="une cuisine équipée ouvrant sur la cour"><img src="assets/icon-three-dots.svg" alt=""></button></p>
           </div>
           <div class="masonry__row masonry__row--hero">
-            <button class="tile" type="button" data-media="photo" data-room="Salle de bain">
-              <img src="assets/ad/photo-14.jpg" alt="Salle de bain avec baignoire et vasque">
+            <button class="tile" type="button" data-media="photo" data-room="Cuisine">
+              <img src="assets/ad-lomme/photo-03.jpg" alt="Cuisine équipée ouvrant sur la cour">
             </button>
           </div>
         </section>
 
-        <section class="tour__section">
+        <section class="tour__section" data-vonly="1">
           <div>
-            <h2 class="tour__title">Extérieur</h2>
-            <p class="tour__quote">« au calme au 3ᵉ étage d’une <strong>résidence sécurisée, arborée et parfaitement entretenue</strong>…»<button class="tour__more" type="button" aria-expanded="false" aria-label="Voir l’extrait de la description associé à l’extérieur" data-match="résidence sécurisée, arborée et parfaitement entretenue"><img src="assets/icon-three-dots.svg" alt=""></button></p>
+            <h2 class="tour__title">Chambres</h2>
+            <p class="tour__quote">« <strong>deux chambres</strong>, une salle de douche…»<button class="tour__more" type="button" aria-expanded="false" aria-label="Voir l’extrait de la description associé aux chambres" data-match="deux chambres"><img src="assets/icon-three-dots.svg" alt=""></button></p>
           </div>
           <div class="masonry__row masonry__row--pair">
-            <button class="tile" type="button" data-media="photo" data-room="Balcon"><img src="assets/ad/photo-08.jpg" alt="Balcon exposé plein sud"></button>
-            <button class="tile" type="button" data-media="photo" data-room="Extérieur"><img src="assets/ad/photo-15.jpg" alt="Résidence arborée et voie verte"></button>
+            <button class="tile" type="button" data-media="photo" data-room="Chambre"><img src="assets/ad-lomme/photo-07.jpg" alt="Chambre principale à l’étage"></button>
+            <button class="tile" type="button" data-media="photo" data-room="Chambre"><img src="assets/ad-lomme/photo-08.jpg" alt="Seconde chambre"></button>
+          </div>
+        </section>
+
+        <section class="tour__section" data-vonly="1">
+          <div>
+            <h2 class="tour__title">Extérieur</h2>
+            <p class="tour__quote">« <strong>Cour exposée sud</strong>…»<button class="tour__more" type="button" aria-expanded="false" aria-label="Voir l’extrait de la description associé à l’extérieur" data-match="Cour exposée sud"><img src="assets/icon-three-dots.svg" alt=""></button></p>
+          </div>
+          <div class="masonry__row masonry__row--pair">
+            <button class="tile" type="button" data-media="photo" data-room="Extérieur"><img src="assets/ad-lomme/photo-01.jpg" alt="Façade en brique de la maison 1930"></button>
+            <button class="tile" type="button" data-media="photo" data-room="Extérieur"><img src="assets/ad-lomme/photo-10.jpg" alt="Cour arrière exposée sud"></button>
+          </div>
+        </section>
+
+        <section class="tour__section" data-vonly="2">
+          <div>
+            <h2 class="tour__title">Pièce de vie</h2>
+            <p class="tour__quote">« Une belle cuisine ouverte sur <strong>une agréable pièce de vie tournée vers le jardin</strong>…»<button class="tour__more" type="button" aria-expanded="false" aria-label="Voir l’extrait de la description associé à la pièce de vie" data-match="une agréable pièce de vie tournée vers le jardin"><img src="assets/icon-three-dots.svg" alt=""></button></p>
+          </div>
+          <div class="masonry__row masonry__row--hero">
+            <button class="tile tile--selected" type="button" aria-current="true" data-media="photo" data-room="Pièce de vie">
+              <img src="assets/ad-carquefou/photo-03.jpg" alt="Pièce de vie ouverte sur le jardin">
+            </button>
+          </div>
+          <div class="masonry__row masonry__row--pair">
+            <button class="tile" type="button" data-media="photo" data-room="Pièce de vie"><img src="assets/ad-carquefou/photo-07.jpg" alt="Pièce de vie et escalier bois"></button>
+            <button class="tile" type="button" data-media="photo" data-room="Pièce de vie"><img src="assets/ad-carquefou/photo-06.jpg" alt="Vue de la salle à manger vers la pièce de vie"></button>
+          </div>
+        </section>
+
+        <section class="tour__section" data-vonly="2">
+          <div>
+            <h2 class="tour__title">Cuisine</h2>
+            <p class="tour__quote">« <strong>une belle cuisine aménagée et équipée</strong> ouverte sur la pièce de vie…»<button class="tour__more" type="button" aria-expanded="false" aria-label="Voir l’extrait de la description associé à la cuisine" data-match="une belle cuisine aménagée et équipée"><img src="assets/icon-three-dots.svg" alt=""></button></p>
+          </div>
+          <div class="masonry__row masonry__row--pair">
+            <button class="tile" type="button" data-media="photo" data-room="Cuisine"><img src="assets/ad-carquefou/photo-02.jpg" alt="Cuisine ouverte sur la salle à manger"></button>
+            <button class="tile" type="button" data-media="photo" data-room="Cuisine"><img src="assets/ad-carquefou/photo-05.jpg" alt="Cuisine en U aménagée et équipée"></button>
+          </div>
+        </section>
+
+        <section class="tour__section" data-vonly="2">
+          <div>
+            <h2 class="tour__title">Chambres</h2>
+            <p class="tour__quote">« le palier dessert <strong>deux chambres</strong>, un bureau…»<button class="tour__more" type="button" aria-expanded="false" aria-label="Voir l’extrait de la description associé aux chambres" data-match="deux chambres"><img src="assets/icon-three-dots.svg" alt=""></button></p>
+          </div>
+          <div class="masonry__row masonry__row--pair">
+            <button class="tile" type="button" data-media="photo" data-room="Chambre"><img src="assets/ad-carquefou/photo-08.jpg" alt="Chambre à l’étage"></button>
+            <button class="tile" type="button" data-media="photo" data-room="Chambre"><img src="assets/ad-carquefou/photo-10.jpg" alt="Seconde chambre"></button>
+          </div>
+        </section>
+
+        <section class="tour__section" data-vonly="2">
+          <div>
+            <h2 class="tour__title">Salle de bains</h2>
+            <p class="tour__quote">« un bureau, <strong>une salle de bains</strong> ainsi que des toilettes indépendants…»<button class="tour__more" type="button" aria-expanded="false" aria-label="Voir l’extrait de la description associé à la salle de bains" data-match="une salle de bains"><img src="assets/icon-three-dots.svg" alt=""></button></p>
+          </div>
+          <div class="masonry__row masonry__row--hero">
+            <button class="tile" type="button" data-media="photo" data-room="Salle de bains">
+              <img src="assets/ad-carquefou/photo-09.jpg" alt="Salle de bains avec baignoire et double vasque">
+            </button>
+          </div>
+        </section>
+
+        <section class="tour__section" data-vonly="2">
+          <div>
+            <h2 class="tour__title">Extérieur</h2>
+            <p class="tour__quote">« le jardin et <strong>sa vaste terrasse en bois exotique</strong>…»<button class="tour__more" type="button" aria-expanded="false" aria-label="Voir l’extrait de la description associé à l’extérieur" data-match="sa vaste terrasse en bois exotique"><img src="assets/icon-three-dots.svg" alt=""></button></p>
+          </div>
+          <div class="masonry__row masonry__row--hero">
+            <button class="tile" type="button" data-media="photo" data-room="Extérieur">
+              <img src="assets/ad-carquefou/photo-01.jpg" alt="Façade arrière et terrasse en bois donnant sur le jardin">
+            </button>
+          </div>
+          <div class="masonry__row masonry__row--pair">
+            <button class="tile" type="button" data-media="photo" data-room="Extérieur"><img src="assets/ad-carquefou/photo-04.jpg" alt="Terrasse, sauna tonneau et jardin"></button>
+            <button class="tile" type="button" data-media="photo" data-room="Extérieur"><img src="assets/ad-carquefou/photo-11.jpg" alt="Grande terrasse et jardin arboré"></button>
           </div>
         </section>
 
@@ -1438,7 +1514,7 @@
             <p class="tour__quote">Plan, visite virtuelle et vidéo du bien</p>
           </div>
           <div class="masonry__row masonry__row--plan">
-            <button class="tile tile--plan" type="button" data-media="plan" data-room="Plan"><img src="assets/plan.png" alt="Plan de l'appartement"></button>
+            <button class="tile tile--plan" type="button" data-media="plan" data-room="Plan"><img src="assets/ad-lomme/plan.jpg" alt="Plan de la maison" data-vsrc="plan2d"></button>
           </div>
           <div class="masonry__row masonry__row--pair">
             <button class="tile" type="button" data-media="virtual" data-room="Visite virtuelle">
@@ -1456,7 +1532,7 @@
       <!-- Une seule description pour toute l'annonce : chaque section n'en met en
            gras que le passage que l'IA lui a rattaché. Le lecteur voit donc où sa
            pièce se situe dans le texte du vendeur, pas un fragment hors sol. -->
-      <template id="tour-description">“… Coup de cœur assuré ! Venez découvrir ce charmant 3 pièces de 58 m² au cœur de Caluire-et-Cuire. Situé au calme au 3ᵉ étage d’une résidence sécurisée, arborée et parfaitement entretenue, il se compose d’une entrée avec rangements, d’un séjour / salle à manger lumineux ouvrant sur un balcon exposé plein sud, d’une cuisine entièrement équipée, semi-ouverte sur le séjour, de deux chambres dont une avec dressing, d’une salle de bain et d’un WC séparé. Accès direct à la voie verte, commerces et écoles à pied.…”</template>
+      <template id="tour-description" data-v="desc">“… Lille Euratechnologies, rue Anatole France. Maison 1930 de 61 m² environ avec cour, en parfait état (dont façade refaite en 2020). Cette maison comprend une entrée, un séjour lumineux en façade, une cuisine équipée ouvrant sur la cour, deux chambres, une salle de douche, un WC séparé et une cave. Cour exposée sud. À proximité d’Euratechnologies, des commerces, des transports en commun et des écoles. Idéal primo-accédant.…”</template>
 
       <div class="excerpt-pop" id="excerpt-pop" role="dialog" aria-label="Extrait de la description" hidden>
         <div class="excerpt-pop__tip"></div>
@@ -1474,8 +1550,8 @@
     <div class="viewer-col">
       <div class="viewer" data-media="photo">
         <div class="viewer__stage">
-          <img class="viewer__backdrop" src="assets/ad/photo-02.jpg" alt="" aria-hidden="true">
-          <img class="viewer__photo" src="assets/ad/photo-02.jpg" alt="Séjour / salle à manger ouvert sur la cuisine">
+          <img class="viewer__backdrop" src="assets/ad-lomme/photo-02.jpg" alt="" aria-hidden="true" data-vsrc="hero">
+          <img class="viewer__photo" src="assets/ad-lomme/photo-02.jpg" alt="Séjour ouvert sur la cuisine" data-vsrc="hero" data-valt="heroAlt">
           <iframe class="viewer__video" title="Vidéo du bien" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
           <div class="viewer__actions">
@@ -1524,10 +1600,10 @@
   <div class="adview__footer">
     <div class="adview__footer-inner">
       <div class="listing">
-        <img class="listing__thumb" src="assets/ad/photo-02.jpg" alt="">
+        <img class="listing__thumb" src="assets/ad-lomme/photo-01.jpg" alt="" data-vsrc="thumb">
         <div class="listing__text">
-          <p>Appartement 3 pièces 58 m²</p>
-          <p>240 000€</p>
+          <p data-v="titleshort">Maison 3 pièces 61 m²</p>
+          <p data-v="price">182 500 €</p>
         </div>
       </div>
       <div class="adview__footer-actions">
@@ -1549,7 +1625,7 @@
       <button class="icon-btn focus__back" type="button" aria-label="Retour">
         <img class="icon-btn__icon" src="assets/icon-arrow-left.svg" alt="">
       </button>
-      <p class="focus__title">Appartement 3 pièces 58 m²</p>
+      <p class="focus__title" data-v="titleshort">Maison 3 pièces 61 m²</p>
     </div>
     <p class="focus__pagination">1/6</p>
   </div>
@@ -1617,7 +1693,7 @@
 
     <div class="modal__content">
       <div class="modal__visual">
-        <img class="modal__image" src="assets/img-redecorated.png" alt="Projection redécorée générée par IA">
+        <img class="modal__image" src="assets/ad-lomme/photo-02.jpg" alt="Séjour ouvert sur la cuisine" data-vsrc="hero" data-valt="heroAlt">
         <img class="modal__image modal__image--incoming reveal-layer" src="" alt="" aria-hidden="true">
         <div class="modal__feedback">
           <span class="modal__thumb--up">
@@ -1641,6 +1717,90 @@
   </div>
 </div>
 
+<!--
+  Variantes participants — même mécanique que l'adview : ?p=1 (61 m², deux niveaux)
+  ou ?p=2 (92 m², trois niveaux avec bureau sous combles). La variante est lue dans
+  l'URL puis mémorisée, donc elle survit à l'aller-retour adview <-> galerie.
+  Ce script précède le script principal : celui-ci lit le template de description et
+  collecte les vignettes une seule fois, il faut donc que le DOM soit déjà à jour.
+-->
+<!-- Valeurs propres au participant 2. En JSON plutôt qu'en littéral JS pour
+     qu'un autre prototype puisse les relire depuis le HTML récupéré, sans
+     exécuter de script : c'est ce que fait la carte d'annonce du tunnel. -->
+<script type="application/json" id="participant-data">
+{
+  "2": {
+    "titleshort": "Maison 4 pièces 92 m²",
+    "price": "409 500 €",
+    "desc": "“… Carquefou, dans un domaine sécurisé. Maison contemporaine de 2023 de 92 m² environ sur deux niveaux, sur un terrain clos et arboré de 370 m². Dès l’entrée, vous découvrirez une belle cuisine aménagée et équipée ouverte sur une agréable pièce de vie tournée vers le jardin et sa vaste terrasse en bois exotique. À l’étage, le palier dessert deux chambres, un bureau, une salle de bains ainsi que des toilettes indépendants. Une buanderie avec accès au jardin et un garage avec porte motorisée complètent ce bien. Jardin arboré sans vis-à-vis et sauna tonneau. À proximité du centre de Carquefou, des commerces, des transports en commun et des écoles.…”",
+    "alt": {
+      "heroAlt": "Pièce de vie ouverte sur le jardin"
+    },
+    "src": {
+      "plan2d": "assets/ad-carquefou/plan.jpg",
+      "hero": "assets/ad-carquefou/photo-03.jpg",
+      "thumb": "assets/ad-carquefou/photo-01.jpg"
+    }
+  }
+}
+</script>
+
+<script>
+(function () {
+  const VARIANT_KEY = 'lbc-proto:participant';
+  // Le JSON vit dans le document (cf. #participant-data) : le tunnel de recherche
+  // relit ce même bloc pour composer sa carte d'annonce, sans dupliquer les valeurs.
+  const PARTICIPANT = JSON.parse(document.getElementById('participant-data').textContent);
+
+  const asked = new URLSearchParams(location.search).get('p');
+  let variant = '1';
+  if (asked === '1' || asked === '2') {
+    variant = asked;
+    try { localStorage.setItem(VARIANT_KEY, asked); } catch (e) {}
+  } else {
+    try { variant = localStorage.getItem(VARIANT_KEY) || '1'; } catch (e) {}
+  }
+
+  // Les blocs propres à une variante sont retirés, pas masqués : sinon ils resteraient
+  // dans la liste des vignettes et compteraient dans la pagination du focus mobile.
+  document.querySelectorAll('[data-vonly]').forEach(el => {
+    if (el.dataset.vonly !== variant) el.remove();
+  });
+
+  const data = PARTICIPANT[variant];
+  if (data) {
+    for (const [key, text] of Object.entries(data)) {
+      if (key === 'src' || key === 'alt') continue;
+      document.querySelectorAll('[data-v="' + key + '"]').forEach(el => {
+        // Le template porte sa description dans son content, hors du document
+        if (el.tagName === 'TEMPLATE') el.content.textContent = text;
+        else el.textContent = text;
+      });
+    }
+    for (const [key, text] of Object.entries(data.alt || {})) {
+      document.querySelectorAll('[data-valt="' + key + '"]').forEach(el => { el.alt = text; });
+    }
+    for (const [key, src] of Object.entries(data.src)) {
+      document.querySelectorAll('[data-vsrc="' + key + '"]').forEach(el => { el.src = src; });
+    }
+  }
+
+  document.querySelectorAll('a[href]').forEach(a => {
+    const href = a.getAttribute('href');
+    if (!href || /^(#|https?:|mailto:|tel:)/.test(href)) return;
+    const hash = href.includes('#') ? href.slice(href.indexOf('#')) : '';
+    const [path, query = ''] = href.slice(0, href.length - hash.length).split('?');
+    const params = new URLSearchParams(query);
+    params.set('p', variant);
+    a.setAttribute('href', path + '?' + params + hash);
+  });
+
+  // Les retours vers l'annonce passent par location.href dans le script principal :
+  // on expose la variante pour qu'ils la reportent.
+  window.PROTO_VARIANT = variant;
+})();
+</script>
+
 <script>
   const YOUTUBE_ID = 'S1aJcn6hAZE';
 
@@ -1656,8 +1816,43 @@
   // ses deux états d'affichage le sont. La liste porte sur le fichier et non sur
   // la vignette, sinon il faudrait la répliquer dans la mosaïque et dans la
   // visite photo, où les mêmes photos réapparaissent.
-  const AI_MODIFIED = ['photo-08.jpg', 'photo-12.jpg'];
-  const aiState = src => AI_MODIFIED.includes(src.split('/').pop()) ? 'modified' : 'authentic';
+  // Le chemin est comparé en entier, et pas seulement le nom de fichier : les deux
+  // annonces numérotent leurs photos pareil, et ce n'est pas la même qui porte le
+  // verdict négatif d'un côté et de l'autre. Une seule par annonce.
+  const AI_MODIFIED = ['ad-lomme/photo-03.jpg', 'ad-carquefou/photo-08.jpg'];
+  const aiState = src => AI_MODIFIED.some(path => src.includes(path)) ? 'modified' : 'authentic';
+  /* Décoration virtuelle : une seule photo par annonce en dispose, celle dont
+     l'agence a fait produire les deux projections. Partout ailleurs le bouton
+     « Redécorer » n'aurait rien à ouvrir, donc il ne s'affiche pas. La clé est le
+     chemin de la photo d'origine, comme pour le verdict IA. */
+  const STAGING = {
+    'ad-lomme/photo-02.jpg': {
+      empty: { src: 'assets/ad-lomme/staging-vide.jpg', alt: 'Projection du séjour vidé de ses meubles, générée par IA' },
+      redecorated: { src: 'assets/ad-lomme/staging-redeco.jpg', alt: 'Projection du séjour redécoré, générée par IA' },
+    },
+    'ad-carquefou/photo-03.jpg': {
+      empty: { src: 'assets/ad-carquefou/staging-vide.jpg', alt: 'Projection de la pièce de vie vidée de ses meubles, générée par IA' },
+      redecorated: { src: 'assets/ad-carquefou/staging-redeco.jpg', alt: 'Projection de la pièce de vie redécorée, générée par IA' },
+    },
+  };
+  const stagingFor = src => STAGING[Object.keys(STAGING).find(path => src.includes(path))];
+
+  const viewerRedecorate = document.querySelector('.viewer__redecorate');
+  const focusRedecorate = document.querySelector('.focus__redecorate');
+  // Les projections sont lourdes : on ne charge que celles de la photo affichée,
+  // et une seule fois, pour ne pas attendre au premier switch de variante.
+  const preloaded = new Set();
+  function setStagingButton(btn, src) {
+    const set = stagingFor(src);
+    btn.hidden = !set;
+    if (!set) return;
+    Object.values(set).forEach(v => {
+      if (preloaded.has(v.src)) return;
+      preloaded.add(v.src);
+      new Image().src = v.src;
+    });
+  }
+
   const tiles = [...document.querySelectorAll('.tile')];
 
   // Nommer chaque vignette permet à View Transitions de la suivre d'un layout à l'autre
@@ -1689,9 +1884,10 @@
     stagePhoto.alt = img.alt;
     stageBackdrop.src = img.src;
     aiSignal.dataset.state = aiState(img.src);
+    setStagingButton(viewerRedecorate, img.src);
     if (tile.dataset.room) {
       const room = tile.dataset.room.toLowerCase();
-      const masculin = ['séjour', 'balcon', 'plan', 'extérieur'].includes(room);
+      const masculin = ['séjour', 'plan', 'plan 3d', 'bureau', 'extérieur'].includes(room);
       disclaimerRoom.textContent = `d’un${masculin ? '' : 'e'} ${room}`;
     }
   }
@@ -1895,7 +2091,7 @@
   document.querySelectorAll('.adview__topbar .icon-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       if (document.referrer.includes('adview.html')) history.back();
-      else location.href = 'adview.html';
+      else location.href = 'adview.html?p=' + (window.PROTO_VARIANT || '1');
     });
   });
 
@@ -1925,17 +2121,14 @@
   const modalContent = modalOverlay.querySelector('.modal__content');
   const modalClose = modalOverlay.querySelector('.modal__close');
   const segments = [...modalOverlay.querySelectorAll('.segmented__item')];
-  const VARIANT_SRC = {
-    redecorated: { src: 'assets/img-redecorated.png', alt: 'Projection redécorée générée par IA' },
-    empty: { src: 'assets/img-emptied.png', alt: 'Projection du séjour vidé de ses meubles, générée par IA' },
-  };
   // La photo de départ dépend du point d'entrée : le viewer desktop ou la
   // vignette ouverte en focus mobile.
   let originalMedia = { src: stagePhoto.src, alt: stagePhoto.alt };
   let lastFocused = null;
 
   function variantMedia(variant) {
-    return variant === 'original' ? originalMedia : VARIANT_SRC[variant];
+    if (variant === 'original') return originalMedia;
+    return stagingFor(originalMedia.src)[variant];
   }
 
   // Le calque du haut porte la nouvelle image et se stabilise par-dessus
@@ -1972,9 +2165,6 @@
     else incoming.addEventListener('load', start, { once: true });
   }
 
-  // Les projections sont lourdes : les précharger évite d'attendre au premier switch
-  Object.values(VARIANT_SRC).forEach(v => { new Image().src = v.src; });
-
   function setVariant(variant, animate) {
     if (modal.dataset.variant === variant && !animate) return;
     modal.dataset.variant = variant;
@@ -2010,7 +2200,7 @@
     if (lastFocused) lastFocused.focus();
   }
 
-  document.querySelector('.viewer__redecorate').addEventListener('click', openModal);
+  viewerRedecorate.addEventListener('click', openModal);
   modalClose.addEventListener('click', closeModal);
   // Clic sur le voile uniquement : un clic dans la modale ne doit pas fermer
   modalOverlay.addEventListener('click', e => { if (e.target === modalOverlay) closeModal(); });
@@ -2065,6 +2255,7 @@
     focusPhoto.src = img.src;
     focusPhoto.alt = img.alt;
     focusAi.dataset.state = aiState(img.src);
+    setStagingButton(focusRedecorate, img.src);
     originalMedia = { src: img.src, alt: img.alt };
   }
 
@@ -2119,7 +2310,7 @@
     else setTimeout(() => setFocusVariant('redecorated', true), 400);
   }
 
-  focusScreen.querySelector('.focus__redecorate').addEventListener('click', openStaging);
+  focusRedecorate.addEventListener('click', openStaging);
 
 
   focusScreen.querySelectorAll('.focus__feedback .icon-btn').forEach(btn => {

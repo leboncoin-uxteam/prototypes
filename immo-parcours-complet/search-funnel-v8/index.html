@@ -1207,6 +1207,12 @@ ul { list-style: none; }
   /* Mobile : la carte reprend sa place au-dessus du réglage (Figma 12213:240881) */
   .radius-control { order: 0; gap: 12px; }
 
+  /* Ligne « Dessiner sur la carte » mobile — Figma 12506:183376 : libellé en
+     body 1 et bordure d'un cran plus contrastée, comme les autres blocs de la
+     feuille. Desktop la garde en body 2 highlight (12506:189517). */
+  .drawrow { border-color: var(--color-outline-dim-2); }
+  .drawrow__label { font-size: 16px; line-height: 24px; font-weight: 400; }
+
   /* SousCat mobile — Figma 11636:319512 : 100px de haut, icône 20px */
   .souscat__card {
     height: 100px; padding: var(--sp-lg) var(--sp-md);
@@ -1376,7 +1382,7 @@ ul { list-style: none; }
                cartes d'alternatives par cette seule ligne. -->
           <button class="drawrow" type="button" id="locDrawRow" hidden>
             <img class="drawrow__icon" src="assets/icon-draw-map.svg" alt="" />
-            <span class="drawrow__label t-body-1">Dessiner sur la carte</span>
+            <span class="drawrow__label t-body-2-hl">Dessiner sur la carte</span>
             <img class="drawrow__chevron" src="assets/icon-chevron-vertical.svg" alt="" />
           </button>
 
@@ -2191,6 +2197,17 @@ ul { list-style: none; }
     { label: 'Paris (75003)', kind: null },
   ];
 
+  /* Quartiers absents de geo.api.gouv.fr : Lomme et Hellemmes ont fusionne avec
+     Lille, l'API ne renvoie donc rien pour eux (« Lomme » ramene Lommerange en
+     Moselle, « Hellemmes » ramene zero resultat). On les injecte devant les
+     resultats reseau, avec leur centroide OSM pour le recadrage de la carte. */
+  const QUARTIERS = [
+    { label: 'Lomme (59160)', kind: 'Quartier',
+      commune: { centre: { type: 'Point', coordinates: [2.9870927, 50.6457022] } } },
+    { label: 'Hellemmes (59260)', kind: 'Quartier',
+      commune: { centre: { type: 'Point', coordinates: [3.1092154, 50.6274528] } } },
+  ];
+
   const normalize = (value) =>
     value.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 
@@ -2237,7 +2254,7 @@ ul { list-style: none; }
      pas.
      Toulouse n'a pas d'arrondissements : le prix est calculé par code postal
      mais les lignes restent au niveau communal.
-     Hors des 51 zones couvertes, la ligne de métadonnées ne s'affiche pas. */
+     Hors des 387 zones couvertes, la ligne de métadonnées ne s'affiche pas. */
   const ZONES = {
     '75001': { insee: '75101', prix: 12700, lignes: [['1', '#ffbe00'], ['4', '#a0006e'], ['7', '#ff82b4']], tags: ['Central', 'Commerçant'] },
     '75002': { insee: '75102', prix: 11400, lignes: [['3', '#6e6e00'], ['8', '#d282be'], ['9', '#d2d200']], tags: ['Commerçant', 'Affaires'] },
@@ -2290,6 +2307,379 @@ ul { list-style: none; }
     '69007': { insee: '69387', prix: 4490, lignes: [['B', '#2575bc'], ['D', '#489e43'], ['T1', '#0d4f9f']], tags: ['Étudiant', 'Moderne'] },
     '69008': { insee: '69388', prix: 4100, lignes: [['D', '#489e43'], ['T2', '#6ba230'], ['T6', '#f191a3']], tags: ['Familial', 'Moderne'] },
     '69009': { insee: '69389', prix: 3770, lignes: [['D', '#489e43']], tags: ['Familial', 'Paisible'] },
+    // Lille : les quartiers de Lomme et d'Hellemmes ont leur propre code postal
+    // mais pas de code INSEE propre (communes associees absorbees par Lille), donc
+    // pas de contour a charger : `insee` est absent et la carte se recentre sur le
+    // centroide porte par la suggestion. Prix = mediane maison, l'unite qui a du
+    // sens dans la metropole lilloise.
+    '59160': { prix: 2725, lignes: [['2', '#ED1D24']], tags: ['Pavillonnaire', 'Familial'] },
+    '59260': { prix: 2579, lignes: [['1', '#FFD400']], tags: ['Village', 'Familial'] },
+    // Carquefou n'a ni tram ni metro : `lignes` vide, le groupe de pastilles est
+    // saute comme pour Marseille 7e.
+    '44470': { insee: '44026', prix: 3234, lignes: [], tags: ['Pavillonnaire', 'Verdoyant'] },
+  };
+
+  /* ── Metadonnees a la commune (departement 59) ───────────────────────────
+     Meme discipline : aucune valeur n'est estimee.
+     `prix` = mediane des ventes de MAISONS 2024, l'unite qui a du sens dans la
+     metropole lilloise et le bassin minier, calculee sur
+     files.data.gouv.fr/geo-dvf/latest/csv/2024/departements/59.csv.gz avec la
+     methode deja utilisee plus haut (regroupement par id_mutation, nature
+     « Vente », un seul local bati Maison/Appartement, surface >= 9 m2,
+     prix/m2 borne 300-30000, mediane). Seuil de publication : au moins 10
+     ventes de maisons dans l'annee, sinon la mediane n'est pas assez stable
+     pour etre affichee. 333 communes sur 647 passent ce seuil, mais elles
+     representent 92 % de la population du departement.
+     Cle = code INSEE et non code postal : 125 des 250 codes postaux du Nord
+     couvrent plusieurs communes (l'un en couvre 15), le code postal ne
+     designe donc pas une zone de prix. `zoneFor` interroge d'abord ZONES par
+     code postal (plus specifique : arrondissements, Lomme, Hellemmes) puis
+     ZONES_COMMUNE par code INSEE.
+     `lignes` = metro et tram OSM (relations `route=subway|tram`, couleur du
+     tag `colour`) dont au moins un arret tombe dans le contour de la commune
+     (geo.api.gouv.fr), plafonne a 3 comme ailleurs : Ilevia metro 1 #FFD400,
+     metro 2 #ED1D24, tram R #81CF00, tram T #0099FF ; Valenciennes T1
+     #D73527, T2 #15618E.
+     `tags` : forme urbaine deduite de la densite population/surface
+     (geo.api.gouv.fr) — >= 3000 hab/km2 Urbain, >= 800 Pavillonnaire,
+     >= 150 Village, sinon Rural — plus « Balneaire » la ou une voie OSM
+     `natural=coastline` traverse la commune (8 communes). Aucun tag « canaux » :
+     Overpass n'a pas pu couvrir la moitie nord du departement et un tag base
+     sur une moitie du territoire serait faux. */
+  const ZONES_COMMUNE = {
+    '59002': { prix: 926, lignes: [], tags: ['Village'] }, // Abscon
+    '59005': { prix: 2222, lignes: [], tags: ['Village'] }, // Allennes-les-Marais
+    '59008': { prix: 1169, lignes: [], tags: ['Pavillonnaire'] }, // Aniche
+    '59011': { prix: 2118, lignes: [], tags: ['Pavillonnaire'] }, // Annœullin
+    '59012': { prix: 1261, lignes: [], tags: ['Rural'] }, // Anor
+    '59014': { prix: 1082, lignes: [['T1', '#D73527'], ['T2', '#15618E']], tags: ['Urbain'] }, // Anzin
+    '59015': { prix: 1595, lignes: [], tags: ['Village'] }, // Arleux
+    '59016': { prix: 2112, lignes: [], tags: ['Village'] }, // Armbouts-Cappel
+    '59017': { prix: 1869, lignes: [], tags: ['Urbain'] }, // Armentières
+    '59018': { prix: 1740, lignes: [], tags: ['Rural'] }, // Arnèke
+    '59022': { prix: 2649, lignes: [], tags: ['Village'] }, // Attiches
+    '59023': { prix: 1973, lignes: [], tags: ['Village'] }, // Aubencheul-au-Bac
+    '59024': { prix: 1183, lignes: [], tags: ['Village'] }, // Auberchicourt
+    '59025': { prix: 2115, lignes: [], tags: ['Village'] }, // Aubers
+    '59027': { prix: 1796, lignes: [], tags: ['Village'] }, // Aubry-du-Hainaut
+    '59028': { prix: 1394, lignes: [], tags: ['Pavillonnaire'] }, // Auby
+    '59029': { prix: 2296, lignes: [], tags: ['Village'] }, // Auchy-lez-Orchies
+    '59032': { prix: 1524, lignes: [['T1', '#D73527'], ['T2', '#15618E']], tags: ['Pavillonnaire'] }, // Aulnoy-lez-Valenciennes
+    '59033': { prix: 1130, lignes: [], tags: ['Pavillonnaire'] }, // Aulnoye-Aymeries
+    '59034': { prix: 3011, lignes: [], tags: ['Village'] }, // Avelin
+    '59035': { prix: 1149, lignes: [], tags: ['Village'] }, // Avesnelles
+    '59037': { prix: 1124, lignes: [], tags: ['Village'] }, // Avesnes-les-Aubert
+    '59036': { prix: 746, lignes: [], tags: ['Pavillonnaire'] }, // Avesnes-sur-Helpe
+    '59041': { prix: 1445, lignes: [], tags: ['Village'] }, // Bachant
+    '59042': { prix: 2877, lignes: [], tags: ['Village'] }, // Bachy
+    '59043': { prix: 2170, lignes: [], tags: ['Village'] }, // Bailleul
+    '59044': { prix: 2856, lignes: [], tags: ['Village'] }, // Baisieux
+    '59052': { prix: 1932, lignes: [], tags: ['Pavillonnaire'] }, // Bauvin
+    '59053': { prix: 1275, lignes: [], tags: ['Village'] }, // Bavay
+    '59054': { prix: 1834, lignes: [], tags: ['Rural'] }, // Bavinchove
+    '59063': { prix: 1004, lignes: [], tags: ['Village'] }, // Beauvois-en-Cambrésis
+    '59067': { prix: 2478, lignes: [], tags: ['Pavillonnaire'] }, // Bergues
+    '59068': { prix: 943, lignes: [], tags: ['Village'] }, // Berlaimont
+    '59071': { prix: 2291, lignes: [], tags: ['Village'] }, // Bersée
+    '59074': { prix: 1161, lignes: [], tags: ['Village'] }, // Bertry
+    '59079': { prix: 1343, lignes: [], tags: ['Pavillonnaire'] }, // Beuvrages
+    '59080': { prix: 2150, lignes: [], tags: ['Village'] }, // Beuvry-la-Forêt
+    '59082': { prix: 2017, lignes: [], tags: ['Village'] }, // Bierne
+    '59084': { prix: 1819, lignes: [], tags: ['Rural'] }, // Blaringhem
+    '59086': { prix: 1970, lignes: [], tags: ['Village'] }, // Boeschepe
+    '59089': { prix: 1519, lignes: [], tags: ['Rural'] }, // Bollezeele
+    '59090': { prix: 3580, lignes: [], tags: ['Village'] }, // Bondues
+    '59092': { prix: 1481, lignes: [], tags: ['Village'] }, // Bouchain
+    '59094': { prix: 1499, lignes: [], tags: ['Village'] }, // Bourbourg
+    '59096': { prix: 3029, lignes: [], tags: ['Village'] }, // Bourghelles
+    '59098': { prix: 2561, lignes: [], tags: ['Village'] }, // Bousbecque
+    '59099': { prix: 1302, lignes: [], tags: ['Village'] }, // Bousies
+    '59104': { prix: 1191, lignes: [], tags: ['Village'] }, // Boussois
+    '59105': { prix: 1943, lignes: [], tags: ['Village'] }, // Bouvignies
+    '59107': { prix: 2358, lignes: [], tags: ['Village', 'Balnéaire'] }, // Bray-Dunes
+    '59110': { prix: 1975, lignes: [], tags: ['Rural'] }, // Brouckerque
+    '59112': { prix: 1271, lignes: [['T2', '#15618E']], tags: ['Pavillonnaire'] }, // Bruay-sur-l'Escaut
+    '59114': { prix: 2216, lignes: [], tags: ['Village'] }, // Bruille-Saint-Amand
+    '59118': { prix: 888, lignes: [], tags: ['Rural'] }, // Busigny
+    '59122': { prix: 1345, lignes: [], tags: ['Pavillonnaire'] }, // Cambrai
+    '59123': { prix: 2398, lignes: [], tags: ['Village'] }, // Camphin-en-Carembault
+    '59124': { prix: 3730, lignes: [], tags: ['Village'] }, // Camphin-en-Pévèle
+    '59126': { prix: 1294, lignes: [], tags: ['Village'] }, // Cantin
+    '59128': { prix: 2675, lignes: [], tags: ['Pavillonnaire'] }, // Capinghem
+    '59129': { prix: 2937, lignes: [], tags: ['Village'] }, // Cappelle-en-Pévèle
+    '59131': { prix: 1802, lignes: [], tags: ['Pavillonnaire'] }, // Cappelle-la-Grande
+    '59134': { prix: 1562, lignes: [], tags: ['Rural'] }, // Cartignies
+    '59135': { prix: 1703, lignes: [], tags: ['Village'] }, // Cassel
+    '59139': { prix: 937, lignes: [], tags: ['Pavillonnaire'] }, // Caudry
+    '59120': { prix: 1844, lignes: [], tags: ['Village'] }, // Caëstre
+    '59146': { prix: 3516, lignes: [], tags: ['Village'] }, // Chéreng
+    '59149': { prix: 786, lignes: [], tags: ['Rural'] }, // Clary
+    '59152': { prix: 2256, lignes: [], tags: ['Village'] }, // Comines
+    '59153': { prix: 1309, lignes: [['T2', '#15618E']], tags: ['Village'] }, // Condé-sur-l'Escaut
+    '59155': { prix: 1775, lignes: [], tags: ['Pavillonnaire'] }, // Coudekerque-Branche
+    '59156': { prix: 1536, lignes: [], tags: ['Pavillonnaire'] }, // Courchelettes
+    '59157': { prix: 1019, lignes: [], tags: ['Rural'] }, // Cousolre
+    '59158': { prix: 2512, lignes: [], tags: ['Village'] }, // Coutiches
+    '59160': { prix: 1124, lignes: [], tags: ['Village'] }, // Crespin
+    '59163': { prix: 2465, lignes: [['2', '#ED1D24'], ['R', '#81CF00']], tags: ['Urbain'] }, // Croix
+    '59161': { prix: 1213, lignes: [], tags: ['Rural'] }, // Crèvecœur-sur-l'Escaut
+    '59165': { prix: 1723, lignes: [], tags: ['Pavillonnaire'] }, // Cuincy
+    '59166': { prix: 2202, lignes: [], tags: ['Village'] }, // Curgies
+    '59168': { prix: 2812, lignes: [], tags: ['Village'] }, // Cysoing
+    '59170': { prix: 1494, lignes: [], tags: ['Village'] }, // Dechy
+    '59172': { prix: 833, lignes: [['T1', '#D73527']], tags: ['Pavillonnaire'] }, // Denain
+    '59670': { prix: 2054, lignes: [], tags: ['Village'] }, // Don
+    '59178': { prix: 1572, lignes: [], tags: ['Pavillonnaire'] }, // Douai
+    '59179': { prix: 1285, lignes: [], tags: ['Pavillonnaire'] }, // Douchy-les-Mines
+    '59183': { prix: 2033, lignes: [], tags: ['Pavillonnaire', 'Balnéaire'] }, // Dunkerque
+    '59193': { prix: 2524, lignes: [], tags: ['Village'] }, // Emmerin
+    '59196': { prix: 3720, lignes: [], tags: ['Rural'] }, // Ennetières-en-Weppes
+    '59197': { prix: 2826, lignes: [], tags: ['Village'] }, // Ennevelin
+    '59202': { prix: 2193, lignes: [], tags: ['Village'] }, // Erquinghem-Lys
+    '59205': { prix: 1286, lignes: [], tags: ['Pavillonnaire'] }, // Escaudain
+    '59206': { prix: 1148, lignes: [], tags: ['Village'] }, // Escaudœuvres
+    '59207': { prix: 1152, lignes: [['T2', '#15618E']], tags: ['Village'] }, // Escautpont
+    '59210': { prix: 1870, lignes: [], tags: ['Village'] }, // Esquelbecq
+    '59212': { prix: 1909, lignes: [], tags: ['Village'] }, // Estaires
+    '59215': { prix: 1650, lignes: [], tags: ['Village'] }, // Estreux
+    '59220': { prix: 2510, lignes: [], tags: ['Urbain'] }, // Faches-Thumesnil
+    '59221': { prix: 1168, lignes: [['T1', '#D73527'], ['T2', '#15618E']], tags: ['Village'] }, // Famars
+    '59222': { prix: 2621, lignes: [], tags: ['Village'] }, // Faumont
+    '59225': { prix: 1214, lignes: [], tags: ['Village'] }, // Feignies
+    '59226': { prix: 964, lignes: [], tags: ['Rural'] }, // Felleries
+    '59227': { prix: 1517, lignes: [], tags: ['Pavillonnaire'] }, // Fenain
+    '59230': { prix: 1113, lignes: [], tags: ['Village'] }, // Ferrière-la-Grande
+    '59234': { prix: 1455, lignes: [], tags: ['Village'] }, // Flers-en-Escrebieux
+    '59239': { prix: 1745, lignes: [], tags: ['Village'] }, // Flines-lez-Raches
+    '59238': { prix: 1377, lignes: [], tags: ['Rural'] }, // Flines-lès-Mortagne
+    '59243': { prix: 1185, lignes: [], tags: ['Village'] }, // Fontaine-au-Pire
+    '59247': { prix: 3223, lignes: [], tags: ['Pavillonnaire'] }, // Forest-sur-Marque
+    '59249': { prix: 1016, lignes: [], tags: ['Village'] }, // Fourmies
+    '59250': { prix: 2879, lignes: [], tags: ['Village'] }, // Fournes-en-Weppes
+    '59252': { prix: 2674, lignes: [], tags: ['Village'] }, // Frelinghien
+    '59253': { prix: 987, lignes: [['T2', '#15618E']], tags: ['Village'] }, // Fresnes-sur-Escaut
+    '59254': { prix: 1563, lignes: [], tags: ['Rural'] }, // Fressain
+    '59256': { prix: 2881, lignes: [], tags: ['Village'] }, // Fretin
+    '59224': { prix: 882, lignes: [], tags: ['Village'] }, // Féchain
+    '59228': { prix: 1664, lignes: [], tags: ['Village'] }, // Férin
+    '59258': { prix: 2642, lignes: [], tags: ['Village'] }, // Genech
+    '59260': { prix: 2145, lignes: [], tags: ['Rural'] }, // Ghyvelde
+    '59261': { prix: 1113, lignes: [], tags: ['Rural'] }, // Glageon
+    '59262': { prix: 2078, lignes: [], tags: ['Village'] }, // Godewaersvelde
+    '59264': { prix: 1415, lignes: [], tags: ['Rural'] }, // Gognies-Chaussée
+    '59265': { prix: 1370, lignes: [], tags: ['Rural'] }, // Gommegnies
+    '59266': { prix: 2400, lignes: [], tags: ['Village'] }, // Gondecourt
+    '59269': { prix: 886, lignes: [], tags: ['Rural'] }, // Gouzeaucourt
+    '59272': { prix: 1642, lignes: [], tags: ['Pavillonnaire', 'Balnéaire'] }, // Grand-Fort-Philippe
+    '59271': { prix: 1564, lignes: [], tags: ['Pavillonnaire', 'Balnéaire'] }, // Grande-Synthe
+    '59273': { prix: 1913, lignes: [], tags: ['Village', 'Balnéaire'] }, // Gravelines
+    '59276': { prix: 1496, lignes: [], tags: ['Pavillonnaire'] }, // Guesnain
+    '59278': { prix: 2615, lignes: [], tags: ['Pavillonnaire'] }, // Hallennes-lez-Haubourdin
+    '59279': { prix: 2097, lignes: [], tags: ['Pavillonnaire'] }, // Halluin
+    '59284': { prix: 1932, lignes: [], tags: ['Village'] }, // Hasnon
+    '59285': { prix: 1143, lignes: [], tags: ['Village'] }, // Haspres
+    '59286': { prix: 2148, lignes: [], tags: ['Pavillonnaire'] }, // Haubourdin
+    '59288': { prix: 1082, lignes: [], tags: ['Village'] }, // Haulchin
+    '59289': { prix: 1028, lignes: [], tags: ['Rural'] }, // Haussy
+    '59291': { prix: 1064, lignes: [], tags: ['Pavillonnaire'] }, // Hautmont
+    '59292': { prix: 1212, lignes: [], tags: ['Village'] }, // Haveluy
+    '59293': { prix: 2027, lignes: [], tags: ['Rural'] }, // Haverskerque
+    '59295': { prix: 1786, lignes: [], tags: ['Village'] }, // Hazebrouck
+    '59299': { prix: 2546, lignes: [], tags: ['Pavillonnaire'] }, // Hem
+    '59301': { prix: 1449, lignes: [], tags: ['Village'] }, // Hergnies
+    '59303': { prix: 2772, lignes: [], tags: ['Village'] }, // Herlies
+    '59305': { prix: 2420, lignes: [], tags: ['Rural'] }, // Herzeele
+    '59308': { prix: 1446, lignes: [], tags: ['Rural'] }, // Hondeghem
+    '59309': { prix: 1529, lignes: [], tags: ['Village'] }, // Hondschoote
+    '59313': { prix: 1092, lignes: [], tags: ['Village'] }, // Hordain
+    '59314': { prix: 1454, lignes: [], tags: ['Village'] }, // Hornaing
+    '59316': { prix: 2472, lignes: [], tags: ['Village'] }, // Houplin-Ancoisne
+    '59317': { prix: 2229, lignes: [], tags: ['Village'] }, // Houplines
+    '59319': { prix: 2225, lignes: [], tags: ['Village'] }, // Hoymille
+    '59297': { prix: 1272, lignes: [], tags: ['Village'] }, // Hélesmes
+    '59302': { prix: 1278, lignes: [['T1', '#D73527']], tags: ['Pavillonnaire'] }, // Hérin
+    '59320': { prix: 2123, lignes: [], tags: ['Village'] }, // Illies
+    '59322': { prix: 1012, lignes: [], tags: ['Village'] }, // Iwuy
+    '59324': { prix: 1129, lignes: [], tags: ['Pavillonnaire'] }, // Jeumont
+    '59051': { prix: 1778, lignes: [], tags: ['Pavillonnaire'] }, // La Bassée
+    '59143': { prix: 2487, lignes: [], tags: ['Pavillonnaire'] }, // La Chapelle-d'Armentières
+    '59268': { prix: 1720, lignes: [], tags: ['Village'] }, // La Gorgue
+    '59357': { prix: 1849, lignes: [], tags: ['Rural'] }, // La Longueville
+    '59368': { prix: 3469, lignes: [['R', '#81CF00'], ['T', '#0099FF']], tags: ['Urbain'] }, // La Madeleine
+    '59564': { prix: 1509, lignes: [['T1', '#D73527']], tags: ['Pavillonnaire'] }, // La Sentinelle
+    '59327': { prix: 1610, lignes: [], tags: ['Pavillonnaire'] }, // Lallaing
+    '59328': { prix: 3492, lignes: [['2', '#ED1D24']], tags: ['Urbain'] }, // Lambersart
+    '59329': { prix: 1538, lignes: [], tags: ['Village'] }, // Lambres-lez-Douai
+    '59330': { prix: 2561, lignes: [], tags: ['Village'] }, // Landas
+    '59331': { prix: 1070, lignes: [], tags: ['Village'] }, // Landrecies
+    '59334': { prix: 2091, lignes: [], tags: ['Village'] }, // Lauwin-Planque
+    '59136': { prix: 806, lignes: [], tags: ['Village'] }, // Le Cateau-Cambrésis
+    '59180': { prix: 1943, lignes: [], tags: ['Rural'] }, // Le Doulieu
+    '59481': { prix: 1629, lignes: [], tags: ['Village'] }, // Le Quesnoy
+    '59335': { prix: 2344, lignes: [], tags: ['Village'] }, // Lecelles
+    '59339': { prix: 2549, lignes: [], tags: ['Pavillonnaire'] }, // Leers
+    '59340': { prix: 2429, lignes: [], tags: ['Village', 'Balnéaire'] }, // Leffrinckoucke
+    '59343': { prix: 2925, lignes: [], tags: ['Pavillonnaire'] }, // Lesquin
+    '59344': { prix: 1031, lignes: [], tags: ['Village'] }, // Leval
+    '59345': { prix: 1471, lignes: [], tags: ['Village'] }, // Lewarde
+    '59346': { prix: 3000, lignes: [], tags: ['Pavillonnaire'] }, // Lezennes
+    '59348': { prix: 1862, lignes: [], tags: ['Village'] }, // Lieu-Saint-Amand
+    '59349': { prix: 1178, lignes: [], tags: ['Village'] }, // Ligny-en-Cambrésis
+    '59350': { prix: 2850, lignes: [['1', '#FFD400'], ['2', '#ED1D24'], ['R', '#81CF00']], tags: ['Urbain'] }, // Lille
+    '59352': { prix: 2882, lignes: [], tags: ['Village'] }, // Linselles
+    '59356': { prix: 3575, lignes: [], tags: ['Village'] }, // Lompret
+    '59359': { prix: 1882, lignes: [], tags: ['Rural', 'Balnéaire'] }, // Loon-Plage
+    '59360': { prix: 2270, lignes: [], tags: ['Urbain'] }, // Loos
+    '59361': { prix: 955, lignes: [], tags: ['Pavillonnaire'] }, // Lourches
+    '59365': { prix: 866, lignes: [], tags: ['Pavillonnaire'] }, // Louvroil
+    '59367': { prix: 2377, lignes: [], tags: ['Urbain'] }, // Lys-lez-Lannoy
+    '59336': { prix: 1042, lignes: [], tags: ['Village'] }, // Lécluse
+    '59369': { prix: 1327, lignes: [], tags: ['Village'] }, // Maing
+    '59375': { prix: 1631, lignes: [], tags: ['Village'] }, // Marchiennes
+    '59377': { prix: 1411, lignes: [], tags: ['Rural'] }, // Marcoing
+    '59378': { prix: 4013, lignes: [['R', '#81CF00'], ['T', '#0099FF']], tags: ['Pavillonnaire'] }, // Marcq-en-Barœul
+    '59382': { prix: 884, lignes: [], tags: ['Rural'] }, // Maretz
+    '59383': { prix: 1421, lignes: [['T1', '#D73527'], ['T2', '#15618E']], tags: ['Pavillonnaire'] }, // Marly
+    '59385': { prix: 1040, lignes: [], tags: ['Village'] }, // Marpent
+    '59387': { prix: 1325, lignes: [], tags: ['Village'] }, // Marquette-en-Ostrevant
+    '59386': { prix: 3202, lignes: [], tags: ['Pavillonnaire'] }, // Marquette-lez-Lille
+    '59388': { prix: 2459, lignes: [], tags: ['Village'] }, // Marquillies
+    '59389': { prix: 1206, lignes: [], tags: ['Village'] }, // Masnières
+    '59390': { prix: 1241, lignes: [], tags: ['Village'] }, // Masny
+    '59392': { prix: 1140, lignes: [], tags: ['Pavillonnaire'] }, // Maubeuge
+    '59400': { prix: 1778, lignes: [], tags: ['Village'] }, // Merville
+    '59409': { prix: 1228, lignes: [], tags: ['Village'] }, // Monchecourt
+    '59410': { prix: 2843, lignes: [['2', '#ED1D24']], tags: ['Urbain'] }, // Mons-en-Barœul
+    '59411': { prix: 2018, lignes: [], tags: ['Village'] }, // Mons-en-Pévèle
+    '59414': { prix: 1511, lignes: [], tags: ['Pavillonnaire'] }, // Montigny-en-Ostrevent
+    '59416': { prix: 1546, lignes: [], tags: ['Rural'] }, // Morbecque
+    '59418': { prix: 1204, lignes: [], tags: ['Village'] }, // Mortagne-du-Nord
+    '59419': { prix: 2393, lignes: [], tags: ['Village'] }, // Mouchin
+    '59421': { prix: 3362, lignes: [['T', '#0099FF']], tags: ['Urbain'] }, // Mouvaux
+    '59398': { prix: 3896, lignes: [], tags: ['Village'] }, // Mérignies
+    '59401': { prix: 2190, lignes: [], tags: ['Rural'] }, // Méteren
+    '59426': { prix: 2389, lignes: [], tags: ['Pavillonnaire'] }, // Neuville-en-Ferrain
+    '59428': { prix: 1341, lignes: [], tags: ['Pavillonnaire'] }, // Neuville-Saint-Rémy
+    '59429': { prix: 1441, lignes: [], tags: ['Village'] }, // Neuville-sur-Escaut
+    '59431': { prix: 2290, lignes: [], tags: ['Village'] }, // Nieppe
+    '59434': { prix: 1455, lignes: [], tags: ['Village'] }, // Nivelle
+    '59435': { prix: 2588, lignes: [], tags: ['Rural'] }, // Nomain
+    '59445': { prix: 962, lignes: [], tags: ['Rural'] }, // Ohain
+    '59447': { prix: 1389, lignes: [], tags: ['Village'] }, // Onnaing
+    '59449': { prix: 2164, lignes: [], tags: ['Village'] }, // Orchies
+    '59452': { prix: 1909, lignes: [], tags: ['Pavillonnaire'] }, // Ostricourt
+    '59455': { prix: 1841, lignes: [], tags: ['Rural'] }, // Paillencourt
+    '59456': { prix: 1552, lignes: [], tags: ['Village'] }, // Pecquencourt
+    '59459': { prix: 1593, lignes: [], tags: ['Pavillonnaire'] }, // Petite-Forêt
+    '59462': { prix: 2393, lignes: [], tags: ['Village'] }, // Phalempin
+    '59464': { prix: 1152, lignes: [], tags: ['Village'] }, // Poix-du-Nord
+    '59467': { prix: 1169, lignes: [], tags: ['Village'] }, // Pont-sur-Sambre
+    '59466': { prix: 2799, lignes: [], tags: ['Pavillonnaire'] }, // Pont-à-Marcq
+    '59472': { prix: 864, lignes: [], tags: ['Village'] }, // Preux-au-Bois
+    '59474': { prix: 849, lignes: [], tags: ['Rural'] }, // Prisches
+    '59475': { prix: 1572, lignes: [], tags: ['Village'] }, // Prouvy
+    '59476': { prix: 1620, lignes: [], tags: ['Village'] }, // Proville
+    '59477': { prix: 2071, lignes: [], tags: ['Pavillonnaire'] }, // Provin
+    '59470': { prix: 2927, lignes: [], tags: ['Village'] }, // Prémesques
+    '59471': { prix: 1465, lignes: [], tags: ['Village'] }, // Préseau
+    '59457': { prix: 2646, lignes: [], tags: ['Pavillonnaire'] }, // Pérenchies
+    '59458': { prix: 4516, lignes: [], tags: ['Pavillonnaire'] }, // Péronne-en-Mélantois
+    '59479': { prix: 1690, lignes: [], tags: ['Village'] }, // Quarouble
+    '59482': { prix: 2750, lignes: [], tags: ['Village'] }, // Quesnoy-sur-Deûle
+    '59484': { prix: 1069, lignes: [], tags: ['Pavillonnaire'] }, // Quiévrechain
+    '59485': { prix: 1073, lignes: [], tags: ['Village'] }, // Quiévy
+    '59488': { prix: 1302, lignes: [], tags: ['Village'] }, // Raillencourt-Sainte-Olle
+    '59489': { prix: 1334, lignes: [], tags: ['Village'] }, // Raimbeaucourt
+    '59491': { prix: 1338, lignes: [], tags: ['Village'] }, // Raismes
+    '59492': { prix: 1353, lignes: [], tags: ['Rural'] }, // Ramillies
+    '59495': { prix: 1073, lignes: [], tags: ['Village'] }, // Recquignies
+    '59497': { prix: 1646, lignes: [], tags: ['Rural'] }, // Renescure
+    '59499': { prix: 2034, lignes: [], tags: ['Rural'] }, // Rexpoëde
+    '59501': { prix: 1669, lignes: [], tags: ['Village'] }, // Rieulay
+    '59502': { prix: 1149, lignes: [], tags: ['Village'] }, // Rieux-en-Cambrésis
+    '59507': { prix: 2262, lignes: [], tags: ['Urbain'] }, // Ronchin
+    '59508': { prix: 2546, lignes: [], tags: ['Pavillonnaire'] }, // Roncq
+    '59509': { prix: 1552, lignes: [], tags: ['Pavillonnaire'] }, // Roost-Warendin
+    '59511': { prix: 2004, lignes: [], tags: ['Village'] }, // Rosult
+    '59512': { prix: 1385, lignes: [['2', '#ED1D24'], ['R', '#81CF00']], tags: ['Urbain'] }, // Roubaix
+    '59514': { prix: 1323, lignes: [], tags: ['Village'] }, // Rousies
+    '59519': { prix: 2212, lignes: [], tags: ['Village'] }, // Rumegies
+    '59520': { prix: 1203, lignes: [], tags: ['Village'] }, // Rumilly-en-Cambrésis
+    '59486': { prix: 1553, lignes: [], tags: ['Village'] }, // Râches
+    '59504': { prix: 1188, lignes: [], tags: ['Pavillonnaire'] }, // Rœulx
+    '59522': { prix: 3341, lignes: [], tags: ['Village'] }, // Sailly-lez-Lannoy
+    '59523': { prix: 3221, lignes: [], tags: ['Village'] }, // Sainghin-en-Mélantois
+    '59524': { prix: 2284, lignes: [], tags: ['Village'] }, // Sainghin-en-Weppes
+    '59525': { prix: 873, lignes: [], tags: ['Village'] }, // Sains-du-Nord
+    '59526': { prix: 1603, lignes: [], tags: ['Village'] }, // Saint-Amand-les-Eaux
+    '59527': { prix: 3302, lignes: [], tags: ['Urbain'] }, // Saint-André-lez-Lille
+    '59528': { prix: 1072, lignes: [], tags: ['Village'] }, // Saint-Aubert
+    '59533': { prix: 1267, lignes: [], tags: ['Village'] }, // Saint-Hilaire-lez-Cambrai
+    '59541': { prix: 1157, lignes: [], tags: ['Rural'] }, // Saint-Python
+    '59544': { prix: 1841, lignes: [], tags: ['Pavillonnaire'] }, // Saint-Saulve
+    '59545': { prix: 1029, lignes: [], tags: ['Rural'] }, // Saint-Souplet
+    '59550': { prix: 1935, lignes: [], tags: ['Village'] }, // Salomé
+    '59553': { prix: 2636, lignes: [], tags: ['Village'] }, // Santes
+    '59555': { prix: 913, lignes: [], tags: ['Village'] }, // Sars-Poteries
+    '59557': { prix: 1869, lignes: [], tags: ['Village'] }, // Saultain
+    '59558': { prix: 1357, lignes: [], tags: ['Village'] }, // Saulzoir
+    '59559': { prix: 2586, lignes: [], tags: ['Rural'] }, // Sebourg
+    '59560': { prix: 2179, lignes: [], tags: ['Village'] }, // Seclin
+    '59566': { prix: 2670, lignes: [], tags: ['Pavillonnaire'] }, // Sequedin
+    '59569': { prix: 1405, lignes: [], tags: ['Pavillonnaire'] }, // Sin-le-Noble
+    '59571': { prix: 977, lignes: [], tags: ['Village'] }, // Solesmes
+    '59572': { prix: 1126, lignes: [], tags: ['Rural'] }, // Solre-le-Château
+    '59574': { prix: 1356, lignes: [], tags: ['Pavillonnaire'] }, // Somain
+    '59576': { prix: 2663, lignes: [], tags: ['Village'] }, // Spycker
+    '59577': { prix: 1871, lignes: [], tags: ['Rural'] }, // Staple
+    '59578': { prix: 1302, lignes: [], tags: ['Rural'] }, // Steenbecque
+    '59579': { prix: 1858, lignes: [], tags: ['Rural'] }, // Steene
+    '59580': { prix: 1875, lignes: [], tags: ['Rural'] }, // Steenvoorde
+    '59581': { prix: 1735, lignes: [], tags: ['Rural'] }, // Steenwerck
+    '59585': { prix: 2719, lignes: [], tags: ['Village'] }, // Templemars
+    '59586': { prix: 2759, lignes: [], tags: ['Village'] }, // Templeuve-en-Pévèle
+    '59589': { prix: 1261, lignes: [], tags: ['Village'] }, // Thiant
+    '59592': { prix: 2210, lignes: [], tags: ['Village'] }, // Thumeries
+    '59594': { prix: 1694, lignes: [], tags: ['Village'] }, // Thun-Saint-Amand
+    '59598': { prix: 2719, lignes: [], tags: ['Pavillonnaire'] }, // Toufflers
+    '59599': { prix: 1781, lignes: [['2', '#ED1D24'], ['T', '#0099FF']], tags: ['Urbain'] }, // Tourcoing
+    '59602': { prix: 3101, lignes: [], tags: ['Village'] }, // Tressin
+    '59603': { prix: 1253, lignes: [], tags: ['Pavillonnaire'] }, // Trith-Saint-Léger
+    '59601': { prix: 832, lignes: [], tags: ['Rural'] }, // Trélon
+    '59588': { prix: 2463, lignes: [], tags: ['Village'] }, // Téteghem-Coudekerque-Village
+    '59605': { prix: 2422, lignes: [], tags: ['Village'] }, // Uxem
+    '59606': { prix: 1600, lignes: [['T1', '#D73527'], ['T2', '#15618E']], tags: ['Urbain'] }, // Valenciennes
+    '59609': { prix: 3158, lignes: [], tags: ['Village'] }, // Vendeville
+    '59611': { prix: 3155, lignes: [], tags: ['Village'] }, // Verlinghem
+    '59613': { prix: 1455, lignes: [], tags: ['Village'] }, // Vicq
+    '59614': { prix: 903, lignes: [], tags: ['Rural'] }, // Viesly
+    '59615': { prix: 1528, lignes: [], tags: ['Rural'] }, // Vieux-Berquin
+    '59616': { prix: 1304, lignes: [['T2', '#15618E']], tags: ['Pavillonnaire'] }, // Vieux-Condé
+    '59009': { prix: 2925, lignes: [['1', '#FFD400'], ['2', '#ED1D24'], ['R', '#81CF00']], tags: ['Pavillonnaire'] }, // Villeneuve-d'Ascq
+    '59622': { prix: 1506, lignes: [], tags: ['Rural'] }, // Villers-en-Cauchies
+    '59624': { prix: 806, lignes: [], tags: ['Village'] }, // Villers-Outréaux
+    '59626': { prix: 1761, lignes: [], tags: ['Rural'] }, // Villers-Pol
+    '59629': { prix: 1833, lignes: [], tags: ['Village'] }, // Vred
+    '59630': { prix: 2155, lignes: [], tags: ['Village'] }, // Wahagnies
+    '59631': { prix: 960, lignes: [], tags: ['Rural'] }, // Walincourt-Selvigny
+    '59632': { prix: 1506, lignes: [], tags: ['Village'] }, // Wallers
+    '59636': { prix: 3257, lignes: [], tags: ['Village'] }, // Wambrechies
+    '59637': { prix: 1856, lignes: [], tags: ['Village'] }, // Wandignies-Hamage
+    '59639': { prix: 1834, lignes: [], tags: ['Village'] }, // Wargnies-le-Grand
+    '59641': { prix: 1868, lignes: [], tags: ['Rural'] }, // Warhem
+    '59646': { prix: 3347, lignes: [['2', '#ED1D24'], ['R', '#81CF00'], ['T', '#0099FF']], tags: ['Urbain'] }, // Wasquehal
+    '59647': { prix: 1281, lignes: [], tags: ['Village'] }, // Watten
+    '59648': { prix: 2258, lignes: [], tags: ['Pavillonnaire'] }, // Wattignies
+    '59650': { prix: 1831, lignes: [], tags: ['Pavillonnaire'] }, // Wattrelos
+    '59651': { prix: 1221, lignes: [], tags: ['Village'] }, // Wavrechain-sous-Denain
+    '59653': { prix: 2543, lignes: [], tags: ['Village'] }, // Wavrin
+    '59654': { prix: 1202, lignes: [], tags: ['Pavillonnaire'] }, // Waziers
+    '59656': { prix: 2935, lignes: [], tags: ['Pavillonnaire'] }, // Wervicq-Sud
+    '59659': { prix: 864, lignes: [], tags: ['Village'] }, // Wignehies
+    '59660': { prix: 2730, lignes: [], tags: ['Village'] }, // Willems
+    '59663': { prix: 2029, lignes: [], tags: ['Village'] }, // Wormhout
+    '59666': { prix: 1673, lignes: [], tags: ['Rural'] }, // Zegerscappel
+    '59668': { prix: 2434, lignes: [], tags: ['Village', 'Balnéaire'] }, // Zuydcoote
   };
 
   function sep() {
@@ -2310,9 +2700,18 @@ ul { list-style: none; }
     return l > 0.179 ? '#000000' : '#ffffff';
   }
 
-  function buildMeta(label) {
+  /* Code postal d'abord : « Lille (59160) » doit resoudre vers Lomme et non vers
+     la mediane de Lille entiere. Le code INSEE ne sert que de repli commune. */
+  function zoneFor(location) {
+    const label = typeof location === 'string' ? location : location.label;
     const postcode = label.match(/\((\d{5})\)/);
-    const zone = postcode && ZONES[postcode[1]];
+    if (postcode && ZONES[postcode[1]]) return ZONES[postcode[1]];
+    const insee = location && location.commune && location.commune.code;
+    return (insee && ZONES_COMMUNE[insee]) || null;
+  }
+
+  function buildMeta(location) {
+    const zone = zoneFor(location);
     if (!zone) return null;
 
     const meta = document.createElement('span');
@@ -2387,7 +2786,7 @@ ul { list-style: none; }
       const text = document.createElement('span');
       text.className = 'popover__option-text';
       text.append(buildLabel(location.label, at, query.length));
-      const meta = buildMeta(location.label);
+      const meta = buildMeta(location);
       if (meta) text.append(meta);
       else if (location.kind) {
         const kind = document.createElement('span');
@@ -2399,9 +2798,6 @@ ul { list-style: none; }
       option.append(icon, text);
       // Sélection depuis l'autocomplétion : le popover reste ouvert sur l'état rayon
       option.addEventListener('click', () => {
-        // Sélection venue d'une saisie : la feuille montre alors la ligne
-        // « Dessiner sur la carte » et non les trois cartes — Figma 12213:184404
-        state.fromTyping = true;
         selectLocation(location.label, location.commune);
       });
       paneResults.append(option);
@@ -2417,9 +2813,16 @@ ul { list-style: none; }
   const GEO_API = 'https://geo.api.gouv.fr/communes';
   const MAX_POSTCODES = 20;
 
+  function quartierMatches(query) {
+    const needle = normalize(query);
+    return QUARTIERS.filter((q) => normalize(q.label).includes(needle));
+  }
+
   function localMatches(query) {
     const needle = normalize(query);
-    return LOCATIONS.filter((location) => normalize(location.label).includes(needle));
+    return quartierMatches(query).concat(
+      LOCATIONS.filter((location) => normalize(location.label).includes(needle))
+    );
   }
 
   function toSuggestions(communes) {
@@ -2482,7 +2885,7 @@ ul { list-style: none; }
         // La réponse peut arriver après que l'utilisateur a quitté la saisie
         if (signal.aborted || input.value.trim() !== query) return;
         renderOptions(
-          toSuggestions(communes),
+          quartierMatches(query).concat(toSuggestions(communes)),
           query,
           'Aucune localisation ne correspond à « ' + query + ' »'
         );
@@ -2511,7 +2914,6 @@ ul { list-style: none; }
   const radiusDrawn = document.getElementById('radiusDrawn');
   const radiusCard = document.getElementById('radiusCard');
   const radiusControl = document.getElementById('radiusControl');
-  const souscat = document.getElementById('locSouscat');
   const souscatCards = document.querySelectorAll('.souscat__card');
   const locWrap = document.getElementById('locWrap');
   const radiusMap = document.getElementById('radiusMap');
@@ -2570,12 +2972,6 @@ ul { list-style: none; }
        recherche n'en a aucun, et la carte occupe la place laissée libre —
        12154:107141. Chaque entrée : { labels, mode, radius }. */
     recents: [],
-    /* V8 — fromTyping : la localisation vient d'être saisie au clavier. Le board
-       remplace alors les trois cartes d'alternatives par la seule ligne
-       « Dessiner sur la carte » (12213:184404, 12246:250597), là où l'ouverture
-       depuis le listing garde les trois cartes (12213:242276). Deux entrées pour
-       une même fonction : signalé comme incohérence. */
-    fromTyping: false,
     /* drawn : la zone vient d'un tracé sur la carte. La chip s'appelle alors
        « Personnalisée » et il n'y a pas de rayon à régler — Figma 12235:249560. */
     drawn: false,
@@ -2666,10 +3062,6 @@ ul { list-style: none; }
   function commit() {
     state.editing = false;
     state.focus = false;
-    /* La feuille rouverte depuis le listing repart sur les trois alternatives,
-       pas sur la ligne « Dessiner sur la carte » : celle-ci n'appartient qu'au
-       parcours qui vient d'une saisie (12213:184404 vs 12213:242276). */
-    state.fromTyping = false;
     pushRecent();
     saveSearch();
     const label = committedLabel();
@@ -2747,7 +3139,6 @@ ul { list-style: none; }
      retoucher — s'il veut affiner, il rouvre le champ. commit() remonte l'entrée
      en tête de l'historique au passage. */
   function replayRecent(entry) {
-    state.fromTyping = false;
     state.drawn = entry.mode === 'draw';
     state.contours = {};
     // Les modes exclusifs se rejouent tels quels : rien à géocoder
@@ -3012,9 +3403,8 @@ ul { list-style: none; }
     sync();
     // Un arrondissement a son propre code INSEE : il primerait sur celui de la
     // commune parente, sinon la carte cadrerait Paris entier au lieu du 10e.
-    const postcode = label.match(/\((\d{5})\)/);
-    const zone = postcode && ZONES[postcode[1]];
-    if (zone) loadCommune(zone.insee, label);
+    const zone = zoneFor({ label: label, commune: commune });
+    if (zone && zone.insee) loadCommune(zone.insee, label);
     else if (commune && commune.code) loadCommune(commune.code, label);
     else if (commune && commune.centre) applyCommune({ centre: commune.centre }, label);
     else geocode(label);
@@ -3067,54 +3457,29 @@ ul { list-style: none; }
        périmètre qu'on règle. */
     const showMap = showSelected && state.mode !== 'france';
     const showRadius = showMap && !multi && !state.drawn;
-    /* Desktop en édition : ni récents ni actions alternatives dès qu'une
-       localisation est posée. Le popover est ancré sous le champ et sortirait du
-       viewport (note « À confirmer avec @Damien », 12253:297335). Les deux blocs ne
-       reviennent qu'à l'état vide — première recherche (12248:264774) ou après
-       « Effacer » (12253:284951). Le mobile, lui, les garde sous la sélection
-       (12213:242276) : c'est la seule divergence de règle entre les deux. */
-    const desktopEdit = !mobile.matches && showSelected;
-    /* Alternatives et récents : escamotés quand la localisation est exclusive
-       (« Autour de moi »), qui n'a rien à proposer sous elle — Figma 12213:243417.
-       Ils reviennent partout ailleurs, réglage du rayon compris : c'est la
-       différence avec la V6, où le rayon prenait tout l'écran. */
-    const showAlternatives = !typing && !desktopEdit
-      && !(showSelected && state.mode === 'around');
-    /* Une porte d'entrée vers le dessin à la fois : la ligne quand on arrive
-       d'une saisie, les trois cartes sinon. Aucun écran du board ne montre les
-       deux — signalé comme incohérence. */
-    const showDrawRow = showSelected && state.fromTyping && !state.drawn;
+    /* Une localisation posée fait basculer la feuille en édition : la seule
+       action secondaire proposée est alors la ligne « Dessiner sur la carte »,
+       sur mobile (Figma 12506:183376) comme sur desktop (12506:189329). Les
+       trois cartes d'alternatives et les récents ne reviennent qu'à l'état vide
+       — première recherche (12248:264774) ou après « Effacer » (12253:284951). */
+    const showAlternatives = !typing && !showSelected;
+    /* Les deux modes exclusifs n'ont pas de périmètre à retoucher : « Autour de
+       moi » n'affiche rien sous sa carte (12213:243417) et « Toute la France »
+       n'a pas de carte du tout. Une zone déjà dessinée non plus : elle se
+       remplace par sa chip, pas en redessinant depuis la feuille (12235:249560). */
+    const showDrawRow = showSelected && !state.drawn
+      && state.mode !== 'around' && state.mode !== 'france';
     const compact = showSelected && !showRadius;
 
     locSelected.hidden = !showSelected;
     drawRow.hidden = !showDrawRow;
     collapsible.dataset.open = String(showAlternatives);
-    souscat.hidden = showDrawRow;
-    /* Pas de récents avant la première recherche validée (Figma 12213:178499),
-       ni sur le parcours qui vient d'une saisie : ces écrans n'ont que la carte
-       et la ligne « Dessiner sur la carte » sous les chips (12213:184404,
-       12246:250597). */
-    locRecents.hidden = !renderRecents() || showDrawRow || desktopEdit;
+    /* Pas de récents avant la première recherche validée — Figma 12213:178499. */
+    locRecents.hidden = !renderRecents();
     radiusCard.hidden = !showMap;
     // La carte reste bordée mais perd son bloc de réglage quand il n'y a pas de
     // rayon à régler — Figma 12235:249560 (zone dessinée), 12246:250597 (2 loc.)
     radiusControl.hidden = !showRadius;
-    /* Une alternative ne s'efface que quand elle est l'état courant : il n'y a
-       rien à reprendre, et la retirer se fait par sa chip. Les autres restent
-       proposées même sous une sélection — « Autour de moi » sur une ville reste un
-       choix valide, il remplace la sélection comme le fait déjà le clic sur une
-       autre ville. « Dessin » ne s'efface jamais : c'est un toggle, le masquer
-       rendrait la désélection impossible. */
-    souscatCards.forEach((card) => {
-      const mode = card.dataset.mode;
-      const exclusive = mode === 'around' || mode === 'france';
-      card.hidden = showSelected && exclusive && mode === state.mode;
-      /* Aucune des trois n'a d'état sélectionné : « Dessin » ouvre un plein écran
-         (ce n'est plus un toggle), et les deux autres se retirent de la liste
-         quand elles sont l'état courant. Le board les montre toutes normales,
-         même sous une zone dessinée — 12235:249560. */
-      card.setAttribute('aria-pressed', 'false');
-    });
     locWrap.classList.toggle('is-compact', compact);
 
     /* Barre d'actions : rien à valider sans localisation — l'écran de première
@@ -3201,7 +3566,6 @@ ul { list-style: none; }
     state.radius = DEFAULT_RADIUS;
     state.editing = false;
     state.drawn = false;
-    state.fromTyping = false;
     state.contours = {};
     input.value = '';
     sync();
@@ -3253,7 +3617,6 @@ ul { list-style: none; }
     state.chips = [DRAW_LABEL];
     state.mode = 'draw';
     state.drawn = true;
-    state.fromTyping = false;
     pushRecent();
     input.value = DRAW_LABEL;
     setPopover(false);
@@ -3421,6 +3784,16 @@ ul { list-style: none; }
       if (!listing) return;
       const lines = [...listing.querySelectorAll('.listing__text p')].map((p) => p.textContent.trim());
       const thumb = listing.querySelector('.listing__thumb');
+      // Le HTML récupéré porte les valeurs du participant 1 : les scripts de la
+      // galerie ne tournent pas dans un document parsé. Pour les autres, on relit
+      // le bloc JSON que la galerie publie à cet usage.
+      const json = doc.getElementById('participant-data');
+      const part = json ? (JSON.parse(json.textContent)[variant] || null) : null;
+      if (part) {
+        if (part.titleshort) lines[0] = part.titleshort;
+        if (part.price) lines[1] = part.price;
+        if (part.src && part.src.thumb) thumb.setAttribute('src', part.src.thumb);
+      }
       if (lines[0]) {
         FEATURED_AD.desc = lines[0];
         const surface = lines[0].match(/(\d+(?:[.,]\d+)?)\s*m²/);
@@ -3433,6 +3806,33 @@ ul { list-style: none; }
       /* Origine différente ou fichier absent : on garde les valeurs par défaut. */
     }
   }
+
+  /* ── Variante du participant ──────────────────────────────────────────────
+     Le lien envoyé au participant porte ?p=1 ou ?p=2 et arrive ici, en tête du
+     parcours. On le mémorise comme le font l'adview et la galerie, et on le
+     reporte sur les liens internes : sans ça, le participant 2 quitterait le
+     tunnel pour l'annonce du participant 1. */
+  const VARIANT_KEY = 'lbc-proto:participant';
+  const asked = new URLSearchParams(location.search).get('p');
+  let variant = '1';
+  if (asked === '1' || asked === '2') {
+    variant = asked;
+    try { localStorage.setItem(VARIANT_KEY, asked); } catch (error) {}
+  } else {
+    try { variant = localStorage.getItem(VARIANT_KEY) || '1'; } catch (error) {}
+  }
+
+  document.querySelectorAll('a[href]').forEach((a) => {
+    const href = a.getAttribute('href');
+    if (!href || /^(#|https?:|mailto:|tel:)/.test(href)) return;
+    // Manipulation de chaîne, pas d'URL absolue : le proto est servi sous un
+    // préfixe de chemin sur GitHub Pages, les liens doivent rester relatifs.
+    const hash = href.includes('#') ? href.slice(href.indexOf('#')) : '';
+    const [path, query = ''] = href.slice(0, href.length - hash.length).split('?');
+    const params = new URLSearchParams(query);
+    params.set('p', variant);
+    a.setAttribute('href', path + '?' + params + hash);
+  });
 
   /* ── Popover « Mes recherches » (desktop) ─────────────────────────────── */
   const navBtn = document.getElementById('navSearchesBtn');
