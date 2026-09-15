@@ -185,11 +185,11 @@
   .chips {
     display: flex;
     gap: var(--spacing-md);
-    /* La colonne est trop etroite pour les quatre filtres sous 1200px : ils
-       passent a la ligne. En bande defilante, « Visite virtuelle » serait
-       tronquee et le filtre inatteignable, faute de geste horizontal a la
-       souris et de barre de defilement visible. */
-    flex-wrap: wrap;
+    /* La colonne est trop etroite pour les quatre filtres sous 1200px : la bande
+       defile, et sort du padding de la barre pour recuperer la gouttiere. Elle
+       s'arrete au bord du panneau media, sur lequel elle n'empiete pas. */
+    margin-right: calc(-1 * var(--gutter));
+    padding-right: var(--gutter);
     overflow-x: auto;
     /* Empêche le geste horizontal de se propager au document une fois la
        bande au bout : sans ça iOS décale toute la page et l'écran semble
@@ -910,8 +910,6 @@
        (8px de padding x 2 + 40px de bouton). Une fois collée, son ombre marque le
        bas du groupe des deux barres — la navbar n'en porte pas. */
     .side__filters { top: 56px; }
-    /* Le pouce fait defiler la bande : pas de retour a la ligne sur mobile. */
-    .chips { flex-wrap: nowrap; }
 
     .adview__topbar {
       position: sticky;
