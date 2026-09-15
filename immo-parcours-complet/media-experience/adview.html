@@ -298,9 +298,14 @@
     margin-inline: auto;
     padding-inline: var(--spacing-lg);
     border-top: var(--border-sm) solid var(--color-neutral-container);
-    /* Les six onglets font 772px : en dessous de ~1000px ils débordent et le
-       dernier devient inatteignable sans défilement horizontal. */
+    /* Les onglets débordent en dessous de ~1000px : la bande garde la largeur
+       de l'écran et se parcourt au doigt, les libellés cachés arrivant au
+       glissé. `overscroll-behavior-x` empêche le geste de se propager au
+       document une fois la bande au bout — sans ça iOS décale toute la page
+       (ou déclenche son retour arrière) et l'écran semble s'élargir. */
     overflow-x: auto;
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
   }
   .stickybar__tabs::-webkit-scrollbar { display: none; }

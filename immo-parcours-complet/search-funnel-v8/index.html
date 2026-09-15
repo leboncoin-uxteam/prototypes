@@ -881,11 +881,11 @@ ul { list-style: none; }
 .adcard__price-main { display: flex; align-items: baseline; gap: var(--sp-sm); font-weight: 700; }
 .adcard__price-main img { width: 16px; height: 16px; align-self: center; }
 .adcard--drop .adcard__price-main { color: var(--color-success); }
-.adcard__title { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-/* Masqués : les critères portés par les cartes (DPE, balcon, dernier étage…)
-   ne correspondent ni aux photos ni à la recherche du proto — même raison que
-   la ville, plus bas. */
-.adcard__criteria, .pro-card__criteria { display: none; }
+/* Masqués : les paramètres portés par les cartes — type, pièces, surface, puis
+   DPE, balcon, dernier étage… — ne correspondent ni aux photos ni à la
+   recherche du proto, même raison que la ville plus bas. */
+.adcard__title, .adcard__criteria,
+.pro-card__params, .pro-card__criteria { display: none; }
 .adcard__criterion { display: flex; align-items: center; gap: var(--sp-sm); }
 .adcard__sep { color: var(--color-on-surface); }
 .adcard__tags { display: flex; flex-wrap: wrap; gap: var(--sp-md); }
@@ -1677,7 +1677,7 @@ ul { list-style: none; }
           <article class="pro-card">
             <img class="pro-card__photo" src="assets/carousel-1.png" alt="" />
             <p class="t-body-1-hl">185 000 €</p>
-            <p class="t-body-2">Appartement · 2 pièces · 39 m<sup>2</sup></p>
+            <p class="pro-card__params t-body-2">Appartement · 2 pièces · 39 m<sup>2</sup></p>
             <div class="pro-card__criteria">
               <span class="dpe"><img src="assets/carousel-dpe-d.svg" alt="DPE" /><span>D</span></span>
               <span class="adcard__criterion"><img src="assets/icon-balcon-carousel.svg" alt="" /><span class="t-body-2">Balcon</span></span>
@@ -1687,7 +1687,7 @@ ul { list-style: none; }
           <article class="pro-card">
             <img class="pro-card__photo" src="assets/carousel-2.png" alt="" />
             <p class="t-body-1-hl">945 000 €</p>
-            <p class="t-body-2">Appartement · 4 pièces · 115 m<sup>2</sup></p>
+            <p class="pro-card__params t-body-2">Appartement · 4 pièces · 115 m<sup>2</sup></p>
             <div class="pro-card__criteria">
               <span class="adcard__criterion"><img src="assets/icon-balcon-carousel.svg" alt="" /><span class="t-body-2">Balcon</span></span>
             </div>
@@ -1696,7 +1696,7 @@ ul { list-style: none; }
           <article class="pro-card">
             <img class="pro-card__photo" src="assets/carousel-3.png" alt="" />
             <p class="t-body-1-hl">299 000 €</p>
-            <p class="t-body-2">Appartement · 70 m<sup>2</sup> · Nice</p>
+            <p class="pro-card__params t-body-2">Appartement · 70 m<sup>2</sup> · Nice</p>
             <div class="pro-card__criteria">
               <span class="adcard__criterion"><img src="assets/icon-balcon-carousel.svg" alt="" /><span class="t-body-2">Balcon</span></span>
             </div>
