@@ -970,6 +970,9 @@
   .market__bounds span { font-size: 14px; line-height: 20px; color: var(--color-on-surface-dim-1); }
   .market__bounds div:last-child { text-align: right; }
   .market__verdict { margin: var(--spacing-lg) 0 0; font-size: 16px; line-height: 24px; }
+  /* Les 56px sous le hint réservent la place de la bulle au-dessus de la jauge.
+     Sans jauge, ils laissent un trou. */
+  .market--nodata .market__hint { margin-bottom: 0; }
 
   /* ---------- Carrousels d'annonces ---------- */
   .more__head {
@@ -1266,6 +1269,12 @@
     line-height: 16px;
     font-weight: 700;
     color: var(--color-support);
+  }
+  /* Vendeur particulier : même chip, couleur neutre — « Pro » est une qualité
+     commerciale, « Particulier » n'en est pas une. Après .tag--pro pour l'emporter. */
+  .tag--private {
+    box-shadow: inset 0 0 0 var(--border-sm) var(--color-on-surface-dim-1);
+    color: var(--color-on-surface-dim-1);
   }
   .promo { display: block; }
   .promo img { width: 100%; height: auto; }
@@ -1754,7 +1763,7 @@ Les informations sur les risques auxquels ce bien est exposé sont disponibles s
       <div class="keys" id="keys">
         <div class="keys__col">
           <p class="keys__item"><img src="assets/icon-crit-clock.svg" alt=""><span>Publié le 05/08/2026</span></p>
-          <p class="keys__item"><img src="assets/icon-crit-buildings.svg" alt=""><span><a class="link--block" href="#">Maison</a></span></p>
+          <p class="keys__item"><img src="assets/icon-crit-buildings.svg" alt=""><span><a class="link--block" href="#" data-v="kind">Maison</a></span></p>
           <p class="keys__item"><img src="assets/icon-crit-measures.svg" alt=""><span data-v="surface">61 m²</span></p>
           <p class="keys__item keys__item--more"><img src="assets/icon-crit-rooms.svg" alt=""><span data-v="rooms">3 pièces</span></p>
           <p class="keys__item keys__item--more"><img src="assets/icon-crit-bath.svg" alt=""><span data-v="bathroom">1 salle de douche</span></p>
@@ -1765,10 +1774,12 @@ Les informations sur les risques auxquels ce bien est exposé sont disponibles s
           <p class="keys__item"><img src="assets/icon-crit-bed.svg" alt=""><span data-v="beds">2 chambres</span></p>
           <p class="keys__item"><img src="assets/icon-crit-stairs.svg" alt=""><span data-v="levels">2 niveaux</span></p>
           <p class="keys__item"><img src="assets/icon-crit-lift.svg" alt=""><span data-v="orient">Orientation sud</span></p>
-          <p class="keys__item keys__item--more"><img src="assets/icon-crit-heating.svg" alt=""><span>Chauffage individuel au gaz</span></p>
+          <p class="keys__item keys__item--more"><img src="assets/icon-crit-heating.svg" alt=""><span data-v="heat">Chauffage individuel au gaz</span></p>
           <p class="keys__item keys__item--more"><img src="assets/icon-crit-year.svg" alt=""><span data-v="year">Construit en 1930</span></p>
           <p class="keys__item keys__item--more"><img src="assets/icon-crit-condition.svg" alt=""><span data-v="cond">Parfait état</span></p>
-          <p class="keys__item keys__item--more"><img src="assets/icon-crit-charges.svg" alt=""><span>Honoraires à la charge de l’acquéreur</span></p>
+          <!-- Vente entre particuliers (6) ou honoraires payés par le vendeur (7) :
+               dans les deux cas l'acquéreur n'en paie pas, donc pas ce critère. -->
+          <p class="keys__item keys__item--more" data-vnot="6 7"><img src="assets/icon-crit-charges.svg" alt=""><span>Honoraires à la charge de l’acquéreur</span></p>
         </div>
       </div>
       <button class="link--block keys__toggle" type="button" aria-expanded="false" aria-controls="keys"
@@ -1787,7 +1798,9 @@ Les informations sur les risques auxquels ce bien est exposé sont disponibles s
       </p>
       <!-- Carte statique, tuiles OpenStreetMap zoom 15, centrée sur les coordonnées
            de l'annonce source : variante 1 à Lomme (50.63003, 3.0026312), variante 2
-           à Carquefou (47.278316, -1.4916236). -->
+           à Carquefou (47.278316, -1.4916236). Variante 7 : l'annonce est relocalisée,
+           le point est le milieu des deux voies du quartier géocodées par la Base
+           Adresse Nationale, Saint-Éloi et Camonil (44.35860, 2.57226). -->
       <div class="map">
         <div class="map__tiles" data-valabel="mapLabel" data-vtransform="mapOffset"
              aria-label="Carte du quartier de Lomme à Lille" role="img">
@@ -1803,7 +1816,7 @@ Les informations sur les risques auxquels ce bien est exposé sont disponibles s
         </div>
         <img class="map__pin" src="assets/icon-pin-filled.svg" alt="">
         <p class="map__credit">© OpenStreetMap</p>
-        <span class="map__badge">Localisation exacte</span>
+        <span class="map__badge" data-v="mapBadge">Localisation exacte</span>
       </div>
 
       <div class="locality__panels">
@@ -1892,10 +1905,36 @@ Les informations sur les risques auxquels ce bien est exposé sont disponibles s
           <h3 class="cost__title">Charges futures du bien</h3>
           <!-- Taxe foncière : absente de l'annonce de la variante 1, valeur reprise de la
                maquette Figma. La variante 2 reprend celle de son annonce source (1 460 €
-               pour 95 m²), ramenée au prorata de la surface. -->
+               pour 95 m²), ramenée au prorata de la surface. Les variantes 3 et 4 ne la
+               donnent nulle part : plutôt que de l'estimer, la ligne dit qu'on ne l'a pas.
+               Les variantes 5 et 6 la publient, elle est reprise telle quelle. La
+               variante 7 ne la donne pas non plus. -->
           <div class="cost__row">
             <p class="cost__label">Taxe foncière</p>
             <p class="cost__amount" data-v="taxe">609 € / an</p>
+          </div>
+          <!-- Charges de copropriété : seuls les appartements en ont, et chacun les siennes.
+               Une ligne par variante concernée plutôt qu'une valeur variabilisée, sinon la
+               ligne resterait visible pour les deux maisons. -->
+          <div class="cost__row" data-vonly="3">
+            <p class="cost__label">Charges de copropriété</p>
+            <p class="cost__amount">952 € / an</p>
+          </div>
+          <div class="cost__row" data-vonly="4">
+            <p class="cost__label">Charges de copropriété</p>
+            <p class="cost__amount">3 400 € / an</p>
+          </div>
+          <div class="cost__row" data-vonly="5">
+            <p class="cost__label">Charges de copropriété</p>
+            <p class="cost__amount">924 € / an</p>
+          </div>
+          <div class="cost__row" data-vonly="6">
+            <p class="cost__label">Charges de copropriété</p>
+            <p class="cost__amount">140 € / an</p>
+          </div>
+          <div class="cost__row" data-vonly="7">
+            <p class="cost__label">Charges de copropriété</p>
+            <p class="cost__amount">3 300 € / an</p>
           </div>
           <div class="cost__row">
             <p class="cost__label">Estimation de la facture énergétique</p>
@@ -1932,7 +1971,7 @@ Les informations sur les risques auxquels ce bien est exposé sont disponibles s
            « Prix haut » sont les 1er et 9e déciles, pas des bornes estimées.
            Variante 1, Lomme (commune 59350) : n = 213, médiane 2 725 €/m².
            Variante 2, Carquefou (commune 44026) : n = 99, médiane 3 234 €/m². -->
-      <div class="market">
+      <div class="market" data-vnot="5">
         <h3 class="market__title">Prix au m² par rapport au secteur <img src="assets/icon-info-12.svg" alt="En savoir plus"></h3>
         <p class="market__hint">Ces données sont indicatives.</p>
         <div class="market__gauge">
@@ -1944,6 +1983,15 @@ Les informations sur les risques auxquels ce bien est exposé sont disponibles s
           <div><b>Prix haut</b><span data-v="mktHigh">3 779 € / m²</span></div>
         </div>
         <p class="market__verdict" data-v="verdict">À 2 992 € / m², le bien est au-dessus de la médiane du secteur (2 725 € / m²).</p>
+      </div>
+      <!-- Variante 5 : DVF ne couvre pas le Bas-Rhin, le Haut-Rhin ni la Moselle
+           (régime du livre foncier, pas de publicité foncière). Aucune fourchette
+           n'est donc calculable pour Strasbourg sans l'estimer, et la jauge s'en va
+           au lieu d'afficher une position inventée. -->
+      <div class="market market--nodata" data-vonly="5">
+        <h3 class="market__title">Prix au m² par rapport au secteur <img src="assets/icon-info-12.svg" alt="En savoir plus"></h3>
+        <p class="market__hint">Comparaison indisponible pour ce secteur.</p>
+        <p class="market__verdict">Les prix de vente ne sont pas publiés en Alsace-Moselle : le fichier des valeurs foncières s’arrête aux départements soumis à la publicité foncière, ce qui exclut le Bas-Rhin.</p>
       </div>
     </section>
 
@@ -2064,7 +2112,9 @@ Les informations sur les risques auxquels ce bien est exposé sont disponibles s
              data-vsrc="agencyLogo" data-valt="agencyName">
         <div>
           <p class="agency__name" data-v="agencyName">Imko Lille</p>
-          <p class="agency__siret" data-v="agencySiren">N° SIREN : 849442439</p>
+          <!-- Un particulier n'a pas de SIREN : la ligne disparaît plutôt que d'afficher
+               un numéro vide ou emprunté. -->
+          <p class="agency__siret" data-v="agencySiren" data-vnot="6">N° SIREN : 849442439</p>
         </div>
       </div>
       <button class="btn btn--outlined" type="button">Suivre</button>
@@ -2074,10 +2124,10 @@ Les informations sur les risques auxquels ce bien est exposé sont disponibles s
 
     <!-- Annonces de vitrine : non présentes dans le HTML de l'annonce, visuels repris de la
          galerie. Ce sont des annonces de décor, pas des biens réels ; leurs prix au m² se
-         tiennent dans la fourchette interdécile DVF 2024 du secteur de chaque variante
-         (Lomme 1 625–3 779 €/m², Carquefou 2 551–4 036 €/m²). Chaque variante a son propre
-         jeu de cartes : les deux annonces sources n'ont ni la même agence ni la même
-         région, on ne peut pas partager le décor. -->
+         tiennent dans la fourchette interdécile DVF 2024 du secteur de leur variante
+         (Lomme 1 625–3 779, Carquefou 2 551–4 036 €/m²). On n'en fabrique plus : les
+         variantes ajoutées après coup n'en ont pas, et le carrousel disparaît alors au
+         lieu d'afficher un titre sans carte. -->
     <section class="more">
       <div class="more__head">
         <h2 class="section__title" data-v="agencyOthers">D’autres annonces de Imko Lille</h2>
@@ -2289,8 +2339,10 @@ Les informations sur les risques auxquels ce bien est exposé sont disponibles s
                (mandate_type: simple), exclusif pour la variante 2. -->
           <p class="contact-card__over" data-v="proposedBy">Proposé par</p>
           <p class="contact-card__name" data-v="agencyName">Imko Lille</p>
-          <!-- Note et nombre d'avis : absents du HTML de l'annonce, valeurs de décor -->
-          <p class="rating">
+          <!-- Note et nombre d'avis : absents du HTML de l'annonce, valeurs de décor.
+               La variante 6 est vendue par un particulier : ni note, ni compteur
+               d'annonces, ni badge Pro — on n'a aucune de ces données pour elle. -->
+          <p class="rating" data-vnot="6">
             <img src="assets/icon-star.svg" alt="">
             <img src="assets/icon-star.svg" alt="">
             <img src="assets/icon-star.svg" alt="">
@@ -2298,9 +2350,10 @@ Les informations sur les risques auxquels ce bien est exposé sont disponibles s
             <img src="assets/icon-star.svg" alt="">
             <b>4,8 (34)</b>
           </p>
-          <span class="tag--pro">Pro</span>
+          <span class="tag--pro" data-vnot="6">Pro</span>
+          <span class="tag--pro tag--private" data-vonly="6">Particulier</span>
           <!-- Nombre d'annonces : chargé côté client sur lbc, absent du HTML de l'annonce -->
-          <p class="contact-card__ads">87 annonces</p>
+          <p class="contact-card__ads" data-vnot="6">87 annonces</p>
         </div>
         <img class="contact-card__chevron" src="assets/icon-chevron-vertical.svg" alt="">
       </a>
@@ -2402,12 +2455,41 @@ Les informations sur les risques auxquels ce bien est exposé sont disponibles s
 </footer>
 
 <!--
-  Variantes participants. Un seul code, deux jeux de valeurs, chacun adossé à une
+  Variantes participants. Un seul code, sept jeux de valeurs, chacun adossé à une
   annonce réelle différente :
     ?p=1 — annonce 3214064492, maison 1930 à Lille Lomme (59160), ramenée à
            61 m² / 3 pièces / 182 500 € ;
     ?p=2 — annonce 3214673441, maison contemporaine de 2023 à Carquefou (44470),
-           ramenée à 92 m² / 4 pièces (2 chambres + bureau) / 409 500 €.
+           ramenée à 92 m² / 4 pièces (2 chambres + bureau) / 409 500 € ;
+    ?p=3 — annonce 3245449385, appartement dans un immeuble de 1900 à Paris 18e,
+           31 m² / 2 pièces / 247 000 € ;
+    ?p=4 — annonce 3269303248, appartement de 1970 à Paris 15e (Javel),
+           45 m² / 2 pièces. Les deux appartements ajoutent les charges de
+           copropriété et remplacent le nombre de niveaux par l'étage.
+           Son prix est le seul chiffre qui ne vient pas de l'annonce : 408 000 €
+           au lieu des 430 000 € affichés, à la demande d'Imene. Tous les montants
+           qui en dépendent ont été recalculés avec les ratios de l'annonce (prix
+           au m², honoraires 2,87 %, notaire 7,78 %, apport 20 %), arrondis à la
+           centaine pour que le total reste juste.
+    ?p=5 — annonce 3130421698, appartement au 3e étage sans ascenseur à Strasbourg
+           (67000), quartier Krutenau, 46 m² / 2 pièces / 199 000 €. Bien
+           actuellement loué, disponible le 4 novembre 2026 ;
+    ?p=6 — annonce 3265472209, maison de 2023 de 89 m² / 4 pièces, vendue par un
+           particulier. Deux valeurs sont changées à la demande d'Imene : la
+           localisation passe de Blanquefort au Pian-Médoc, secteur Feydieu, et le
+           prix de 353 000 € à 335 500 €. Les montants dérivés sont recalculés avec
+           les ratios de l'annonce (notaire 8,00 %, apport 20 %) et la phrase de
+           l'annonce sur les transports, écrite pour Blanquefort, est retirée : elle
+           serait fausse au Pian-Médoc.
+    ?p=7 — annonce 3222720860, appartement de 1964 de 88 m² / 4 pièces au 1er étage
+           avec ascenseur, vendu par un agent mandataire du réseau Expertimo. Deux
+           valeurs sont changées à la demande d'Imene : la localisation passe de
+           Millau au quartier Saint-Éloi – Camonil de Rodez (12000) et le prix de
+           222 000 € à 213 000 €. Les dérivés sont recalculés avec les ratios de
+           l'annonce (notaire 8,00 %, apport 20 %). La description reprend celle de
+           l'annonce, dont les repères millavois (résidence du XVI, bas de l'avenue
+           Charles de Gaulle, Parc de la Victoire) sont retirés : ils n'existent pas
+           à Rodez et aucun équivalent n'est inventé.
   La variante est mémorisée pour que la navigation adview <-> galerie <-> listing la
   conserve sans param dans chaque lien. Le HTML porte la variante 1 en dur : sans JS
   la page reste cohérente.
@@ -2417,7 +2499,22 @@ Les informations sur les risques auxquels ce bien est exposé sont disponibles s
   notaire 7,80 % (35 040 € sur 449 000 €), taxe foncière et budget énergie de l'annonce
   ramenés au prorata de la surface (95 m² -> 92 m²). Apport = 20 % du prix. Le curseur du
   marché est la position du prix au m² entre les 1er et 9e déciles DVF du secteur, borné à
-  100 % (Lomme 1 625 / 3 779, Carquefou 2 551 / 4 036 €/m²).
+  100 %.
+  Variante 3 : honoraires 5,11 % (12 000 € sur 235 000 € hors honoraires), notaire et
+  budget énergie repris tels quels de l'annonce. Variante 4 : voir ci-dessus, prix
+  modifié et dérivés recalculés. Aucune des deux ne publie sa taxe foncière : la ligne
+  reste « Non communiquée » plutôt qu'estimée.
+  Variante 5 : honoraires 4,74 % (9 000 € sur 190 000 € hors honoraires), notaire, taxe
+  foncière et budget énergie repris tels quels de l'annonce. Variante 6 : pas d'honoraires,
+  c'est une vente entre particuliers. Variante 7 : honoraires à la charge du vendeur
+  (fees_price = 0), donc rien à afficher côté acquéreur ; charges de copropriété et budget
+  énergie repris tels quels, taxe foncière absente de l'annonce.
+  Les déciles DVF 2024 par secteur : Paris 18e 5 769 / 11 768, Paris 15e 7 199 / 11 921 €/m²
+  (appartements, commune entière), Le Pian-Médoc 2 672 / 4 711 €/m² (maisons, 21 ventes),
+  Rodez 1 248 / 2 815 €/m² (appartements, 366 ventes, médiane 2 087 €/m²).
+  La variante 5 n'a pas de fourchette : le fichier des valeurs foncières ne couvre pas le
+  Bas-Rhin, le Haut-Rhin et la Moselle, qui relèvent du livre foncier. Le bloc marché est
+  donc remplacé par une explication, pas par une position inventée.
   Chaque variante garde l'agence, le type de mandat, le DPE et les photos de SON annonce :
   ce sont des données réelles, on ne les remplace pas par des valeurs inventées.
 -->
@@ -2524,6 +2621,444 @@ Les informations sur les risques auxquels ce bien est exposé sont disponibles s
       left: { gaugeLeft: '100%' },
       transform: { mapOffset: 'translate(-314.65px, -287.36px)' },
       val: { finPrice: '409 500', finDown: '81 900' }
+    },
+    '3': {
+      title: 'Appartement 2 pièces 31 m² — Paris 18e | leboncoin',
+      features: 'Appartement · 31 m² · 2 pièces',
+      breadcrumb: 'Vente appartement 2 pièces, 31 m²',
+      region: 'Île-de-France',
+      city: 'Paris',
+      where: 'Paris 75018 · Chapelle - Marx Dormoy',
+      localityName: 'Chapelle - Marx Dormoy',
+      localityAdmin: 'Paris (75018)',
+      // `location.type` de l'annonce vaut « district » : le point n'est pas l'adresse
+      // du bien mais celui du quartier, le badge ne peut donc pas dire « exacte ».
+      mapBadge: 'Localisation approximative',
+      mapLabel: 'Carte du secteur de l’appartement à Paris 18e',
+      mktLow: '5 769 € / m²',
+      mktHigh: '11 768 € / m²',
+      price: '247 000 €',
+      ppm: '7 968 € / m²',
+      keyinfo: 'Cave · Cuisine équipée · Interphone · Étage 4/6',
+      kind: 'Appartement',
+      surface: '31 m²',
+      rooms: '2 pièces',
+      beds: '1 chambre',
+      levels: 'Étage 4 sur 6',
+      bathroom: '1 salle d’eau',
+      outside: 'Square au pied de l’immeuble',
+      feat: 'Cave · Cuisine équipée · Interphone',
+      // L'annonce ne donne pas d'orientation mais donne l'ascenseur : la ligne porte
+      // deja l'icone d'ascenseur, elle affiche donc l'information qui existe.
+      orient: 'Sans ascenseur',
+      heat: 'Chauffage individuel électrique',
+      year: 'Construit en 1900',
+      cond: 'Bon état',
+      honoraires: 'Honoraires de 5,11 % à la charge de l’acquéreur, soit 12 000 € inclus dans le prix.',
+      notaire: '18 800 €',
+      total: '265 800 €',
+      taxe: 'Non communiquée',
+      energie: 'entre 590 et 820 € / an',
+      verdict: 'À 7 968 € / m², le bien est en dessous de la médiane du secteur (8 489 € / m²).',
+      proposedBy: 'Proposé par',
+      agencyName: 'L’Immobilier par Charly',
+      agencySiren: 'N° SIREN : 885172601',
+      agencyOthers: 'D’autres annonces de L’Immobilier par Charly',
+      desc: `Appartement 2 pièces 31 m²
+
+Métro Marx Dormoy – Square de la Madone – Dans un immeuble ancien en bon état général. Au 4ème étage sans ascenseur, joli 2 pièces de 31 m² comprenant un séjour avec cuisine ouverte aménagée, une salle d’eau avec WC sanibroyeur (possible de se raccorder à une colonne), belle chambre avec grand placard aménagé. Calme, vue ciel, aucune perte de place et en bon état général. C’est un appartement parfait pour poser ses valises tout de suite ! Une cave en sous-sol est comprise également.
+Square au pied de l’immeuble !
+
+Surface : 31 m²
+
+À propos de la copropriété :
+Pas de procédure en cours
+Statut provisoire du syndicat : Pas de procédure en cours
+Nombre de lots : 140
+Date de réalisation du diagnostic énergétique : 13/06/2026
+
+Consommation énergie primaire : 175 kWh/m²/an
+Consommation énergie finale : 92 kWh/m²/an
+
+Montant estimé des dépenses annuelles d’énergie pour un usage standard : entre 590 € et 820 € sur les années 2021, 2022 et 2023 (abonnements compris).
+
+Les informations sur les risques auxquels ce bien est exposé sont disponibles sur le site Géorisques : georisques.gouv.fr`,
+      scale: { dpe: 'C', ges: 'A' },
+      alt: {
+        hero0Alt: 'Séjour avec cuisine ouverte',
+        hero1Alt: 'Chambre avec coin bureau',
+        hero2Alt: 'Cuisine ouverte aménagée et équipée'
+      },
+      src: {
+        plan2d: 'assets/ad-paris18/plan.jpg',
+        cover: 'assets/ad-paris18/photo-01.jpg',
+        hero0: 'assets/ad-paris18/photo-01.jpg',
+        hero1: 'assets/ad-paris18/photo-05.jpg',
+        hero2: 'assets/ad-paris18/photo-03.jpg',
+        tour0: 'assets/ad-paris18/photo-03.jpg',
+        tour1: 'assets/ad-paris18/photo-06.jpg',
+        agencyLogo: 'assets/ad-paris18/store-logo.jpg',
+        map0: 'assets/map/t-16598-11267.png', map1: 'assets/map/t-16599-11267.png',
+        map2: 'assets/map/t-16600-11267.png', map3: 'assets/map/t-16598-11268.png',
+        map4: 'assets/map/t-16599-11268.png', map5: 'assets/map/t-16600-11268.png',
+        map6: 'assets/map/t-16598-11269.png', map7: 'assets/map/t-16599-11269.png',
+        map8: 'assets/map/t-16600-11269.png'
+      },
+      left: { gaugeLeft: '37%' },
+      transform: { mapOffset: 'translate(-287.52px, -338.41px)' },
+      val: { finPrice: '247 000', finDown: '49 400' }
+    },
+    '4': {
+      title: 'Appartement 2 pièces 45 m² — Paris 15e | leboncoin',
+      features: 'Appartement · 45 m² · 2 pièces',
+      breadcrumb: 'Vente appartement 2 pièces, 45 m²',
+      region: 'Île-de-France',
+      city: 'Paris',
+      where: 'Paris 75015 · Javel - André Citroën',
+      localityName: 'Javel - André Citroën',
+      localityAdmin: 'Paris (75015)',
+      mapBadge: 'Localisation approximative',
+      mapLabel: 'Carte du secteur de l’appartement à Paris 15e',
+      mktLow: '7 199 € / m²',
+      mktHigh: '11 921 € / m²',
+      price: '408 000 €',
+      ppm: '9 067 € / m²',
+      keyinfo: 'Parking · Cave · Cuisine équipée · Étage 1/6',
+      kind: 'Appartement',
+      surface: '45 m²',
+      rooms: '2 pièces',
+      beds: '1 chambre',
+      levels: 'Étage 1 sur 6',
+      bathroom: '1 salle de bains',
+      outside: 'Cour intérieure végétalisée',
+      feat: 'Cave · Cuisine équipée · Interphone · Gardien',
+      orient: 'Orientation nord',
+      heat: 'Chauffage collectif au gaz',
+      year: 'Construit en 1970',
+      // L'annonce ne renseigne pas l'état général : la ligne le dit plutôt que de trancher.
+      cond: 'État non communiqué',
+      honoraires: 'Honoraires de 2,87 % à la charge de l’acquéreur, soit 11 400 € inclus dans le prix.',
+      notaire: '31 700 €',
+      total: '439 700 €',
+      taxe: 'Non communiquée',
+      energie: 'entre 520 et 750 € / an',
+      verdict: 'À 9 067 € / m², le bien est en dessous de la médiane du secteur (9 428 € / m²).',
+      proposedBy: 'Proposé par',
+      agencyName: 'Alexandre Gouin Immobilier',
+      agencySiren: 'N° SIREN : 813678679',
+      desc: `Paris 15e – Javel – 2 pièces – 45 m²
+
+À proximité immédiate de Beaugrenelle et de l’église Saint-Christophe-de-Javel, au cœur d’un environnement recherché du 15e arrondissement de Paris, cet appartement deux pièces prend place au 1er étage avec ascenseur d’une résidence sécurisée des années 70 avec gardien. Situé dans un quartier apprécié pour sa qualité de vie, sa proximité avec les commerces, les transports et les quais de Seine, ce bien constitue une belle opportunité aussi bien pour une résidence principale que pour un investissement locatif.
+
+Donnant entièrement sur une agréable cour intérieure végétalisée, l’appartement bénéficie d’un environnement calme et préservé, à l’abri de l’agitation urbaine. Son agencement fonctionnel et ses volumes bien répartis permettent d’envisager différents projets d’aménagement et d’optimisation.
+
+L’entrée dessert une pièce de vie confortable avec espace de rangement intégré. La cuisine indépendante offre un espace distinct et fonctionnel, facilement aménageable selon les besoins. La chambre dispose d’une salle de bains attenante, apportant confort et praticité au quotidien. Des WC séparés viennent compléter l’ensemble.
+
+Une cave en sous-sol complète ce bien et offre un espace de stockage supplémentaire particulièrement appréciable. Un emplacement de parking en sous-sol est proposé en supplément, un véritable atout dans ce secteur recherché du 15e arrondissement.
+
+L’emplacement constitue l’un des principaux points forts de cet appartement. À quelques pas des commerces de Beaugrenelle, des transports, notamment du métro Javel, ainsi que des quais de Seine, le bien profite d’un cadre de vie pratique et agréable au quotidien.
+
+Copropriété de 126 lots – dont 74 lots d’habitation. Pas de procédure en cours.
+
+Charges prévisionnelles annuelles : 3 400 €.
+
+Le prix indiqué comprend les honoraires à la charge de l’acheteur : 2,87 % TTC du prix du bien hors honoraires. Prix hors honoraires : 396 600 €.
+
+Référence annonce : 65122
+
+Date de réalisation du diagnostic : 28/04/2026
+
+Montant estimé des dépenses annuelles d’énergie pour un usage standard : entre 520 € et 750 € sur les années 2021, 2022 et 2023 (abonnements compris).
+
+Les informations sur les risques auxquels ce bien est exposé sont disponibles sur le site Géorisques : georisques.gouv.fr`,
+      scale: { dpe: 'C', ges: 'C' },
+      alt: {
+        hero0Alt: 'Pièce de vie avec fenêtres sur la cour intérieure',
+        hero1Alt: 'Chambre avec accès à la salle de bains',
+        hero2Alt: 'Cuisine indépendante équipée'
+      },
+      src: {
+        plan2d: 'assets/ad-paris15/plan.jpg',
+        cover: 'assets/ad-paris15/photo-01.jpg',
+        hero0: 'assets/ad-paris15/photo-01.jpg',
+        hero1: 'assets/ad-paris15/photo-11.jpg',
+        hero2: 'assets/ad-paris15/photo-09.jpg',
+        tour0: 'assets/ad-paris15/photo-09.jpg',
+        tour1: 'assets/ad-paris15/photo-11.jpg',
+        agencyLogo: 'assets/ad-paris15/store-logo.jpg',
+        map0: 'assets/map/t-16589-11274.png', map1: 'assets/map/t-16590-11274.png',
+        map2: 'assets/map/t-16591-11274.png', map3: 'assets/map/t-16589-11275.png',
+        map4: 'assets/map/t-16590-11275.png', map5: 'assets/map/t-16591-11275.png',
+        map6: 'assets/map/t-16589-11276.png', map7: 'assets/map/t-16590-11276.png',
+        map8: 'assets/map/t-16591-11276.png'
+      },
+      left: { gaugeLeft: '40%' },
+      transform: { mapOffset: 'translate(-442.46px, -396.29px)' },
+      val: { finPrice: '408 000', finDown: '81 600' }
+    },
+    '5': {
+      title: 'Appartement 2 pièces 46 m² — Strasbourg Krutenau | leboncoin',
+      features: 'Appartement · 46 m² · 2 pièces',
+      breadcrumb: 'Vente appartement 2 pièces, 46 m²',
+      region: 'Alsace',
+      city: 'Strasbourg',
+      where: 'Strasbourg 67000 · Krutenau',
+      localityName: 'Krutenau',
+      localityAdmin: 'Strasbourg (67000)',
+      mapBadge: 'Localisation approximative',
+      mapLabel: 'Carte du secteur de l’appartement à Strasbourg',
+      price: '199 000 €',
+      ppm: '4 326 € / m²',
+      keyinfo: 'Sans ascenseur · Étage 3/4 · Actuellement loué',
+      kind: 'Appartement',
+      surface: '46 m²',
+      rooms: '2 pièces',
+      beds: '1 chambre',
+      levels: 'Étage 3 sur 4',
+      bathroom: '1 salle d’eau',
+      // L'annonce ne mentionne aucun extérieur ni aucun équipement : les deux lignes
+      // le disent, plutôt que de reprendre les valeurs de la variante précédente.
+      outside: 'Non communiqué',
+      feat: 'Non communiqué',
+      orient: 'Sans ascenseur',
+      heat: 'Chauffage individuel électrique',
+      // Ni année de construction ni état général dans l'annonce.
+      year: 'Non communiquée',
+      cond: 'État non communiqué',
+      honoraires: 'Honoraires de 4,74 % à la charge de l’acquéreur, soit 9 000 € inclus dans le prix.',
+      notaire: '15 200 €',
+      total: '214 200 €',
+      taxe: '634 € / an',
+      energie: 'entre 1 002 et 1 357 € / an',
+      proposedBy: 'Proposé par',
+      agencyName: 'Cabinet Husser et Stocki',
+      agencySiren: 'N° SIREN : 489317339',
+      desc: `Appartement 2 pièces 46 m²
+
+Disponible le 4 novembre 2026. Appartement actuellement loué, le locataire vient de transmettre son préavis.
+
+– KRUTENAU –
+5 rue Klein 67000 Strasbourg
+2 pièces, 45,51 m² au 3e étage sans ascenseur.
+
+DPE E – nouvelle version 1er janvier 2026
+Chauffage individuel électrique
+
+Actuellement loué 800 € par mois + 50 € de charges. Bail signé le 05/11/2024, d’une durée de 6 ans car le propriétaire est une personne morale.
+
+Prix du bien : 199 000 €
+Prix hors honoraires : 190 000 €
+Honoraires TTC : 4,74 % soit 9 000 €, à la charge de l’acquéreur
+
+À propos de la copropriété :
+Pas de procédure en cours
+Nombre de lots : 10 (5 principaux)
+
+Charges prévisionnelles annuelles 2025 : 924,24 € au total, dont 516,24 € déductibles et 376,09 € de charges locatives (soit 31,34 € par mois).
+
+Taxe foncière 2025 : 634 € dont 137 € de TOM.
+
+Date de réalisation du diagnostic énergétique : 13/03/2024
+Consommation énergie primaire : 288 kWh/m²/an
+Consommation énergie finale : 151 kWh/m²/an
+
+Montant estimé des dépenses annuelles d’énergie pour un usage standard : entre 1 002 € et 1 357 € par an. Prix moyens des énergies indexés sur l’année 2021 (abonnements compris).
+
+Les informations sur les risques auxquels ce bien est exposé sont disponibles sur le site Géorisques : georisques.gouv.fr`,
+      scale: { dpe: 'E', ges: 'C' },
+      alt: {
+        hero0Alt: 'Séjour avec ses deux fenêtres sur rue',
+        hero1Alt: 'Chambre avec rangements',
+        hero2Alt: 'Cuisine séparée équipée'
+      },
+      src: {
+        plan2d: 'assets/ad-strasbourg/plan.jpg',
+        cover: 'assets/ad-strasbourg/photo-01.jpg',
+        hero0: 'assets/ad-strasbourg/photo-01.jpg',
+        hero1: 'assets/ad-strasbourg/photo-02.jpg',
+        hero2: 'assets/ad-strasbourg/photo-03.jpg',
+        tour0: 'assets/ad-strasbourg/photo-03.jpg',
+        tour1: 'assets/ad-strasbourg/photo-02.jpg',
+        agencyLogo: 'assets/ad-strasbourg/store-logo.jpg',
+        map0: 'assets/map/t-17089-11309.png', map1: 'assets/map/t-17090-11309.png',
+        map2: 'assets/map/t-17091-11309.png', map3: 'assets/map/t-17089-11310.png',
+        map4: 'assets/map/t-17090-11310.png', map5: 'assets/map/t-17091-11310.png',
+        map6: 'assets/map/t-17089-11311.png', map7: 'assets/map/t-17090-11311.png',
+        map8: 'assets/map/t-17091-11311.png'
+      },
+      transform: { mapOffset: 'translate(-308.12px, -450.20px)' },
+      val: { finPrice: '199 000', finDown: '39 800' }
+    },
+    '6': {
+      title: 'Maison 4 pièces 89 m² — Le Pian-Médoc | leboncoin',
+      features: 'Maison · 89 m² · 4 pièces',
+      breadcrumb: 'Vente maison 4 pièces, 89 m²',
+      region: 'Aquitaine',
+      city: 'Le Pian-Médoc',
+      where: 'Le Pian-Médoc 33290 · Feydieu',
+      localityName: 'Feydieu',
+      localityAdmin: 'Le Pian-Médoc (33290)',
+      // Secteur et non adresse : le point est celui du village de Feydieu, géocodé
+      // par la Base Adresse Nationale, pas celui de la maison.
+      mapBadge: 'Localisation approximative',
+      mapLabel: 'Carte du secteur de la maison au Pian-Médoc',
+      mktLow: '2 672 € / m²',
+      mktHigh: '4 711 € / m²',
+      price: '335 500 €',
+      ppm: '3 770 € / m²',
+      keyinfo: 'Terrasse · Jardin · Garage · Climatisation',
+      surface: '89 m²',
+      rooms: '4 pièces',
+      beds: '3 chambres',
+      levels: '2 niveaux',
+      bathroom: '1 salle de bains',
+      outside: 'Terrasse · Jardin',
+      feat: 'Terrain de 205 m² · Garage · Climatisation · Cuisine ouverte',
+      orient: 'Orientation sud',
+      heat: 'Chauffage électrique',
+      year: 'Construit en 2023',
+      cond: 'Très bon état',
+      // Vente entre particuliers : il n'y a pas d'honoraires d'agence, la ligne le dit
+      // au lieu d'afficher un pourcentage qui n'existe pas.
+      honoraires: 'Vente de particulier à particulier : aucun honoraire d’agence.',
+      notaire: '26 840 €',
+      total: '362 340 €',
+      taxe: '800 € / an',
+      energie: 'entre 520 et 780 € / an',
+      verdict: 'À 3 770 € / m², le bien est au-dessus de la médiane du secteur (3 509 € / m²).',
+      proposedBy: 'Proposé par',
+      agencyName: 'chamarcy',
+      desc: `Le Pian-Médoc, secteur Feydieu, dans une rue calme.
+
+Projetez-vous dans cette maison individuelle de 2023, de 89 m² avec jardin et garage.
+
+Au rez-de-chaussée, vous trouverez une grande pièce de vie lumineuse grâce à sa large baie vitrée, une cuisine semi-ouverte équipée, un cellier et des WC avec lavabo.
+
+L’étage est composé de 3 chambres avec penderies et d’une salle de bain spacieuse avec baignoire et WC.
+
+À l’extérieur, le jardin avec terrasse en bois est exposé sud et entièrement clôturé. Côté nord, une place de parking avec prise pour véhicule électrique.
+
+Maison récente équipée d’une climatisation réversible et d’un chauffe-eau thermodynamique.
+
+DPE classe A réalisé en 03/2025.
+
+Ce bien est soumis à la copropriété. Les charges courantes annuelles sont estimées à 140 €.
+
+Aucun travaux ni de frais d’agence à prévoir !
+
+Proche des commodités : écoles et commerces.
+
+Vente de particulier à particulier, agence s’abstenir, merci.`,
+      scale: { dpe: 'A', ges: 'A' },
+      alt: {
+        hero0Alt: 'Façade arrière, terrasse en bois et jardin clos',
+        hero1Alt: 'Pièce de vie ouverte sur la salle à manger',
+        hero2Alt: 'Cuisine semi-ouverte équipée'
+      },
+      src: {
+        plan2d: 'assets/ad-pian-medoc/plan.jpg',
+        cover: 'assets/ad-pian-medoc/photo-01.jpg',
+        hero0: 'assets/ad-pian-medoc/photo-01.jpg',
+        hero1: 'assets/ad-pian-medoc/photo-02.jpg',
+        hero2: 'assets/ad-pian-medoc/photo-03.jpg',
+        tour0: 'assets/ad-pian-medoc/photo-03.jpg',
+        tour1: 'assets/ad-pian-medoc/photo-05.jpg',
+        agencyLogo: 'assets/ad-pian-medoc/store-logo.jpg',
+        map0: 'assets/map/t-16325-11789.png', map1: 'assets/map/t-16326-11789.png',
+        map2: 'assets/map/t-16327-11789.png', map3: 'assets/map/t-16325-11790.png',
+        map4: 'assets/map/t-16326-11790.png', map5: 'assets/map/t-16327-11790.png',
+        map6: 'assets/map/t-16325-11791.png', map7: 'assets/map/t-16326-11791.png',
+        map8: 'assets/map/t-16327-11791.png'
+      },
+      left: { gaugeLeft: '54%' },
+      transform: { mapOffset: 'translate(-294.03px, -363.70px)' },
+      val: { finPrice: '335 500', finDown: '67 100' }
+    },
+    '7': {
+      title: 'Appartement 4 pièces 88 m² — Rodez Saint-Éloi | leboncoin',
+      features: 'Appartement · 88 m² · 4 pièces',
+      breadcrumb: 'Vente appartement 4 pièces, 88 m²',
+      region: 'Midi-Pyrénées',
+      city: 'Rodez',
+      where: 'Rodez 12000 · Saint-Éloi – Camonil',
+      localityName: 'Saint-Éloi – Camonil',
+      localityAdmin: 'Rodez (12000)',
+      mapBadge: 'Localisation approximative',
+      mapLabel: 'Carte du secteur de l’appartement à Rodez',
+      mktLow: '1 248 € / m²',
+      mktHigh: '2 815 € / m²',
+      price: '213 000 €',
+      ppm: '2 420 € / m²',
+      keyinfo: 'Ascenseur · Étage 1 · Balcon · Cave',
+      kind: 'Appartement',
+      surface: '88 m²',
+      rooms: '4 pièces',
+      beds: '3 chambres',
+      // L'annonce dit « premier étage » sans donner le nombre d'étages de l'immeuble.
+      levels: 'Étage 1',
+      bathroom: '1 salle d’eau',
+      outside: 'Balcon',
+      feat: 'Cave de 9,50 m² · Place de parking privative · Cuisine séparée',
+      orient: 'Ascenseur',
+      heat: 'Chauffage collectif au gaz',
+      year: 'Construit en 1964',
+      cond: 'Très bon état',
+      // Honoraires à la charge du vendeur (fees_price = 0 dans l'annonce) : le prix
+      // affiché est celui que paie l'acquéreur.
+      honoraires: 'Honoraires d’agence à la charge du vendeur : aucun honoraire ne s’ajoute au prix pour l’acquéreur.',
+      notaire: '17 040 €',
+      total: '230 040 €',
+      taxe: 'Non communiquée',
+      energie: 'entre 1 440 et 1 990 € / an',
+      verdict: 'À 2 420 € / m², le bien est au-dessus de la médiane du secteur (2 087 € / m²).',
+      proposedBy: 'Proposé par',
+      agencyName: 'GUIDICE Romain',
+      agencySiren: 'N° SIREN : 841730393',
+      desc: `Appartement 4 pièces 88 m²
+
+Au sein d’une résidence du quartier Saint-Éloi – Camonil, à Rodez, venez découvrir cet appartement F4 de 88 m² situé au premier étage avec ascenseur.
+ L’appartement dispose de trois chambres, salon séjour, salle d’eau, WC séparé et d’une cuisine séparée donnant sur un balcon au calme.
+ Son état est excellent et les prestations vous raviront par le confort apporté au quotidien, cave de 9,50 m², ascenseur et place de parking privative.
+ Son emplacement proche des commodités du quartier vous ravira !
+ Les charges de copropriété incluent la consommation de chauffage, d’eau froide et eau chaude (chaudière collective gaz).
+ À découvrir sans tarder.
+   - Annonce rédigée et publiée par un Agent Mandataire -
+
+Surface : 88 m²
+
+A propos de la copropriété :
+Pas de procédure en cours
+Nombre de lots : 58
+Date de réalisation du diagnostic énergétique : 09/04/2025
+
+Consommation énergie primaire : 205 kWh/m²/an
+Consommation énergie finale : 200 kWh/m²/an
+
+Montant estimé des dépenses annuelles d’énergie pour un usage standard : entre 1 440 € et 1 990 € sur les années 2021, 2022 et 2023 (abonnements compris).`,
+      scale: { dpe: 'D', ges: 'D' },
+      alt: {
+        hero0Alt: 'Salle à manger ouverte sur le salon, photo habillée d’un bandeau de l’agence',
+        hero1Alt: 'Cuisine séparée équipée',
+        hero2Alt: 'Chambre avec fenêtre sur les arbres'
+      },
+      src: {
+        plan2d: 'assets/ad-rodez/plan.jpg',
+        cover: 'assets/ad-rodez/photo-01.jpg',
+        hero0: 'assets/ad-rodez/photo-01.jpg',
+        hero1: 'assets/ad-rodez/photo-08.jpg',
+        hero2: 'assets/ad-rodez/photo-12.jpg',
+        tour0: 'assets/ad-rodez/photo-02.jpg',
+        tour1: 'assets/ad-rodez/photo-08.jpg',
+        agencyLogo: 'assets/ad-rodez/store-logo.jpg',
+        map0: 'assets/map/t-16617-11868.png', map1: 'assets/map/t-16618-11868.png',
+        map2: 'assets/map/t-16619-11868.png', map3: 'assets/map/t-16617-11869.png',
+        map4: 'assets/map/t-16618-11869.png', map5: 'assets/map/t-16619-11869.png',
+        map6: 'assets/map/t-16617-11870.png', map7: 'assets/map/t-16618-11870.png',
+        map8: 'assets/map/t-16619-11870.png'
+      },
+      left: { gaugeLeft: '75%' },
+      transform: { mapOffset: 'translate(-290.00px, -403.74px)' },
+      val: { finPrice: '213 000', finDown: '42 600' }
     }
   };
 
@@ -2531,7 +3066,7 @@ Les informations sur les risques auxquels ce bien est exposé sont disponibles s
 
   function currentVariant() {
     const asked = new URLSearchParams(location.search).get('p');
-    if (asked === '1' || asked === '2') {
+    if (['1', '2', '3', '4', '5', '6', '7'].includes(asked)) {
       try { localStorage.setItem(VARIANT_KEY, asked); } catch (e) {}
       return asked;
     }
@@ -2566,7 +3101,9 @@ Les informations sur les risques auxquels ce bien est exposé sont disponibles s
     for (const [key, src] of Object.entries(data.src)) {
       document.querySelectorAll('[data-vsrc="' + key + '"]').forEach(el => { el.src = src; });
     }
-    for (const [key, left] of Object.entries(data.left)) {
+    // Protege comme scale et transform : la variante 5 n'a pas de curseur de marche,
+    // et sans le defaut la boucle interrompait celles qui suivent.
+    for (const [key, left] of Object.entries(data.left || {})) {
       document.querySelectorAll('[data-vleft="' + key + '"]').forEach(el => { el.style.left = left; });
     }
     for (const [key, value] of Object.entries(data.val)) {
@@ -2596,6 +3133,21 @@ Les informations sur les risques auxquels ce bien est exposé sont disponibles s
   document.querySelectorAll('[data-vonly]').forEach(el => {
     if (el.dataset.vonly !== variant) el.remove();
   });
+  /* L'inverse : un bloc qui vaut pour toutes les variantes sauf une. Sans ça il
+     faudrait le recopier autant de fois qu'il y a de variantes concernées. */
+  document.querySelectorAll('[data-vnot]').forEach(el => {
+    if (el.dataset.vnot.split(' ').includes(variant)) el.remove();
+  });
+  /* Les carrousels d'annonces sont du decor : ils n'existent que pour les variantes
+     qui en ont un jeu. Un titre suivi d'une piste vide vaut moins que rien, donc la
+     section entiere s'en va. */
+  document.querySelectorAll('.more').forEach(section => {
+    if (!section.querySelector('.mini')) {
+      const rule = section.previousElementSibling;
+      if (rule && rule.classList.contains('rule')) rule.remove();
+      section.remove();
+    }
+  });
   applyVariant(variant);
   propagateVariant(variant);
 </script>
@@ -2610,6 +3162,12 @@ Les informations sur les risques auxquels ce bien est exposé sont disponibles s
 
   const keys = document.getElementById('keys');
   const keysToggle = document.querySelector('.keys__toggle');
+  /* Le nombre est compté, pas écrit : la vente entre particuliers n'a pas de ligne
+     d'honoraires, et un « +8 » qui n'en cache que 7 se remarque tout de suite. */
+  const hiddenKeys = keys.querySelectorAll('.keys__item--more').length;
+  keysToggle.dataset.labelMore = `Voir les ${hiddenKeys} critères supplémentaires`;
+  keysToggle.textContent = keysToggle.dataset.labelMore;
+  document.querySelector('.keyinfo__more').textContent = `+${hiddenKeys}`;
   function setKeysExpanded(open) {
     keys.classList.toggle('keys--expanded', open);
     keysToggle.setAttribute('aria-expanded', String(open));

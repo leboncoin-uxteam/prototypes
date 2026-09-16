@@ -2680,6 +2680,159 @@ ul { list-style: none; }
     '59663': { prix: 2029, lignes: [], tags: ['Village'] }, // Wormhout
     '59666': { prix: 1673, lignes: [], tags: ['Rural'] }, // Zegerscappel
     '59668': { prix: 2434, lignes: [], tags: ['Village', 'Balnéaire'] }, // Zuydcoote
+
+    /* ── Petite couronne : Hauts-de-Seine, Seine-Saint-Denis, Val-de-Marne ───
+       Les 122 communes des trois departements, soit toutes les valeurs que
+       l'autocompletion peut y renvoyer : geo.api.gouv.fr ne descend pas au
+       quartier, et les seuls quartiers du proto sont Lomme et Hellemmes
+       (ZONES) plus les arrondissements de Paris, Lyon et Marseille.
+       Pierrefitte-sur-Seine a fusionne dans Saint-Denis au 01/01/2025 : DVF 2024
+       la compte encore a part (93059), ses ventes sont donc reversees dans
+       93066, seul code que le referentiel actuel connaisse.
+       `prix` = mediane des ventes d'APPARTEMENTS 2024, l'unite qui a du sens ici,
+       meme methode que plus haut sur les fichiers departementaux
+       files.data.gouv.fr/geo-dvf/latest/csv/2024/departements/{92,93,94}.csv.gz
+       (regroupement par id_mutation, nature « Vente », un seul local bati,
+       surface >= 9 m2, prix/m2 borne 300-30000, au moins 10 ventes). Quatre
+       communes pavillonnaires n'atteignent pas ce seuil en appartements
+       (Marnes-la-Coquette, Ormesson-sur-Marne, Perigny, Mandres-les-Roses) :
+       c'est la mediane de leurs maisons qui est publiee, 13 a 100 ventes.
+       `lignes` = referentiel IDFM et non OSM, qui n'est pas joignable d'ici :
+       jeux `arrets-lignes` (un code INSEE par arret) et `referentiel-des-lignes`
+       (couleur officielle `colourweb_hexa`, la meme que pour Paris). Metro puis
+       tram comme ailleurs, plafonne a 3, classe par nombre d'arrets dans la
+       commune. RER et Transilien restent hors champ, ici aussi : 58 communes
+       n'ont donc aucune pastille alors qu'un RER les traverse — c'est la limite
+       de la regle, pas un trou de donnees.
+       `tags` : la regle de densite du 59 ne dit plus rien a cette echelle, elle
+       rangerait 105 des 122 communes sous « Urbain ». La forme batie est donc
+       lue dans la part des maisons parmi les ventes 2024 du meme fichier DVF —
+       >= 60 % Pavillonnaire, 25-60 % Mixte, < 25 % Immeubles — et un second tag
+       ne marque que les deux extremes de densite : « Dense » au-dela de
+       15 000 hab/km2 (Paris intra-muros en compte ~20 000), « Village » sous
+       800, le seuil deja retenu pour le Nord. */
+    '94001': { prix: 2825, lignes: [], tags: ['Mixte'] }, // Ablon-sur-Seine
+    '94002': { prix: 4861, lignes: [], tags: ['Immeubles'] }, // Alfortville
+    '92002': { prix: 4867, lignes: [['T10', '#6e6e00']], tags: ['Mixte'] }, // Antony
+    '94003': { prix: 5161, lignes: [], tags: ['Mixte'] }, // Arcueil
+    '92004': { prix: 6188, lignes: [['13', '#82c8e6'], ['T1', '#0055c8']], tags: ['Immeubles', 'Dense'] }, // Asnières-sur-Seine
+    '93001': { prix: 3917, lignes: [['12', '#00643c'], ['7', '#ff82b4']], tags: ['Immeubles', 'Dense'] }, // Aubervilliers
+    '93005': { prix: 2910, lignes: [['T4', '#dc9600']], tags: ['Mixte'] }, // Aulnay-sous-Bois
+    '92007': { prix: 4826, lignes: [['4', '#a0006e']], tags: ['Immeubles'] }, // Bagneux
+    '93006': { prix: 5198, lignes: [['3', '#6e6e00']], tags: ['Immeubles', 'Dense'] }, // Bagnolet
+    '93008': { prix: 3452, lignes: [['5', '#ff5a00'], ['T1', '#0055c8']], tags: ['Mixte'] }, // Bobigny
+    '92009': { prix: 6253, lignes: [], tags: ['Immeubles', 'Dense'] }, // Bois-Colombes
+    '94004': { prix: 2765, lignes: [], tags: ['Immeubles'] }, // Boissy-Saint-Léger
+    '93010': { prix: 2822, lignes: [['T4', '#dc9600']], tags: ['Mixte'] }, // Bondy
+    '94011': { prix: 3833, lignes: [], tags: ['Mixte'] }, // Bonneuil-sur-Marne
+    '92012': { prix: 8188, lignes: [['9', '#d2d200'], ['10', '#dc9600']], tags: ['Immeubles', 'Dense'] }, // Boulogne-Billancourt
+    '92014': { prix: 5200, lignes: [], tags: ['Immeubles'] }, // Bourg-la-Reine
+    '94015': { prix: 4633, lignes: [], tags: ['Mixte'] }, // Bry-sur-Marne
+    '94016': { prix: 4930, lignes: [], tags: ['Immeubles'] }, // Cachan
+    '94017': { prix: 3426, lignes: [], tags: ['Mixte'] }, // Champigny-sur-Marne
+    '94018': { prix: 7381, lignes: [['8', '#d282be']], tags: ['Immeubles', 'Dense'] }, // Charenton-le-Pont
+    '92022': { prix: 5395, lignes: [], tags: ['Immeubles'] }, // Chaville
+    '94019': { prix: 3057, lignes: [], tags: ['Mixte'] }, // Chennevières-sur-Marne
+    '94021': { prix: 3477, lignes: [['14', '#640082'], ['T7', '#6e491e']], tags: ['Immeubles'] }, // Chevilly-Larue
+    '94022': { prix: 3449, lignes: [['T9', '#3c91dc']], tags: ['Immeubles'] }, // Choisy-le-Roi
+    '92019': { prix: 4667, lignes: [['T10', '#6e6e00']], tags: ['Immeubles'] }, // Châtenay-Malabry
+    '92020': { prix: 5405, lignes: [['13', '#82c8e6'], ['T6', '#ff0000']], tags: ['Immeubles'] }, // Châtillon
+    '92023': { prix: 5452, lignes: [['T6', '#ff0000'], ['T10', '#6e6e00']], tags: ['Mixte'] }, // Clamart
+    '92024': { prix: 6744, lignes: [['13', '#82c8e6']], tags: ['Immeubles', 'Dense'] }, // Clichy
+    '93014': { prix: 1821, lignes: [['T4', '#dc9600']], tags: ['Mixte'] }, // Clichy-sous-Bois
+    '92025': { prix: 4885, lignes: [['T2', '#a0006e']], tags: ['Mixte'] }, // Colombes
+    '93015': { prix: 3226, lignes: [], tags: ['Pavillonnaire'] }, // Coubron
+    '92026': { prix: 6667, lignes: [['1', '#ffbe00'], ['T2', '#a0006e']], tags: ['Immeubles', 'Dense'] }, // Courbevoie
+    '94028': { prix: 3401, lignes: [['8', '#d282be']], tags: ['Immeubles'] }, // Créteil
+    '93029': { prix: 3292, lignes: [['T1', '#0055c8']], tags: ['Mixte'] }, // Drancy
+    '93030': { prix: 2188, lignes: [], tags: ['Mixte'] }, // Dugny
+    '92032': { prix: 4471, lignes: [], tags: ['Immeubles'] }, // Fontenay-aux-Roses
+    '94033': { prix: 5667, lignes: [], tags: ['Mixte'] }, // Fontenay-sous-Bois
+    '94034': { prix: 3108, lignes: [], tags: ['Immeubles'] }, // Fresnes
+    '93032': { prix: 2917, lignes: [], tags: ['Mixte'] }, // Gagny
+    '92033': { prix: 5778, lignes: [], tags: ['Immeubles'] }, // Garches
+    '92036': { prix: 4408, lignes: [['13', '#82c8e6'], ['T1', '#0055c8']], tags: ['Immeubles'] }, // Gennevilliers
+    '94037': { prix: 5931, lignes: [], tags: ['Immeubles', 'Dense'] }, // Gentilly
+    '93033': { prix: 4486, lignes: [], tags: ['Pavillonnaire'] }, // Gournay-sur-Marne
+    '92040': { prix: 7351, lignes: [['12', '#00643c'], ['T2', '#a0006e']], tags: ['Immeubles', 'Dense'] }, // Issy-les-Moulineaux
+    '94041': { prix: 4822, lignes: [['7', '#ff82b4'], ['T9', '#3c91dc']], tags: ['Immeubles'] }, // Ivry-sur-Seine
+    '94042': { prix: 5542, lignes: [], tags: ['Immeubles'] }, // Joinville-le-Pont
+    '94038': { prix: 3732, lignes: [['14', '#640082']], tags: ['Mixte'] }, // L'Haÿ-les-Roses
+    '93039': { prix: 3609, lignes: [['T1', '#0055c8']], tags: ['Immeubles'] }, // L'Île-Saint-Denis
+    '93027': { prix: 2738, lignes: [['7', '#ff82b4'], ['T1', '#0055c8'], ['T11', '#ff5a00']], tags: ['Mixte'] }, // La Courneuve
+    '92035': { prix: 6331, lignes: [['T2', '#a0006e']], tags: ['Immeubles', 'Dense'] }, // La Garenne-Colombes
+    '94060': { prix: 3580, lignes: [], tags: ['Pavillonnaire'] }, // La Queue-en-Brie
+    '93007': { prix: 3565, lignes: [], tags: ['Pavillonnaire'] }, // Le Blanc-Mesnil
+    '93013': { prix: 3412, lignes: [['T11', '#ff5a00']], tags: ['Immeubles'] }, // Le Bourget
+    '94043': { prix: 5614, lignes: [['14', '#640082'], ['7', '#ff82b4']], tags: ['Immeubles', 'Dense'] }, // Le Kremlin-Bicêtre
+    '94058': { prix: 5250, lignes: [], tags: ['Mixte'] }, // Le Perreux-sur-Marne
+    '92060': { prix: 5389, lignes: [['T10', '#6e6e00']], tags: ['Immeubles'] }, // Le Plessis-Robinson
+    '94059': { prix: 3548, lignes: [], tags: ['Mixte'] }, // Le Plessis-Trévise
+    '93061': { prix: 6096, lignes: [], tags: ['Immeubles', 'Dense'] }, // Le Pré-Saint-Gervais
+    '93062': { prix: 4014, lignes: [], tags: ['Mixte'] }, // Le Raincy
+    '93045': { prix: 6607, lignes: [['11', '#6e491e']], tags: ['Immeubles', 'Dense'] }, // Les Lilas
+    '93057': { prix: 3273, lignes: [['T4', '#dc9600']], tags: ['Mixte'] }, // Les Pavillons-sous-Bois
+    '92044': { prix: 8868, lignes: [['3', '#6e6e00']], tags: ['Immeubles', 'Dense'] }, // Levallois-Perret
+    '94044': { prix: 3274, lignes: [], tags: ['Mixte'] }, // Limeil-Brévannes
+    '93046': { prix: 2791, lignes: [['T4', '#dc9600']], tags: ['Mixte'] }, // Livry-Gargan
+    '94046': { prix: 5422, lignes: [['8', '#d282be']], tags: ['Immeubles'] }, // Maisons-Alfort
+    '92046': { prix: 6595, lignes: [['13', '#82c8e6']], tags: ['Immeubles'] }, // Malakoff
+    '94047': { prix: 3476, lignes: [], tags: ['Pavillonnaire'] }, // Mandres-les-Roses
+    '92047': { prix: 6447, lignes: [], tags: ['Pavillonnaire', 'Village'] }, // Marnes-la-Coquette
+    '94048': { prix: 4494, lignes: [], tags: ['Pavillonnaire'] }, // Marolles-en-Brie
+    '92048': { prix: 5781, lignes: [['T6', '#ff0000'], ['T2', '#a0006e']], tags: ['Immeubles'] }, // Meudon
+    '93047': { prix: 3031, lignes: [['T4', '#dc9600']], tags: ['Pavillonnaire'] }, // Montfermeil
+    '93048': { prix: 5800, lignes: [['9', '#d2d200'], ['11', '#6e491e']], tags: ['Immeubles'] }, // Montreuil
+    '92049': { prix: 7000, lignes: [['4', '#a0006e']], tags: ['Immeubles', 'Dense'] }, // Montrouge
+    '92050': { prix: 5055, lignes: [], tags: ['Immeubles'] }, // Nanterre
+    '93049': { prix: 4014, lignes: [], tags: ['Mixte'] }, // Neuilly-Plaisance
+    '93050': { prix: 3006, lignes: [], tags: ['Mixte'] }, // Neuilly-sur-Marne
+    '92051': { prix: 10357, lignes: [['1', '#ffbe00']], tags: ['Immeubles', 'Dense'] }, // Neuilly-sur-Seine
+    '94052': { prix: 5914, lignes: [], tags: ['Immeubles'] }, // Nogent-sur-Marne
+    '94053': { prix: 3580, lignes: [], tags: ['Mixte'] }, // Noiseau
+    '93051': { prix: 4233, lignes: [], tags: ['Mixte'] }, // Noisy-le-Grand
+    '93053': { prix: 3407, lignes: [['11', '#6e491e'], ['T1', '#0055c8']], tags: ['Mixte'] }, // Noisy-le-Sec
+    '94054': { prix: 3080, lignes: [['T9', '#3c91dc'], ['T7', '#6e491e']], tags: ['Mixte'] }, // Orly
+    '94055': { prix: 4076, lignes: [], tags: ['Pavillonnaire'] }, // Ormesson-sur-Marne
+    '93055': { prix: 5778, lignes: [['5', '#ff5a00'], ['7', '#ff82b4']], tags: ['Immeubles'] }, // Pantin
+    '92062': { prix: 6931, lignes: [['1', '#ffbe00'], ['T2', '#a0006e']], tags: ['Immeubles'] }, // Puteaux
+    '94056': { prix: 3301, lignes: [], tags: ['Pavillonnaire'] }, // Périgny
+    '93063': { prix: 5070, lignes: [['11', '#6e491e']], tags: ['Mixte'] }, // Romainville
+    '93064': { prix: 3667, lignes: [['11', '#6e491e']], tags: ['Immeubles'] }, // Rosny-sous-Bois
+    '92063': { prix: 5500, lignes: [], tags: ['Immeubles'] }, // Rueil-Malmaison
+    '94065': { prix: 4255, lignes: [['T7', '#6e491e']], tags: ['Mixte'] }, // Rungis
+    '92064': { prix: 6383, lignes: [['T2', '#a0006e']], tags: ['Immeubles'] }, // Saint-Cloud
+    '93066': { prix: 3833, lignes: [['13', '#82c8e6'], ['12', '#00643c'], ['14', '#640082']], tags: ['Immeubles'] }, // Saint-Denis
+    '94067': { prix: 8487, lignes: [], tags: ['Immeubles', 'Dense'] }, // Saint-Mandé
+    '94068': { prix: 5268, lignes: [], tags: ['Mixte'] }, // Saint-Maur-des-Fossés
+    '94069': { prix: 5871, lignes: [], tags: ['Immeubles'] }, // Saint-Maurice
+    '93070': { prix: 6250, lignes: [['13', '#82c8e6'], ['14', '#640082']], tags: ['Immeubles'] }, // Saint-Ouen-sur-Seine
+    '94070': { prix: 3829, lignes: [], tags: ['Mixte', 'Village'] }, // Santeny
+    '92071': { prix: 5800, lignes: [], tags: ['Immeubles'] }, // Sceaux
+    '93071': { prix: 2200, lignes: [['T4', '#dc9600']], tags: ['Mixte'] }, // Sevran
+    '93072': { prix: 2606, lignes: [['T11', '#ff5a00']], tags: ['Mixte'] }, // Stains
+    '94071': { prix: 3370, lignes: [], tags: ['Mixte'] }, // Sucy-en-Brie
+    '92073': { prix: 6556, lignes: [['T2', '#a0006e']], tags: ['Immeubles'] }, // Suresnes
+    '92072': { prix: 5349, lignes: [['T2', '#a0006e']], tags: ['Immeubles'] }, // Sèvres
+    '94073': { prix: 3478, lignes: [['14', '#640082'], ['T9', '#3c91dc'], ['T7', '#6e491e']], tags: ['Immeubles'] }, // Thiais
+    '93073': { prix: 2559, lignes: [], tags: ['Pavillonnaire'] }, // Tremblay-en-France
+    '94074': { prix: 3216, lignes: [], tags: ['Mixte'] }, // Valenton
+    '92075': { prix: 6098, lignes: [], tags: ['Immeubles', 'Dense'] }, // Vanves
+    '92076': { prix: 4912, lignes: [], tags: ['Immeubles'] }, // Vaucresson
+    '93074': { prix: 3062, lignes: [], tags: ['Mixte'] }, // Vaujours
+    '92077': { prix: 5208, lignes: [], tags: ['Immeubles'] }, // Ville-d'Avray
+    '94075': { prix: 3584, lignes: [], tags: ['Pavillonnaire'] }, // Villecresnes
+    '94076': { prix: 4769, lignes: [['7', '#ff82b4'], ['14', '#640082'], ['T7', '#6e491e']], tags: ['Immeubles'] }, // Villejuif
+    '93077': { prix: 3451, lignes: [['T4', '#dc9600']], tags: ['Mixte'] }, // Villemomble
+    '94078': { prix: 2668, lignes: [], tags: ['Mixte'] }, // Villeneuve-Saint-Georges
+    '92078': { prix: 3284, lignes: [['T1', '#0055c8']], tags: ['Immeubles'] }, // Villeneuve-la-Garenne
+    '94077': { prix: 3529, lignes: [], tags: ['Mixte'] }, // Villeneuve-le-Roi
+    '93078': { prix: 2331, lignes: [], tags: ['Mixte'] }, // Villepinte
+    '93079': { prix: 2567, lignes: [['T8', '#6e6e00'], ['T11', '#ff5a00']], tags: ['Mixte'] }, // Villetaneuse
+    '94079': { prix: 3678, lignes: [], tags: ['Mixte'] }, // Villiers-sur-Marne
+    '94080': { prix: 8500, lignes: [['1', '#ffbe00']], tags: ['Immeubles', 'Dense'] }, // Vincennes
+    '94081': { prix: 3779, lignes: [['T9', '#3c91dc'], ['T7', '#6e491e']], tags: ['Mixte'] }, // Vitry-sur-Seine
+    '93031': { prix: 2660, lignes: [['T8', '#6e6e00'], ['T11', '#ff5a00']], tags: ['Immeubles'] }, // Épinay-sur-Seine
   };
 
   function sep() {
@@ -3465,17 +3618,18 @@ ul { list-style: none; }
     const showRadius = showMap && !multi && !state.drawn;
     /* Deux frames du board décrivent l'état « une localisation posée » de deux
        façons : ce sont deux moments différents. Arrivée du listing pour retoucher
-       une recherche validée, mobile suit « Edit localisation avec historique »
+       une recherche validée, on suit « Edit localisation avec historique »
        (12506:183467) — les trois cartes et les récents restent sous la carte,
        comme à l'état vide (12248:264774, 12253:284951). Localisation tout juste
        saisie et pas encore validée, une seule ligne « Dessiner sur la carte » les
-       remplace (12506:183376, 12213:184404) : d'où `state.picked`. Desktop garde
-       cette ligne dans les deux cas (12506:189329), où la place manque.
+       remplace (12506:183376, 12213:184404) : d'où `state.picked`.
+       Même règle aux deux breakpoints. Le board donne la ligne seule à desktop en
+       édition (12506:189329), mais c'est l'historique qui sert à reprendre une
+       recherche : desktop suit l'app plutôt que la maquette sur ce point.
        « Autour de moi » et « Toute la France » n'ont rien à proposer sous leur
        carte : ils escamotent l'ensemble aux deux breakpoints (12213:243417). */
     const showAlternatives = !typing && (!showSelected
-      || (mobile.matches && !state.picked
-          && state.mode !== 'around' && state.mode !== 'france'));
+      || (!state.picked && state.mode !== 'around' && state.mode !== 'france'));
     /* Les deux modes exclusifs n'ont pas de périmètre à retoucher : « Autour de
        moi » n'affiche rien sous sa carte (12213:243417) et « Toute la France »
        n'a pas de carte du tout. Une zone déjà dessinée non plus : elle se
@@ -3823,14 +3977,14 @@ ul { list-style: none; }
   }
 
   /* ── Variante du participant ──────────────────────────────────────────────
-     Le lien envoyé au participant porte ?p=1 ou ?p=2 et arrive ici, en tête du
-     parcours. On le mémorise comme le font l'adview et la galerie, et on le
+     Le lien envoyé au participant porte ?p=1 … ?p=7 et arrive ici, en tête
+     du parcours. On le mémorise comme le font l'adview et la galerie, et on le
      reporte sur les liens internes : sans ça, le participant 2 quitterait le
      tunnel pour l'annonce du participant 1. */
   const VARIANT_KEY = 'lbc-proto:participant';
   const asked = new URLSearchParams(location.search).get('p');
   let variant = '1';
-  if (asked === '1' || asked === '2') {
+  if (['1', '2', '3', '4', '5', '6', '7'].includes(asked)) {
     variant = asked;
     try { localStorage.setItem(VARIANT_KEY, asked); } catch (error) {}
   } else {

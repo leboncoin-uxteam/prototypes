@@ -144,23 +144,38 @@
   }
 
   /* ---------- Colonne latérale ---------- */
-  .side__eyebrow {
-    margin: 0;
-    font-size: 14px;
-    line-height: 20px;
-    font-weight: 400;
-    color: var(--color-on-surface-dim-1);
+  /* La fleche de retour precede le titre de la galerie. La colonne porte donc la
+     sortie, il n'y a plus de croix en surimpression pour ca. Le nom de l'annonce
+     n'est pas repris ici : la barre de la photo le porte deja, et la colonne gagne
+     la hauteur d'une rangee de vignettes. */
+  .side__head {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
   }
+  /* Le padding du bouton est repris en marge negative : c'est le glyphe, et non
+     sa zone de clic, qui se cale sur la gouttiere de la colonne. */
+  .side__back {
+    margin-left: calc(-1 * var(--spacing-md));
+    border-radius: var(--rounded-full);
+  }
+  .side__back .icon-btn__icon { width: 24px; height: 24px; }
   .side__title {
     margin: 0;
     font-size: 20px;
     line-height: 28px;
     font-weight: 700;
   }
+  /* La barre de filtres apporte deja 8px de padding haut, pour ne pas coller les
+     chips au bord de la fenetre quand elle est collee. Sans cette marge negative
+     ils s'ajouteraient au gap de la colonne et le titre serait a 32px des chips :
+     on garde les 24px du gap, lus une seule fois. */
+  .side__head { margin-bottom: calc(-1 * var(--spacing-md)); }
 
-  /* Chips et toggle restent à portée pendant tout le scroll de la galerie : ils
-     se collent en haut de la colonne. Fond opaque et gouttière négative pour
-     courir d'un bord à l'autre, sinon les photos défileraient dans les marges. */
+  /* Les chips restent à portée pendant tout le scroll de la galerie : elles se
+     collent en haut de la colonne. Fond opaque et gouttière négative pour courir
+     d'un bord à l'autre, sinon les photos défileraient dans les marges. Le toggle
+     est resté dans le flux : il se règle une fois, il n'a pas à suivre le scroll. */
   .side__filters {
     position: sticky;
     top: 0;
@@ -531,8 +546,6 @@
 
   /* Disclaimer IA — visible seulement en visite photo */
   .viewer__disclaimer { display: none; }
-  /* En visite photo, la vue reste en split : pas de sortie vers l'état étendu */
-  .is-photo-tour .viewer__collapse { display: none; }
   .is-photo-tour .viewer__ai { display: none; }
   .is-photo-tour .viewer__disclaimer { display: block; }
   .viewer__disclaimer p {
@@ -655,6 +668,9 @@
   /* Le player YouTube a ses propres contrôles */
   .viewer[data-media="video"] .viewer__nav { display: none; }
 
+  /* Le player YouTube occupe toute la scene : rien a agrandir de plus */
+  .viewer[data-media="video"] .viewer__zoom { display: none; }
+
   /* Redécorer et les mentions IA ne concernent que les photos */
   .viewer:not([data-media="photo"]) .viewer__redecorate,
   .viewer:not([data-media="photo"]) .viewer__ai,
@@ -728,6 +744,9 @@
     cursor: pointer;
   }
   .icon-btn--surface { background: var(--color-surface); }
+  /* La loupe est exportee blanche, pour les fonds sombres : sur le bouton clair
+     `brightness(0)` la ramene au noir sans repasser par un second asset. */
+  .viewer__zoom .icon-btn__icon { filter: brightness(0); }
   .icon-btn--bare { padding: var(--spacing-sm); }
   .icon-btn__icon { display: block; width: 16px; height: 16px; }
   .icon-btn { transition: background-color var(--duration-short) var(--ease-standard); }
@@ -824,6 +843,9 @@
 
   /* ---------- Galerie étendue (panneau média fermé) ---------- */
   .is-expanded .viewer-col { display: none; }
+  /* La galerie est deja pleine largeur : la sortie n'a plus d'objet, on revient
+     au split en choisissant une vignette. */
+  .adview.is-expanded .viewer__collapse { display: none; }
 
   @media (min-width: 900px) {
     .is-expanded .side {
@@ -831,9 +853,12 @@
       width: 100%;
       padding: var(--gutter) var(--gutter) var(--spacing-3xl);
     }
-    /* Gouttière 8px et rangées de 157px : la trame de la maquette pleine largeur */
+    /* Gouttière 8px et rangées de 157px : la trame de la maquette pleine largeur.
+       En visite photo c'est la section qui porte la grille, et non ses rangées :
+       chacune n'a que deux ou trois photos, une grille par rangée laisserait
+       autant de trous que de rangées. */
     .is-expanded .masonry,
-    .is-expanded .tour .masonry__row {
+    .is-expanded .tour__section {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
       grid-auto-rows: 157px;
@@ -841,13 +866,22 @@
       gap: var(--spacing-md);
       aspect-ratio: auto;
     }
+    /* Le titre et l'extrait tiennent la première rangée, dimensionnée par son
+       contenu : `grid-auto-rows` ne vaut que pour les rangées de vignettes. */
+    .is-expanded .tour__section { grid-template-rows: auto; }
+    .is-expanded .tour__section > div:first-child { grid-column: 1 / -1; }
     .is-expanded .masonry > .masonry__row,
     .is-expanded .masonry .masonry__stack,
+    .is-expanded .tour__section > .masonry__row,
     .is-expanded .tour .masonry__stack { display: contents; }
     .is-expanded .tile { flex: none; }
     /* 2 colonnes × 2 rangées ≈ le ratio du plan, sinon il se perd dans le blanc */
     .is-expanded .tile--plan { grid-column: span 2; grid-row: span 2; }
     .is-expanded .tile--tall { grid-row: span 2; }
+    /* Rangée par pièce, la pile de deux n'a plus de sens : une section compte
+       trois ou quatre photos, une vignette double hauteur y creuse un trou que
+       rien ne vient combler. */
+    .is-expanded .tour__section .tile--tall { grid-row: auto; }
   }
 
   /* ---------- Responsive ---------- */
@@ -903,8 +937,9 @@
     .viewer-col { display: none; }
     /* La respiration du haut est reprise par le padding de la barre sticky. */
     .side { order: 1; padding-top: 0; }
-    .side__eyebrow,
-    .side__title { display: none; }
+    /* Le nom de l'annonce et la fleche sont deja dans la navbar sticky, et la
+       galerie occupe tout l'ecran : elle n'a pas besoin d'etre nommee. */
+    .side__head { display: none; }
 
     /* La barre des filtres se cale sous la navbar, dont la hauteur est fixe
        (8px de padding x 2 + 40px de bouton). Une fois collée, son ombre marque le
@@ -922,7 +957,7 @@
       background: var(--color-surface);
     }
     .adview__topbar .adview__back { display: flex; }
-    .adview__topbar .adview__close { display: none; }
+    .adview__topbar .viewer__collapse { display: none; }
     .adview__topbar .icon-btn__icon { width: 24px; height: 24px; }
     .adview__topbar .adview__topbar-title {
       display: block;
@@ -973,14 +1008,6 @@
     .adview__footer-actions { gap: var(--spacing-lg); }
     .adview__footer-actions .btn--medium { padding-inline: var(--spacing-md); }
   }
-  /* La croix du topbar est en surimpression du panneau média sombre :
-     l'asset exporté est monochrome foncé, on l'inverse en blanc.
-     Sur mobile la navbar est blanche, donc pas d'inversion. */
-  @media (min-width: 768px) {
-    .adview__topbar .icon-btn__icon { filter: brightness(0) invert(1); }
-    .adview__topbar .icon-btn:hover { background: rgba(255, 255, 255, 0.12); }
-  }
-
   .sr-only {
     position: absolute;
     width: 1px;
@@ -1102,11 +1129,12 @@
 
   /* Ecran scinde (Figma 4444:14054) : demi-photo en haut, plan en bas. */
   .focus__plan {
+    position: relative;
     flex: none;
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 0 var(--spacing-lg) var(--spacing-lg);
+    padding: var(--spacing-md) var(--spacing-lg) var(--spacing-lg);
     border-top: var(--border-sm) solid rgba(172, 184, 199, 0.4);
     border-radius: var(--rounded-md) var(--rounded-md) 0 0;
     background: var(--color-surface);
@@ -1115,23 +1143,18 @@
     box-shadow: 0 -8px 16px var(--color-shadow);
   }
   .focus__plan[hidden] { display: none; }
-  /* Le plan prend la place des actions : on le referme par la poignee. */
+  /* Le plan prend la place des actions : on le referme par la croix. */
   .focus[data-plan="on"] .focus__foot { display: none; }
-  /* Poignee : seule sortie du mode scinde, donc large a viser. */
-  .focus__plan-close {
-    display: flex;
-    justify-content: center;
-    width: 100%;
-    padding: var(--spacing-md) 0 var(--spacing-lg);
-    border: 0;
-    background: none;
-    cursor: pointer;
-  }
-  .focus__plan-handle {
-    width: 32px;
-    height: 4px;
+  /* Croix en haut a droite (Figma 4453:14367) plutot qu'une poignee : le geste
+     de glissement n'est pas implemente, une poignee promettrait donc une sortie
+     qui n'existe pas. Posee par-dessus le plan pour ne pas lui prendre de hauteur. */
+  .focus__plan-close.icon-btn {
+    position: absolute;
+    top: var(--spacing-md);
+    right: var(--spacing-md);
+    z-index: 1;
     border-radius: var(--rounded-full);
-    background: var(--color-outline);
+    box-shadow: 0 2px 4px var(--color-shadow);
   }
   .focus__plan-img {
     display: block;
@@ -1283,6 +1306,35 @@
   }
   .modal__image { display: block; width: 100%; height: 100%; object-fit: cover; }
 
+  /* ---------- Zoom ---------- */
+  /* La photo prend toute la place que la fenetre laisse, quitte a etre agrandie
+     au-dela de sa taille d'origine : on vient y chercher un detail, pas une
+     definition. Le cadre epouse son ratio, parce que c'est lui qui porte la croix
+     et qu'une croix de dialog se pose sur la dialog, pas dans le vide autour. */
+  .zoom {
+    position: relative;
+    /* Des deux dimensions, la fenetre designe celle qui touche le bord : la largeur
+       disponible, ou la hauteur disponible ramenee au ratio de la photo. Le ratio
+       est pose par le JS - le CSS ne sait pas quelle photo il affiche. */
+    width: min(100%, (100vh - 2 * var(--spacing-xl)) * var(--zoom-ratio, 1.5));
+    aspect-ratio: var(--zoom-ratio, 1.5);
+  }
+  .zoom__image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+  .zoom__close {
+    position: absolute;
+    top: var(--spacing-lg);
+    right: var(--spacing-lg);
+  }
+  /* Le voile est translucide : sans ca la croix de sortie de la photo resterait
+     lisible dans la bande laissee a cote de la dialog, et on lirait deux
+     fermetures pour un seul retour en arriere. */
+  body:has(#zoom-modal:not([hidden])) .adview__topbar { visibility: hidden; }
+
   /* Révélation « home staging » : la projection IA se stabilise — le flou se
      dissipe pendant qu'elle se fond sur la photo d'origine. */
   .reveal-layer {
@@ -1354,16 +1406,20 @@
       <img class="icon-btn__icon" src="assets/icon-arrow-left.svg" alt="">
     </button>
     <p class="adview__topbar-title" data-v="titleshort">Maison 3 pièces 61 m²</p>
-    <button class="icon-btn icon-btn--bare adview__close" type="button" aria-label="Fermer la galerie">
-      <img class="icon-btn__icon" src="assets/icon-cross.svg" alt="">
+    <!-- Sortie de la photo vers la galerie pleine largeur. Elle occupe la place
+         de l'ancienne croix de fermeture, partie dans l'entete de la colonne. -->
+    <button class="icon-btn icon-btn--surface viewer__collapse" type="button" aria-label="Fermer la photo et voir tous les médias">
+      <img class="icon-btn__icon" src="assets/icon-cross-photo.svg" alt="">
     </button>
   </div>
 
   <div class="adview__body">
 
     <div class="side">
-      <div>
-        <p class="side__eyebrow" data-v="titleshort">Maison 3 pièces 61 m²</p>
+      <div class="side__head">
+        <button class="icon-btn side__back" type="button" aria-label="Retour à l’annonce">
+          <img class="icon-btn__icon" src="assets/icon-arrow-left.svg" alt="">
+        </button>
         <h1 class="side__title">Médias</h1>
       </div>
 
@@ -1386,18 +1442,18 @@
             Visite virtuelle
           </button>
         </div>
+      </div>
 
-        <div class="tour-intro">
-          <label class="switch-label">
-            <input class="switch__input" type="checkbox">
-            <span class="switch">
-              <img class="switch__handle switch__handle--off" src="assets/switch-handle.svg" alt="">
-              <img class="switch__handle switch__handle--on" src="assets/switch-handle-on.svg" alt="">
-            </span>
-            <span class="switch-label__text">Organiser par pièce</span>
-          </label>
-          <p class="tour-intro__disclaimer">Notre système d’IA classifie automatiquement les photos de l’annonce, et les associe à des extraits de la description. L’IA peut commettre des erreurs.</p>
-        </div>
+      <div class="tour-intro">
+        <label class="switch-label">
+          <input class="switch__input" type="checkbox">
+          <span class="switch">
+            <img class="switch__handle switch__handle--off" src="assets/switch-handle.svg" alt="">
+            <img class="switch__handle switch__handle--on" src="assets/switch-handle-on.svg" alt="">
+          </span>
+          <span class="switch-label__text">Organiser par pièce</span>
+        </label>
+        <p class="tour-intro__disclaimer">Notre système d’IA classifie automatiquement les photos de l’annonce, et les associe à des extraits de la description. L’IA peut commettre des erreurs.</p>
       </div>
 
       <!-- Les rangées pleine largeur vont aux pièces qui portent la décision, par
@@ -1434,9 +1490,9 @@
           <button class="tile" type="button" data-media="photo" data-room="Séjour"><img src="assets/ad-lomme/photo-06.jpg" alt="Séjour, coin salon"></button>
         </div>
 
-        <!-- Les deux variantes reposent sur deux annonces réelles distinctes, qui ne
+        <!-- Les variantes reposent sur des annonces réelles distinctes, qui ne
              partagent aucune photo : les rangées sont dédoublées plutôt que
-             re-sourcées, et le script en retire celles de l'autre participant. -->
+             re-sourcées, et le script retire celles des autres participants. -->
         <div class="masonry__row masonry__row--hero" data-vonly="2">
           <button class="tile tile--selected" type="button" aria-current="true" data-media="photo" data-room="Pièce de vie">
             <img src="assets/ad-carquefou/photo-03.jpg" alt="Pièce de vie ouverte sur le jardin">
@@ -1470,6 +1526,183 @@
         <div class="masonry__row masonry__row--pair" data-vonly="2">
           <button class="tile" type="button" data-media="photo" data-room="Extérieur"><img src="assets/ad-carquefou/photo-04.jpg" alt="Terrasse, sauna tonneau et jardin"></button>
           <button class="tile" type="button" data-media="photo" data-room="Extérieur"><img src="assets/ad-carquefou/photo-11.jpg" alt="Grande terrasse et jardin arboré"></button>
+        </div>
+
+        <div class="masonry__row masonry__row--hero" data-vonly="3">
+          <button class="tile tile--selected" type="button" aria-current="true" data-media="photo" data-room="Séjour">
+            <img src="assets/ad-paris18/photo-01.jpg" alt="Séjour avec cuisine ouverte">
+          </button>
+        </div>
+
+        <!-- La photo verticale prise depuis la fenêtre va dans la colonne étroite
+             et haute : c'est le seul emplacement de la mosaïque qui ne la recadre
+             pas en paysage. -->
+        <div class="masonry__row masonry__row--mixed" data-vonly="3">
+          <button class="tile tile--narrow tile--tall" type="button" data-media="photo" data-room="Extérieur"><img src="assets/ad-paris18/photo-02.jpg" alt="Vue sur les toits depuis la fenêtre du séjour"></button>
+          <div class="masonry__stack">
+            <button class="tile" type="button" data-media="photo" data-room="Chambre"><img src="assets/ad-paris18/photo-05.jpg" alt="Chambre avec coin bureau"></button>
+            <button class="tile" type="button" data-media="photo" data-room="Cuisine"><img src="assets/ad-paris18/photo-03.jpg" alt="Cuisine ouverte aménagée et équipée"></button>
+          </div>
+        </div>
+
+        <div class="masonry__row masonry__row--hero" data-vonly="3">
+          <button class="tile" type="button" data-media="photo" data-room="Séjour">
+            <img src="assets/ad-paris18/photo-04.jpg" alt="Séjour, coin salon">
+          </button>
+        </div>
+
+        <div class="masonry__row masonry__row--pair" data-vonly="3">
+          <button class="tile" type="button" data-media="photo" data-room="Chambre"><img src="assets/ad-paris18/photo-06.jpg" alt="Chambre et son grand placard aménagé"></button>
+          <button class="tile" type="button" data-media="photo" data-room="Salle d’eau"><img src="assets/ad-paris18/photo-07.jpg" alt="Salle d’eau avec douche et WC"></button>
+        </div>
+
+        <div class="masonry__row masonry__row--pair" data-vonly="3">
+          <button class="tile" type="button" data-media="photo" data-room="Extérieur"><img src="assets/ad-paris18/photo-08.jpg" alt="Cour intérieure plantée de l’immeuble"></button>
+          <button class="tile" type="button" data-media="photo" data-room="Diagnostic"><img src="assets/ad-paris18/photo-09.jpg" alt="Étiquette du diagnostic de performance énergétique"></button>
+        </div>
+
+        <div class="masonry__row masonry__row--hero" data-vonly="4">
+          <button class="tile tile--selected" type="button" aria-current="true" data-media="photo" data-room="Pièce de vie">
+            <img src="assets/ad-paris15/photo-01.jpg" alt="Pièce de vie avec fenêtres sur la cour intérieure">
+          </button>
+        </div>
+
+        <div class="masonry__row masonry__row--mixed" data-vonly="4">
+          <button class="tile tile--narrow tile--tall" type="button" data-media="photo" data-room="Cave"><img src="assets/ad-paris15/photo-16.jpg" alt="Escalier d’accès à la cave"></button>
+          <div class="masonry__stack">
+            <button class="tile" type="button" data-media="photo" data-room="Chambre"><img src="assets/ad-paris15/photo-11.jpg" alt="Chambre avec sa fenêtre sur la cour"></button>
+            <button class="tile" type="button" data-media="photo" data-room="Cuisine"><img src="assets/ad-paris15/photo-09.jpg" alt="Cuisine équipée et sa fenêtre sur la cour"></button>
+          </div>
+        </div>
+
+        <!-- Deux photos de l'annonce portent la mention « proposition d'aménagement
+             virtuel non contractuel » : elles montrent la même pièce meublée
+             autrement. Elles restent dans la mosaïque, avec le signalement IA. -->
+        <div class="masonry__row masonry__row--hero" data-vonly="4">
+          <button class="tile" type="button" data-media="photo" data-room="Pièce de vie">
+            <img src="assets/ad-paris15/photo-02.jpg" alt="Pièce de vie, proposition d’aménagement virtuel">
+          </button>
+        </div>
+
+        <div class="masonry__row masonry__row--pair" data-vonly="4">
+          <button class="tile" type="button" data-media="photo" data-room="Pièce de vie"><img src="assets/ad-paris15/photo-04.jpg" alt="Pièce de vie, coin salon et télévision"></button>
+          <button class="tile" type="button" data-media="photo" data-room="Salle de bains"><img src="assets/ad-paris15/photo-13.jpg" alt="Salle de bains avec baignoire"></button>
+        </div>
+
+        <div class="masonry__row masonry__row--pair" data-vonly="4">
+          <button class="tile" type="button" data-media="photo" data-room="Pièce de vie"><img src="assets/ad-paris15/photo-05.jpg" alt="Pièce de vie vue vers le bar de la cuisine"></button>
+          <button class="tile" type="button" data-media="photo" data-room="Chambre"><img src="assets/ad-paris15/photo-12.jpg" alt="Chambre, autre angle"></button>
+        </div>
+
+        <div class="masonry__row masonry__row--pair" data-vonly="4">
+          <button class="tile" type="button" data-media="photo" data-room="Pièce de vie"><img src="assets/ad-paris15/photo-06.jpg" alt="Pièce de vie et ses rangements intégrés"></button>
+          <button class="tile" type="button" data-media="photo" data-room="Cuisine"><img src="assets/ad-paris15/photo-10.jpg" alt="Cuisine et son ouverture vers la pièce de vie"></button>
+        </div>
+
+        <div class="masonry__row masonry__row--pair" data-vonly="4">
+          <button class="tile" type="button" data-media="photo" data-room="Pièce de vie"><img src="assets/ad-paris15/photo-07.jpg" alt="Pièce de vie vue depuis l’entrée"></button>
+          <button class="tile" type="button" data-media="photo" data-room="Salle de bains"><img src="assets/ad-paris15/photo-14.jpg" alt="Salle de bains, vasque et miroir"></button>
+        </div>
+
+        <div class="masonry__row masonry__row--pair" data-vonly="4">
+          <button class="tile" type="button" data-media="photo" data-room="Pièce de vie"><img src="assets/ad-paris15/photo-08.jpg" alt="Pièce de vie, table et fenêtre"></button>
+          <button class="tile" type="button" data-media="photo" data-room="Pièce de vie"><img src="assets/ad-paris15/photo-03.jpg" alt="Pièce de vie, seconde proposition d’aménagement virtuel"></button>
+        </div>
+
+        <div class="masonry__row masonry__row--hero" data-vonly="4">
+          <button class="tile" type="button" data-media="photo" data-room="Couloir">
+            <img src="assets/ad-paris15/photo-15.jpg" alt="Couloir desservant l’appartement">
+          </button>
+        </div>
+
+        <div class="masonry__row masonry__row--hero" data-vonly="5">
+          <button class="tile tile--selected" type="button" aria-current="true" data-media="photo" data-room="Séjour">
+            <img src="assets/ad-strasbourg/photo-01.jpg" alt="Séjour avec ses deux fenêtres sur rue">
+          </button>
+        </div>
+
+        <div class="masonry__row masonry__row--mixed" data-vonly="5">
+          <button class="tile tile--narrow tile--tall" type="button" data-media="photo" data-room="Salle d’eau"><img src="assets/ad-strasbourg/photo-04.jpg" alt="Salle d’eau avec douche d’angle, vasque et WC"></button>
+          <div class="masonry__stack">
+            <button class="tile" type="button" data-media="photo" data-room="Chambre"><img src="assets/ad-strasbourg/photo-02.jpg" alt="Chambre avec armoire, bureau et fenêtre"></button>
+            <button class="tile" type="button" data-media="photo" data-room="Cuisine"><img src="assets/ad-strasbourg/photo-03.jpg" alt="Cuisine séparée avec plaque, four et lave-linge"></button>
+          </div>
+        </div>
+
+        <div class="masonry__row masonry__row--hero" data-vonly="6">
+          <button class="tile tile--selected" type="button" aria-current="true" data-media="photo" data-room="Extérieur">
+            <img src="assets/ad-pian-medoc/photo-01.jpg" alt="Façade arrière, terrasse en bois et jardin clos">
+          </button>
+        </div>
+
+        <div class="masonry__row masonry__row--hero" data-vonly="6">
+          <button class="tile" type="button" data-media="photo" data-room="Pièce de vie">
+            <img src="assets/ad-pian-medoc/photo-02.jpg" alt="Pièce de vie ouverte sur la salle à manger et la baie vitrée">
+          </button>
+        </div>
+
+        <div class="masonry__row masonry__row--pair" data-vonly="6">
+          <button class="tile" type="button" data-media="photo" data-room="Cuisine"><img src="assets/ad-pian-medoc/photo-03.jpg" alt="Cuisine semi-ouverte avec bar et plaque à induction"></button>
+          <button class="tile" type="button" data-media="photo" data-room="Salle de bains"><img src="assets/ad-pian-medoc/photo-06.jpg" alt="Salle de bains avec baignoire, vasque et WC"></button>
+        </div>
+
+        <div class="masonry__row masonry__row--pair" data-vonly="6">
+          <button class="tile" type="button" data-media="photo" data-room="Chambre"><img src="assets/ad-pian-medoc/photo-05.jpg" alt="Chambre parentale avec parquet en point de Hongrie"></button>
+          <button class="tile" type="button" data-media="photo" data-room="Chambre"><img src="assets/ad-pian-medoc/photo-04.jpg" alt="Deuxième chambre aménagée en chambre d’enfant"></button>
+        </div>
+
+        <div class="masonry__row masonry__row--hero" data-vonly="6">
+          <button class="tile" type="button" data-media="photo" data-room="Terrasse">
+            <img src="assets/ad-pian-medoc/photo-07.jpg" alt="Terrasse en bois et jardin clôturé exposés sud">
+          </button>
+        </div>
+
+        <div class="masonry__row masonry__row--hero" data-vonly="7">
+          <button class="tile tile--selected" type="button" aria-current="true" data-media="photo" data-room="Séjour">
+            <img src="assets/ad-rodez/photo-01.jpg" alt="Salle à manger ouverte sur le salon, photo habillée d’un bandeau de l’agence">
+          </button>
+        </div>
+
+        <div class="masonry__row masonry__row--pair" data-vonly="7">
+          <button class="tile" type="button" data-media="photo" data-room="Salle à manger"><img src="assets/ad-rodez/photo-02.jpg" alt="Salle à manger, table et ouverture sur la cuisine"></button>
+          <button class="tile" type="button" data-media="photo" data-room="Salon"><img src="assets/ad-rodez/photo-03.jpg" alt="Salon en enfilade avec la salle à manger"></button>
+        </div>
+
+        <div class="masonry__row masonry__row--mixed" data-vonly="7">
+          <button class="tile tile--narrow tile--tall" type="button" data-media="photo" data-room="Entrée"><img src="assets/ad-rodez/photo-06.jpg" alt="Entrée avec porte-manteau et commode"></button>
+          <div class="masonry__stack">
+            <button class="tile" type="button" data-media="photo" data-room="Salon"><img src="assets/ad-rodez/photo-04.jpg" alt="Salon, mur orange et téléviseur"></button>
+            <button class="tile" type="button" data-media="photo" data-room="Séjour"><img src="assets/ad-rodez/photo-05.jpg" alt="Séjour, canapé et accès aux chambres"></button>
+          </div>
+        </div>
+
+        <div class="masonry__row masonry__row--pair" data-vonly="7">
+          <button class="tile" type="button" data-media="photo" data-room="Dégagement"><img src="assets/ad-rodez/photo-07.jpg" alt="Dégagement desservant les pièces"></button>
+          <button class="tile" type="button" data-media="photo" data-room="Cuisine"><img src="assets/ad-rodez/photo-08.jpg" alt="Cuisine séparée équipée, four et hotte"></button>
+        </div>
+
+        <div class="masonry__row masonry__row--mixed" data-vonly="7">
+          <button class="tile tile--narrow tile--tall" type="button" data-media="photo" data-room="Balcon"><img src="assets/ad-rodez/photo-10.jpg" alt="Balcon avec agrumes en pot, vue sur les arbres"></button>
+          <div class="masonry__stack">
+            <button class="tile" type="button" data-media="photo" data-room="Cuisine"><img src="assets/ad-rodez/photo-09.jpg" alt="Cuisine et sa porte-fenêtre ouverte sur le balcon"></button>
+            <button class="tile" type="button" data-media="photo" data-room="Chambre"><img src="assets/ad-rodez/photo-12.jpg" alt="Chambre avec fenêtre sur les arbres"></button>
+          </div>
+        </div>
+
+        <div class="masonry__row masonry__row--mixed" data-vonly="7">
+          <button class="tile tile--narrow tile--tall" type="button" data-media="photo" data-room="Balcon"><img src="assets/ad-rodez/photo-11.jpg" alt="Balcon en vue plongeante sur le parking de la résidence"></button>
+          <div class="masonry__stack">
+            <button class="tile" type="button" data-media="photo" data-room="Chambre"><img src="assets/ad-rodez/photo-13.jpg" alt="Deuxième chambre, mur rouge"></button>
+            <button class="tile" type="button" data-media="photo" data-room="Chambre"><img src="assets/ad-rodez/photo-14.jpg" alt="Troisième chambre, vide, murs bleu clair"></button>
+          </div>
+        </div>
+
+        <div class="masonry__row masonry__row--mixed" data-vonly="7">
+          <button class="tile tile--narrow tile--tall" type="button" data-media="photo" data-room="Salle d’eau"><img src="assets/ad-rodez/photo-16.jpg" alt="Douche à l’italienne carrelée vert d’eau"></button>
+          <div class="masonry__stack">
+            <button class="tile" type="button" data-media="photo" data-room="Salle d’eau"><img src="assets/ad-rodez/photo-15.jpg" alt="Salle d’eau, vasque, sèche-serviettes et lave-linge"></button>
+            <button class="tile" type="button" data-media="photo" data-room="Cave"><img src="assets/ad-rodez/photo-17.jpg" alt="Cave de 9,50 m² en sous-sol"></button>
+          </div>
         </div>
 
         <div class="masonry__row masonry__row--plan">
@@ -1610,6 +1843,349 @@
           </div>
         </section>
 
+        <!-- Deux pièces, cuisine ouverte : le séjour et la cuisine sont une seule
+             pièce sur le plan, la section les tient donc ensemble plutôt que de
+             couper une photo en deux. -->
+        <section class="tour__section" data-vonly="3">
+          <div>
+            <h2 class="tour__title">Séjour et cuisine</h2>
+            <p class="tour__quote">« joli 2 pièces de 31 m² comprenant <strong>un séjour avec cuisine ouverte aménagée</strong>…»<button class="tour__more" type="button" aria-expanded="false" aria-label="Voir l’extrait de la description associé au séjour" data-match="un séjour avec cuisine ouverte aménagée"><img src="assets/icon-three-dots.svg" alt=""></button></p>
+          </div>
+          <div class="masonry__row masonry__row--hero">
+            <button class="tile tile--selected" type="button" aria-current="true" data-media="photo" data-room="Séjour">
+              <img src="assets/ad-paris18/photo-01.jpg" alt="Séjour avec cuisine ouverte">
+            </button>
+          </div>
+          <div class="masonry__row masonry__row--pair">
+            <button class="tile" type="button" data-media="photo" data-room="Séjour"><img src="assets/ad-paris18/photo-04.jpg" alt="Séjour, coin salon"></button>
+            <button class="tile" type="button" data-media="photo" data-room="Cuisine"><img src="assets/ad-paris18/photo-03.jpg" alt="Cuisine ouverte aménagée et équipée"></button>
+          </div>
+        </section>
+
+        <section class="tour__section" data-vonly="3">
+          <div>
+            <h2 class="tour__title">Chambre</h2>
+            <p class="tour__quote">« <strong>belle chambre avec grand placard aménagé</strong>…»<button class="tour__more" type="button" aria-expanded="false" aria-label="Voir l’extrait de la description associé à la chambre" data-match="belle chambre avec grand placard aménagé"><img src="assets/icon-three-dots.svg" alt=""></button></p>
+          </div>
+          <div class="masonry__row masonry__row--pair">
+            <button class="tile" type="button" data-media="photo" data-room="Chambre"><img src="assets/ad-paris18/photo-05.jpg" alt="Chambre avec coin bureau"></button>
+            <button class="tile" type="button" data-media="photo" data-room="Chambre"><img src="assets/ad-paris18/photo-06.jpg" alt="Chambre et son grand placard aménagé"></button>
+          </div>
+        </section>
+
+        <section class="tour__section" data-vonly="3">
+          <div>
+            <h2 class="tour__title">Salle d’eau</h2>
+            <p class="tour__quote">« <strong>une salle d’eau avec WC sanibroyeur</strong>…»<button class="tour__more" type="button" aria-expanded="false" aria-label="Voir l’extrait de la description associé à la salle d’eau" data-match="une salle d’eau avec WC sanibroyeur"><img src="assets/icon-three-dots.svg" alt=""></button></p>
+          </div>
+          <div class="masonry__row masonry__row--hero">
+            <button class="tile" type="button" data-media="photo" data-room="Salle d’eau">
+              <img src="assets/ad-paris18/photo-07.jpg" alt="Salle d’eau avec douche et WC">
+            </button>
+          </div>
+        </section>
+
+        <section class="tour__section" data-vonly="3">
+          <div>
+            <h2 class="tour__title">Extérieur</h2>
+            <p class="tour__quote">« Calme, <strong>vue ciel</strong>… Square au pied de l’immeuble !»<button class="tour__more" type="button" aria-expanded="false" aria-label="Voir l’extrait de la description associé à l’extérieur" data-match="vue ciel"><img src="assets/icon-three-dots.svg" alt=""></button></p>
+          </div>
+          <div class="masonry__row masonry__row--pair">
+            <button class="tile" type="button" data-media="photo" data-room="Extérieur"><img src="assets/ad-paris18/photo-02.jpg" alt="Vue sur les toits depuis la fenêtre du séjour"></button>
+            <button class="tile" type="button" data-media="photo" data-room="Extérieur"><img src="assets/ad-paris18/photo-08.jpg" alt="Cour intérieure plantée de l’immeuble"></button>
+          </div>
+        </section>
+
+        <section class="tour__section" data-vonly="4">
+          <div>
+            <h2 class="tour__title">Pièce de vie</h2>
+            <p class="tour__quote">« L’entrée dessert <strong>une pièce de vie confortable avec espace de rangement intégré</strong>…»<button class="tour__more" type="button" aria-expanded="false" aria-label="Voir l’extrait de la description associé à la pièce de vie" data-match="une pièce de vie confortable avec espace de rangement intégré"><img src="assets/icon-three-dots.svg" alt=""></button></p>
+          </div>
+          <div class="masonry__row masonry__row--hero">
+            <button class="tile tile--selected" type="button" aria-current="true" data-media="photo" data-room="Pièce de vie">
+              <img src="assets/ad-paris15/photo-01.jpg" alt="Pièce de vie avec fenêtres sur la cour intérieure">
+            </button>
+          </div>
+          <div class="masonry__row masonry__row--pair">
+            <button class="tile" type="button" data-media="photo" data-room="Pièce de vie"><img src="assets/ad-paris15/photo-04.jpg" alt="Pièce de vie, coin salon et télévision"></button>
+            <button class="tile" type="button" data-media="photo" data-room="Pièce de vie"><img src="assets/ad-paris15/photo-05.jpg" alt="Pièce de vie vue vers le bar de la cuisine"></button>
+          </div>
+          <div class="masonry__row masonry__row--pair">
+            <button class="tile" type="button" data-media="photo" data-room="Pièce de vie"><img src="assets/ad-paris15/photo-06.jpg" alt="Pièce de vie et ses rangements intégrés"></button>
+            <button class="tile" type="button" data-media="photo" data-room="Pièce de vie"><img src="assets/ad-paris15/photo-07.jpg" alt="Pièce de vie vue depuis l’entrée"></button>
+          </div>
+          <div class="masonry__row masonry__row--hero">
+            <button class="tile" type="button" data-media="photo" data-room="Pièce de vie">
+              <img src="assets/ad-paris15/photo-08.jpg" alt="Pièce de vie, table et fenêtre">
+            </button>
+          </div>
+        </section>
+
+        <!-- Les deux projections de l'agence ne sont pas une pièce de plus : elles
+             refont la même, donc elles ont leur propre section plutôt que d'être
+             mélangées aux photos du bien tel qu'il est. -->
+        <section class="tour__section" data-vonly="4">
+          <div>
+            <h2 class="tour__title">Aménagement virtuel</h2>
+            <p class="tour__quote">Deux photos de la pièce de vie portent la mention « proposition d’aménagement virtuel non contractuel »</p>
+          </div>
+          <div class="masonry__row masonry__row--pair">
+            <button class="tile" type="button" data-media="photo" data-room="Pièce de vie"><img src="assets/ad-paris15/photo-02.jpg" alt="Pièce de vie, proposition d’aménagement virtuel"></button>
+            <button class="tile" type="button" data-media="photo" data-room="Pièce de vie"><img src="assets/ad-paris15/photo-03.jpg" alt="Pièce de vie, seconde proposition d’aménagement virtuel"></button>
+          </div>
+        </section>
+
+        <section class="tour__section" data-vonly="4">
+          <div>
+            <h2 class="tour__title">Cuisine</h2>
+            <p class="tour__quote">« <strong>La cuisine indépendante offre un espace distinct et fonctionnel</strong>, facilement aménageable…»<button class="tour__more" type="button" aria-expanded="false" aria-label="Voir l’extrait de la description associé à la cuisine" data-match="La cuisine indépendante offre un espace distinct et fonctionnel"><img src="assets/icon-three-dots.svg" alt=""></button></p>
+          </div>
+          <div class="masonry__row masonry__row--pair">
+            <button class="tile" type="button" data-media="photo" data-room="Cuisine"><img src="assets/ad-paris15/photo-09.jpg" alt="Cuisine équipée et sa fenêtre sur la cour"></button>
+            <button class="tile" type="button" data-media="photo" data-room="Cuisine"><img src="assets/ad-paris15/photo-10.jpg" alt="Cuisine et son ouverture vers la pièce de vie"></button>
+          </div>
+        </section>
+
+        <!-- La salle de bains est attenante à la chambre : la description les tient
+             dans la même phrase, la section les tient dans le même bloc. -->
+        <section class="tour__section" data-vonly="4">
+          <div>
+            <h2 class="tour__title">Chambre et salle de bains</h2>
+            <p class="tour__quote">« <strong>La chambre dispose d’une salle de bains attenante</strong>, apportant confort et praticité au quotidien…»<button class="tour__more" type="button" aria-expanded="false" aria-label="Voir l’extrait de la description associé à la chambre" data-match="La chambre dispose d’une salle de bains attenante"><img src="assets/icon-three-dots.svg" alt=""></button></p>
+          </div>
+          <div class="masonry__row masonry__row--pair">
+            <button class="tile" type="button" data-media="photo" data-room="Chambre"><img src="assets/ad-paris15/photo-11.jpg" alt="Chambre avec sa fenêtre sur la cour"></button>
+            <button class="tile" type="button" data-media="photo" data-room="Chambre"><img src="assets/ad-paris15/photo-12.jpg" alt="Chambre, autre angle"></button>
+          </div>
+          <div class="masonry__row masonry__row--pair">
+            <button class="tile" type="button" data-media="photo" data-room="Salle de bains"><img src="assets/ad-paris15/photo-13.jpg" alt="Salle de bains avec baignoire"></button>
+            <button class="tile" type="button" data-media="photo" data-room="Salle de bains"><img src="assets/ad-paris15/photo-14.jpg" alt="Salle de bains, vasque et miroir"></button>
+          </div>
+        </section>
+
+        <section class="tour__section" data-vonly="4">
+          <div>
+            <h2 class="tour__title">Couloir et cave</h2>
+            <p class="tour__quote">« <strong>Une cave en sous-sol complète ce bien</strong> et offre un espace de stockage supplémentaire…»<button class="tour__more" type="button" aria-expanded="false" aria-label="Voir l’extrait de la description associé à la cave" data-match="Une cave en sous-sol complète ce bien"><img src="assets/icon-three-dots.svg" alt=""></button></p>
+          </div>
+          <div class="masonry__row masonry__row--pair">
+            <button class="tile" type="button" data-media="photo" data-room="Couloir"><img src="assets/ad-paris15/photo-15.jpg" alt="Couloir desservant l’appartement"></button>
+            <button class="tile" type="button" data-media="photo" data-room="Cave"><img src="assets/ad-paris15/photo-16.jpg" alt="Escalier d’accès à la cave"></button>
+          </div>
+        </section>
+
+        <!-- La description de cette annonce est administrative : prix, copropriété,
+             diagnostic. Elle ne décrit aucune pièce, donc les sections portent une
+             légende de ce qu'on voit sur la photo, sans bouton d'extrait — il n'y
+             aurait rien à ouvrir. -->
+        <section class="tour__section" data-vonly="5">
+          <div>
+            <h2 class="tour__title">Séjour</h2>
+            <p class="tour__quote">Le séjour, meublé par le locataire en place</p>
+          </div>
+          <div class="masonry__row masonry__row--hero">
+            <button class="tile tile--selected" type="button" aria-current="true" data-media="photo" data-room="Séjour">
+              <img src="assets/ad-strasbourg/photo-01.jpg" alt="Séjour avec ses deux fenêtres sur rue">
+            </button>
+          </div>
+        </section>
+
+        <section class="tour__section" data-vonly="5">
+          <div>
+            <h2 class="tour__title">Chambre</h2>
+            <p class="tour__quote">L’unique chambre de l’appartement</p>
+          </div>
+          <div class="masonry__row masonry__row--hero">
+            <button class="tile" type="button" data-media="photo" data-room="Chambre">
+              <img src="assets/ad-strasbourg/photo-02.jpg" alt="Chambre avec armoire, bureau et fenêtre">
+            </button>
+          </div>
+        </section>
+
+        <section class="tour__section" data-vonly="5">
+          <div>
+            <h2 class="tour__title">Cuisine</h2>
+            <p class="tour__quote">Cuisine séparée, plaque, four et lave-linge</p>
+          </div>
+          <div class="masonry__row masonry__row--hero">
+            <button class="tile" type="button" data-media="photo" data-room="Cuisine">
+              <img src="assets/ad-strasbourg/photo-03.jpg" alt="Cuisine séparée avec plaque, four et lave-linge">
+            </button>
+          </div>
+        </section>
+
+        <section class="tour__section" data-vonly="5">
+          <div>
+            <h2 class="tour__title">Salle d’eau</h2>
+            <p class="tour__quote">Douche d’angle, vasque et WC dans la même pièce</p>
+          </div>
+          <div class="masonry__row masonry__row--hero">
+            <button class="tile" type="button" data-media="photo" data-room="Salle d’eau">
+              <img src="assets/ad-strasbourg/photo-04.jpg" alt="Salle d’eau avec douche d’angle, vasque et WC">
+            </button>
+          </div>
+        </section>
+
+        <section class="tour__section" data-vonly="6">
+          <div>
+            <h2 class="tour__title">Pièce de vie</h2>
+            <p class="tour__quote">« Au rez-de-chaussée, vous trouverez <strong>une grande pièce de vie lumineuse grâce à sa large baie vitrée</strong>…»<button class="tour__more" type="button" aria-expanded="false" aria-label="Voir l’extrait de la description associé à la pièce de vie" data-match="une grande pièce de vie lumineuse grâce à sa large baie vitrée"><img src="assets/icon-three-dots.svg" alt=""></button></p>
+          </div>
+          <div class="masonry__row masonry__row--hero">
+            <button class="tile" type="button" data-media="photo" data-room="Pièce de vie">
+              <img src="assets/ad-pian-medoc/photo-02.jpg" alt="Pièce de vie ouverte sur la salle à manger et la baie vitrée">
+            </button>
+          </div>
+        </section>
+
+        <section class="tour__section" data-vonly="6">
+          <div>
+            <h2 class="tour__title">Cuisine</h2>
+            <p class="tour__quote">« …<strong>une cuisine semi-ouverte équipée</strong>, un cellier et des WC avec lavabo…»<button class="tour__more" type="button" aria-expanded="false" aria-label="Voir l’extrait de la description associé à la cuisine" data-match="une cuisine semi-ouverte équipée"><img src="assets/icon-three-dots.svg" alt=""></button></p>
+          </div>
+          <div class="masonry__row masonry__row--hero">
+            <button class="tile" type="button" data-media="photo" data-room="Cuisine">
+              <img src="assets/ad-pian-medoc/photo-03.jpg" alt="Cuisine semi-ouverte avec bar et plaque à induction">
+            </button>
+          </div>
+        </section>
+
+        <section class="tour__section" data-vonly="6">
+          <div>
+            <h2 class="tour__title">Chambres</h2>
+            <p class="tour__quote">« L’étage est composé de <strong>3 chambres avec penderies</strong> et d’une salle de bain spacieuse…»<button class="tour__more" type="button" aria-expanded="false" aria-label="Voir l’extrait de la description associé aux chambres" data-match="3 chambres avec penderies"><img src="assets/icon-three-dots.svg" alt=""></button></p>
+          </div>
+          <div class="masonry__row masonry__row--pair">
+            <button class="tile" type="button" data-media="photo" data-room="Chambre"><img src="assets/ad-pian-medoc/photo-05.jpg" alt="Chambre parentale avec parquet en point de Hongrie"></button>
+            <button class="tile" type="button" data-media="photo" data-room="Chambre"><img src="assets/ad-pian-medoc/photo-04.jpg" alt="Deuxième chambre aménagée en chambre d’enfant"></button>
+          </div>
+        </section>
+
+        <!-- L'annonce écrit « salle de bain » au singulier : la citation le garde tel
+             quel, seul le titre de section suit l'orthographe des critères. -->
+        <section class="tour__section" data-vonly="6">
+          <div>
+            <h2 class="tour__title">Salle de bains</h2>
+            <p class="tour__quote">« …et d’<strong>une salle de bain spacieuse avec baignoire et WC</strong>…»<button class="tour__more" type="button" aria-expanded="false" aria-label="Voir l’extrait de la description associé à la salle de bains" data-match="une salle de bain spacieuse avec baignoire et WC"><img src="assets/icon-three-dots.svg" alt=""></button></p>
+          </div>
+          <div class="masonry__row masonry__row--hero">
+            <button class="tile" type="button" data-media="photo" data-room="Salle de bains">
+              <img src="assets/ad-pian-medoc/photo-06.jpg" alt="Salle de bains avec baignoire, vasque et WC">
+            </button>
+          </div>
+        </section>
+
+        <section class="tour__section" data-vonly="6">
+          <div>
+            <h2 class="tour__title">Jardin et terrasse</h2>
+            <p class="tour__quote">« À l’extérieur, <strong>le jardin avec terrasse en bois est exposé sud</strong> et entièrement clôturé…»<button class="tour__more" type="button" aria-expanded="false" aria-label="Voir l’extrait de la description associé au jardin" data-match="le jardin avec terrasse en bois est exposé sud"><img src="assets/icon-three-dots.svg" alt=""></button></p>
+          </div>
+          <div class="masonry__row masonry__row--hero">
+            <button class="tile tile--selected" type="button" aria-current="true" data-media="photo" data-room="Extérieur">
+              <img src="assets/ad-pian-medoc/photo-01.jpg" alt="Façade arrière, terrasse en bois et jardin clos">
+            </button>
+          </div>
+          <div class="masonry__row masonry__row--hero">
+            <button class="tile" type="button" data-media="photo" data-room="Terrasse">
+              <img src="assets/ad-pian-medoc/photo-07.jpg" alt="Terrasse en bois et jardin clôturé exposés sud">
+            </button>
+          </div>
+        </section>
+
+        <section class="tour__section" data-vonly="7">
+          <div>
+            <h2 class="tour__title">Séjour et salon</h2>
+            <p class="tour__quote">« L’appartement dispose de trois chambres, <strong>salon séjour</strong>, salle d’eau, WC séparé…»<button class="tour__more" type="button" aria-expanded="false" aria-label="Voir l’extrait de la description associé au séjour" data-match="salon séjour"><img src="assets/icon-three-dots.svg" alt=""></button></p>
+          </div>
+          <div class="masonry__row masonry__row--hero">
+            <button class="tile tile--selected" type="button" aria-current="true" data-media="photo" data-room="Séjour">
+              <img src="assets/ad-rodez/photo-01.jpg" alt="Salle à manger ouverte sur le salon, photo habillée d’un bandeau de l’agence">
+            </button>
+          </div>
+          <div class="masonry__row masonry__row--pair">
+            <button class="tile" type="button" data-media="photo" data-room="Salle à manger"><img src="assets/ad-rodez/photo-02.jpg" alt="Salle à manger, table et ouverture sur la cuisine"></button>
+            <button class="tile" type="button" data-media="photo" data-room="Salon"><img src="assets/ad-rodez/photo-03.jpg" alt="Salon en enfilade avec la salle à manger"></button>
+          </div>
+          <div class="masonry__row masonry__row--pair">
+            <button class="tile" type="button" data-media="photo" data-room="Salon"><img src="assets/ad-rodez/photo-04.jpg" alt="Salon, mur orange et téléviseur"></button>
+            <button class="tile" type="button" data-media="photo" data-room="Séjour"><img src="assets/ad-rodez/photo-05.jpg" alt="Séjour, canapé et accès aux chambres"></button>
+          </div>
+        </section>
+
+        <section class="tour__section" data-vonly="7">
+          <div>
+            <h2 class="tour__title">Cuisine</h2>
+            <p class="tour__quote">« …et d’<strong>une cuisine séparée donnant sur un balcon au calme</strong>.»<button class="tour__more" type="button" aria-expanded="false" aria-label="Voir l’extrait de la description associé à la cuisine" data-match="une cuisine séparée donnant sur un balcon au calme"><img src="assets/icon-three-dots.svg" alt=""></button></p>
+          </div>
+          <div class="masonry__row masonry__row--pair">
+            <button class="tile" type="button" data-media="photo" data-room="Cuisine"><img src="assets/ad-rodez/photo-08.jpg" alt="Cuisine séparée équipée, four et hotte"></button>
+            <button class="tile" type="button" data-media="photo" data-room="Cuisine"><img src="assets/ad-rodez/photo-09.jpg" alt="Cuisine et sa porte-fenêtre ouverte sur le balcon"></button>
+          </div>
+        </section>
+
+        <section class="tour__section" data-vonly="7">
+          <div>
+            <h2 class="tour__title">Balcon</h2>
+            <p class="tour__quote">« …une cuisine séparée <strong>donnant sur un balcon au calme</strong>.»<button class="tour__more" type="button" aria-expanded="false" aria-label="Voir l’extrait de la description associé au balcon" data-match="donnant sur un balcon au calme"><img src="assets/icon-three-dots.svg" alt=""></button></p>
+          </div>
+          <div class="masonry__row masonry__row--pair">
+            <button class="tile" type="button" data-media="photo" data-room="Balcon"><img src="assets/ad-rodez/photo-10.jpg" alt="Balcon avec agrumes en pot, vue sur les arbres"></button>
+            <button class="tile" type="button" data-media="photo" data-room="Balcon"><img src="assets/ad-rodez/photo-11.jpg" alt="Balcon en vue plongeante sur le parking de la résidence"></button>
+          </div>
+        </section>
+
+        <section class="tour__section" data-vonly="7">
+          <div>
+            <h2 class="tour__title">Chambres</h2>
+            <p class="tour__quote">« L’appartement dispose de <strong>trois chambres</strong>, salon séjour, salle d’eau…»<button class="tour__more" type="button" aria-expanded="false" aria-label="Voir l’extrait de la description associé aux chambres" data-match="trois chambres"><img src="assets/icon-three-dots.svg" alt=""></button></p>
+          </div>
+          <div class="masonry__row masonry__row--pair">
+            <button class="tile" type="button" data-media="photo" data-room="Chambre"><img src="assets/ad-rodez/photo-12.jpg" alt="Chambre avec fenêtre sur les arbres"></button>
+            <button class="tile" type="button" data-media="photo" data-room="Chambre"><img src="assets/ad-rodez/photo-13.jpg" alt="Deuxième chambre, mur rouge"></button>
+          </div>
+          <div class="masonry__row masonry__row--hero">
+            <button class="tile" type="button" data-media="photo" data-room="Chambre">
+              <img src="assets/ad-rodez/photo-14.jpg" alt="Troisième chambre, vide, murs bleu clair">
+            </button>
+          </div>
+        </section>
+
+        <section class="tour__section" data-vonly="7">
+          <div>
+            <h2 class="tour__title">Salle d’eau</h2>
+            <p class="tour__quote">« …trois chambres, salon séjour, <strong>salle d’eau</strong>, WC séparé…»<button class="tour__more" type="button" aria-expanded="false" aria-label="Voir l’extrait de la description associé à la salle d’eau" data-match="salle d’eau"><img src="assets/icon-three-dots.svg" alt=""></button></p>
+          </div>
+          <div class="masonry__row masonry__row--pair">
+            <button class="tile" type="button" data-media="photo" data-room="Salle d’eau"><img src="assets/ad-rodez/photo-15.jpg" alt="Salle d’eau, vasque, sèche-serviettes et lave-linge"></button>
+            <button class="tile" type="button" data-media="photo" data-room="Salle d’eau"><img src="assets/ad-rodez/photo-16.jpg" alt="Douche à l’italienne carrelée vert d’eau"></button>
+          </div>
+        </section>
+
+        <!-- L'entrée et le dégagement ne sont pas décrits dans l'annonce : légende de
+             ce qu'on voit, sans bouton d'extrait, il n'y aurait rien à ouvrir. -->
+        <section class="tour__section" data-vonly="7">
+          <div>
+            <h2 class="tour__title">Entrée et dégagement</h2>
+            <p class="tour__quote">L’entrée et le dégagement qui dessert les pièces</p>
+          </div>
+          <div class="masonry__row masonry__row--pair">
+            <button class="tile" type="button" data-media="photo" data-room="Entrée"><img src="assets/ad-rodez/photo-06.jpg" alt="Entrée avec porte-manteau et commode"></button>
+            <button class="tile" type="button" data-media="photo" data-room="Dégagement"><img src="assets/ad-rodez/photo-07.jpg" alt="Dégagement desservant les pièces"></button>
+          </div>
+        </section>
+
+        <section class="tour__section" data-vonly="7">
+          <div>
+            <h2 class="tour__title">Cave</h2>
+            <p class="tour__quote">« …le confort apporté au quotidien, <strong>cave de 9,50 m²</strong>, ascenseur et place de parking privative.»<button class="tour__more" type="button" aria-expanded="false" aria-label="Voir l’extrait de la description associé à la cave" data-match="cave de 9,50 m²"><img src="assets/icon-three-dots.svg" alt=""></button></p>
+          </div>
+          <div class="masonry__row masonry__row--hero">
+            <button class="tile" type="button" data-media="photo" data-room="Cave">
+              <img src="assets/ad-rodez/photo-17.jpg" alt="Cave de 9,50 m² en sous-sol">
+            </button>
+          </div>
+        </section>
+
         <section class="tour__section">
           <div>
             <h2 class="tour__title">Autres médias</h2>
@@ -1617,6 +2193,30 @@
           </div>
           <div class="masonry__row masonry__row--plan">
             <button class="tile tile--plan" type="button" data-media="plan" data-room="Plan"><img src="assets/ad-lomme/plan.jpg" alt="Plan de la maison" data-vsrc="plan2d"></button>
+          </div>
+          <!-- L'étiquette énergie fait partie des photos de l'annonce, mais ce n'est
+               pas une pièce : organisée par pièce, la galerie la range ici. -->
+          <div class="masonry__row masonry__row--hero" data-vonly="3">
+            <button class="tile" type="button" data-media="photo" data-room="Diagnostic"><img src="assets/ad-paris18/photo-09.jpg" alt="Étiquette du diagnostic de performance énergétique"></button>
+          </div>
+          <div class="masonry__row masonry__row--hero" data-vonly="4">
+            <button class="tile" type="button" data-media="photo" data-room="Mesurage"><img src="assets/ad-paris15/mesurage.jpg" alt="Tableau de mesurage de la surface Carrez, pièce par pièce"></button>
+          </div>
+          <!-- L'agence a publié la carte de visite de son négociateur parmi les photos
+               du bien : elle n'est pas une pièce, elle est rangée ici. -->
+          <div class="masonry__row masonry__row--hero" data-vonly="5">
+            <button class="tile" type="button" data-media="photo" data-room="Carte de visite"><img src="assets/ad-strasbourg/carte-visite.jpg" alt="Carte de visite du négociateur de l’agence"></button>
+          </div>
+          <!-- La maison a deux niveaux, donc deux plans : le rez-de-chaussée sert de
+               plan principal ci-dessus, celui de l'étage vient à la suite. -->
+          <div class="masonry__row masonry__row--hero" data-vonly="6">
+            <button class="tile tile--plan" type="button" data-media="plan" data-room="Plan"><img src="assets/ad-pian-medoc/plan-etage.jpg" alt="Plan côté de l’étage : trois chambres et la salle de bains"></button>
+          </div>
+          <!-- L'agent mandataire a publié sa carte de visite et le visuel de son réseau
+               parmi les photos du bien : ni l'une ni l'autre n'est une pièce. -->
+          <div class="masonry__row masonry__row--pair" data-vonly="7">
+            <button class="tile" type="button" data-media="photo" data-room="Carte de visite"><img src="assets/ad-rodez/carte-visite.jpg" alt="Carte de visite de l’agent mandataire, avec téléphone et courriel"></button>
+            <button class="tile" type="button" data-media="photo" data-room="Visuel de l’agence"><img src="assets/ad-rodez/equipe-reseau.jpg" alt="Visuel du réseau de l’agence : l’équipe du sud Aveyron sur une carte"></button>
           </div>
           <div class="masonry__row masonry__row--pair">
             <button class="tile" type="button" data-media="virtual" data-room="Visite virtuelle">
@@ -1661,8 +2261,8 @@
               <img class="btn__icon" src="assets/icon-paintbrush-ai.svg" alt="">
               Redécorer
             </button>
-            <button class="icon-btn icon-btn--surface viewer__collapse" type="button" aria-label="Fermer la photo et voir tous les médias">
-              <img class="icon-btn__icon" src="assets/icon-cross-photo.svg" alt="">
+            <button class="icon-btn icon-btn--surface viewer__zoom" type="button" aria-label="Agrandir la photo">
+              <img class="icon-btn__icon" src="assets/icon-magnifier.svg" alt="">
             </button>
           </div>
 
@@ -1791,8 +2391,8 @@
   <!-- Ecran scinde : le plan s'installe sous la photo et y reste pendant qu'on
        continue de faire defiler les photos. -->
   <div class="focus__plan" id="focus-plan" hidden>
-    <button class="focus__plan-close" type="button" aria-label="Masquer le plan">
-      <span class="focus__plan-handle"></span>
+    <button class="icon-btn icon-btn--surface focus__plan-close" type="button" aria-label="Masquer le plan">
+      <img class="icon-btn__icon" src="assets/icon-cross.svg" alt="">
     </button>
     <img class="focus__plan-img" src="assets/ad-lomme/plan.jpg" alt="Plan de la maison" data-vsrc="plan2d">
   </div>
@@ -1839,8 +2439,10 @@
 </div>
 
 <!--
-  Variantes participants — même mécanique que l'adview : ?p=1 (61 m², deux niveaux)
-  ou ?p=2 (92 m², trois niveaux avec bureau sous combles). La variante est lue dans
+  Variantes participants — même mécanique que l'adview : ?p=1 (maison 61 m² à Lomme),
+  ?p=2 (maison 92 m² à Carquefou), ?p=3 (appartement 31 m² à Paris 18e), ?p=4
+  (appartement 45 m² à Paris 15e), ?p=5 (appartement 46 m² à Strasbourg Krutenau),
+  ?p=6 (maison 89 m² au Pian-Médoc) ou ?p=7 (appartement 88 m² à Rodez Saint-Éloi). La variante est lue dans
   l'URL puis mémorisée, donc elle survit à l'aller-retour adview <-> galerie.
   Ce script précède le script principal : celui-ci lit le template de description et
   collecte les vignettes une seule fois, il faut donc que le DOM soit déjà à jour.
@@ -1848,6 +2450,17 @@
 <!-- Valeurs propres au participant 2. En JSON plutôt qu'en littéral JS pour
      qu'un autre prototype puisse les relire depuis le HTML récupéré, sans
      exécuter de script : c'est ce que fait la carte d'annonce du tunnel. -->
+<!-- Zoom : la photo seule, au plus grand que la fenêtre permette. Ni segmented
+     ni mentions IA — ici on ne compare pas, on regarde le détail. -->
+<div class="modal-overlay" id="zoom-modal" hidden>
+  <div class="zoom" role="dialog" aria-modal="true" aria-label="Photo agrandie">
+    <img class="zoom__image" src="" alt="">
+    <button class="icon-btn icon-btn--surface zoom__close" type="button" aria-label="Fermer la photo agrandie">
+      <img class="icon-btn__icon" src="assets/icon-cross-photo.svg" alt="">
+    </button>
+  </div>
+</div>
+
 <script type="application/json" id="participant-data">
 {
   "2": {
@@ -1862,6 +2475,71 @@
       "hero": "assets/ad-carquefou/photo-03.jpg",
       "thumb": "assets/ad-carquefou/photo-01.jpg"
     }
+  },
+  "3": {
+    "titleshort": "Appartement 2 pièces 31 m²",
+    "price": "247 000 €",
+    "desc": "“… Métro Marx Dormoy – Square de la Madone. Dans un immeuble ancien en bon état général, au 4e étage sans ascenseur, joli 2 pièces de 31 m² comprenant un séjour avec cuisine ouverte aménagée, une salle d’eau avec WC sanibroyeur, belle chambre avec grand placard aménagé. Calme, vue ciel, aucune perte de place et en bon état général. Une cave en sous-sol est comprise également. Square au pied de l’immeuble !…”",
+    "alt": {
+      "heroAlt": "Séjour avec cuisine ouverte"
+    },
+    "src": {
+      "plan2d": "assets/ad-paris18/plan.jpg",
+      "hero": "assets/ad-paris18/photo-01.jpg",
+      "thumb": "assets/ad-paris18/photo-01.jpg"
+    }
+  },
+  "4": {
+    "titleshort": "Appartement 2 pièces 45 m²",
+    "price": "408 000 €",
+    "desc": "“… À proximité immédiate de Beaugrenelle et de l’église Saint-Christophe-de-Javel, cet appartement deux pièces prend place au 1er étage avec ascenseur d’une résidence sécurisée des années 70 avec gardien. Donnant entièrement sur une agréable cour intérieure végétalisée, l’appartement bénéficie d’un environnement calme et préservé. L’entrée dessert une pièce de vie confortable avec espace de rangement intégré. La cuisine indépendante offre un espace distinct et fonctionnel, facilement aménageable selon les besoins. La chambre dispose d’une salle de bains attenante, apportant confort et praticité au quotidien. Des WC séparés viennent compléter l’ensemble. Une cave en sous-sol complète ce bien et offre un espace de stockage supplémentaire particulièrement appréciable. Un emplacement de parking en sous-sol est proposé en supplément.…”",
+    "alt": {
+      "heroAlt": "Pièce de vie avec fenêtres sur la cour intérieure"
+    },
+    "src": {
+      "plan2d": "assets/ad-paris15/plan.jpg",
+      "hero": "assets/ad-paris15/photo-01.jpg",
+      "thumb": "assets/ad-paris15/photo-01.jpg"
+    }
+  },
+  "5": {
+    "titleshort": "Appartement 2 pièces 46 m²",
+    "price": "199 000 €",
+    "desc": "“… Disponible le 4 novembre 2026. Appartement actuellement loué, le locataire vient de transmettre son préavis. – KRUTENAU – 5 rue Klein 67000 Strasbourg. 2 pièces, 45,51 m² au 3e étage sans ascenseur. Chauffage individuel électrique. Actuellement loué 800 € par mois + 50 € de charges. Prix du bien : 199 000 €, prix hors honoraires 190 000 €, honoraires TTC 4,74 % soit 9 000 € à la charge de l’acquéreur. À propos de la copropriété : pas de procédure en cours, nombre de lots 10 dont 5 principaux. Charges prévisionnelles annuelles 2025 : 924,24 €. Taxe foncière 2025 : 634 € dont 137 € de TOM.…”",
+    "alt": {
+      "heroAlt": "Séjour avec ses deux fenêtres sur rue"
+    },
+    "src": {
+      "plan2d": "assets/ad-strasbourg/plan.jpg",
+      "hero": "assets/ad-strasbourg/photo-01.jpg",
+      "thumb": "assets/ad-strasbourg/photo-01.jpg"
+    }
+  },
+  "6": {
+    "titleshort": "Maison 4 pièces 89 m²",
+    "price": "335 500 €",
+    "desc": "“… Le Pian-Médoc, secteur Feydieu, dans une rue calme. Projetez-vous dans cette maison individuelle de 2023, de 89 m² avec jardin et garage. Au rez-de-chaussée, vous trouverez une grande pièce de vie lumineuse grâce à sa large baie vitrée, une cuisine semi-ouverte équipée, un cellier et des WC avec lavabo. L’étage est composé de 3 chambres avec penderies et d’une salle de bain spacieuse avec baignoire et WC. À l’extérieur, le jardin avec terrasse en bois est exposé sud et entièrement clôturé. Côté nord, une place de parking avec prise pour véhicule électrique. Maison récente équipée d’une climatisation réversible et d’un chauffe-eau thermodynamique. DPE classe A réalisé en 03/2025. Vente de particulier à particulier, agence s’abstenir, merci.…”",
+    "alt": {
+      "heroAlt": "Façade arrière, terrasse en bois et jardin clos"
+    },
+    "src": {
+      "plan2d": "assets/ad-pian-medoc/plan.jpg",
+      "hero": "assets/ad-pian-medoc/photo-01.jpg",
+      "thumb": "assets/ad-pian-medoc/photo-01.jpg"
+    }
+  },
+  "7": {
+    "titleshort": "Appartement 4 pièces 88 m²",
+    "price": "213 000 €",
+    "desc": "“… Au sein d’une résidence du quartier Saint-Éloi – Camonil, à Rodez, venez découvrir cet appartement F4 de 88 m² situé au premier étage avec ascenseur. L’appartement dispose de trois chambres, salon séjour, salle d’eau, WC séparé et d’une cuisine séparée donnant sur un balcon au calme. Son état est excellent et les prestations vous raviront par le confort apporté au quotidien, cave de 9,50 m², ascenseur et place de parking privative. Les charges de copropriété incluent la consommation de chauffage, d’eau froide et eau chaude (chaudière collective gaz). À propos de la copropriété : pas de procédure en cours, nombre de lots 58. Date de réalisation du diagnostic énergétique : 09/04/2025.…”",
+    "alt": {
+      "heroAlt": "Salle à manger ouverte sur le salon, photo habillée d’un bandeau de l’agence"
+    },
+    "src": {
+      "plan2d": "assets/ad-rodez/plan.jpg",
+      "hero": "assets/ad-rodez/photo-01.jpg",
+      "thumb": "assets/ad-rodez/photo-01.jpg"
+    }
   }
 }
 </script>
@@ -1875,7 +2553,7 @@
 
   const asked = new URLSearchParams(location.search).get('p');
   let variant = '1';
-  if (asked === '1' || asked === '2') {
+  if (['1', '2', '3', '4', '5', '6', '7'].includes(asked)) {
     variant = asked;
     try { localStorage.setItem(VARIANT_KEY, asked); } catch (e) {}
   } else {
@@ -1937,15 +2615,23 @@
   // ses deux états d'affichage le sont. La liste porte sur le fichier et non sur
   // la vignette, sinon il faudrait la répliquer dans la mosaïque et dans la
   // visite photo, où les mêmes photos réapparaissent.
-  // Le chemin est comparé en entier, et pas seulement le nom de fichier : les deux
+  // Le chemin est comparé en entier, et pas seulement le nom de fichier : les
   // annonces numérotent leurs photos pareil, et ce n'est pas la même qui porte le
-  // verdict négatif d'un côté et de l'autre. Une seule par annonce.
-  const AI_MODIFIED = ['ad-lomme/photo-03.jpg', 'ad-carquefou/photo-08.jpg'];
+  // verdict négatif d'une annonce à l'autre. Les trois premières en ont une chacune,
+  // choisie pour la démonstration ; la quatrième en a deux, et celles-là ne sont pas
+  // choisies : ce sont les deux photos que l'agence a réellement publiées avec la
+  // mention « proposition d'aménagement virtuel non contractuel ».
+  const AI_MODIFIED = ['ad-lomme/photo-03.jpg', 'ad-carquefou/photo-08.jpg', 'ad-paris18/photo-04.jpg', 'ad-paris15/photo-02.jpg', 'ad-paris15/photo-03.jpg'];
   const aiState = src => AI_MODIFIED.some(path => src.includes(path)) ? 'modified' : 'authentic';
   /* Décoration virtuelle : une seule photo par annonce en dispose, celle dont
-     l'agence a fait produire les deux projections. Partout ailleurs le bouton
-     « Redécorer » n'aurait rien à ouvrir, donc il ne s'affiche pas. La clé est le
-     chemin de la photo d'origine, comme pour le verdict IA. */
+     on a fait produire les deux projections. Partout ailleurs le bouton
+     « Redécorer » n'aurait rien à ouvrir, donc il ne s'affiche pas — la maison
+     du Pian-Médoc n'en a pas encore.
+     Sauf à Rodez, c'est la photo de couverture : le bouton est donc disponible
+     dès l'ouverture de la galerie. À Rodez la paire a été produite depuis le
+     salon, qui n'est pas la vignette sélectionnée — il faut l'afficher pour voir
+     le bouton, et on ne rattache pas la projection à une autre prise de vue.
+     La clé est le chemin de la photo d'origine, comme pour le verdict IA. */
   const STAGING = {
     'ad-lomme/photo-02.jpg': {
       empty: { src: 'assets/ad-lomme/staging-vide.jpg', alt: 'Projection du séjour vidé de ses meubles, générée par IA' },
@@ -1954,6 +2640,22 @@
     'ad-carquefou/photo-03.jpg': {
       empty: { src: 'assets/ad-carquefou/staging-vide.jpg', alt: 'Projection de la pièce de vie vidée de ses meubles, générée par IA' },
       redecorated: { src: 'assets/ad-carquefou/staging-redeco.jpg', alt: 'Projection de la pièce de vie redécorée, générée par IA' },
+    },
+    'ad-paris18/photo-01.jpg': {
+      empty: { src: 'assets/ad-paris18/staging-vide.jpg', alt: 'Projection du séjour vidé de ses meubles, générée par IA' },
+      redecorated: { src: 'assets/ad-paris18/staging-redeco.jpg', alt: 'Projection du séjour redécoré, générée par IA' },
+    },
+    'ad-paris15/photo-01.jpg': {
+      empty: { src: 'assets/ad-paris15/staging-vide.jpg', alt: 'Projection de la pièce de vie vidée de ses meubles, générée par IA' },
+      redecorated: { src: 'assets/ad-paris15/staging-redeco.jpg', alt: 'Projection de la pièce de vie redécorée, générée par IA' },
+    },
+    'ad-strasbourg/photo-01.jpg': {
+      empty: { src: 'assets/ad-strasbourg/staging-vide.jpg', alt: 'Projection du séjour vidé de ses meubles, générée par IA' },
+      redecorated: { src: 'assets/ad-strasbourg/staging-redeco.jpg', alt: 'Projection du séjour redécoré, générée par IA' },
+    },
+    'ad-rodez/photo-03.jpg': {
+      empty: { src: 'assets/ad-rodez/staging-vide.jpg', alt: 'Projection du salon vidé de ses meubles, générée par IA' },
+      redecorated: { src: 'assets/ad-rodez/staging-redeco.jpg', alt: 'Projection du salon redécoré, générée par IA' },
     },
   };
   const stagingFor = src => STAGING[Object.keys(STAGING).find(path => src.includes(path))];
@@ -1973,6 +2675,23 @@
       new Image().src = v.src;
     });
   }
+
+  /* Le signalement nomme la piece de la photo affichee. Comme le bouton
+     « Redecorer », il doit donc partir de la vignette selectionnee dans le markup :
+     ce n'est pas la meme piece d'une annonce a l'autre. */
+  function setDisclaimerRoom(label) {
+    const room = label.toLowerCase();
+    const masculin = ['séjour', 'plan', 'plan 3d', 'bureau', 'extérieur', 'diagnostic', 'couloir', 'mesurage',
+                      'salon', 'balcon', 'dégagement', 'visuel de l’agence'].includes(room);
+    disclaimerRoom.textContent = `d’un${masculin ? '' : 'e'} ${room}`;
+  }
+  const startTile = document.querySelector('.masonry .tile--selected');
+  if (startTile && startTile.dataset.room) setDisclaimerRoom(startTile.dataset.room);
+
+  /* Le bouton n'est mis a jour qu'au clic sur une vignette : son etat de depart
+     doit donc etre calcule ici, sur la photo posee dans le markup. Elle n'est pas
+     la meme d'une annonce a l'autre. */
+  setStagingButton(viewerRedecorate, stagePhoto.src);
 
   const tiles = [...document.querySelectorAll('.tile')];
 
@@ -2006,11 +2725,7 @@
     stageBackdrop.src = img.src;
     aiSignal.dataset.state = aiState(img.src);
     setStagingButton(viewerRedecorate, img.src);
-    if (tile.dataset.room) {
-      const room = tile.dataset.room.toLowerCase();
-      const masculin = ['séjour', 'plan', 'plan 3d', 'bureau', 'extérieur'].includes(room);
-      disclaimerRoom.textContent = `d’un${masculin ? '' : 'e'} ${room}`;
-    }
+    if (tile.dataset.room) setDisclaimerRoom(tile.dataset.room);
   }
 
   function markTile(tile) {
@@ -2061,6 +2776,9 @@
   let filter = 'all';
 
   function applyFilter() {
+    // `selectTile` ramene en vue scindee. Or filtrer ou ranger par piece ne change
+    // que le contenu de la galerie, pas la vue depuis laquelle on la regarde.
+    const expanded = adview.classList.contains('is-expanded');
     adview.classList.toggle('is-filtered', filter !== 'all');
     // Le toggle disparaît hors « Tous » : ne pas laisser la visite photo
     // active derrière un contrôle invisible.
@@ -2073,6 +2791,7 @@
     const scope = adview.classList.contains('is-photo-tour') ? '.tour' : '.masonry';
     const first = document.querySelector(`${scope} .tile:not([hidden])`);
     if (first) selectTile(first);
+    adview.classList.toggle('is-expanded', expanded);
   }
 
   document.querySelectorAll('.chip').forEach(chip => chip.addEventListener('click', () => transition(() => {
@@ -2092,7 +2811,6 @@
   const tourToggle = document.querySelector('.switch__input');
   tourToggle.addEventListener('change', () => transition(() => {
     adview.classList.toggle('is-photo-tour', tourToggle.checked);
-    if (tourToggle.checked) adview.classList.remove('is-expanded');
     applyFilter();
     closeExcerpt();
   }));
@@ -2221,7 +2939,7 @@
 
   // Retour navigateur seulement si on vient de l'adview : sinon un back nous
   // renverrait vers une autre entrée de la galerie (ex. ?media=plan puis ?media=video)
-  document.querySelectorAll('.adview__topbar .icon-btn').forEach(btn => {
+  document.querySelectorAll('.adview__back, .side__back').forEach(btn => {
     btn.addEventListener('click', () => {
       if (document.referrer.includes('adview.html')) history.back();
       else location.href = 'adview.html?p=' + (window.PROTO_VARIANT || '1');
@@ -2342,6 +3060,41 @@
   segments.forEach(s => s.addEventListener('click', () => setVariant(s.dataset.variant)));
   modalContent.addEventListener('scroll', updateLegalFade);
   window.addEventListener('resize', updateLegalFade);
+
+  /* ---------- Zoom : la photo affichée en plus grand ---------- */
+  const zoomOverlay = document.getElementById('zoom-modal');
+  const zoomFrame = zoomOverlay.querySelector('.zoom');
+  const zoomImage = zoomOverlay.querySelector('.zoom__image');
+  const zoomClose = zoomOverlay.querySelector('.zoom__close');
+  let zoomReturn = null;
+
+  function openZoom() {
+    zoomReturn = document.activeElement;
+    // La scène recadre en `cover` : le zoom repart de la même source, mais
+    // affichée entière, c'est là qu'on gagne le détail.
+    zoomImage.src = stagePhoto.src;
+    zoomImage.alt = stagePhoto.alt;
+    // Le cadre se met au ratio de la photo pour que la croix tombe dessus. La
+    // scene la recadre en `cover` : sa forme reelle n'est lisible que sur l'image.
+    if (stagePhoto.naturalWidth) {
+      zoomFrame.style.setProperty('--zoom-ratio', stagePhoto.naturalWidth / stagePhoto.naturalHeight);
+    }
+    zoomOverlay.hidden = false;
+    zoomOverlay.classList.add('is-open');
+    document.body.style.overflow = 'hidden';
+    zoomClose.focus();
+  }
+
+  function closeZoom() {
+    zoomOverlay.classList.remove('is-open');
+    zoomOverlay.hidden = true;
+    document.body.style.overflow = '';
+    if (zoomReturn) zoomReturn.focus();
+  }
+
+  document.querySelector('.viewer__zoom').addEventListener('click', openZoom);
+  zoomClose.addEventListener('click', closeZoom);
+  zoomOverlay.addEventListener('click', e => { if (e.target === zoomOverlay) closeZoom(); });
 
   modalOverlay.querySelectorAll('.modal__feedback .icon-btn').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -2468,7 +3221,10 @@
   }
 
   focusPlanBtn.addEventListener('click', () => setPlan(true));
-  focusPlanClose.addEventListener('click', () => setPlan(false));
+  focusPlanClose.addEventListener('click', () => {
+    setPlan(false);
+    focusPlanBtn.focus();
+  });
 
 
   focusScreen.querySelectorAll('.focus__feedback .icon-btn').forEach(btn => {
@@ -2505,7 +3261,8 @@
 
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape') {
-      if (!modalOverlay.hidden) closeModal();
+      if (!zoomOverlay.hidden) closeZoom();
+      else if (!modalOverlay.hidden) closeModal();
       else if (!focusScreen.hidden) focusBackStep();
       return;
     }
