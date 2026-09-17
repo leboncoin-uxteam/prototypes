@@ -102,8 +102,8 @@ export default function DeposerPage() {
   const [hidePhone, setHidePhone] = useState(false)
   const [acceptMarketing, setAcceptMarketing] = useState(false)
 
-  async function handleAddPhotos(files: File[]) {
-    const urls = await addPhotosToDraft(files)
+  function handleAddPhotos(files: File[]) {
+    const urls = Array.from(files).map(f => URL.createObjectURL(f))
     setPhotos(prev => [...prev, ...urls])
   }
 

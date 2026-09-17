@@ -44,6 +44,7 @@ export function PhotoGrid({ photos, onAdd }: PhotoGridProps) {
   function handleFiles(e: React.ChangeEvent<HTMLInputElement>) {
     const files = Array.from(e.target.files ?? [])
     if (files.length) onAdd(files)
+    e.target.value = ''
   }
 
   return (
