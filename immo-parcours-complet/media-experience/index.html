@@ -1705,9 +1705,34 @@
           </div>
         </div>
 
+        <div class="masonry__row masonry__row--hero" data-vonly="8">
+          <button class="tile tile--selected" type="button" aria-current="true" data-media="photo" data-room="Séjour">
+            <img src="assets/ad-ivry/photo-02.jpg" alt="Séjour ouvert sur le balcon et la cuisine">
+          </button>
+        </div>
+
+        <div class="masonry__row masonry__row--pair" data-vonly="8">
+          <button class="tile" type="button" data-media="photo" data-room="Séjour"><img src="assets/ad-ivry/photo-01.jpg" alt="Séjour avec canapé, téléviseur et porte-fenêtre sur le balcon"></button>
+          <button class="tile" type="button" data-media="photo" data-room="Séjour"><img src="assets/ad-ivry/photo-04.jpg" alt="Séjour vu du balcon, cuisine ouverte et porte d’entrée"></button>
+        </div>
+
+        <div class="masonry__row masonry__row--mixed" data-vonly="8">
+          <button class="tile tile--narrow tile--tall" type="button" data-media="photo" data-room="Cuisine"><img src="assets/ad-ivry/photo-03.jpg" alt="Cuisine ouverte équipée, façades bleu canard"></button>
+          <div class="masonry__stack">
+            <button class="tile" type="button" data-media="photo" data-room="Chambre"><img src="assets/ad-ivry/photo-05.jpg" alt="Chambre avec lit double et trois fenêtres"></button>
+            <button class="tile" type="button" data-media="photo" data-room="Chambre"><img src="assets/ad-ivry/photo-06.jpg" alt="Deuxième chambre, banquette rouge sous la fenêtre"></button>
+          </div>
+        </div>
+
+        <div class="masonry__row masonry__row--hero" data-vonly="8">
+          <button class="tile" type="button" data-media="photo" data-room="Salle de bains">
+            <img src="assets/ad-ivry/photo-07.jpg" alt="Salle de bains avec baignoire, vasque et grand miroir">
+          </button>
+        </div>
+
         <div class="masonry__row masonry__row--plan">
           <button class="tile tile--plan" type="button" data-media="plan" data-room="Plan">
-            <img src="assets/ad-lomme/plan.jpg" alt="Plan de la maison" data-vsrc="plan2d">
+            <img src="assets/ad-lomme/plan.jpg" alt="Plan de la maison" data-vsrc="plan2d" data-valt="plan2dAlt">
           </button>
         </div>
 
@@ -2186,13 +2211,68 @@
           </div>
         </section>
 
+        <section class="tour__section" data-vonly="8">
+          <div>
+            <h2 class="tour__title">Pièce de vie</h2>
+            <p class="tour__quote">« Dès l’entrée, découvrez une agréable <strong>pièce de vie de près de 30 m²</strong>, offrant un espace convivial et chaleureux…»<button class="tour__more" type="button" aria-expanded="false" aria-label="Voir l’extrait de la description associé à la pièce de vie" data-match="pièce de vie de près de 30 m²"><img src="assets/icon-three-dots.svg" alt=""></button></p>
+          </div>
+          <div class="masonry__row masonry__row--hero">
+            <button class="tile tile--selected" type="button" aria-current="true" data-media="photo" data-room="Séjour">
+              <img src="assets/ad-ivry/photo-02.jpg" alt="Séjour ouvert sur le balcon et la cuisine">
+            </button>
+          </div>
+          <div class="masonry__row masonry__row--pair">
+            <button class="tile" type="button" data-media="photo" data-room="Séjour"><img src="assets/ad-ivry/photo-01.jpg" alt="Séjour avec canapé, téléviseur et porte-fenêtre sur le balcon"></button>
+            <button class="tile" type="button" data-media="photo" data-room="Séjour"><img src="assets/ad-ivry/photo-04.jpg" alt="Séjour vu du balcon, cuisine ouverte et porte d’entrée"></button>
+          </div>
+        </section>
+
+        <section class="tour__section" data-vonly="8">
+          <div>
+            <h2 class="tour__title">Cuisine</h2>
+            <p class="tour__quote">« …pour le quotidien comme pour recevoir. <strong>La cuisine ouverte, moderne</strong>…»<button class="tour__more" type="button" aria-expanded="false" aria-label="Voir l’extrait de la description associé à la cuisine" data-match="La cuisine ouverte, moderne"><img src="assets/icon-three-dots.svg" alt=""></button></p>
+          </div>
+          <div class="masonry__row masonry__row--hero">
+            <button class="tile" type="button" data-media="photo" data-room="Cuisine">
+              <img src="assets/ad-ivry/photo-03.jpg" alt="Cuisine ouverte équipée, façades bleu canard">
+            </button>
+          </div>
+        </section>
+
+        <!-- La description de l'annonce d'Ivry est coupée par le « Voir plus » sur la page
+             enregistrée : elle s'arrête à la cuisine. Les chambres, la salle de bains et le
+             balcon n'ont donc pas d'extrait à citer, ils portent une légende de ce qu'on voit
+             et pas de bouton d'extrait — il n'y aurait rien à ouvrir. -->
+        <section class="tour__section" data-vonly="8">
+          <div>
+            <h2 class="tour__title">Chambres</h2>
+            <p class="tour__quote">Les deux chambres du bien</p>
+          </div>
+          <div class="masonry__row masonry__row--pair">
+            <button class="tile" type="button" data-media="photo" data-room="Chambre"><img src="assets/ad-ivry/photo-05.jpg" alt="Chambre avec lit double et trois fenêtres"></button>
+            <button class="tile" type="button" data-media="photo" data-room="Chambre"><img src="assets/ad-ivry/photo-06.jpg" alt="Deuxième chambre, banquette rouge sous la fenêtre"></button>
+          </div>
+        </section>
+
+        <section class="tour__section" data-vonly="8">
+          <div>
+            <h2 class="tour__title">Salle de bains</h2>
+            <p class="tour__quote">La salle de bains avec baignoire et vasque</p>
+          </div>
+          <div class="masonry__row masonry__row--hero">
+            <button class="tile" type="button" data-media="photo" data-room="Salle de bains">
+              <img src="assets/ad-ivry/photo-07.jpg" alt="Salle de bains avec baignoire, vasque et grand miroir">
+            </button>
+          </div>
+        </section>
+
         <section class="tour__section">
           <div>
             <h2 class="tour__title">Autres médias</h2>
             <p class="tour__quote">Plan, visite virtuelle et vidéo du bien</p>
           </div>
           <div class="masonry__row masonry__row--plan">
-            <button class="tile tile--plan" type="button" data-media="plan" data-room="Plan"><img src="assets/ad-lomme/plan.jpg" alt="Plan de la maison" data-vsrc="plan2d"></button>
+            <button class="tile tile--plan" type="button" data-media="plan" data-room="Plan"><img src="assets/ad-lomme/plan.jpg" alt="Plan de la maison" data-vsrc="plan2d" data-valt="plan2dAlt"></button>
           </div>
           <!-- L'étiquette énergie fait partie des photos de l'annonce, mais ce n'est
                pas une pièce : organisée par pièce, la galerie la range ici. -->
@@ -2394,7 +2474,7 @@
     <button class="icon-btn icon-btn--surface focus__plan-close" type="button" aria-label="Masquer le plan">
       <img class="icon-btn__icon" src="assets/icon-cross.svg" alt="">
     </button>
-    <img class="focus__plan-img" src="assets/ad-lomme/plan.jpg" alt="Plan de la maison" data-vsrc="plan2d">
+    <img class="focus__plan-img" src="assets/ad-lomme/plan.jpg" alt="Plan de la maison" data-vsrc="plan2d" data-valt="plan2dAlt">
   </div>
 </div>
 
@@ -2442,7 +2522,8 @@
   Variantes participants — même mécanique que l'adview : ?p=1 (maison 61 m² à Lomme),
   ?p=2 (maison 92 m² à Carquefou), ?p=3 (appartement 31 m² à Paris 18e), ?p=4
   (appartement 45 m² à Paris 15e), ?p=5 (appartement 46 m² à Strasbourg Krutenau),
-  ?p=6 (maison 89 m² au Pian-Médoc) ou ?p=7 (appartement 88 m² à Rodez Saint-Éloi). La variante est lue dans
+  ?p=6 (maison 89 m² au Pian-Médoc), ?p=7 (appartement 88 m² à Rodez Saint-Éloi) ou
+  ?p=8 (appartement 64 m² à Ivry-sur-Seine, quartier Ivry Port). La variante est lue dans
   l'URL puis mémorisée, donc elle survit à l'aller-retour adview <-> galerie.
   Ce script précède le script principal : celui-ci lit le template de description et
   collecte les vignettes une seule fois, il faut donc que le DOM soit déjà à jour.
@@ -2481,7 +2562,8 @@
     "price": "247 000 €",
     "desc": "“… Métro Marx Dormoy – Square de la Madone. Dans un immeuble ancien en bon état général, au 4e étage sans ascenseur, joli 2 pièces de 31 m² comprenant un séjour avec cuisine ouverte aménagée, une salle d’eau avec WC sanibroyeur, belle chambre avec grand placard aménagé. Calme, vue ciel, aucune perte de place et en bon état général. Une cave en sous-sol est comprise également. Square au pied de l’immeuble !…”",
     "alt": {
-      "heroAlt": "Séjour avec cuisine ouverte"
+      "heroAlt": "Séjour avec cuisine ouverte",
+      "plan2dAlt": "Plan de l’appartement"
     },
     "src": {
       "plan2d": "assets/ad-paris18/plan.jpg",
@@ -2494,7 +2576,8 @@
     "price": "408 000 €",
     "desc": "“… À proximité immédiate de Beaugrenelle et de l’église Saint-Christophe-de-Javel, cet appartement deux pièces prend place au 1er étage avec ascenseur d’une résidence sécurisée des années 70 avec gardien. Donnant entièrement sur une agréable cour intérieure végétalisée, l’appartement bénéficie d’un environnement calme et préservé. L’entrée dessert une pièce de vie confortable avec espace de rangement intégré. La cuisine indépendante offre un espace distinct et fonctionnel, facilement aménageable selon les besoins. La chambre dispose d’une salle de bains attenante, apportant confort et praticité au quotidien. Des WC séparés viennent compléter l’ensemble. Une cave en sous-sol complète ce bien et offre un espace de stockage supplémentaire particulièrement appréciable. Un emplacement de parking en sous-sol est proposé en supplément.…”",
     "alt": {
-      "heroAlt": "Pièce de vie avec fenêtres sur la cour intérieure"
+      "heroAlt": "Pièce de vie avec fenêtres sur la cour intérieure",
+      "plan2dAlt": "Plan de l’appartement"
     },
     "src": {
       "plan2d": "assets/ad-paris15/plan.jpg",
@@ -2507,7 +2590,8 @@
     "price": "199 000 €",
     "desc": "“… Disponible le 4 novembre 2026. Appartement actuellement loué, le locataire vient de transmettre son préavis. – KRUTENAU – 5 rue Klein 67000 Strasbourg. 2 pièces, 45,51 m² au 3e étage sans ascenseur. Chauffage individuel électrique. Actuellement loué 800 € par mois + 50 € de charges. Prix du bien : 199 000 €, prix hors honoraires 190 000 €, honoraires TTC 4,74 % soit 9 000 € à la charge de l’acquéreur. À propos de la copropriété : pas de procédure en cours, nombre de lots 10 dont 5 principaux. Charges prévisionnelles annuelles 2025 : 924,24 €. Taxe foncière 2025 : 634 € dont 137 € de TOM.…”",
     "alt": {
-      "heroAlt": "Séjour avec ses deux fenêtres sur rue"
+      "heroAlt": "Séjour avec ses deux fenêtres sur rue",
+      "plan2dAlt": "Plan de l’appartement"
     },
     "src": {
       "plan2d": "assets/ad-strasbourg/plan.jpg",
@@ -2533,12 +2617,27 @@
     "price": "213 000 €",
     "desc": "“… Au sein d’une résidence du quartier Saint-Éloi – Camonil, à Rodez, venez découvrir cet appartement F4 de 88 m² situé au premier étage avec ascenseur. L’appartement dispose de trois chambres, salon séjour, salle d’eau, WC séparé et d’une cuisine séparée donnant sur un balcon au calme. Son état est excellent et les prestations vous raviront par le confort apporté au quotidien, cave de 9,50 m², ascenseur et place de parking privative. Les charges de copropriété incluent la consommation de chauffage, d’eau froide et eau chaude (chaudière collective gaz). À propos de la copropriété : pas de procédure en cours, nombre de lots 58. Date de réalisation du diagnostic énergétique : 09/04/2025.…”",
     "alt": {
-      "heroAlt": "Salle à manger ouverte sur le salon, photo habillée d’un bandeau de l’agence"
+      "heroAlt": "Salle à manger ouverte sur le salon, photo habillée d’un bandeau de l’agence",
+      "plan2dAlt": "Plan de l’appartement"
     },
     "src": {
       "plan2d": "assets/ad-rodez/plan.jpg",
       "hero": "assets/ad-rodez/photo-01.jpg",
       "thumb": "assets/ad-rodez/photo-01.jpg"
+    }
+  },
+  "8": {
+    "titleshort": "Appartement 3 pièces 64 m²",
+    "price": "309 000 €",
+    "desc": "“L’agence Guy Hoquet Ivry-sur-Seine vous propose en exclusivité ce bel appartement de 64,1 m² situé au sein d’une résidence récente, calme et sécurisée datant de 2016 et certifiée BBC (Bâtiment Basse Consommation). Un bien qui conjugue confort moderne, fonctionnalité et emplacement stratégique. Dès l’entrée, découvrez une agréable pièce de vie de près de 30 m², offrant un espace convivial et chaleureux pour le quotidien comme pour recevoir. La cuisine ouverte, moderne…”",
+    "alt": {
+      "heroAlt": "Séjour ouvert sur le balcon et la cuisine",
+      "plan2dAlt": "Vue 3D de l’appartement sans son toit, tirée de la visite virtuelle"
+    },
+    "src": {
+      "plan2d": "assets/ad-ivry/plan.jpg",
+      "hero": "assets/ad-ivry/photo-02.jpg",
+      "thumb": "assets/ad-ivry/photo-01.jpg"
     }
   }
 }
@@ -2553,7 +2652,7 @@
 
   const asked = new URLSearchParams(location.search).get('p');
   let variant = '1';
-  if (['1', '2', '3', '4', '5', '6', '7'].includes(asked)) {
+  if (['1', '2', '3', '4', '5', '6', '7', '8'].includes(asked)) {
     variant = asked;
     try { localStorage.setItem(VARIANT_KEY, asked); } catch (e) {}
   } else {
@@ -2627,9 +2726,9 @@
      on a fait produire les deux projections. Partout ailleurs le bouton
      « Redécorer » n'aurait rien à ouvrir, donc il ne s'affiche pas — la maison
      du Pian-Médoc n'en a pas encore.
-     Sauf à Rodez, c'est la photo de couverture : le bouton est donc disponible
-     dès l'ouverture de la galerie. À Rodez la paire a été produite depuis le
-     salon, qui n'est pas la vignette sélectionnée — il faut l'afficher pour voir
+     Sauf à Rodez, c'est la vignette sélectionnée à l'ouverture de la galerie :
+     le bouton est donc disponible tout de suite. À Rodez la paire a été produite
+     depuis le salon, qui n'est pas cette vignette — il faut l'afficher pour voir
      le bouton, et on ne rattache pas la projection à une autre prise de vue.
      La clé est le chemin de la photo d'origine, comme pour le verdict IA. */
   const STAGING = {
@@ -2656,6 +2755,10 @@
     'ad-rodez/photo-03.jpg': {
       empty: { src: 'assets/ad-rodez/staging-vide.jpg', alt: 'Projection du salon vidé de ses meubles, générée par IA' },
       redecorated: { src: 'assets/ad-rodez/staging-redeco.jpg', alt: 'Projection du salon redécoré, générée par IA' },
+    },
+    'ad-ivry/photo-02.jpg': {
+      empty: { src: 'assets/ad-ivry/staging-vide.jpg', alt: 'Projection du séjour vidé de ses meubles, générée par IA' },
+      redecorated: { src: 'assets/ad-ivry/staging-redeco.jpg', alt: 'Projection du séjour redécoré, générée par IA' },
     },
   };
   const stagingFor = src => STAGING[Object.keys(STAGING).find(path => src.includes(path))];

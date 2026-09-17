@@ -3977,14 +3977,14 @@ ul { list-style: none; }
   }
 
   /* ── Variante du participant ──────────────────────────────────────────────
-     Le lien envoyé au participant porte ?p=1 … ?p=7 et arrive ici, en tête
+     Le lien envoyé au participant porte ?p=1 … ?p=8 et arrive ici, en tête
      du parcours. On le mémorise comme le font l'adview et la galerie, et on le
      reporte sur les liens internes : sans ça, le participant 2 quitterait le
      tunnel pour l'annonce du participant 1. */
   const VARIANT_KEY = 'lbc-proto:participant';
   const asked = new URLSearchParams(location.search).get('p');
   let variant = '1';
-  if (['1', '2', '3', '4', '5', '6', '7'].includes(asked)) {
+  if (['1', '2', '3', '4', '5', '6', '7', '8'].includes(asked)) {
     variant = asked;
     try { localStorage.setItem(VARIANT_KEY, asked); } catch (error) {}
   } else {

@@ -332,7 +332,11 @@
   /* ---------- Layout page ---------- */
   .page {
     display: grid;
-    grid-template-columns: var(--main-col) var(--aside-col);
+    /* La colonne principale plie : `--page-width` est la largeur de la boite, dont
+       le padding lateral se retranche. Les colonnes figees demandaient 672+18+330,
+       soit la boite entiere, et la colonne laterale sortait donc de 32px a droite
+       avec sa carte de contact et ses trois bannieres. */
+    grid-template-columns: minmax(0, var(--main-col)) var(--aside-col);
     gap: var(--col-gap);
     width: 100%;
     max-width: var(--page-width);
@@ -1779,7 +1783,7 @@ Les informations sur les risques auxquels ce bien est exposé sont disponibles s
           <p class="keys__item keys__item--more"><img src="assets/icon-crit-condition.svg" alt=""><span data-v="cond">Parfait état</span></p>
           <!-- Vente entre particuliers (6) ou honoraires payés par le vendeur (7) :
                dans les deux cas l'acquéreur n'en paie pas, donc pas ce critère. -->
-          <p class="keys__item keys__item--more" data-vnot="6 7"><img src="assets/icon-crit-charges.svg" alt=""><span>Honoraires à la charge de l’acquéreur</span></p>
+          <p class="keys__item keys__item--more" data-vnot="6 7 8"><img src="assets/icon-crit-charges.svg" alt=""><span>Honoraires à la charge de l’acquéreur</span></p>
         </div>
       </div>
       <button class="link--block keys__toggle" type="button" aria-expanded="false" aria-controls="keys"
@@ -1907,8 +1911,8 @@ Les informations sur les risques auxquels ce bien est exposé sont disponibles s
                maquette Figma. La variante 2 reprend celle de son annonce source (1 460 €
                pour 95 m²), ramenée au prorata de la surface. Les variantes 3 et 4 ne la
                donnent nulle part : plutôt que de l'estimer, la ligne dit qu'on ne l'a pas.
-               Les variantes 5 et 6 la publient, elle est reprise telle quelle. La
-               variante 7 ne la donne pas non plus. -->
+               Les variantes 5 et 6 la publient, elle est reprise telle quelle. Les
+               variantes 7 et 8 ne la donnent pas non plus. -->
           <div class="cost__row">
             <p class="cost__label">Taxe foncière</p>
             <p class="cost__amount" data-v="taxe">609 € / an</p>
@@ -2490,6 +2494,14 @@ Les informations sur les risques auxquels ce bien est exposé sont disponibles s
            l'annonce, dont les repères millavois (résidence du XVI, bas de l'avenue
            Charles de Gaulle, Parc de la Victoire) sont retirés : ils n'existent pas
            à Rodez et aucun équivalent n'est inventé.
+    ?p=8 — annonce 3223510276, appartement de 2016 de 64 m² / 3 pièces au 2e étage
+           d'un immeuble de 8, quartier Ivry Port à Ivry-sur-Seine (94200), vendu en
+           exclusivité par Guy Hoquet. Ni le prix ni la localisation ne sont changés :
+           tout vient de l'annonce. Sa page a été enregistrée avec le bouton « Voir
+           plus » replié, donc la description s'arrête à « La cuisine ouverte,
+           moderne… » : la suite n'est pas reconstituée, et les pièces qu'elle aurait
+           décrites (chambres, salle de bains, balcon) portent une légende de ce qu'on
+           voit au lieu d'un extrait cité.
   La variante est mémorisée pour que la navigation adview <-> galerie <-> listing la
   conserve sans param dans chaque lien. Le HTML porte la variante 1 en dur : sans JS
   la page reste cohérente.
@@ -2508,10 +2520,15 @@ Les informations sur les risques auxquels ce bien est exposé sont disponibles s
   foncière et budget énergie repris tels quels de l'annonce. Variante 6 : pas d'honoraires,
   c'est une vente entre particuliers. Variante 7 : honoraires à la charge du vendeur
   (fees_price = 0), donc rien à afficher côté acquéreur ; charges de copropriété et budget
-  énergie repris tels quels, taxe foncière absente de l'annonce.
+  énergie repris tels quels, taxe foncière absente de l'annonce. Variante 8 : honoraires
+  à la charge du vendeur également ; notaire (24 720 €) et montant total (333 720 €) sont
+  ceux de l'annonce, l'apport reste 20 % du prix. Ni taxe foncière ni charges de
+  copropriété dans l'annonce : la première dit qu'on ne l'a pas, la seconde n'a pas de
+  ligne.
   Les déciles DVF 2024 par secteur : Paris 18e 5 769 / 11 768, Paris 15e 7 199 / 11 921 €/m²
   (appartements, commune entière), Le Pian-Médoc 2 672 / 4 711 €/m² (maisons, 21 ventes),
-  Rodez 1 248 / 2 815 €/m² (appartements, 366 ventes, médiane 2 087 €/m²).
+  Rodez 1 248 / 2 815 €/m² (appartements, 366 ventes, médiane 2 087 €/m²),
+  Ivry-sur-Seine 3 529 / 6 396 €/m² (appartements, 384 ventes, médiane 4 822 €/m²).
   La variante 5 n'a pas de fourchette : le fichier des valeurs foncières ne couvre pas le
   Bas-Rhin, le Haut-Rhin et la Moselle, qui relèvent du livre foncier. Le bloc marché est
   donc remplacé par une explication, pas par une position inventée.
@@ -3059,6 +3076,83 @@ Montant estimé des dépenses annuelles d’énergie pour un usage standard : en
       left: { gaugeLeft: '75%' },
       transform: { mapOffset: 'translate(-290.00px, -403.74px)' },
       val: { finPrice: '213 000', finDown: '42 600' }
+    },
+    '8': {
+      title: 'Appartement 3 pièces 64 m² — Ivry-sur-Seine Ivry Port | leboncoin',
+      features: 'Appartement · 64 m² · 3 pièces',
+      breadcrumb: 'Vente appartement 3 pièces, 64 m²',
+      region: 'Île-de-France',
+      city: 'Ivry-sur-Seine',
+      where: 'Ivry-sur-Seine 94200 · Quartier Ivry Port',
+      localityName: 'Quartier Ivry Port',
+      localityAdmin: 'Ivry-sur-Seine (94200)',
+      mapBadge: 'Localisation approximative',
+      mapLabel: 'Carte du secteur de l’appartement à Ivry-sur-Seine',
+      mktLow: '3 529 € / m²',
+      mktHigh: '6 396 € / m²',
+      price: '309 000 €',
+      ppm: '4 828 € / m²',
+      keyinfo: 'Balcon · Étage 2/8 · Résidence de 2016 · BBC',
+      kind: 'Appartement',
+      surface: '64 m²',
+      rooms: '3 pièces',
+      beds: '2 chambres',
+      levels: 'Étage 2 sur 8',
+      // L'annonce ne liste ni salle de bains ni balcon dans ses informations clés :
+      // les deux sont décrits d'après ses propres photos, sans compter ce qu'on ne voit pas.
+      bathroom: 'Salle de bains',
+      outside: 'Balcon',
+      feat: 'Résidence sécurisée de 2016 · Certifiée BBC · Cuisine ouverte',
+      orient: 'Non communiqué',
+      heat: 'Non communiqué',
+      year: 'Construit en 2016',
+      cond: 'Bon état',
+      // « Les honoraires sont à la charge du vendeur » : le prix affiché est celui
+      // que paie l'acquéreur, rien ne s'y ajoute.
+      honoraires: 'Honoraires d’agence à la charge du vendeur : aucun honoraire ne s’ajoute au prix pour l’acquéreur.',
+      notaire: '24 720 €',
+      total: '333 720 €',
+      taxe: 'Non communiquée',
+      energie: 'entre 460 et 650 € / an',
+      verdict: 'À 4 828 € / m², le bien est au niveau de la médiane du secteur (4 822 € / m²).',
+      proposedBy: 'Proposé en exclusivité par',
+      agencyName: 'GUY HOQUET IVRY-SUR-SEINE',
+      agencySiren: 'N° SIRET : 89902163800015',
+      // La page enregistrée l'a été avec le bouton « Voir plus » replié : la description
+      // s'arrête donc où l'annonce la coupait à l'écran. Rien n'est complété à la main.
+      desc: `Appartement 3 pièces 64 m²
+
+L’agence Guy Hoquet Ivry-sur-Seine vous propose en exclusivité ce bel appartement de 64,1 m² situé au sein d’une résidence récente, calme et sécurisée datant de 2016 et certifiée BBC (Bâtiment Basse Consommation). Un bien qui conjugue confort moderne, fonctionnalité et emplacement stratégique.
+
+Dès l’entrée, découvrez une agréable pièce de vie de près de 30 m², offrant un espace convivial et chaleureux pour le quotidien comme pour recevoir. La cuisine ouverte, moderne…
+
+Surface : 64 m²
+Étage : 2 sur 8
+Référence : 1562`,
+      scale: { dpe: 'B', ges: 'A' },
+      alt: {
+        hero0Alt: 'Séjour avec canapé, téléviseur et porte-fenêtre sur le balcon',
+        hero1Alt: 'Cuisine ouverte équipée, façades bleu canard',
+        hero2Alt: 'Chambre avec lit double et trois fenêtres'
+      },
+      src: {
+        plan2d: 'assets/ad-ivry/plan.jpg',
+        cover: 'assets/ad-ivry/photo-01.jpg',
+        hero0: 'assets/ad-ivry/photo-01.jpg',
+        hero1: 'assets/ad-ivry/photo-03.jpg',
+        hero2: 'assets/ad-ivry/photo-05.jpg',
+        tour0: 'assets/ad-ivry/photo-02.jpg',
+        tour1: 'assets/ad-ivry/photo-03.jpg',
+        agencyLogo: 'assets/ad-ivry/store-logo.jpg',
+        map0: 'assets/map/t-16601-11277.png', map1: 'assets/map/t-16602-11277.png',
+        map2: 'assets/map/t-16603-11277.png', map3: 'assets/map/t-16601-11278.png',
+        map4: 'assets/map/t-16602-11278.png', map5: 'assets/map/t-16603-11278.png',
+        map6: 'assets/map/t-16601-11279.png', map7: 'assets/map/t-16602-11279.png',
+        map8: 'assets/map/t-16603-11279.png'
+      },
+      left: { gaugeLeft: '45%' },
+      transform: { mapOffset: 'translate(-390.49px, -494.91px)' },
+      val: { finPrice: '309 000', finDown: '61 800' }
     }
   };
 
@@ -3066,7 +3160,7 @@ Montant estimé des dépenses annuelles d’énergie pour un usage standard : en
 
   function currentVariant() {
     const asked = new URLSearchParams(location.search).get('p');
-    if (['1', '2', '3', '4', '5', '6', '7'].includes(asked)) {
+    if (['1', '2', '3', '4', '5', '6', '7', '8'].includes(asked)) {
       try { localStorage.setItem(VARIANT_KEY, asked); } catch (e) {}
       return asked;
     }
