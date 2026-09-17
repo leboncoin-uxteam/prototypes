@@ -1,15 +1,15 @@
 function SparksIcon({ className }: { className?: string }) {
   return (
     <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor" className={className}>
-      <path d="M10 1.5l1.8 5.2 5.2 1.8-5.2 1.8L10 15.5l-1.8-5.2L3 8.5l5.2-1.8L10 1.5z" />
-      <path d="M16 1l.9 2.1L19 4l-2.1.9L16 7l-.9-2.1L13 4l2.1-.9L16 1z" opacity="0.6" />
+      <path d="M10 2l1.6 4.8L16.4 8.4l-4.8 1.6L10 14.8l-1.6-4.8L3.6 8.4l4.8-1.6L10 2z" />
+      <path d="M16.5 1l.8 2.2L19.5 4l-2.2.8L16.5 7l-.8-2.2L13.5 4l2.2-.8L16.5 1z" opacity="0.7" />
     </svg>
   )
 }
 
 function CheckIcon() {
   return (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="shrink-0 mt-0.5">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="shrink-0 mt-[3px]">
       <path d="M13 4L6.5 10.5 3 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   )
@@ -27,7 +27,7 @@ function Criterion({ met, labelMet, labelUnmet }: CriterionProps) {
       {met ? (
         <CheckIcon />
       ) : (
-        <span className="shrink-0 mt-0.5 w-4 text-center leading-none">—</span>
+        <span className="shrink-0 w-4 text-center select-none">—</span>
       )}
       <span>{met ? labelMet : labelUnmet}</span>
     </div>
@@ -45,14 +45,14 @@ export function VideoGenerationCard({ hasEnoughPhotos, hasVehicleInfo, onGenerat
 
   return (
     <div className="border border-outline rounded-xl p-4 bg-surface flex flex-col gap-4">
-      {/* Header */}
-      <div className="flex items-center gap-2">
+      {/* Header: icône + titre + tag "Nouveau !" */}
+      <div className="flex items-center gap-2 flex-wrap">
         <SparksIcon className="text-ai shrink-0" />
-        <span className="font-bold text-[18px] leading-6 text-on-surface flex-1">
+        <span className="font-bold text-[18px] leading-6 text-on-surface">
           Génération d'une vidéo avec l'IA
         </span>
-        <span className="text-[12px] font-bold px-2 py-0.5 rounded-full bg-accent-container text-on-accent-container shrink-0">
-          Option
+        <span className="text-[13px] font-bold px-2 py-0.5 rounded-md bg-main text-on-main shrink-0">
+          Nouveau !
         </span>
       </div>
 
@@ -61,7 +61,7 @@ export function VideoGenerationCard({ hasEnoughPhotos, hasVehicleInfo, onGenerat
         Vous pouvez désormais choisir de générer une vidéo de votre véhicule, pour cela vous avez besoin de :
       </p>
 
-      {/* Criteria */}
+      {/* Critères */}
       <div className="flex flex-col gap-2">
         <Criterion
           met={hasEnoughPhotos}
@@ -70,7 +70,7 @@ export function VideoGenerationCard({ hasEnoughPhotos, hasVehicleInfo, onGenerat
         />
         <Criterion
           met={hasVehicleInfo}
-          labelUnmet="Marque, Modèle, Année & Couleur renseignés"
+          labelUnmet="Marque, Modèle & Couleur renseignés"
           labelMet="Marque, Modèle, Année & Couleur ajoutés"
         />
       </div>
@@ -79,10 +79,8 @@ export function VideoGenerationCard({ hasEnoughPhotos, hasVehicleInfo, onGenerat
       <button
         type="button"
         onClick={canGenerate ? onGenerate : undefined}
-        className={`inline-flex items-center gap-2 font-bold text-[16px] px-6 py-3 rounded-full bg-ai text-on-ai transition-opacity ${
-          canGenerate ? 'hover:opacity-90 cursor-pointer' : 'cursor-not-allowed'
-        }`}
-        style={{ opacity: canGenerate ? 1 : 0.4 }}
+        className="inline-flex items-center gap-2 font-bold text-[16px] px-5 py-3 rounded-xl bg-ai text-on-ai transition-opacity hover:opacity-90"
+        style={{ opacity: canGenerate ? 1 : 0.4, cursor: canGenerate ? 'pointer' : 'not-allowed' }}
       >
         <SparksIcon />
         Générer une vidéo
