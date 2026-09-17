@@ -79,7 +79,7 @@ export function VideoGenerationCard({ hasEnoughPhotos, hasVehicleInfo, onGenerat
       <button
         type="button"
         onClick={canGenerate ? onGenerate : undefined}
-        className="inline-flex items-center gap-2 font-bold text-[16px] px-5 py-3 rounded-xl transition-opacity hover:opacity-90"
+        className="self-start inline-flex items-center gap-2 font-bold text-[16px] px-5 py-3 rounded-xl transition-opacity hover:opacity-90"
         style={{
           backgroundColor: 'var(--color-ai)',
           color: 'var(--color-on-ai)',
