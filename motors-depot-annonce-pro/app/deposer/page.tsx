@@ -13,8 +13,10 @@ import { FormToggle } from '@/components/ui/FormToggle'
 import { ChipGroup } from '@/components/ui/ChipGroup'
 import { RadioGroup } from '@/components/ui/RadioGroup'
 import { PrefixInput } from '@/components/ui/PrefixInput'
+import { VideoGenerationCard } from '@/components/depot/VideoGenerationCard'
 import { useAdStore } from '@/lib/store/adStore'
 import { addPhotosToDraft } from '@/lib/api/photos'
+import { generateVideo } from '@/lib/api/video'
 
 const CATEGORIES = ['Voitures', 'Utilitaires', 'Motos', 'Caravaning & Camping-car', 'Nautisme'].map(v => ({ value: v, label: v }))
 const BRANDS = ['PEUGEOT', 'Volkswagen', 'Renault', 'Citroën', 'BMW', 'Mercedes', 'Audi', 'Toyota', 'Ford', 'Opel'].map(v => ({ value: v, label: v }))
@@ -102,6 +104,11 @@ export default function DeposerPage() {
   async function handleAddPhotos(files: File[]) {
     const urls = await addPhotosToDraft(files)
     setPhotos(prev => [...prev, ...urls])
+  }
+
+  async function handleGenerateVideo() {
+    const result = await generateVideo('draft')
+    setVideoUrl(result.videoUrl)
   }
 
   function handleSave() {
@@ -420,39 +427,12 @@ export default function DeposerPage() {
             <FormInput label="Référence" value={reference} onChange={setReference} placeholder="Votre référence" />
           </FieldRow>
 
-          {/* AI Video card */}
           <FieldRow>
-            <div className="border border-outline rounded-xl p-5 bg-surface-hovered/50">
-              <div className="flex items-center gap-2 mb-3">
-                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" className="text-support">
-                  <path d="M10 1l2 6h6l-5 3.5 2 6L10 13l-5 3.5 2-6L2 7h6L10 1z" fill="currentColor" />
-                </svg>
-                <span className="font-bold text-[16px] text-on-background">Génération d'une vidéo avec l'IA</span>
-                <span className="ml-auto bg-accent-container text-on-accent-container text-[11px] font-bold px-2 py-0.5 rounded-full">Option</span>
-              </div>
-              <p className="text-[14px] text-neutral mb-4">
-                Vous pouvez désormais choisir de générer une vidéo de votre véhicule, pour cela vous avez besoin de :
-              </p>
-              <ul className="text-[14px] text-success flex flex-col gap-1 mb-5">
-                <li className="flex items-center gap-2">
-                  <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M13 4L6 11 3 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none"/></svg>
-                  5 photos ou plus ajoutées
-                </li>
-                <li className="flex items-center gap-2">
-                  <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M13 4L6 11 3 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none"/></svg>
-                  Marque, Modèle, Année &amp; Couleur ajoutés
-                </li>
-              </ul>
-              <button
-                type="button"
-                className="flex items-center justify-center gap-2 w-full bg-support text-on-support font-bold text-[14px] py-3 rounded-lg hover:bg-support-hovered transition-colors"
-              >
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                  <path d="M8 1l1.5 4.5L14 7l-4.5 1.5L8 13l-1.5-4.5L2 7l4.5-1.5L8 1z" fill="currentColor" />
-                </svg>
-                Générer une vidéo
-              </button>
-            </div>
+            <VideoGenerationCard
+              hasEnoughPhotos={photos.length >= 5}
+              hasVehicleInfo={!!brand && !!model && !!year && !!color}
+              onGenerate={handleGenerateVideo}
+            />
           </FieldRow>
         </FormSection>
 
