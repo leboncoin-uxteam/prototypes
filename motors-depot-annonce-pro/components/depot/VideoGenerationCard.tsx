@@ -47,7 +47,7 @@ export function VideoGenerationCard({ hasEnoughPhotos, hasVehicleInfo, onGenerat
     <div className="border border-outline rounded-xl p-4 bg-surface flex flex-col gap-4">
       {/* Header */}
       <div className="flex items-center gap-2">
-        <SparksIcon className="text-support shrink-0" />
+        <SparksIcon className="text-ai shrink-0" />
         <span className="font-bold text-[18px] leading-6 text-on-surface flex-1">
           Génération d'une vidéo avec l'IA
         </span>
@@ -79,10 +79,10 @@ export function VideoGenerationCard({ hasEnoughPhotos, hasVehicleInfo, onGenerat
       <button
         type="button"
         onClick={canGenerate ? onGenerate : undefined}
-        disabled={!canGenerate}
         className={`inline-flex items-center gap-2 font-bold text-[16px] px-6 py-3 rounded-full bg-ai text-on-ai transition-opacity ${
-          canGenerate ? 'opacity-100 hover:opacity-90 cursor-pointer' : 'opacity-40 cursor-not-allowed'
+          canGenerate ? 'hover:opacity-90 cursor-pointer' : 'cursor-not-allowed'
         }`}
+        style={{ opacity: canGenerate ? 1 : 0.4 }}
       >
         <SparksIcon />
         Générer une vidéo

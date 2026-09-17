@@ -34,7 +34,7 @@ export function FormTextarea({
         <button
           type="button"
           onClick={onAiClick}
-          className="flex items-center justify-center gap-2 w-full bg-support text-on-support font-bold text-[14px] py-3 rounded-lg hover:bg-support-hovered transition-colors"
+          className="inline-flex items-center gap-2 bg-ai text-on-ai font-bold text-[14px] px-5 py-3 rounded-full hover:opacity-90 transition-opacity"
         >
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
             <path d="M8 1l1.5 4.5L14 7l-4.5 1.5L8 13l-1.5-4.5L2 7l4.5-1.5L8 1z" fill="currentColor" />
