@@ -93,6 +93,7 @@ export default function DeposerPage() {
   const [description, setDescription] = useState('')
   const [url360, setUrl360] = useState('')
   const [videoUrl, setVideoUrl] = useState('')
+  const [isGeneratingVideo, setIsGeneratingVideo] = useState(false)
   const [reference, setReference] = useState('')
   const [price, setPrice] = useState('')
   const [address, setAddress] = useState('')
@@ -106,7 +107,12 @@ export default function DeposerPage() {
     setPhotos(prev => [...prev, ...urls])
   }
 
-  async function handleGenerateVideo() {
+  function handleGenerateVideo() {
+    setIsGeneratingVideo(true)
+  }
+
+  async function handleGenerationComplete() {
+    setIsGeneratingVideo(false)
     const result = await generateVideo('draft')
     setVideoUrl(result.videoUrl)
   }
@@ -432,6 +438,8 @@ export default function DeposerPage() {
               hasEnoughPhotos={photos.length >= 5}
               hasVehicleInfo={!!brand && !!model && !!year && !!color}
               onGenerate={handleGenerateVideo}
+              isGenerating={isGeneratingVideo}
+              onGenerationComplete={handleGenerationComplete}
             />
           </FieldRow>
         </FormSection>
