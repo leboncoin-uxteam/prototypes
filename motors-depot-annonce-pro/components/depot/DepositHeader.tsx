@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 
 export function DepositHeader() {
@@ -7,21 +8,31 @@ export function DepositHeader() {
 
   return (
     <header
-      className="sticky top-0 z-50 bg-surface flex items-center justify-between px-8 h-[60px]"
-      style={{ boxShadow: '0 1px 0 rgba(0,0,0,0.08)' }}
+      className="sticky top-0 z-50 w-full bg-surface"
+      style={{ boxShadow: '0 4px 8px rgba(108,129,157,0.5)' }}
     >
-      <div className="flex items-center gap-3">
-        <span className="text-main font-bold text-[20px] leading-none">leboncoin</span>
-        <span className="text-on-surface/30 text-[16px]">|</span>
-        <span className="text-on-surface text-[16px] font-normal">Déposer une annonce</span>
-      </div>
+      <div className="max-w-[1440px] mx-auto px-[187px] h-[60px] flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <Image
+            src="/leboncoin-logo.svg"
+            alt="leboncoin"
+            width={164}
+            height={30}
+            priority
+          />
+          <span className="text-[16px] font-bold text-support leading-6">
+            Déposer une annonce
+          </span>
+        </div>
 
-      <button
-        onClick={() => router.push('/')}
-        className="border border-outline rounded-full px-4 py-1.5 text-[14px] text-on-surface hover:bg-neutral-container transition-colors"
-      >
-        Quitter
-      </button>
+        <button
+          type="button"
+          onClick={() => router.push('/')}
+          className="border border-support rounded-full px-5 py-2 text-[14px] font-bold text-support hover:bg-support-container transition-colors"
+        >
+          Quitter
+        </button>
+      </div>
     </header>
   )
 }

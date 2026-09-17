@@ -121,7 +121,7 @@ export default function DeposerPage() {
   const modelOptions = (MODELS[brand] ?? []).map(v => ({ value: v, label: v }))
 
   return (
-    <div className="min-h-screen bg-surface">
+    <div className="min-h-screen bg-background-variant">
       <DepositHeader />
 
       <div className="max-w-[1440px] mx-auto px-[187px] pt-8 pb-16">
