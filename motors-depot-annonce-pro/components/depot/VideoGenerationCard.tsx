@@ -1,6 +1,6 @@
-function SparksIcon({ className }: { className?: string }) {
+function SparksIcon({ className, style }: { className?: string; style?: React.CSSProperties }) {
   return (
-    <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor" className={className}>
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor" className={className} style={style}>
       <path d="M10 2l1.6 4.8L16.4 8.4l-4.8 1.6L10 14.8l-1.6-4.8L3.6 8.4l4.8-1.6L10 2z" />
       <path d="M16.5 1l.8 2.2L19.5 4l-2.2.8L16.5 7l-.8-2.2L13.5 4l2.2-.8L16.5 1z" opacity="0.7" />
     </svg>
@@ -47,7 +47,7 @@ export function VideoGenerationCard({ hasEnoughPhotos, hasVehicleInfo, onGenerat
     <div className="border border-outline rounded-xl p-4 bg-surface flex flex-col gap-4">
       {/* Header: icône + titre + tag "Nouveau !" */}
       <div className="flex items-center gap-2 flex-wrap">
-        <SparksIcon className="text-ai shrink-0" />
+        <SparksIcon className="shrink-0" style={{ color: 'var(--color-ai)' }} />
         <span className="font-bold text-[18px] leading-6 text-on-surface">
           Génération d'une vidéo avec l'IA
         </span>
@@ -79,8 +79,13 @@ export function VideoGenerationCard({ hasEnoughPhotos, hasVehicleInfo, onGenerat
       <button
         type="button"
         onClick={canGenerate ? onGenerate : undefined}
-        className="inline-flex items-center gap-2 font-bold text-[16px] px-5 py-3 rounded-xl bg-ai text-on-ai transition-opacity hover:opacity-90"
-        style={{ opacity: canGenerate ? 1 : 0.4, cursor: canGenerate ? 'pointer' : 'not-allowed' }}
+        className="inline-flex items-center gap-2 font-bold text-[16px] px-5 py-3 rounded-xl transition-opacity hover:opacity-90"
+        style={{
+          backgroundColor: 'var(--color-ai)',
+          color: 'var(--color-on-ai)',
+          opacity: canGenerate ? 1 : 0.4,
+          cursor: canGenerate ? 'pointer' : 'not-allowed',
+        }}
       >
         <SparksIcon />
         Générer une vidéo
