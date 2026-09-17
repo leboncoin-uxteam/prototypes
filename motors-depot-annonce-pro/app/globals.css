@@ -44,6 +44,10 @@
   --color-on-success-container: #1d6340;
   --color-success-container-hovered: #f5fbf8;
 
+  /* --- Colors: AI --- */
+  --color-ai: #0c5291;
+  --color-on-ai: #ffffff;
+
   /* --- Colors: alert --- */
   --color-alert: #ffaa00;
   --color-on-alert: #202730;

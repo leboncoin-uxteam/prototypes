@@ -16,6 +16,10 @@ const config: Config = {
           "container-hovered": "var(--color-main-container-hovered)",
           variant: "var(--color-main-variant)",
         },
+        ai: {
+          DEFAULT: "var(--color-ai)",
+        },
+        "on-ai": "var(--color-on-ai)",
         "on-main": "var(--color-on-main)",
         "on-main-container": "var(--color-on-main-container)",
         "on-main-variant": "var(--color-on-main-variant)",

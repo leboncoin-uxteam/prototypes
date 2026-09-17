@@ -80,10 +80,8 @@ export function VideoGenerationCard({ hasEnoughPhotos, hasVehicleInfo, onGenerat
         type="button"
         onClick={canGenerate ? onGenerate : undefined}
         disabled={!canGenerate}
-        className={`flex items-center justify-center gap-2 w-full font-bold text-[16px] py-3 rounded-full transition-colors ${
-          canGenerate
-            ? 'bg-support text-on-support hover:bg-support-hovered cursor-pointer'
-            : 'bg-neutral-container text-on-background/40 cursor-not-allowed'
+        className={`inline-flex items-center gap-2 font-bold text-[16px] px-6 py-3 rounded-full bg-ai text-on-ai transition-opacity ${
+          canGenerate ? 'opacity-100 hover:opacity-90 cursor-pointer' : 'opacity-40 cursor-not-allowed'
         }`}
       >
         <SparksIcon />
