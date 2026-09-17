@@ -30,19 +30,6 @@ export function FormTextarea({
         {required && <span className="text-error text-[12px] mt-0.5">*</span>}
       </label>
 
-      {aiButton && (
-        <button
-          type="button"
-          onClick={onAiClick}
-          className="inline-flex items-center gap-2 bg-ai text-on-ai font-bold text-[14px] px-5 py-3 rounded-full hover:opacity-90 transition-opacity"
-        >
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-            <path d="M8 1l1.5 4.5L14 7l-4.5 1.5L8 13l-1.5-4.5L2 7l4.5-1.5L8 1z" fill="currentColor" />
-          </svg>
-          Me proposer une description automatique
-        </button>
-      )}
-
       <div className="relative">
         <textarea
           value={value}
@@ -57,6 +44,20 @@ export function FormTextarea({
           </span>
         )}
       </div>
+
+      {aiButton && (
+        <button
+          type="button"
+          onClick={onAiClick}
+          className="self-start inline-flex items-center gap-2 font-bold text-[14px] px-5 py-3 rounded-xl hover:opacity-90 transition-opacity"
+          style={{ backgroundColor: 'var(--color-ai)', color: 'var(--color-on-ai)' }}
+        >
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+            <path d="M8 1.5l1.4 4.1 4.1 1.4-4.1 1.4L8 12.5l-1.4-4.1-4.1-1.4 4.1-1.4L8 1.5z" />
+          </svg>
+          Me proposer une description automatique
+        </button>
+      )}
 
       {hint && <p className="text-[12px] leading-4 text-neutral">{hint}</p>}
     </div>

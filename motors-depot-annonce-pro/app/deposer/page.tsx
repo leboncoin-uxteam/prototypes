@@ -398,8 +398,6 @@ export default function DeposerPage() {
               placeholder="Ajoutez un titre"
               maxLength={300}
               rows={2}
-              aiButton
-              onAiClick={() => setAdTitle(`${brand} ${model} ${year}`.trim())}
             />
           </FieldRow>
 
@@ -412,6 +410,8 @@ export default function DeposerPage() {
               placeholder="Ajoutez une description"
               rows={5}
               hint="Indiquez dans le texte de l'annonce si vous proposez un droit de rétractation à l'acheteur."
+              aiButton
+              onAiClick={() => setDescription(`${brand} ${model} ${year} - ${color}`.trim())}
             />
           </FieldRow>
 
