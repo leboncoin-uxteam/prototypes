@@ -41,11 +41,11 @@ const ENTRETIEN_OPTIONS = ['Carnet d\'entretien complet', 'Entretien partiel', '
 const ETAT_OPTIONS = ['Excellent état', 'Très bon état', 'Bon état', 'État correct', 'Véhicule endommagé'].map(v => ({ value: v, label: v }))
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
-  return <h2 className="font-bold text-[20px] leading-7 text-on-background mb-8 px-6">{children}</h2>
+  return <h2 className="font-bold text-[20px] leading-7 text-on-background px-6">{children}</h2>
 }
 
 function FieldRow({ children }: { children: React.ReactNode }) {
-  return <div className="px-6 mb-8">{children}</div>
+  return <div className="px-6">{children}</div>
 }
 
 export default function DeposerPage() {
@@ -124,7 +124,7 @@ export default function DeposerPage() {
     <div className="min-h-screen bg-background-variant">
       <DepositHeader />
 
-      <div className="max-w-[1440px] mx-auto px-[187px] pt-8 pb-16">
+      <div className="max-w-[1440px] mx-auto px-[187px] pt-8 pb-16 flex flex-col gap-6">
 
         {/* ── Section Photos ── */}
         <FormSection
@@ -135,8 +135,8 @@ export default function DeposerPage() {
           }
         >
           <SectionTitle>Ajoutez des photos</SectionTitle>
-          <p className="px-6 text-[14px] text-neutral mb-6">Faites glisser vos photos pour changer leur ordre.</p>
-          <div className="px-6 mb-6">
+          <p className="px-6 text-[14px] text-neutral">Faites glisser vos photos pour changer leur ordre.</p>
+          <div className="px-6">
             <PhotoGrid photos={photos} onAdd={handleAddPhotos} />
           </div>
           <FieldRow>
@@ -148,7 +148,6 @@ export default function DeposerPage() {
           </FieldRow>
         </FormSection>
 
-        <div className="border-t border-outline/30" />
 
         {/* ── Section Données véhicule ── */}
         <FormSection
@@ -372,7 +371,6 @@ export default function DeposerPage() {
           </FieldRow>
         </FormSection>
 
-        <div className="border-t border-outline/30" />
 
         {/* ── Section Description ── */}
         <FormSection
@@ -458,7 +456,6 @@ export default function DeposerPage() {
           </FieldRow>
         </FormSection>
 
-        <div className="border-t border-outline/30" />
 
         {/* ── Section Prix ── */}
         <FormSection
@@ -485,7 +482,6 @@ export default function DeposerPage() {
           </FieldRow>
         </FormSection>
 
-        <div className="border-t border-outline/30" />
 
         {/* ── Section Localisation ── */}
         <FormSection
@@ -526,7 +522,6 @@ export default function DeposerPage() {
           </FieldRow>
         </FormSection>
 
-        <div className="border-t border-outline/30" />
 
         {/* ── Section Coordonnées ── */}
         <FormSection
