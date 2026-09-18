@@ -31,6 +31,8 @@ jobs:
       - name: Build
         run: npm run build
         working-directory: motors-depot-annonce-pro
+        env:
+          NEXT_PUBLIC_BASE_PATH: /prototypes/motors-depot-annonce-pro
 
       - name: Assemble site
         run: |
