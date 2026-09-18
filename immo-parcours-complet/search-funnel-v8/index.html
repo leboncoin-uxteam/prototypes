@@ -2234,6 +2234,25 @@ ul { list-style: none; }
       commune: { centre: { type: 'Point', coordinates: [7.68892, 48.40818] } } },
     { label: 'Krafft, Erstein (67150)', kind: 'Quartier',
       commune: { centre: { type: 'Point', coordinates: [7.70027, 48.42304] } } },
+    /* Le Pian-Medoc (variante ?p=6) : meme situation, l'API ne descend pas au
+       quartier. Sur les 17 noeuds `place` du contour de la commune (Overpass,
+       INSEE 33322, 18/09/2026) on ne garde que ceux qui designent un lieu habite
+       identifiable : les deux `village` (Louens, Senejac), les trois `hamlet`
+       porteurs d'une reference FANTOIR (Le Poujeau, La Tite, Bernet) et Feydieu,
+       le quartier de l'annonce. Les lieux-dits isoles et les lotissements sont
+       ecartes pour garder la liste lisible. */
+    { label: 'Feydieu, Le Pian-Médoc (33290)', kind: 'Quartier',
+      commune: { centre: { type: 'Point', coordinates: [-0.63559, 44.97874] } } },
+    { label: 'Le Poujeau, Le Pian-Médoc (33290)', kind: 'Quartier',
+      commune: { centre: { type: 'Point', coordinates: [-0.6346, 44.94738] } } },
+    { label: 'Louens, Le Pian-Médoc (33290)', kind: 'Quartier',
+      commune: { centre: { type: 'Point', coordinates: [-0.68712, 44.94519] } } },
+    { label: 'Sénéjac, Le Pian-Médoc (33290)', kind: 'Quartier',
+      commune: { centre: { type: 'Point', coordinates: [-0.68907, 44.96156] } } },
+    { label: 'La Tite, Le Pian-Médoc (33290)', kind: 'Quartier',
+      commune: { centre: { type: 'Point', coordinates: [-0.68686, 44.95427] } } },
+    { label: 'Bernet, Le Pian-Médoc (33290)', kind: 'Quartier',
+      commune: { centre: { type: 'Point', coordinates: [-0.69947, 44.95636] } } },
   ];
 
   const normalize = (value) =>
@@ -2404,6 +2423,38 @@ ul { list-style: none; }
     'Erstein-Gare (67150)': { prix: 4370, lignes: BUS('260', '262', '263'), tags: ['Gare', 'Pavillonnaire'] },
     'Cité Sucrerie, Erstein (67150)': { prix: 4370, lignes: BUS('262', '263', '270'), tags: ['Industriel', 'Rural'] },
     'Krafft, Erstein (67150)': { prix: 4370, lignes: BUS('263', '270', '271'), tags: ['Village', 'Fluvial'] },
+    /* Le Pian-Medoc : les six quartiers portent la mediane de la commune, 3 442
+       €/m2 maisons (DVF 2024, INSEE 33322, n=33). Aucun d'eux n'atteint le seuil
+       de publication de 10 ventes : en cerclant chaque noeud, 800 m puis 1 200 m,
+       on plafonne a 5 ventes (Le Poujeau) et 9 (bourg). Une mediane calculee sur
+       1 a 5 ventes ne serait pas assez stable pour etre affichee, la valeur
+       communale est donc reprise telle quelle — c'est bien une mediane sourcee,
+       simplement prise a l'echelle superieure.
+       `lignes` vide : les 17 arrets de bus OSM du contour de la commune
+       n'appartiennent a aucune relation `route=bus` (verifie le 18/09/2026), le
+       reseau desservant Le Pian-Medoc n'est pas cartographie. Inventer une ligne
+       serait faux, le groupe de pastilles est donc saute comme a Carquefou.
+       `tags` : releve Overpass du 18/09/2026 (vignes, bois, eau, commerces,
+       ecoles, equipements de loisir), rayon 800 m puis 1 500 m autour du noeud.
+         · Feydieu : parcelles de vigne (50 dans les 1 500 m) et un bras d'eau,
+           un seul commerce → Vignoble, Rural.
+         · Le Poujeau : 11 commerces dans les 800 m, 51 et deux ecoles dans les
+           1 500 m — le quartier commercant de la commune → Commerçant,
+           Pavillonnaire.
+         · Louens : bois, plans d'eau et quatre equipements de loisir, une ecole
+           → Village, Verdoyant.
+         · Senejac : 17 parcelles de vigne des 800 m, aucun commerce → Vignoble,
+           Rural.
+         · La Tite : rien dans les 800 m, vignes et equipements de loisir au-dela
+           → Village, Vignoble.
+         · Bernet : 12 parcelles de vigne et six plans d'eau dans les 1 500 m, un
+           commerce → Rural, Vignoble. */
+    'Feydieu, Le Pian-Médoc (33290)': { prix: 3442, lignes: [], tags: ['Vignoble', 'Rural'] },
+    'Le Poujeau, Le Pian-Médoc (33290)': { prix: 3442, lignes: [], tags: ['Commerçant', 'Pavillonnaire'] },
+    'Louens, Le Pian-Médoc (33290)': { prix: 3442, lignes: [], tags: ['Village', 'Verdoyant'] },
+    'Sénéjac, Le Pian-Médoc (33290)': { prix: 3442, lignes: [], tags: ['Vignoble', 'Rural'] },
+    'La Tite, Le Pian-Médoc (33290)': { prix: 3442, lignes: [], tags: ['Village', 'Vignoble'] },
+    'Bernet, Le Pian-Médoc (33290)': { prix: 3442, lignes: [], tags: ['Rural', 'Vignoble'] },
   };
 
   /* ── Metadonnees a la commune (departement 59) ───────────────────────────
@@ -2920,6 +2971,49 @@ ul { list-style: none; }
     '94080': { prix: 8500, lignes: [['1', '#ffbe00']], tags: ['Immeubles', 'Dense'] }, // Vincennes
     '94081': { prix: 3779, lignes: [['T9', '#3c91dc'], ['T7', '#6e491e']], tags: ['Mixte'] }, // Vitry-sur-Seine
     '93031': { prix: 2660, lignes: [['T8', '#6e6e00'], ['T11', '#ff5a00']], tags: ['Immeubles'] }, // Épinay-sur-Seine
+    /* ── Le Pian-Medoc et ses voisines (Gironde, variante ?p=6) ───────────────
+       Perimetre : toutes les communes dont le centre est a moins de 12 km de
+       celui du Pian-Medoc (geo.api.gouv.fr), soit 13 communes. Labarde est la
+       seule ecartee : 4 ventes de maisons en 2024, sous le seuil de publication
+       de 10, donc pas de mediane affichable.
+       `prix` = mediane des ventes de MAISONS 2024 (DVF Etalab, departement 33,
+       16 664 mutations retenues), meme methode que pour le Nord — l'unite qui a
+       du sens dans le Medoc, ou l'appartement est marginal (1 vente au
+       Pian-Medoc). Effectifs : Le Pian-Medoc 33, Arsac 31, Le Taillan 70,
+       Blanquefort 73, Saint-Aubin 29, Parempuyre 75, Ludon 39, Macau 30,
+       Avensan 23, Eysines 122, Margaux-Cantenac 33, Bruges 93, Le Haillan 74.
+       `lignes` = tram TBM d'abord puis bus, plafonne a 3. Un arret OSM de la
+       ligne doit tomber dans le contour geo.api de la commune (18/09/2026) ;
+       couleurs issues du tag `colour` des relations : tram A #802990,
+       C #CF56A0, D #91619D, E #967651 ; bus 2 #0086CB, 12 #0086CB, 22 #EE7D00,
+       30 #76B82A, 37 #76B82A, 38 #EE7D01, 71 #76B82A, 76 #76B82A, 77 #7C982E,
+       79 #7C982E. Les six communes hors Bordeaux Metropole (Arsac, Avensan,
+       Labarde, Ludon, Macau, Margaux-Cantenac) et Le Pian-Medoc lui-meme n'ont
+       aucun arret rattache a une relation de ligne dans OSM : `lignes` reste
+       vide plutot que de porter une ligne devinee. Les gares TER de Blanquefort,
+       Parempuyre, Ludon, Macau, Margaux et Bruges donnent le tag « Gare » quand
+       la commune n'a pas de tram, elles ne sont pas des pastilles de ligne.
+       `tags` : premier tag = forme urbaine deduite de la densite
+       population/surface geo.api (>= 3000 Urbain, >= 800 Pavillonnaire, >= 150
+       Village, sinon Rural) ; second tag = composition observee au meme releve
+       Overpass que les quartiers, a l'interieur du contour — « Vignoble » a
+       partir d'une centaine de parcelles `landuse=vineyard` (Margaux-Cantenac
+       635, Arsac 264, Macau 155, Ludon 120), « Commerçant » a partir de
+       cinquante commerces, « Verdoyant » pour les bois et plans d'eau
+       dominants, « Gare » pour les communes citees plus haut. */
+    '33322': { prix: 3442, lignes: [], tags: ['Village', 'Commerçant'] }, // Le Pian-Médoc
+    '33012': { prix: 3167, lignes: [], tags: ['Rural', 'Vignoble'] }, // Arsac
+    '33022': { prix: 2734, lignes: [], tags: ['Rural', 'Verdoyant'] }, // Avensan
+    '33056': { prix: 3583, lignes: [['E', '#967651'], ['22', '#EE7D00', 'bus'], ['37', '#76B82A', 'bus']], tags: ['Village', 'Gare'] }, // Blanquefort
+    '33075': { prix: 4177, lignes: [['C', '#CF56A0'], ['D', '#91619D'], ['E', '#967651']], tags: ['Pavillonnaire', 'Verdoyant'] }, // Bruges
+    '33162': { prix: 3537, lignes: [['D', '#91619D'], ['2', '#0086CB', 'bus'], ['12', '#0086CB', 'bus']], tags: ['Pavillonnaire', 'Commerçant'] }, // Eysines
+    '33200': { prix: 3678, lignes: [['A', '#802990'], ['30', '#76B82A', 'bus'], ['38', '#EE7D01', 'bus']], tags: ['Pavillonnaire', 'Verdoyant'] }, // Le Haillan
+    '33256': { prix: 3211, lignes: [], tags: ['Village', 'Vignoble'] }, // Ludon-Médoc
+    '33262': { prix: 2630, lignes: [], tags: ['Village', 'Vignoble'] }, // Macau
+    '33268': { prix: 2156, lignes: [], tags: ['Rural', 'Vignoble'] }, // Margaux-Cantenac
+    '33312': { prix: 3176, lignes: [['22', '#EE7D00', 'bus'], ['76', '#76B82A', 'bus'], ['77', '#7C982E', 'bus']], tags: ['Village', 'Gare'] }, // Parempuyre
+    '33376': { prix: 4157, lignes: [['37', '#76B82A', 'bus'], ['79', '#7C982E', 'bus']], tags: ['Village', 'Verdoyant'] }, // Saint-Aubin-de-Médoc
+    '33519': { prix: 3502, lignes: [['2', '#0086CB', 'bus'], ['37', '#76B82A', 'bus'], ['71', '#76B82A', 'bus']], tags: ['Village', 'Verdoyant'] }, // Le Taillan-Médoc
   };
 
   function sep() {
