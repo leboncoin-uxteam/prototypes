@@ -3105,6 +3105,31 @@ ul { list-style: none; }
        concentre une trentaine de commerces → Commerçant. Detail par quartier
        dans ZONES_QUARTIER. */
     '12133': { prix: 2140, lignes: [['J', '#0D7B48', 'bus'], ['I', '#8d8d8a', 'bus'], ['216', '#916caf', 'bus']], tags: ['Village', 'Commerçant'] }, // Luc-la-Primaube
+    /* Les cinq communes limitrophes de Luc-la-Primaube. Limitrophe au sens strict :
+       contours geo.api.gouv.fr en contact, verifie deux fois — au moins deux
+       sommets communs arrondis au 1/10 000e de degre, puis distance minimale
+       entre les deux traces (Olemps 0 m, Flavin 0 m, Calmont 7 m, Baraqueville
+       7 m, Druelle Balsac 5 m ; la commune suivante est a plus de 300 m). Rodez
+       n'en fait pas partie, Olemps s'intercale.
+       `prix` = mediane maison DVF 2024, chacune au-dessus du seuil de 10 ventes :
+       Olemps n=15, Calmont n=10, Baraqueville n=24, Flavin n=12, Druelle Balsac
+       n=16.
+       `lignes` : Agglobus (Rodez Agglomeration) avant les lignes interurbaines
+       liO, plafonne a 3, ligne retenue quand un de ses arrets OSM tombe dans le
+       contour de la commune (18/09/2026). Olemps est aussi desservie par la J,
+       ecartee par le plafond. La ligne M d'Agglobus ne porte pas de tag `colour`
+       dans OSM : sa pastille reste au fond neutre Spark.
+       `tags` : densite (>= 3000 Urbain, >= 800 Pavillonnaire, >= 150 Village,
+       sinon Rural) puis composition observee dans le contour — Olemps 42
+       immeubles `building=apartments` pour 278 hab/km2 → Immeubles ;
+       Baraqueville 36 commerces, 7 ecoles, 2 pharmacies, le bourg-centre du
+       Segala → Commerçant ; Calmont, Flavin et Druelle Balsac dominees par les
+       bois, les champs et les plans d'eau → Verdoyant. */
+    '12174': { prix: 2172, lignes: [['B', '#E21B25', 'bus'], ['H', '#d693a1', 'bus'], ['I', '#8d8d8a', 'bus']], tags: ['Village', 'Immeubles'] }, // Olemps
+    '12043': { prix: 2544, lignes: [['219', '#2da6dd', 'bus'], ['220', '#74cfe2', 'bus'], ['221', '#e43417', 'bus']], tags: ['Rural', 'Verdoyant'] }, // Calmont
+    '12056': { prix: 1861, lignes: [['220', '#74cfe2', 'bus'], ['221', '#e43417', 'bus']], tags: ['Rural', 'Commerçant'] }, // Baraqueville
+    '12102': { prix: 2104, lignes: [['216', '#916caf', 'bus']], tags: ['Rural', 'Verdoyant'] }, // Flavin
+    '12090': { prix: 2084, lignes: [['E', '#a68cff', 'bus'], ['M', null, 'bus'], ['203', '#ee7f00', 'bus']], tags: ['Rural', 'Verdoyant'] }, // Druelle Balsac
   };
 
   function sep() {
