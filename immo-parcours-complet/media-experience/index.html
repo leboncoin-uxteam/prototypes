@@ -261,6 +261,56 @@
   }
   .side__disclaimer a { color: inherit; }
 
+  /* ---------- Switch (Spark) ---------- */
+  /* Le toggle double les onglets : ils mènent chacun à une pièce, il bascule la
+     colonne entière en vue par pièce sans viser laquelle. */
+  .switch-label {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    cursor: pointer;
+  }
+  .switch-label__text { font-size: 16px; line-height: 24px; }
+  .switch__input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .switch {
+    position: relative;
+    flex: none;
+    width: 38px;
+    height: 24px;
+    border-radius: var(--rounded-lg);
+    background: var(--color-support-dim-3);
+    transition: background-color var(--duration-short) var(--ease-standard);
+  }
+  .switch__handle {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    transition: left var(--duration-short) var(--ease-standard);
+  }
+  .switch__handle img { display: block; width: 100%; height: 100%; }
+
+  /* État selected */
+  .switch__input:checked ~ .switch { background: var(--color-support); }
+  .switch__input:checked ~ .switch .switch__handle { left: 16px; }
+  .switch__input:not(:checked) ~ .switch .switch__handle--on { display: none; }
+  .switch__input:checked ~ .switch .switch__handle--off { display: none; }
+  .switch-label:hover .switch__input:checked ~ .switch { background: var(--color-support-hovered); }
+  .switch__input:focus-visible ~ .switch {
+    outline: var(--border-md) solid var(--color-focus);
+    outline-offset: 2px;
+  }
+
   /* ---------- Galerie masonry ---------- */
   .masonry {
     display: flex;
@@ -1377,6 +1427,15 @@
              médias disponibles ne sont pas les mêmes d'une annonce à l'autre. -->
         <div class="tabs" role="tablist" aria-label="Médias et pièces du logement"></div>
       </div>
+
+      <label class="switch-label">
+        <input class="switch__input" type="checkbox">
+        <span class="switch">
+          <img class="switch__handle switch__handle--off" src="assets/switch-handle.svg" alt="">
+          <img class="switch__handle switch__handle--on" src="assets/switch-handle-on.svg" alt="">
+        </span>
+        <span class="switch-label__text">Organiser par pièce</span>
+      </label>
 
       <p class="side__disclaimer">Notre système d’IA classifie automatiquement les photos de l’annonce, et les associe à des extraits de la description. L’IA peut commettre des erreurs.</p>
 
@@ -3078,6 +3137,7 @@
   function activateTab(tab, animate = true) {
     const target = tabTargets.get(tab);
     markTab(tab);
+    tourToggle.checked = Boolean(target);
     // Changer de vue déplace toute la colonne : on y saute. Rester dans la visite et
     // passer d'une pièce à l'autre se fait en douceur.
     const sameView = adview.classList.contains('is-photo-tour') === Boolean(target);
@@ -3106,6 +3166,17 @@
       if (!animating) landing = Math.round(scrollY);
     });
   }
+
+  /* Le toggle dit la même chose que les onglets, sans nommer de pièce : il mène au
+     début de la visite et « Tous » la referme. */
+  const tourToggle = document.querySelector('.switch__input');
+  const firstRoomTab = [...tabTargets.keys()].find(t => tabTargets.get(t)?.matches('.tour__section'));
+  const allTab = [...tabTargets.keys()][0];
+  tourToggle.addEventListener('change', () => {
+    const tab = tourToggle.checked ? (firstRoomTab || [...tabTargets.keys()][1]) : allTab;
+    if (tab) activateTab(tab);
+    else tourToggle.checked = false;
+  });
 
   tabsList.addEventListener('click', event => {
     const tab = event.target.closest('.tab');
