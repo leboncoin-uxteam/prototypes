@@ -1,0 +1,55 @@
+name: Deploy Motors Depot to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+    paths: ['motors-depot-annonce-pro/**', '.github/workflows/deploy-motors-depot.yml']
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: motors-depot-annonce-pro/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: motors-depot-annonce-pro
+
+      - name: Build
+        run: npm run build
+        working-directory: motors-depot-annonce-pro
+
+      - name: Assemble site
+        run: |
+          mkdir -p _site
+          find . -maxdepth 1 \
+            -not -name '.' \
+            -not -name '_site' \
+            -not -name '.git' \
+            -not -name '.github' \
+            -not -name 'favoris' \
+            -not -name 'motors-depot-annonce-pro' \
+            -exec cp -r {} _site/ \;
+          cp -r motors-depot-annonce-pro/out _site/motors-depot-annonce-pro
+
+      - uses: actions/configure-pages@v4
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - id: deployment
+        uses: actions/deploy-pages@v4
