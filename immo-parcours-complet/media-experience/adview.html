@@ -1804,7 +1804,12 @@ Les informations sur les risques auxquels ce bien est exposé sont disponibles s
            de l'annonce source : variante 1 à Lomme (50.63003, 3.0026312), variante 2
            à Carquefou (47.278316, -1.4916236). Variante 7 : l'annonce est relocalisée,
            le point est le milieu des deux voies du quartier géocodées par la Base
-           Adresse Nationale, Saint-Éloi et Camonil (44.35860, 2.57226). -->
+           Adresse Nationale, Saint-Éloi et Camonil (44.35860, 2.57226). Variante 5 :
+           relocalisée elle aussi, le point est le parc de la rue des Cygnes
+           (48.41636, 7.66210), à 370 m du noeud OpenStreetMap de la Cité des
+           Peupliers ; il est préféré au noeud lui-même parce qu'il tombe au milieu
+           de sa tuile, là où le noeud aurait laissé la grille de 768 px plus courte
+           que le cadre de la carte. -->
       <div class="map">
         <div class="map__tiles" data-valabel="mapLabel" data-vtransform="mapOffset"
              aria-label="Carte du quartier de Lomme à Lille" role="img">
@@ -1990,7 +1995,7 @@ Les informations sur les risques auxquels ce bien est exposé sont disponibles s
       </div>
       <!-- Variante 5 : DVF ne couvre pas le Bas-Rhin, le Haut-Rhin ni la Moselle
            (régime du livre foncier, pas de publicité foncière). Aucune fourchette
-           n'est donc calculable pour Strasbourg sans l'estimer, et la jauge s'en va
+           n'est donc calculable pour Erstein sans l'estimer, et la jauge s'en va
            au lieu d'afficher une position inventée. -->
       <div class="market market--nodata" data-vonly="5">
         <h3 class="market__title">Prix au m² par rapport au secteur <img src="assets/icon-info-12.svg" alt="En savoir plus"></h3>
@@ -2475,13 +2480,18 @@ Les informations sur les risques auxquels ce bien est exposé sont disponibles s
            qui en dépendent ont été recalculés avec les ratios de l'annonce (prix
            au m², honoraires 2,87 %, notaire 7,78 %, apport 20 %), arrondis à la
            centaine pour que le total reste juste.
-    ?p=5 — annonce 3130421698, appartement à Strasbourg (67000), quartier Krutenau,
-           46 m² / 2 pièces / 199 000 €. Deux valeurs sont changées à la demande
-           d'Imene : l'appartement passe du 3e étage au rez-de-chaussée surélevé, et la
-           location en cours se termine fin septembre 2026 — le bien est donc
-           disponible le 1er octobre et non le 4 novembre. La phrase de l'annonce
-           sur le bail de 6 ans signé le 05/11/2024 est retirée : elle contredirait
-           cette fin de bail ;
+    ?p=5 — annonce 3130421698, 46 m² / 2 pièces / 199 000 €, relocalisée à la
+           demande d'Imene : de Strasbourg Krutenau (67000) vers la Cité des
+           Peupliers à Erstein (67150), un quartier bordé d'espaces verts — aire de
+           jeux a 70 m du noeud OpenStreetMap du quartier, parc de la rue des Cygnes
+           a 370 m, square de l'Obertor a 590 m, Jardins Canop'Terre a 760 m. Deux
+           autres valeurs changent : l'appartement passe du 3e étage au
+           rez-de-chaussée surélevé, et la location en cours se termine fin
+           septembre 2026 — le bien est donc disponible le 1er octobre et non le
+           4 novembre. La phrase de l'annonce sur le bail de 6 ans signé le
+           05/11/2024 est retirée : elle contredirait cette fin de bail. L'adresse
+           de l'annonce (5 rue Klein) tombe avec Strasbourg : aucune rue d'Erstein
+           n'est inventée à la place ;
     ?p=6 — annonce 3265472209, maison de 2023 de 89 m² / 4 pièces, vendue par un
            particulier. Deux valeurs sont changées à la demande d'Imene : la
            localisation passe de Blanquefort au Pian-Médoc, secteur Feydieu, et le
@@ -2818,16 +2828,16 @@ Les informations sur les risques auxquels ce bien est exposé sont disponibles s
       val: { finPrice: '408 000', finDown: '81 600' }
     },
     '5': {
-      title: 'Appartement 2 pièces 46 m² — Strasbourg Krutenau | leboncoin',
+      title: 'Appartement 2 pièces 46 m² — Erstein Cité des Peupliers | leboncoin',
       features: 'Appartement · 46 m² · 2 pièces',
       breadcrumb: 'Vente appartement 2 pièces, 46 m²',
       region: 'Alsace',
-      city: 'Strasbourg',
-      where: 'Strasbourg 67000 · Krutenau',
-      localityName: 'Krutenau',
-      localityAdmin: 'Strasbourg (67000)',
+      city: 'Erstein',
+      where: 'Erstein 67150 · Cité des Peupliers',
+      localityName: 'Cité des Peupliers',
+      localityAdmin: 'Erstein (67150)',
       mapBadge: 'Localisation approximative',
-      mapLabel: 'Carte du secteur de l’appartement à Strasbourg',
+      mapLabel: 'Carte du secteur de l’appartement à Erstein',
       price: '199 000 €',
       ppm: '4 326 € / m²',
       keyinfo: 'Rez-de-chaussée surélevé · Sans ascenseur · Actuellement loué',
@@ -2858,8 +2868,8 @@ Les informations sur les risques auxquels ce bien est exposé sont disponibles s
 
 Disponible le 1er octobre 2026. Appartement actuellement loué, la location en cours se termine le 30 septembre 2026.
 
-– KRUTENAU –
-5 rue Klein 67000 Strasbourg
+– CITÉ DES PEUPLIERS –
+67150 Erstein
 2 pièces, 45,51 m² au rez-de-chaussée surélevé, immeuble sans ascenseur.
 
 DPE E – nouvelle version 1er janvier 2026
@@ -2901,13 +2911,13 @@ Les informations sur les risques auxquels ce bien est exposé sont disponibles s
         tour0: 'assets/ad-strasbourg/photo-03.jpg',
         tour1: 'assets/ad-strasbourg/photo-02.jpg',
         agencyLogo: 'assets/ad-strasbourg/store-logo.jpg',
-        map0: 'assets/map/t-17089-11309.png', map1: 'assets/map/t-17090-11309.png',
-        map2: 'assets/map/t-17091-11309.png', map3: 'assets/map/t-17089-11310.png',
-        map4: 'assets/map/t-17090-11310.png', map5: 'assets/map/t-17091-11310.png',
-        map6: 'assets/map/t-17089-11311.png', map7: 'assets/map/t-17090-11311.png',
-        map8: 'assets/map/t-17091-11311.png'
+        map0: 'assets/map/t-17080-11332.png', map1: 'assets/map/t-17081-11332.png',
+        map2: 'assets/map/t-17082-11332.png', map3: 'assets/map/t-17080-11333.png',
+        map4: 'assets/map/t-17081-11333.png', map5: 'assets/map/t-17082-11333.png',
+        map6: 'assets/map/t-17080-11334.png', map7: 'assets/map/t-17081-11334.png',
+        map8: 'assets/map/t-17082-11334.png'
       },
-      transform: { mapOffset: 'translate(-308.12px, -450.20px)' },
+      transform: { mapOffset: 'translate(-363.87px, -450.86px)' },
       val: { finPrice: '199 000', finDown: '39 800' }
     },
     '6': {
