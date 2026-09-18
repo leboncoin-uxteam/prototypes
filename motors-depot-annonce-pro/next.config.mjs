@@ -1,4 +1,8 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {};
+const nextConfig = {
+  output: 'export',
+  basePath: '/motors-depot-annonce-pro',
+  images: { unoptimized: true },
+}
 
-export default nextConfig;
+export default nextConfig
