@@ -96,13 +96,12 @@
     top: 0;
     right: 0;
     z-index: 2;
-    display: flex;
     justify-content: flex-end;
     padding: var(--spacing-md) var(--gutter);
   }
-  /* La navbar mobile n'existe qu'en dessous de 768px */
-  .adview__topbar .adview__back,
-  .adview__topbar .adview__topbar-title { display: none; }
+  /* La navbar n'existe qu'en dessous de 768px : au-dessus, la sortie est revenue
+     sur la photo et le nom de l'annonce est porte par la barre de rappel. */
+  .adview__topbar { display: none; }
 
   .adview__body {
     flex: 1 1 auto;
@@ -195,6 +194,10 @@
      colonne, une ombre y ferait flotter une carte. Aucun sélecteur CSS ne décrit
      cet état, d'où la classe posée au scroll. */
   .side__filters.is-stuck { box-shadow: 0 6px 12px var(--color-shadow); }
+  /* Les 8px de padding bas de la barre et les 2px de la bande scrollable
+     s'ajoutaient au gap de la colonne : le toggle tombait a 34px des chips au
+     lieu des 24 de la maquette (4146:29461 / 4146:29472). */
+  .side__filters { margin-bottom: calc(-1 * var(--spacing-md) - 2px); }
 
   /* ---------- Chips (Spark) ---------- */
   .chips {
@@ -544,6 +547,22 @@
     pointer-events: none;
   }
 
+  /* Verdict negatif remonte sur la vignette : sans ouvrir la photo, on repere
+     dans la mosaique celle qui pose question (Figma 4146:29451 / 4147:112339).
+     Meme pastille que le verdict du viewer — fond `error-container`, bouclier de
+     20px dans un cercle de 24 — posee en haut a gauche, ou aucune vignette ne
+     porte deja de glyph. */
+  .tile__ai {
+    position: absolute;
+    top: var(--spacing-md);
+    left: var(--spacing-md);
+    width: 24px;
+    height: 24px;
+    border-radius: var(--rounded-full);
+    background: var(--color-error-container) url("assets/icon-ai-modified.svg") no-repeat center / 20px 20px;
+    pointer-events: none;
+  }
+
   /* Disclaimer IA — visible seulement en visite photo */
   .viewer__disclaimer { display: none; }
   .is-photo-tour .viewer__ai { display: none; }
@@ -746,7 +765,6 @@
   .icon-btn--surface { background: var(--color-surface); }
   /* La loupe est exportee blanche, pour les fonds sombres : sur le bouton clair
      `brightness(0)` la ramene au noir sans repasser par un second asset. */
-  .viewer__zoom .icon-btn__icon { filter: brightness(0); }
   .icon-btn--bare { padding: var(--spacing-sm); }
   .icon-btn__icon { display: block; width: 16px; height: 16px; }
   .icon-btn { transition: background-color var(--duration-short) var(--ease-standard); }
@@ -843,10 +861,6 @@
 
   /* ---------- Galerie étendue (panneau média fermé) ---------- */
   .is-expanded .viewer-col { display: none; }
-  /* La galerie est deja pleine largeur : la sortie n'a plus d'objet, on revient
-     au split en choisissant une vignette. */
-  .adview.is-expanded .viewer__collapse { display: none; }
-
   @media (min-width: 900px) {
     .is-expanded .side {
       flex: 1 1 auto;
@@ -947,6 +961,7 @@
     .side__filters { top: 56px; }
 
     .adview__topbar {
+      display: flex;
       position: sticky;
       top: 0;
       justify-content: flex-start;
@@ -957,7 +972,6 @@
       background: var(--color-surface);
     }
     .adview__topbar .adview__back { display: flex; }
-    .adview__topbar .viewer__collapse { display: none; }
     .adview__topbar .icon-btn__icon { width: 24px; height: 24px; }
     .adview__topbar .adview__topbar-title {
       display: block;
@@ -1333,7 +1347,7 @@
   /* Le voile est translucide : sans ca la croix de sortie de la photo resterait
      lisible dans la bande laissee a cote de la dialog, et on lirait deux
      fermetures pour un seul retour en arriere. */
-  body:has(#zoom-modal:not([hidden])) .adview__topbar { visibility: hidden; }
+  body:has(#zoom-modal:not([hidden])) .viewer__collapse { visibility: hidden; }
 
   /* Révélation « home staging » : la projection IA se stabilise — le flou se
      dissipe pendant qu'elle se fond sur la photo d'origine. */
@@ -1406,11 +1420,6 @@
       <img class="icon-btn__icon" src="assets/icon-arrow-left.svg" alt="">
     </button>
     <p class="adview__topbar-title" data-v="titleshort">Maison 3 pièces 61 m²</p>
-    <!-- Sortie de la photo vers la galerie pleine largeur. Elle occupe la place
-         de l'ancienne croix de fermeture, partie dans l'entete de la colonne. -->
-    <button class="icon-btn icon-btn--surface viewer__collapse" type="button" aria-label="Fermer la photo et voir tous les médias">
-      <img class="icon-btn__icon" src="assets/icon-cross-photo.svg" alt="">
-    </button>
   </div>
 
   <div class="adview__body">
@@ -2342,7 +2351,14 @@
               Redécorer
             </button>
             <button class="icon-btn icon-btn--surface viewer__zoom" type="button" aria-label="Agrandir la photo">
-              <img class="icon-btn__icon" src="assets/icon-magnifier.svg" alt="">
+              <img class="icon-btn__icon" src="assets/icon-expand.svg" alt="">
+            </button>
+            <!-- Sortie du cote a cote vers la galerie pleine largeur. Elle est
+                 posee sur la photo (Figma 4146:29451), au bout de la rangee
+                 d'actions : seule au coin, elle tomberait sur le bouton
+                 « Redecorer ». -->
+            <button class="icon-btn icon-btn--surface viewer__collapse" type="button" aria-label="Fermer la photo et voir tous les médias">
+              <img class="icon-btn__icon" src="assets/icon-cross-photo.svg" alt="">
             </button>
           </div>
 
@@ -2588,7 +2604,7 @@
   "5": {
     "titleshort": "Appartement 2 pièces 46 m²",
     "price": "199 000 €",
-    "desc": "“… Disponible le 4 novembre 2026. Appartement actuellement loué, le locataire vient de transmettre son préavis. – KRUTENAU – 5 rue Klein 67000 Strasbourg. 2 pièces, 45,51 m² au 3e étage sans ascenseur. Chauffage individuel électrique. Actuellement loué 800 € par mois + 50 € de charges. Prix du bien : 199 000 €, prix hors honoraires 190 000 €, honoraires TTC 4,74 % soit 9 000 € à la charge de l’acquéreur. À propos de la copropriété : pas de procédure en cours, nombre de lots 10 dont 5 principaux. Charges prévisionnelles annuelles 2025 : 924,24 €. Taxe foncière 2025 : 634 € dont 137 € de TOM.…”",
+    "desc": "“… Disponible le 1er octobre 2026. Appartement actuellement loué, la location en cours se termine le 30 septembre 2026. – KRUTENAU – 5 rue Klein 67000 Strasbourg. 2 pièces, 45,51 m² au rez-de-chaussée surélevé, immeuble sans ascenseur. Chauffage individuel électrique. Actuellement loué 800 € par mois + 50 € de charges. Prix du bien : 199 000 €, prix hors honoraires 190 000 €, honoraires TTC 4,74 % soit 9 000 € à la charge de l’acquéreur. À propos de la copropriété : pas de procédure en cours, nombre de lots 10 dont 5 principaux. Charges prévisionnelles annuelles 2025 : 924,24 €. Taxe foncière 2025 : 634 € dont 137 € de TOM.…”",
     "alt": {
       "heroAlt": "Séjour avec ses deux fenêtres sur rue",
       "plan2dAlt": "Plan de l’appartement"
@@ -2716,11 +2732,23 @@
   // visite photo, où les mêmes photos réapparaissent.
   // Le chemin est comparé en entier, et pas seulement le nom de fichier : les
   // annonces numérotent leurs photos pareil, et ce n'est pas la même qui porte le
-  // verdict négatif d'une annonce à l'autre. Les trois premières en ont une chacune,
-  // choisie pour la démonstration ; la quatrième en a deux, et celles-là ne sont pas
-  // choisies : ce sont les deux photos que l'agence a réellement publiées avec la
-  // mention « proposition d'aménagement virtuel non contractuel ».
-  const AI_MODIFIED = ['ad-lomme/photo-03.jpg', 'ad-carquefou/photo-08.jpg', 'ad-paris18/photo-04.jpg', 'ad-paris15/photo-02.jpg', 'ad-paris15/photo-03.jpg'];
+  // verdict négatif d'une annonce à l'autre. La quatrième annonce en a deux, et
+  // celles-là ne sont pas choisies : ce sont les deux photos que l'agence a
+  // réellement publiées avec la mention « proposition d'aménagement virtuel non
+  // contractuel ». Les sept autres en ont une chacune, choisie pour la
+  // démonstration — jamais la vignette sélectionnée à l'ouverture, sinon la
+  // pastille de la mosaïque tomberait sous le liseré de sélection.
+  const AI_MODIFIED = [
+    'ad-lomme/photo-03.jpg',
+    'ad-carquefou/photo-08.jpg',
+    'ad-paris18/photo-04.jpg',
+    'ad-paris15/photo-02.jpg',
+    'ad-paris15/photo-03.jpg',
+    'ad-strasbourg/photo-03.jpg',
+    'ad-pian-medoc/photo-05.jpg',
+    'ad-rodez/photo-14.jpg',
+    'ad-ivry/photo-06.jpg',
+  ];
   const aiState = src => AI_MODIFIED.some(path => src.includes(path)) ? 'modified' : 'authentic';
   /* Décoration virtuelle : une seule photo par annonce en dispose, celle dont
      on a fait produire les deux projections. Partout ailleurs le bouton
@@ -2797,6 +2825,20 @@
   setStagingButton(viewerRedecorate, stagePhoto.src);
 
   const tiles = [...document.querySelectorAll('.tile')];
+
+  /* La pastille n'est pas dans le markup : il faudrait la repeter sur les deux
+     grilles — mosaique et visite photo — de chacune des huit annonces, alors que
+     le verdict est deja porte par le chemin du fichier. */
+  tiles.forEach(tile => {
+    if (tile.dataset.media !== 'photo') return;
+    const img = tile.querySelector('img:not(.tile__badge)');
+    if (!img || aiState(img.src) !== 'modified') return;
+    const flag = document.createElement('span');
+    flag.className = 'tile__ai';
+    flag.setAttribute('role', 'img');
+    flag.setAttribute('aria-label', 'Cette photo semble avoir \u00e9t\u00e9 modifi\u00e9e par IA');
+    tile.append(flag);
+  });
 
   // Nommer chaque vignette permet à View Transitions de la suivre d'un layout à l'autre
   tiles.forEach((tile, i) => { tile.style.viewTransitionName = `tile-${i}`; });
