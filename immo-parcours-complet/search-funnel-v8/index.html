@@ -455,6 +455,11 @@ ul { list-style: none; }
    fonction, dont une seule est visible à la fois. */
 .drawrow {
   display: flex; align-items: center; gap: var(--sp-lg);
+  /* `flex: none` : la ligne vit dans le corps scrollable de la feuille, en flex
+     colonne. Sans ça elle se laisse comprimer des 52px de la maquette a 26 des
+     que le contenu depasse — ce qui arrive sur tout ecran court (390x667) et
+     jusqu'a 767px de large, ou la carte prend le reste de la hauteur. */
+  flex: none;
   width: 100%; height: 52px; padding-inline: var(--sp-lg);
   border: var(--border-sm) solid var(--color-outline-dim-3);
   border-radius: var(--radius-md);
