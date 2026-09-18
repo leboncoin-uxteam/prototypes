@@ -2253,6 +2253,38 @@ ul { list-style: none; }
       commune: { centre: { type: 'Point', coordinates: [-0.68686, 44.95427] } } },
     { label: 'Bernet, Le Pian-Médoc (33290)', kind: 'Quartier',
       commune: { centre: { type: 'Point', coordinates: [-0.69947, 44.95636] } } },
+    /* La Primaube : La Primaube n'est pas une commune, c'est le bourg principal de
+       Luc-la-Primaube (INSEE 12133, CP 12450) — geo.api ne renvoie donc que la
+       commune. Sur les 89 noeuds `place` du contour (Overpass, 18/09/2026), on
+       retient les 11 qui portent `place=neighbourhood` ou `quarter`, c'est-a-dire
+       les quartiers au sens strict ; les 78 autres sont des lieux-dits,
+       ecarts agricoles et fermes isolees. Cinq entourent le bourg de La Primaube
+       au sud, six le bourg de Luc au nord : le libelle porte le nom du bourg
+       correspondant, la saisie « Primaube » remonte les onze. */
+    // « Quartier de l'Étoile » dans OSM : le mot est redondant avec le type affiche
+    // a droite du libelle, et la ligne passait a 96 px de haut a 390 px.
+    { label: "L'Étoile, La Primaube (12450)", kind: 'Quartier',
+      commune: { centre: { type: 'Point', coordinates: [2.56111, 44.29278] } } },
+    { label: 'Le Camp de Cros, La Primaube (12450)', kind: 'Quartier',
+      commune: { centre: { type: 'Point', coordinates: [2.55935, 44.29597] } } },
+    { label: 'Le Baracou, La Primaube (12450)', kind: 'Quartier',
+      commune: { centre: { type: 'Point', coordinates: [2.55593, 44.29756] } } },
+    { label: "L'Ensoleillée, La Primaube (12450)", kind: 'Quartier',
+      commune: { centre: { type: 'Point', coordinates: [2.56212, 44.28766] } } },
+    { label: 'Les Costes, La Primaube (12450)', kind: 'Quartier',
+      commune: { centre: { type: 'Point', coordinates: [2.56456, 44.28651] } } },
+    { label: 'Les Peyries, Luc-la-Primaube (12450)', kind: 'Quartier',
+      commune: { centre: { type: 'Point', coordinates: [2.52938, 44.31607] } } },
+    { label: 'Le Bouscaillou, Luc-la-Primaube (12450)', kind: 'Quartier',
+      commune: { centre: { type: 'Point', coordinates: [2.53029, 44.31389] } } },
+    { label: 'La Souque, Luc-la-Primaube (12450)', kind: 'Quartier',
+      commune: { centre: { type: 'Point', coordinates: [2.5266, 44.31653] } } },
+    { label: 'Les Fanguets, Luc-la-Primaube (12450)', kind: 'Quartier',
+      commune: { centre: { type: 'Point', coordinates: [2.52547, 44.31622] } } },
+    { label: 'La Rivière, Luc-la-Primaube (12450)', kind: 'Quartier',
+      commune: { centre: { type: 'Point', coordinates: [2.52456, 44.31793] } } },
+    { label: 'Moussens, Luc-la-Primaube (12450)', kind: 'Quartier',
+      commune: { centre: { type: 'Point', coordinates: [2.52873, 44.31039] } } },
   ];
 
   const normalize = (value) =>
@@ -2455,6 +2487,59 @@ ul { list-style: none; }
     'Sénéjac, Le Pian-Médoc (33290)': { prix: 3442, lignes: [], tags: ['Vignoble', 'Rural'] },
     'La Tite, Le Pian-Médoc (33290)': { prix: 3442, lignes: [], tags: ['Village', 'Vignoble'] },
     'Bernet, Le Pian-Médoc (33290)': { prix: 3442, lignes: [], tags: ['Rural', 'Vignoble'] },
+    /* La Primaube / Luc-la-Primaube — DVF 2024 departement 12, 3 201 mutations
+       retenues dont 3 178 geolocalisees, mediane des ventes de MAISONS (l'unite
+       du marche local : 32 ventes de maisons contre 18 d'appartements sur la
+       commune). Les cinq quartiers du sud atteignent le seuil de 10 ventes par
+       eux-memes, en cerclant le noeud a 800 m — c'est le tissu dense de La
+       Primaube : Etoile n=16 → 2 338, Ensoleillee n=16 → 2 365, Les Costes n=12
+       → 2 365, Camp de Cros n=10 → 2 188. Le Baracou n'a que 8 ventes a 800 m, le
+       cercle est ouvert a 1 200 m (n=12 → 2 310), ecart signale ici. Les six
+       quartiers du nord plafonnent a 4 ventes a 1 200 m : ils reprennent la
+       mediane communale, 2 140 €/m2 (n=32).
+       `lignes` : Agglobus (Rodez Agglomeration) d'abord, puis les lignes
+       interurbaines liO de la Region Occitanie, plafonne a 3, retenues quand un
+       arret OSM figure parmi les six plus proches du noeud (18/09/2026) —
+       Agglobus J #0D7B48 et I #8d8d8a, liO 216 #916caf et 219 #2da6dd. Distances
+       relevees : Etoile arret « L'Étoile » a 76 m, Baracou « Le Baracou » a 126 m,
+       Peyries « Embranchement Route de Lax » a 25 m, La Souque « Stade de Luc » a
+       79 m, Moussens « Salle Animation » a 511 m. Les couleurs viennent du tag
+       `colour` des relations, aucune n'est inventee.
+       `tags` : releve Overpass du 18/09/2026 dans les 500 m puis 800 m
+       (commerces, ecoles, immeubles `building=apartments`, equipements de loisir,
+       bois, champs, eau) — forme urbaine et composition observables seulement.
+         · L'Étoile (« Quartier de l'Étoile » dans OSM) : 28 commerces, 30 immeubles, 4 ecoles, 2
+           pharmacies dans les 500 m — le centre commercant → Commerçant,
+           Immeubles.
+         · Le Camp de Cros : 28 commerces et 26 immeubles dans les 500 m, meme
+           tissu que l'Étoile → Commerçant, Immeubles.
+         · Le Baracou : 13 commerces mais seulement 7 immeubles a 500 m, bois et
+           champs au contact → Commerçant, Mixte.
+         · L'Ensoleillée : 13 equipements de loisir, 3 ecoles, 3 commerces
+           → Familial, Verdoyant.
+         · Les Costes : 9 equipements de loisir, 7 bois, un seul restaurant dans
+           les 500 m → Verdoyant, Familial.
+         · Les Peyries : 6 equipements de loisir, une ecole, champs autour
+           → Village, Familial.
+         · Le Bouscaillou : cinq plans d'eau, champs, une ecole, un seul commerce
+           dans les 800 m → Village, Verdoyant.
+         · La Souque : champs et plans d'eau, aucun commerce → Rural, Verdoyant.
+         · Les Fanguets : champs, eau, une zone d'activites, aucun commerce
+           → Rural, Verdoyant.
+         · La Rivière : six plans d'eau et 11 parcelles de champs dans les 800 m,
+           aucun commerce → Rural, Fluvial.
+         · Moussens : champs, eau et bois, aucun commerce → Rural, Verdoyant. */
+    "L'Étoile, La Primaube (12450)": { prix: 2338, lignes: [['J', '#0D7B48', 'bus'], ['216', '#916caf', 'bus'], ['219', '#2da6dd', 'bus']], tags: ['Commerçant', 'Immeubles'] },
+    'Le Camp de Cros, La Primaube (12450)': { prix: 2188, lignes: [['J', '#0D7B48', 'bus'], ['216', '#916caf', 'bus'], ['219', '#2da6dd', 'bus']], tags: ['Commerçant', 'Immeubles'] },
+    'Le Baracou, La Primaube (12450)': { prix: 2310, lignes: [['J', '#0D7B48', 'bus'], ['216', '#916caf', 'bus'], ['219', '#2da6dd', 'bus']], tags: ['Commerçant', 'Mixte'] },
+    "L'Ensoleillée, La Primaube (12450)": { prix: 2365, lignes: [['J', '#0D7B48', 'bus']], tags: ['Familial', 'Verdoyant'] },
+    'Les Costes, La Primaube (12450)': { prix: 2365, lignes: [['J', '#0D7B48', 'bus']], tags: ['Verdoyant', 'Familial'] },
+    'Les Peyries, Luc-la-Primaube (12450)': { prix: 2140, lignes: [['J', '#0D7B48', 'bus'], ['I', '#8d8d8a', 'bus']], tags: ['Village', 'Familial'] },
+    'Le Bouscaillou, Luc-la-Primaube (12450)': { prix: 2140, lignes: [['J', '#0D7B48', 'bus'], ['I', '#8d8d8a', 'bus']], tags: ['Village', 'Verdoyant'] },
+    'La Souque, Luc-la-Primaube (12450)': { prix: 2140, lignes: [['J', '#0D7B48', 'bus'], ['I', '#8d8d8a', 'bus']], tags: ['Rural', 'Verdoyant'] },
+    'Les Fanguets, Luc-la-Primaube (12450)': { prix: 2140, lignes: [['J', '#0D7B48', 'bus'], ['I', '#8d8d8a', 'bus']], tags: ['Rural', 'Verdoyant'] },
+    'La Rivière, Luc-la-Primaube (12450)': { prix: 2140, lignes: [['J', '#0D7B48', 'bus'], ['I', '#8d8d8a', 'bus']], tags: ['Rural', 'Fluvial'] },
+    'Moussens, Luc-la-Primaube (12450)': { prix: 2140, lignes: [['J', '#0D7B48', 'bus'], ['I', '#8d8d8a', 'bus']], tags: ['Rural', 'Verdoyant'] },
   };
 
   /* ── Metadonnees a la commune (departement 59) ───────────────────────────
@@ -3014,6 +3099,12 @@ ul { list-style: none; }
     '33312': { prix: 3176, lignes: [['22', '#EE7D00', 'bus'], ['76', '#76B82A', 'bus'], ['77', '#7C982E', 'bus']], tags: ['Village', 'Gare'] }, // Parempuyre
     '33376': { prix: 4157, lignes: [['37', '#76B82A', 'bus'], ['79', '#7C982E', 'bus']], tags: ['Village', 'Verdoyant'] }, // Saint-Aubin-de-Médoc
     '33519': { prix: 3502, lignes: [['2', '#0086CB', 'bus'], ['37', '#76B82A', 'bus'], ['71', '#76B82A', 'bus']], tags: ['Village', 'Verdoyant'] }, // Le Taillan-Médoc
+    /* Luc-la-Primaube (Aveyron) : mediane maison 2 140 €/m2, n=32 (DVF 2024).
+       Lignes : union des lignes desservant ses quartiers, Agglobus avant liO,
+       plafonnee a 3. Densite 224 hab/km2 → Village ; le bourg de La Primaube
+       concentre une trentaine de commerces → Commerçant. Detail par quartier
+       dans ZONES_QUARTIER. */
+    '12133': { prix: 2140, lignes: [['J', '#0D7B48', 'bus'], ['I', '#8d8d8a', 'bus'], ['216', '#916caf', 'bus']], tags: ['Village', 'Commerçant'] }, // Luc-la-Primaube
   };
 
   function sep() {
