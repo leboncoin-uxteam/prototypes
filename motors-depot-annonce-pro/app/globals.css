@@ -1,0 +1,156 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* --- Colors: main --- */
+  --color-main: #ec5a13;
+  --color-on-main: #ffffff;
+  --color-main-hovered: #f07b42;
+  --color-main-container: #ffe9de;
+  --color-on-main-container: #89380f;
+  --color-main-container-hovered: #fff2eb;
+  --color-main-variant: #b84a14;
+  --color-on-main-variant: #ffffff;
+  --color-main-variant-hovered: #ec5a13;
+
+  /* --- Colors: support --- */
+  --color-support: #094171;
+  --color-on-support: #ffffff;
+  --color-support-hovered: #0c5291;
+  --color-support-container: #e6f2fd;
+  --color-on-support-container: #152233;
+  --color-support-container-hovered: #f4f9fe;
+  --color-support-variant: #0c5291;
+  --color-on-support-variant: #ffffff;
+  --color-support-variant-hovered: #0f69b9;
+
+  /* --- Colors: accent --- */
+  --color-accent: #8526d9;
+  --color-on-accent: #ffffff;
+  --color-accent-hovered: #9f47eb;
+  --color-accent-container: #e9d6fa;
+  --color-on-accent-container: #362555;
+  --color-accent-container-hovered: #f5edfd;
+  --color-accent-variant: #501782;
+  --color-on-accent-variant: #ffffff;
+  --color-accent-variant-hovered: #6b1fad;
+
+  /* --- Colors: success --- */
+  --color-success: #1d6340;
+  --color-on-success: #ffffff;
+  --color-success-hovered: #278456;
+  --color-success-container: #e0f2e9;
+  --color-on-success-container: #1d6340;
+  --color-success-container-hovered: #f5fbf8;
+
+  /* --- Colors: AI --- */
+  --color-ai: #0c5291;
+  --color-on-ai: #ffffff;
+
+  /* --- Colors: alert --- */
+  --color-alert: #ffaa00;
+  --color-on-alert: #202730;
+  --color-alert-hovered: #ffbb33;
+  --color-alert-container: #ffeecc;
+  --color-on-alert-container: #664400;
+  --color-alert-container-hovered: #fff6e5;
+
+  /* --- Colors: error --- */
+  --color-error: #ad291f;
+  --color-on-error: #ffffff;
+  --color-error-hovered: #d93426;
+  --color-error-container: #f7d7d4;
+  --color-on-error-container: #822017;
+  --color-error-container-hovered: #fbeceb;
+
+  /* --- Colors: info --- */
+  --color-info: #0c5291;
+  --color-on-info: #ffffff;
+  --color-info-hovered: #0f69b9;
+  --color-info-container: #c2e0fa;
+  --color-on-info-container: #0c5291;
+  --color-info-container-hovered: #e6f2fd;
+
+  /* --- Colors: neutral --- */
+  --color-neutral: #3a4757;
+  --color-on-neutral: #ffffff;
+  --color-neutral-hovered: #4f6076;
+  --color-neutral-container: #f0f2f5;
+  --color-on-neutral-container: #3a4757;
+  --color-neutral-container-hovered: #f6f8f9;
+
+  /* --- Colors: background --- */
+  --color-background: #ffffff;
+  --color-on-background: #152233;
+  --color-background-variant: #f4f9fe;
+  --color-on-background-variant: #152233;
+
+  /* --- Colors: surface --- */
+  --color-surface: #ffffff;
+  --color-on-surface: #152233;
+  --color-surface-hovered: #f6f8f9;
+  --color-surface-inverse: #2b3441;
+  --color-on-surface-inverse: #ffffff;
+  --color-surface-inverse-hovered: #3a4757;
+  --color-surface-dark: #2b3441;
+  --color-on-surface-dark: #ffffff;
+  --color-surface-dark-hovered: #3a4757;
+
+  /* --- Colors: transversal --- */
+  --color-outline: #acb8c7;
+  --color-outline-high: #202730;
+  --color-overlay: #202730;
+  --color-on-overlay: #ffffff;
+  --color-shadow: rgba(108 129 157 / 0.5);
+  --color-focus: #00f;
+
+  /* --- Spacing --- */
+  --spacing-none: 0rem;
+  --spacing-sm: 0.25rem;
+  --spacing-md: 0.5rem;
+  --spacing-lg: 1rem;
+  --spacing-xl: 1.5rem;
+  --spacing-2xl: 2rem;
+  --spacing-3xl: 2.5rem;
+
+  /* --- Border radius --- */
+  --radius-none: 0px;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-full: 9999px;
+
+  /* --- Border width --- */
+  --border-none: 0px;
+  --border-sm: 1px;
+  --border-md: 2px;
+  --border-lg: 4px;
+
+  /* --- Motion: duration --- */
+  --duration-short: 150ms;
+  --duration-medium: 250ms;
+  --duration-long: 450ms;
+
+  /* --- Motion: easing --- */
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-decelerate: cubic-bezier(0.05, 0.7, 0.1, 1);
+  --ease-accelerate: cubic-bezier(0.3, 0, 0.8, 0.15);
+  --ease-linear: cubic-bezier(0, 0, 1, 1);
+  --ease-standard-back: cubic-bezier(0.54, -0.52, 0.29, 1.54);
+  --ease-decelerate-back: cubic-bezier(0.45, 1.45, 0.8, 1);
+  --ease-accelerate-back: cubic-bezier(0.35, -0.47, 0.8, 0.15);
+
+  /* --- Typography --- */
+  --font-family: 'Nunito Sans', system-ui, sans-serif;
+}
+
+html,
+body {
+  height: 100%;
+  font-family: var(--font-family);
+  background-color: var(--color-background);
+  color: var(--color-on-background);
+  -webkit-font-smoothing: antialiased;
+}
