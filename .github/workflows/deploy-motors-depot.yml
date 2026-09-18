@@ -1,9 +1,8 @@
-name: Deploy Motors Depot to GitHub Pages
+name: Deploy all prototypes to GitHub Pages
 
 on:
   push:
     branches: [main]
-    paths: ['motors-depot-annonce-pro/**', '.github/workflows/deploy-motors-depot.yml']
 
 jobs:
   deploy:
@@ -21,19 +20,25 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
-          cache-dependency-path: motors-depot-annonce-pro/package-lock.json
 
-      - name: Install dependencies
-        run: npm ci
+      # Build favoris
+      - run: npm ci
+        working-directory: favoris
+
+      - run: npm run build
+        working-directory: favoris
+
+      # Build motors-depot
+      - run: npm ci
         working-directory: motors-depot-annonce-pro
 
-      - name: Build
+      - name: Build motors-depot
         run: npm run build
         working-directory: motors-depot-annonce-pro
         env:
           NEXT_PUBLIC_BASE_PATH: /prototypes/motors-depot-annonce-pro
 
+      # Assemble _site
       - name: Assemble site
         run: |
           mkdir -p _site
@@ -45,13 +50,12 @@ jobs:
             -not -name 'favoris' \
             -not -name 'motors-depot-annonce-pro' \
             -exec cp -r {} _site/ \;
+          cp -r favoris/out _site/favoris
           cp -r motors-depot-annonce-pro/out _site/motors-depot-annonce-pro
 
       - uses: actions/configure-pages@v4
-
       - uses: actions/upload-pages-artifact@v3
         with:
           path: _site
-
       - id: deployment
         uses: actions/deploy-pages@v4
