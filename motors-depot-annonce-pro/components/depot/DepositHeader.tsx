@@ -1,7 +1,8 @@
 'use client'
 
-import Image from 'next/image'
 import { useRouter } from 'next/navigation'
+
+const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? ''
 
 export function DepositHeader() {
   const router = useRouter()
@@ -13,12 +14,13 @@ export function DepositHeader() {
     >
       <div className="max-w-[1440px] mx-auto px-[187px] h-[60px] flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <Image
-            src="/leboncoin-logo.svg"
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={`${basePath}/leboncoin-logo.svg`}
             alt="leboncoin"
             width={164}
             height={30}
-            priority
+            style={{ height: 30, width: 164 }}
           />
           <span className="text-[16px] font-bold text-support leading-6">
             Déposer une annonce
