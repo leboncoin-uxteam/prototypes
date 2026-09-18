@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: 'export',
-  basePath: '/motors-depot-annonce-pro',
+  basePath: '/prototypes/motors-depot-annonce-pro',
   images: { unoptimized: true },
 }
 
