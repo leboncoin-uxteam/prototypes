@@ -4287,7 +4287,7 @@ ul { list-style: none; }
   const VARIANT_KEY = 'lbc-proto:participant';
   const asked = new URLSearchParams(location.search).get('p');
   let variant = '1';
-  if (['1', '2', '3', '4', '5', '6', '7', '8'].includes(asked)) {
+  if (['1', '2', '3', '4', '5', '6', '7', '8', '9'].includes(asked)) {
     variant = asked;
     try { localStorage.setItem(VARIANT_KEY, asked); } catch (error) {}
   } else {

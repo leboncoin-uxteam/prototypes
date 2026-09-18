@@ -3167,6 +3167,93 @@ Référence : 1562`,
       left: { gaugeLeft: '45%' },
       transform: { mapOffset: 'translate(-390.49px, -494.91px)' },
       val: { finPrice: '309 000', finDown: '61 800' }
+    },
+    '9': {
+      title: 'Appartement 2 pièces 53 m² — Drancy Drancy Centre | leboncoin',
+      features: 'Appartement · 53 m² · 2 pièces',
+      breadcrumb: 'Vente appartement 2 pièces, 53 m²',
+      region: 'Île-de-France',
+      city: 'Drancy',
+      where: 'Drancy 93700 · Quartier Drancy Centre',
+      localityName: 'Quartier Drancy Centre',
+      localityAdmin: 'Drancy (93700)',
+      mapBadge: 'Localisation exacte',
+      mapLabel: 'Carte du secteur de l’appartement à Drancy',
+      mktLow: '2 264 € / m²',
+      mktHigh: '4 718 € / m²',
+      price: '175 000 €',
+      ppm: '3 302 € / m²',
+      keyinfo: 'Terrasse de 10,5 m² · Étage 3 · Ascenseur · Cave',
+      kind: 'Appartement',
+      surface: '53 m²',
+      rooms: '2 pièces',
+      beds: '1 chambre',
+      levels: 'Étage 3',
+      bathroom: '1 salle de bains',
+      outside: 'Terrasse',
+      feat: 'Cuisine équipée ouverte · Ascenseur · Cave · Parking · Interphone et digicode',
+      orient: 'Non communiqué',
+      heat: 'Chauffage central au gaz',
+      // L'annonce se contredit : ses informations datent l'immeuble de 2014, sa
+      // description de 2015. C'est la donnée structurée qui est reprise.
+      year: 'Construit en 2014',
+      cond: 'Non communiqué',
+      // « SANS HONORAIRES » ouvre la description : le prix affiché est celui que
+      // paie l'acquéreur.
+      honoraires: 'Vendu sans honoraires d’agence : aucun honoraire ne s’ajoute au prix pour l’acquéreur.',
+      notaire: '14 000 €',
+      total: '189 000 €',
+      // Seule taxe foncière annoncée des neuf annonces, et c'est l'annonceur qui
+      // l'estime — la facture énergétique, elle, n'est donnée qu'en kWh.
+      taxe: '1 500 € / an (estimation de l’annonceur)',
+      energie: 'Non communiquée',
+      verdict: 'À 3 302 € / m², le bien est au-dessus de la médiane du secteur (3 258 € / m²).',
+      proposedBy: 'Proposé par',
+      agencyName: 'CDC HABITAT VENTES',
+      agencySiren: 'Numéro SIREN non communiqué',
+      // La description publiée s'ouvre sur une date de visite et se referme sur deux
+      // fois la même référence : les deux sont retirées, le reste est repris mot pour mot.
+      desc: `Appartement T2
+
+SANS HONORAIRES. Idéalement situé en plein centre-ville de Drancy, au pied des commerces, des écoles et des transports en commun (RER B), découvrez au 3ème étage dans un immeuble avec ascenseur de 2015 ce spacieux appartement de 2 pièces de 52 m² avec une terrasse vendu avec une cave. Possibilité d’acquérir une place de parking en sous-sol pour 10000 euros.
+
+Il se compose d’une entrée, un séjour avec cuisine aménagée (25 m²), d’une chambre spacieuse avec placards (15 m²), d’une salle de bains, WC séparés et une terrasse de 10,5 m² accessible depuis le séjour et la chambre. L’appartement est lumineux, bien distribué et offre de jolies prestations.
+
+Avec ses parcs, ses infrastructures sportives et ses écoles, Drancy offre un cadre de vie privilégié et agréable, idéal pour les familles et les jeunes actifs ou investisseurs.
+
+Faibles charges : estimation des charges mensuelles 180 euros avec chauffage collectif et ECS. Estimation de la taxe foncière pour un T2 1500 euros. DPE C GES C.
+
+Surface : 53 m²
+Étage : 3
+Référence : 6110 - 260638`,
+      scale: { dpe: 'C', ges: 'C' },
+      alt: {
+        // Sur mobile la mosaïque se réduit à `hero1` : c'est donc le séjour, la pièce
+        // que les deux projections aménagent.
+        hero0Alt: 'Séjour vide, porte-fenêtre sur la terrasse à gauche et hotte de la cuisine à droite',
+        hero1Alt: 'Séjour vide, cuisine ouverte à gauche et porte-fenêtre ouverte sur la terrasse',
+        hero2Alt: 'Chambre vide avec placards coulissants et porte-fenêtre sur la terrasse'
+      },
+      src: {
+        plan2d: 'assets/ad-drancy/plan.jpg',
+        cover: 'assets/ad-drancy/photo-04.jpg',
+        hero0: 'assets/ad-drancy/photo-07.jpg',
+        hero1: 'assets/ad-drancy/photo-04.jpg',
+        hero2: 'assets/ad-drancy/photo-05.jpg',
+        tour0: 'assets/ad-drancy/photo-06.jpg',
+        tour1: 'assets/ad-drancy/photo-02.jpg',
+        agencyLogo: 'assets/ad-drancy/store-logo.jpg',
+        map0: 'assets/map/t-16605-11263.png', map1: 'assets/map/t-16606-11263.png',
+        map2: 'assets/map/t-16607-11263.png', map3: 'assets/map/t-16605-11264.png',
+        map4: 'assets/map/t-16606-11264.png', map5: 'assets/map/t-16607-11264.png',
+        map6: 'assets/map/t-16605-11265.png', map7: 'assets/map/t-16606-11265.png',
+        map8: 'assets/map/t-16607-11265.png'
+      },
+      // Fourchette et médiane du secteur telles que publiées par l'annonce source,
+      // curseur inclus : rien n'est recalculé ici.
+      left: { gaugeLeft: '42%' },
+      transform: { mapOffset: 'translate(-493.01px, -292.89px)' },
+      val: { finPrice: '175 000', finDown: '35 000' }
     }
   };
 
@@ -3174,7 +3261,7 @@ Référence : 1562`,
 
   function currentVariant() {
     const asked = new URLSearchParams(location.search).get('p');
-    if (['1', '2', '3', '4', '5', '6', '7', '8'].includes(asked)) {
+    if (['1', '2', '3', '4', '5', '6', '7', '8', '9'].includes(asked)) {
       try { localStorage.setItem(VARIANT_KEY, asked); } catch (e) {}
       return asked;
     }
