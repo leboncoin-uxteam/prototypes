@@ -14,9 +14,9 @@ import { ChipGroup } from '@/components/ui/ChipGroup'
 import { RadioGroup } from '@/components/ui/RadioGroup'
 import { PrefixInput } from '@/components/ui/PrefixInput'
 import { VideoGenerationCard } from '@/components/depot/VideoGenerationCard'
+import { VideoGenerationNudge, CARD_ID } from '@/components/depot/VideoGenerationNudge'
+import { Snackbar } from '@/components/ui/Snackbar'
 import { useAdStore } from '@/lib/store/adStore'
-import { addPhotosToDraft } from '@/lib/api/photos'
-import { generateVideo } from '@/lib/api/video'
 
 const CATEGORIES = ['Voitures', 'Utilitaires', 'Motos', 'Caravaning & Camping-car', 'Nautisme'].map(v => ({ value: v, label: v }))
 const BRANDS = ['PEUGEOT', 'Volkswagen', 'Renault', 'Citroën', 'BMW', 'Mercedes', 'Audi', 'Toyota', 'Ford', 'Opel'].map(v => ({ value: v, label: v }))
@@ -93,7 +93,11 @@ export default function DeposerPage() {
   const [description, setDescription] = useState('')
   const [url360, setUrl360] = useState('')
   const [videoUrl, setVideoUrl] = useState('')
+  const [videoValidated, setVideoValidated] = useState(false)
+  const [videoDeleted, setVideoDeleted] = useState(false)
   const [isGeneratingVideo, setIsGeneratingVideo] = useState(false)
+  const [currentStepLabel, setCurrentStepLabel] = useState('')
+  const [showSnackbar, setShowSnackbar] = useState(false)
   const [reference, setReference] = useState('')
   const [price, setPrice] = useState('')
   const [address, setAddress] = useState('')
@@ -111,10 +115,9 @@ export default function DeposerPage() {
     setIsGeneratingVideo(true)
   }
 
-  async function handleGenerationComplete() {
+  function handleGenerationComplete() {
     setIsGeneratingVideo(false)
-    const result = await generateVideo('draft')
-    setVideoUrl(result.videoUrl)
+    setVideoUrl('generated')
   }
 
   function handleSave() {
@@ -434,13 +437,26 @@ export default function DeposerPage() {
           </FieldRow>
 
           <FieldRow>
-            <VideoGenerationCard
-              hasEnoughPhotos={photos.length >= 5}
-              hasVehicleInfo={!!brand && !!model && !!year && !!color}
-              onGenerate={handleGenerateVideo}
-              isGenerating={isGeneratingVideo}
-              onGenerationComplete={handleGenerationComplete}
-            />
+            <div id={CARD_ID}>
+              <VideoGenerationCard
+                hasEnoughPhotos={photos.length >= 5}
+                hasVehicleInfo={!!brand && !!model && !!year && !!color}
+                onGenerate={handleGenerateVideo}
+                isGenerating={isGeneratingVideo}
+                onGenerationComplete={handleGenerationComplete}
+                onStepChange={setCurrentStepLabel}
+                videoReady={!!videoUrl && !videoValidated && !videoDeleted}
+                videoValidated={videoValidated}
+                videoDeleted={videoDeleted}
+                thumbnailUrl={photos[0]}
+                onValidate={() => { setVideoValidated(true); setShowSnackbar(true) }}
+                onDeleteVideo={() => {
+                  if (videoValidated) setVideoDeleted(true)
+                  setVideoUrl('')
+                  setVideoValidated(false)
+                }}
+              />
+            </div>
           </FieldRow>
         </FormSection>
 
@@ -587,6 +603,18 @@ export default function DeposerPage() {
         </FormSection>
 
       </div>
+
+      <VideoGenerationNudge
+        isGenerating={isGeneratingVideo}
+        currentStepLabel={currentStepLabel}
+        videoReady={!!videoUrl && !videoValidated && !videoDeleted}
+      />
+
+      <Snackbar
+        message="La vidéo sera ajoutée à votre annonce."
+        visible={showSnackbar}
+        onHide={() => setShowSnackbar(false)}
+      />
     </div>
   )
 }
