@@ -3169,9 +3169,9 @@ Référence : 1562`,
       val: { finPrice: '309 000', finDown: '61 800' }
     },
     '9': {
-      title: 'Appartement 2 pièces 53 m² — Drancy Drancy Centre | leboncoin',
-      features: 'Appartement · 53 m² · 2 pièces',
-      breadcrumb: 'Vente appartement 2 pièces, 53 m²',
+      title: 'Appartement 2 pièces 52 m² — Drancy Drancy Centre | leboncoin',
+      features: 'Appartement · 52 m² · 2 pièces',
+      breadcrumb: 'Vente appartement 2 pièces, 52 m²',
       region: 'Île-de-France',
       city: 'Drancy',
       where: 'Drancy 93700 · Quartier Drancy Centre',
@@ -3182,10 +3182,10 @@ Référence : 1562`,
       mktLow: '2 264 € / m²',
       mktHigh: '4 718 € / m²',
       price: '175 000 €',
-      ppm: '3 302 € / m²',
+      ppm: '3 365 € / m²',
       keyinfo: 'Terrasse de 10,5 m² · Étage 3 · Ascenseur · Cave',
       kind: 'Appartement',
-      surface: '53 m²',
+      surface: '52 m²',
       rooms: '2 pièces',
       beds: '1 chambre',
       levels: 'Étage 3',
@@ -3207,7 +3207,7 @@ Référence : 1562`,
       // l'estime — la facture énergétique, elle, n'est donnée qu'en kWh.
       taxe: '1 500 € / an (estimation de l’annonceur)',
       energie: 'Non communiquée',
-      verdict: 'À 3 302 € / m², le bien est au-dessus de la médiane du secteur (3 258 € / m²).',
+      verdict: 'À 3 365 € / m², le bien est au-dessus de la médiane du secteur (3 258 € / m²).',
       proposedBy: 'Proposé par',
       agencyName: 'CDC HABITAT VENTES',
       agencySiren: 'Numéro SIREN non communiqué',
@@ -3223,7 +3223,7 @@ Avec ses parcs, ses infrastructures sportives et ses écoles, Drancy offre un ca
 
 Faibles charges : estimation des charges mensuelles 180 euros avec chauffage collectif et ECS. Estimation de la taxe foncière pour un T2 1500 euros. DPE C GES C.
 
-Surface : 53 m²
+Surface : 52 m²
 Étage : 3
 Référence : 6110 - 260638`,
       scale: { dpe: 'C', ges: 'C' },
@@ -3249,9 +3249,10 @@ Référence : 6110 - 260638`,
         map6: 'assets/map/t-16605-11265.png', map7: 'assets/map/t-16606-11265.png',
         map8: 'assets/map/t-16607-11265.png'
       },
-      // Fourchette et médiane du secteur telles que publiées par l'annonce source,
-      // curseur inclus : rien n'est recalculé ici.
-      left: { gaugeLeft: '42%' },
+      // Fourchette et médiane du secteur telles que publiées par l'annonce source.
+      // Le curseur, lui, est reporté sur cette échelle : l'annonce le place à 42 %
+      // pour un prix au m² calculé sur 53 m², et la surface retenue ici est 52 m².
+      left: { gaugeLeft: '45%' },
       transform: { mapOffset: 'translate(-493.01px, -292.89px)' },
       val: { finPrice: '175 000', finDown: '35 000' }
     }
