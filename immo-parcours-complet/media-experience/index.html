@@ -165,16 +165,15 @@
     line-height: 28px;
     font-weight: 700;
   }
-  /* La barre de filtres apporte deja 8px de padding haut, pour ne pas coller les
-     chips au bord de la fenetre quand elle est collee. Sans cette marge negative
-     ils s'ajouteraient au gap de la colonne et le titre serait a 32px des chips :
+  /* La barre d'onglets apporte deja 8px de padding haut, pour ne pas coller les
+     onglets au bord de la fenetre quand elle est collee. Sans cette marge negative
+     ils s'ajouteraient au gap de la colonne et le titre serait a 32px des onglets :
      on garde les 24px du gap, lus une seule fois. */
   .side__head { margin-bottom: calc(-1 * var(--spacing-md)); }
 
-  /* Les chips restent à portée pendant tout le scroll de la galerie : elles se
+  /* Les onglets restent à portée pendant tout le scroll de la galerie : ils se
      collent en haut de la colonne. Fond opaque et gouttière négative pour courir
-     d'un bord à l'autre, sinon les photos défileraient dans les marges. Le toggle
-     est resté dans le flux : il se règle une fois, il n'a pas à suivre le scroll. */
+     d'un bord à l'autre, sinon les photos défileraient dans les marges. */
   .side__filters {
     position: sticky;
     top: 0;
@@ -186,7 +185,9 @@
        pas de valeur à maintenir en double. */
     gap: inherit;
     margin-inline: calc(-1 * var(--gutter));
-    padding: var(--spacing-md) var(--gutter);
+    /* Pas de padding bas : le trait de base des onglets fait déjà la séparation
+       avec la galerie, et il doit toucher le bord de la barre quand elle est collée. */
+    padding: var(--spacing-md) var(--gutter) 0;
     background: var(--color-surface);
     transition: box-shadow var(--duration-short) var(--ease-standard);
   }
@@ -194,18 +195,17 @@
      colonne, une ombre y ferait flotter une carte. Aucun sélecteur CSS ne décrit
      cet état, d'où la classe posée au scroll. */
   .side__filters.is-stuck { box-shadow: 0 6px 12px var(--color-shadow); }
-  /* Les 8px de padding bas de la barre et les 2px de la bande scrollable
-     s'ajoutaient au gap de la colonne : le toggle tombait a 34px des chips au
-     lieu des 24 de la maquette (4146:29461 / 4146:29472). */
-  .side__filters { margin-bottom: calc(-1 * var(--spacing-md) - 2px); }
 
-  /* ---------- Chips (Spark) ---------- */
-  .chips {
+  /* ---------- Onglets (Spark Tabs) ---------- */
+  /* Les onglets remplacent les chips de filtre et le toggle « Organiser par pièce »
+     (Figma 4480:12199). La colonne ne tient pas six libellés : la bande défile, et
+     sort du padding de la barre pour récupérer la gouttière. Elle s'arrête au bord
+     du panneau média, sur lequel elle n'empiète pas. */
+  .tabs {
     display: flex;
-    gap: var(--spacing-md);
-    /* La colonne est trop etroite pour les quatre filtres sous 1200px : la bande
-       defile, et sort du padding de la barre pour recuperer la gouttiere. Elle
-       s'arrete au bord du panneau media, sur lequel elle n'empiete pas. */
+    /* Ligne de base du groupe : posée en ombre interne, elle reste sous la partie
+       visible de la bande, y compris quand celle-ci a défilé. */
+    box-shadow: inset 0 calc(-1 * var(--border-sm)) 0 var(--color-outline);
     margin-right: calc(-1 * var(--gutter));
     padding-right: var(--gutter);
     overflow-x: auto;
@@ -215,102 +215,51 @@
     overscroll-behavior-x: contain;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
-    padding-bottom: 2px;
   }
-  .chips::-webkit-scrollbar { display: none; }
-  .chip {
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab {
     flex: none;
     display: flex;
     align-items: center;
-    justify-content: center;
-    gap: var(--spacing-sm);
-    height: 32px;
-    min-width: 32px;
-    padding: 6px var(--spacing-md);
-    border: var(--border-sm) solid var(--color-support);
-    border-radius: var(--rounded-full);
+    height: 40px;
+    padding: var(--spacing-md) var(--spacing-lg);
+    border: 0;
+    border-bottom: var(--border-md) solid transparent;
     background: transparent;
     font: inherit;
     font-size: 16px;
     line-height: 24px;
-    color: var(--color-support);
+    color: var(--color-on-surface);
     white-space: nowrap;
     cursor: pointer;
-    transition: background-color var(--duration-short) var(--ease-standard);
   }
-  .chip:hover { background: var(--color-support-container); }
-  .chip[aria-pressed="true"] { background: var(--color-support-container); }
-  .chip[aria-pressed="true"]:hover { background: var(--color-support-container-hovered); }
-  .chip__icon { display: block; width: 16px; height: 16px; }
-
-  /* Le check n'apparaît qu'à l'état sélectionné */
-  .chip[aria-pressed="false"] .chip__icon { display: none; }
-
-  /* ---------- Switch (Spark) ---------- */
-  .switch-label {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--spacing-md);
-    cursor: pointer;
+  /* C'est le libellé du premier onglet qui se cale sur la gouttière, pas sa zone
+     de clic — comme le glyphe de la flèche de retour au-dessus. */
+  .tab:first-child { padding-left: 0; }
+  .tab:hover { color: var(--color-support-hovered); }
+  .tab[aria-selected="true"] {
+    border-bottom-color: var(--color-support);
+    color: var(--color-support);
+    font-weight: 700;
   }
-  .switch-label__text { font-size: 16px; line-height: 24px; }
-  /* La visite photo n'a de sens que sur l'ensemble des médias : filtrer sur
-     plan ou vidéo la retire. */
-  .is-filtered .tour-intro { display: none; }
+  /* Le contour est rentré : posé dehors, il serait rogné par la bande scrollable. */
+  .tab:focus-visible {
+    outline: var(--border-md) solid var(--color-focus);
+    outline-offset: calc(-1 * var(--border-md));
+  }
 
-  /* Le disclaimer IA est accroché au toggle : ce qu'il annonce — classification
-     automatique des photos, rapprochement avec des extraits de la description —
-     n'existe qu'en visite photo. Il n'apparaît donc qu'une fois le toggle actif,
-     au-dessus des sections qu'il explique. */
-  .tour-intro { display: flex; flex-direction: column; gap: var(--spacing-md); }
-  .tour-intro__disclaimer {
-    display: none;
+  /* Ce que le disclaimer annonce — classification automatique des photos,
+     rapprochement avec des extraits de la description — porte maintenant les
+     onglets eux-mêmes : les pièces listées sont celles que l'IA a reconnues. Il
+     reste donc en haut de la colonne, affiché d'entrée et non plus seulement en
+     visite par pièce. */
+  .side__disclaimer {
     margin: 0;
     font-size: 10px;
     line-height: 14px;
     color: var(--color-on-surface-dim-1);
   }
-  .is-photo-tour .tour-intro__disclaimer { display: block; }
-  .tour-intro__disclaimer a { color: inherit; }
-  .switch__input {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    opacity: 0;
-    pointer-events: none;
-  }
-  .switch {
-    position: relative;
-    flex: none;
-    width: 38px;
-    height: 24px;
-    border-radius: var(--rounded-lg);
-    background: var(--color-support-dim-3);
-    transition: background-color var(--duration-short) var(--ease-standard);
-  }
-  .switch__handle {
-    position: absolute;
-    top: 2px;
-    left: 2px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 20px;
-    height: 20px;
-    transition: left var(--duration-short) var(--ease-standard);
-  }
-  .switch__handle img { display: block; width: 100%; height: 100%; }
-
-  /* État selected */
-  .switch__input:checked ~ .switch { background: var(--color-support); }
-  .switch__input:checked ~ .switch .switch__handle { left: 16px; }
-  .switch__input:not(:checked) ~ .switch .switch__handle--on { display: none; }
-  .switch__input:checked ~ .switch .switch__handle--off { display: none; }
-  .switch-label:hover .switch__input:checked ~ .switch { background: var(--color-support-hovered); }
-  .switch__input:focus-visible ~ .switch {
-    outline: var(--border-md) solid var(--color-focus);
-    outline-offset: 2px;
-  }
+  .side__disclaimer a { color: inherit; }
 
   /* ---------- Galerie masonry ---------- */
   .masonry {
@@ -606,14 +555,6 @@
   }
   .tile--selected:hover img { opacity: 1; }
   .tile--narrow { flex: 0 0 35.4%; }
-
-  /* ---------- Filtrage par chip ---------- */
-  .tile[hidden] { display: none; }
-  .masonry__row:not(:has(.tile:not([hidden]))),
-  .masonry__stack:not(:has(.tile:not([hidden]))),
-  .tour__section:not(:has(.tile:not([hidden]))) { display: none; }
-  /* Filtré, une vignette isolée hériterait d'un ratio de paire trop écrasé */
-  .is-filtered .masonry__row:not(.masonry__row--plan) { aspect-ratio: 419 / 227; }
 
   .masonry__stack {
     flex: 1 1 0;
@@ -997,7 +938,6 @@
     .masonry__row--hero { aspect-ratio: 343 / 227; }
     .masonry__row--pair { aspect-ratio: 343 / 136; }
     .masonry__row--mixed { aspect-ratio: 343 / 302; }
-    .is-filtered .masonry__row:not(.masonry__row--plan) { aspect-ratio: 343 / 227; }
 
     /* Visite photo : même trame que la galerie d'entrée, section par section.
        Les ratios sont redéclarés ici car `.tour .masonry__row { aspect-ratio: auto }`
@@ -1015,7 +955,7 @@
   @media (max-width: 599px) {
     :root { --gutter: var(--spacing-lg); }
     .side { gap: var(--spacing-lg); }
-    .chips { margin-inline: calc(-1 * var(--gutter)); padding-inline: var(--gutter); }
+    .tabs { margin-inline: calc(-1 * var(--gutter)); padding-inline: var(--gutter); }
     .viewer__stage { aspect-ratio: 4 / 3; border-radius: 0; }
     .viewer-col { padding-inline: 0; }
     .viewer__ai { padding-inline: var(--gutter); }
@@ -1433,37 +1373,12 @@
       </div>
 
       <div class="side__filters">
-        <div class="chips" role="group" aria-label="Filtrer les médias">
-          <button class="chip" type="button" aria-pressed="true" data-filter="all">
-            <img class="chip__icon" src="assets/icon-check.svg" alt="">
-            Tous
-          </button>
-          <button class="chip" type="button" aria-pressed="false" data-filter="plan">
-            <img class="chip__icon" src="assets/icon-check.svg" alt="">
-            Plan
-          </button>
-          <button class="chip" type="button" aria-pressed="false" data-filter="video">
-            <img class="chip__icon" src="assets/icon-check.svg" alt="">
-            Vidéo
-          </button>
-          <button class="chip" type="button" aria-pressed="false" data-filter="virtual">
-            <img class="chip__icon" src="assets/icon-check.svg" alt="">
-            Visite virtuelle
-          </button>
-        </div>
+        <!-- Les onglets sont construits au chargement : les pièces reconnues et les
+             médias disponibles ne sont pas les mêmes d'une annonce à l'autre. -->
+        <div class="tabs" role="tablist" aria-label="Médias et pièces du logement"></div>
       </div>
 
-      <div class="tour-intro">
-        <label class="switch-label">
-          <input class="switch__input" type="checkbox">
-          <span class="switch">
-            <img class="switch__handle switch__handle--off" src="assets/switch-handle.svg" alt="">
-            <img class="switch__handle switch__handle--on" src="assets/switch-handle-on.svg" alt="">
-          </span>
-          <span class="switch-label__text">Organiser par pièce</span>
-        </label>
-        <p class="tour-intro__disclaimer">Notre système d’IA classifie automatiquement les photos de l’annonce, et les associe à des extraits de la description. L’IA peut commettre des erreurs.</p>
-      </div>
+      <p class="side__disclaimer">Notre système d’IA classifie automatiquement les photos de l’annonce, et les associe à des extraits de la description. L’IA peut commettre des erreurs.</p>
 
       <!-- Les rangées pleine largeur vont aux pièces qui portent la décision, par
            ordre de priorité : séjour, extérieur, cuisine, salle de bain. Les
@@ -2845,9 +2760,11 @@
 
   const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
 
+  // La promesse rendue est tenue quand le DOM a basculé : ce qui dépend du nouveau
+  // layout — mesurer une ancre, s'y rendre — s'y accroche.
   function transition(update) {
-    if (!document.startViewTransition || reduceMotion.matches) { update(); return; }
-    document.startViewTransition(update);
+    if (!document.startViewTransition || reduceMotion.matches) { update(); return Promise.resolve(); }
+    return document.startViewTransition(update).updateCallbackDone;
   }
 
   function showMedia(tile) {
@@ -2898,7 +2815,7 @@
 
   function visibleTiles() {
     const scope = adview.classList.contains('is-photo-tour') ? '.tour' : '.masonry';
-    return [...document.querySelectorAll(`${scope} .tile`)].filter(t => !t.hidden);
+    return [...document.querySelectorAll(`${scope} .tile`)];
   }
 
   function step(delta) {
@@ -2918,46 +2835,12 @@
   prevBtn.addEventListener('click', () => step(-1));
   nextBtn.addEventListener('click', () => step(1));
 
-  let filter = 'all';
-
-  function applyFilter() {
-    // `selectTile` ramene en vue scindee. Or filtrer ou ranger par piece ne change
-    // que le contenu de la galerie, pas la vue depuis laquelle on la regarde.
-    const expanded = adview.classList.contains('is-expanded');
-    adview.classList.toggle('is-filtered', filter !== 'all');
-    // Le toggle disparaît hors « Tous » : ne pas laisser la visite photo
-    // active derrière un contrôle invisible.
-    if (filter !== 'all' && tourToggle.checked) {
-      tourToggle.checked = false;
-      adview.classList.remove('is-photo-tour');
-    }
-    tiles.forEach(t => { t.hidden = filter !== 'all' && t.dataset.media !== filter; });
-
-    const scope = adview.classList.contains('is-photo-tour') ? '.tour' : '.masonry';
-    const first = document.querySelector(`${scope} .tile:not([hidden])`);
-    if (first) selectTile(first);
-    adview.classList.toggle('is-expanded', expanded);
-  }
-
-  document.querySelectorAll('.chip').forEach(chip => chip.addEventListener('click', () => transition(() => {
-    document.querySelectorAll('.chip').forEach(c => c.setAttribute('aria-pressed', String(c === chip)));
-    filter = chip.dataset.filter;
-    applyFilter();
-  })));
-
   // Fermer la photo étend la galerie sur toute la largeur ;
   // rouvrir passe par le clic sur une vignette.
   document.querySelector('.viewer__collapse').addEventListener('click', () => transition(() => {
     adview.classList.add('is-expanded');
     stageVideo.removeAttribute('src');
     viewer.dataset.media = 'photo';
-  }));
-
-  const tourToggle = document.querySelector('.switch__input');
-  tourToggle.addEventListener('change', () => transition(() => {
-    adview.classList.toggle('is-photo-tour', tourToggle.checked);
-    applyFilter();
-    closeExcerpt();
   }));
 
   /* ---------- Popover « Extrait de la description » ---------- */
@@ -2974,6 +2857,160 @@
   addEventListener('scroll', syncFiltersStuck, { passive: true });
   addEventListener('resize', syncFiltersStuck);
   syncFiltersStuck();
+
+  /* ---------- Onglets : « Tous », ou une ancre dans la visite par pièce ---------- */
+  /* Les onglets remplacent les chips de filtre et le toggle « Organiser par pièce »
+     (Figma 4480:12199). « Tous » montre la mosaïque ; tout autre onglet passe en
+     visite par pièce et amène directement sur son ancre. Les sections y restent
+     toutes affichées : ce ne sont donc pas des `tabpanel` et les onglets ne portent
+     pas d'`aria-controls` — ils ne déplacent que le point de lecture. */
+  const tabsList = document.querySelector('.tabs');
+  const tour = document.querySelector('.tour');
+  const tabTargets = new Map();
+
+  function addTab(label, target) {
+    const tab = document.createElement('button');
+    tab.className = 'tab';
+    tab.type = 'button';
+    tab.setAttribute('role', 'tab');
+    tab.setAttribute('aria-selected', String(tabTargets.size === 0));
+    // Un seul onglet est atteignable au clavier : la sélection se déplace ensuite
+    // aux flèches, comme le veut le motif Tabs.
+    tab.tabIndex = tabTargets.size === 0 ? 0 : -1;
+    tab.textContent = label;
+    tabTargets.set(tab, target);
+    tabsList.append(tab);
+  }
+
+  /* Les pièces reconnues et les médias publiés changent d'une annonce à l'autre :
+     les onglets sont lus dans la galerie, pas écrits en dur. L'ordre est celui de la
+     maquette — les médias qui ne sont pas des pièces d'abord, les pièces ensuite,
+     dans l'ordre de la visite. */
+  addTab('Tous', null);
+  [['plan', 'Plan'], ['video', 'Vidéo'], ['virtual', 'Visite virtuelle']].forEach(([media, label]) => {
+    const tile = tour.querySelector(`.tile[data-media="${media}"]`);
+    if (tile) addTab(label, tile);
+  });
+  tour.querySelectorAll('.tour__section').forEach(section => {
+    // La dernière section rassemble ce qui n'est pas une pièce : plan, vidéo et
+    // visite virtuelle ont déjà leur onglet ci-dessus, elle n'en prend pas un de plus.
+    if (section.querySelector('.tile:not([data-media="photo"])')) return;
+    addTab(section.querySelector('.tour__title').textContent, section);
+  });
+
+  // Une vignette est atteinte par sa rangée : c'est la rangée qui porte la hauteur,
+  // s'arrêter sur la vignette laisserait le haut de la rangée sous les onglets.
+  const anchorOf = target => target.matches('.tile') ? target.closest('.masonry__row') : target;
+
+  // Les ancres sont relues dans l'ordre du document, qui n'est pas celui des onglets.
+  const anchors = [...tabTargets].filter(([, target]) => target)
+    .map(([tab, target]) => ({ tab, el: anchorOf(target) }));
+  anchors.sort((a, b) => (a.el.compareDocumentPosition(b.el) & Node.DOCUMENT_POSITION_FOLLOWING) ? -1 : 1);
+
+  // La barre d'onglets est collante : le haut de l'ancre doit arriver juste dessous.
+  const stickyOffset = () =>
+    (parseFloat(getComputedStyle(sideFilters).top) || 0) + sideFilters.getBoundingClientRect().height;
+
+  // La bande d'onglets défile horizontalement : l'onglet sélectionné doit rester
+  // lisible sans emmener la page avec lui, ce que ferait `scrollIntoView`.
+  function keepTabInView(tab) {
+    const strip = tabsList.getBoundingClientRect();
+    const pad = parseFloat(getComputedStyle(tabsList).paddingRight) || 0;
+    const box = tab.getBoundingClientRect();
+    if (box.left < strip.left) tabsList.scrollLeft -= strip.left - box.left;
+    else if (box.right > strip.right - pad) tabsList.scrollLeft += box.right - strip.right + pad;
+  }
+
+  function markTab(tab) {
+    tabTargets.forEach((target, t) => {
+      t.setAttribute('aria-selected', String(t === tab));
+      t.tabIndex = t === tab ? 0 : -1;
+    });
+    keepTabInView(tab);
+  }
+
+  // Un défilement animé traverse les ancres intermédiaires : le suivi au scroll est
+  // suspendu jusqu'à l'arrêt, sinon l'onglet clignoterait en route. Sans `scrollend`
+  // pour savoir quand il s'arrête, on saute directement à l'ancre.
+  const canAnimate = 'onscrollend' in window;
+  let animating = false;
+  /* Position de la page à l'arrivée sur une ancre. Le bas du document peut bloquer
+     le défilement avant que l'ancre rejoigne la barre : le suivi au scroll
+     désignerait alors la section d'au-dessus. L'onglet choisi reste donc
+     sélectionné tant que la page n'a pas quitté son point d'arrivée. */
+  let landing = null;
+  if (canAnimate) addEventListener('scrollend', () => {
+    animating = false;
+    landing = Math.round(scrollY);
+    syncTabFromScroll();
+  });
+
+  function activateTab(tab, animate = true) {
+    const target = tabTargets.get(tab);
+    markTab(tab);
+    // Changer de vue déplace toute la colonne : on y saute. Rester dans la visite et
+    // passer d'une pièce à l'autre se fait en douceur.
+    const sameView = adview.classList.contains('is-photo-tour') === Boolean(target);
+    const behavior = animate && sameView && canAnimate ? 'smooth' : 'instant';
+    // Ranger par pièce ne change que le contenu de la galerie, pas la vue depuis
+    // laquelle on la regarde : le côte à côte survit au changement d'onglet.
+    const expanded = adview.classList.contains('is-expanded');
+    transition(() => {
+      adview.classList.toggle('is-photo-tour', Boolean(target));
+      const scope = target || document.querySelector('.masonry');
+      const first = scope.matches('.tile') ? scope : scope.querySelector('.tile');
+      if (first) selectTile(first);
+      adview.classList.toggle('is-expanded', expanded);
+      closeExcerpt();
+    // Le défilement attend la bascule : avant elle l'ancre est encore masquée, et sa
+    // position ne veut rien dire.
+    }).then(() => {
+      if (!target) { landing = null; scrollTo({ top: 0, behavior }); return; }
+      const top = anchorOf(target).getBoundingClientRect().top - stickyOffset();
+      // Une ancre déjà en place n'anime rien, donc n'émet pas de `scrollend` : sans
+      // ce garde-fou le suivi au scroll resterait suspendu.
+      animating = behavior === 'smooth' && Math.abs(top) > 1;
+      scrollBy({ top, behavior });
+      // Un saut est synchrone : le point d'arrivée est connu tout de suite. Une
+      // animation, elle, le fait connaître à `scrollend`.
+      if (!animating) landing = Math.round(scrollY);
+    });
+  }
+
+  tabsList.addEventListener('click', event => {
+    const tab = event.target.closest('.tab');
+    if (tab) activateTab(tab);
+  });
+
+  tabsList.addEventListener('keydown', event => {
+    const list = [...tabTargets.keys()];
+    const from = list.indexOf(event.target.closest('.tab'));
+    if (from < 0) return;
+    const to = { ArrowLeft: from - 1, ArrowRight: from + 1, Home: 0, End: list.length - 1 }[event.key];
+    if (to === undefined) return;
+    event.preventDefault();
+    const tab = list[(to + list.length) % list.length];
+    tab.focus();
+    activateTab(tab);
+  });
+
+  /* L'onglet suit la lecture : en défilant dans la visite, c'est la section atteinte
+     qui se sélectionne. Sans ça l'onglet resterait sur l'ancre cliquée alors qu'on
+     lit déjà la pièce suivante. */
+  function syncTabFromScroll() {
+    if (animating || !adview.classList.contains('is-photo-tour')) return;
+    if (landing !== null) {
+      if (Math.abs(scrollY - landing) < 8) return;
+      landing = null;
+    }
+    const offset = stickyOffset();
+    let current = anchors[0];
+    for (const anchor of anchors) {
+      if (anchor.el.getBoundingClientRect().top - offset <= 4) current = anchor;
+    }
+    if (current && current.tab.getAttribute('aria-selected') !== 'true') markTab(current.tab);
+  }
+  addEventListener('scroll', syncTabFromScroll, { passive: true });
   const excerptPop = document.getElementById('excerpt-pop');
   const excerptTip = excerptPop.querySelector('.excerpt-pop__tip');
   const excerptBody = excerptPop.querySelector('.excerpt-pop__body');
@@ -3097,22 +3134,17 @@
     });
   });
 
-  // ?media=… : entrée depuis la bande médias de l'adview. `tour` arrive
-  // directement en visite photo : la carte « Photos par pièce » montre déjà des
-  // photos rangées par pièce, la galerie doit tenir cette promesse à l'arrivée
-  // plutôt que de renvoyer vers la mosaïque avec un toggle à trouver.
-  const MEDIA_PARAM = { plan: 'plan', video: 'video', photos: 'all', tour: 'all' };
-  const media = new URLSearchParams(location.search).get('media');
-  const wanted = MEDIA_PARAM[media];
+  // ?media=… : entrée depuis la bande médias de l'adview. Chaque point d'entrée
+  // ouvre la galerie sur son onglet ; `tour` arrive sur la première pièce, la carte
+  // « Photos par pièce » montrant déjà des photos rangées par pièce.
+  const MEDIA_TAB = { plan: 'Plan', video: 'Vidéo', photos: 'Tous', tour: 'piece' };
+  const wanted = MEDIA_TAB[new URLSearchParams(location.search).get('media')];
   if (wanted) {
-    document.querySelectorAll('.chip').forEach(c => c.setAttribute('aria-pressed', String(c.dataset.filter === wanted)));
-    filter = wanted;
-    if (media === 'tour') {
-      tourToggle.checked = true;
-      adview.classList.add('is-photo-tour');
-      adview.classList.remove('is-expanded');
-    }
-    applyFilter();
+    const list = [...tabTargets.keys()];
+    const tab = wanted === 'piece'
+      ? list.find(t => (tabTargets.get(t) || {}).matches && tabTargets.get(t).matches('.tour__section'))
+      : list.find(t => t.textContent === wanted);
+    if (tab) activateTab(tab, false);
   }
   /* ---------- Modale « Décoration virtuelle » ---------- */
   const modalOverlay = document.getElementById('redecorate-modal');
