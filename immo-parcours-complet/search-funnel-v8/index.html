@@ -422,6 +422,12 @@ ul { list-style: none; }
   width: 16px; height: 16px; border-radius: var(--radius-full);
   font-size: 9px; line-height: 16px; font-weight: 700;
 }
+.metro--bus {
+  width: auto; min-width: 16px; padding-inline: var(--sp-sm);
+  border-radius: var(--radius-sm);
+  background: var(--color-neutral-container);
+  color: var(--color-on-surface-rebrand);
+}
 /* Tag-L, réf. Figma 4220:7458 */
 .tag-l {
   display: grid; place-items: center; flex: none;
@@ -2339,6 +2345,10 @@ ul { list-style: none; }
     // Carquefou n'a ni tram ni metro : `lignes` vide, le groupe de pastilles est
     // saute comme pour Marseille 7e.
     '44470': { insee: '44026', prix: 3234, lignes: [], tags: ['Pavillonnaire', 'Verdoyant'] },
+    // Erstein : meme valeur de demonstration que ses quartiers, voir ZONES_QUARTIER.
+    // Bus Fluo Grand Est desservant la commune : 260, 262, 263, 270, 271, 280,
+    // plafonnes a 3 par ordre de ligne.
+    '67150': { insee: '67130', prix: 4370, lignes: [['260', null, 'bus'], ['262', null, 'bus'], ['263', null, 'bus']], tags: ['Commerçant', 'Verdoyant'] },
   };
 
   /* ── Metadonnees au quartier (Erstein) ───────────────────────────────────
@@ -2346,18 +2356,31 @@ ul { list-style: none; }
      postal 67150 et le code INSEE 67130, ni l'un ni l'autre ne peut les
      distinguer. `zoneFor` interroge donc ce dictionnaire en premier.
 
-     `prix: null` — et non une valeur approchee : le fichier DVF ne couvre pas
-     l'Alsace-Moselle. Les departements 67, 68 et 57 relevent du livre foncier et
-     non de la publicite fonciere, leurs fichiers n'existent pas sur
-     files.data.gouv.fr/geo-dvf (404 verifie le 18/09/2026 sur 67, 68 et 57 la
-     ou 59 repond). Aucune autre source ouverte ne publie de mediane au quartier
-     pour Erstein, donc la ligne affiche « Prix non publies » (avec la raison en
-     infobulle) plutot qu'un chiffre estime. C'est la meme reserve que le bloc marche de
-     l'adview pour la variante ?p=5.
+     ATTENTION — `prix` n'est PAS sourcé ici, contrairement au reste du fichier :
+     le fichier DVF ne couvre pas l'Alsace-Moselle (67, 68 et 57 relevent du livre
+     foncier et non de la publicite fonciere ; 404 verifie le 18/09/2026 sur les
+     trois departements la ou 59 repond), et aucune source ouverte ne publie de
+     mediane a la commune ni au quartier pour Erstein. La meme valeur de
+     demonstration est donc portee par la ville et par ses cinq quartiers, calee
+     sur le prix au m2 de l'annonce ?p=5 (199 000 € / 45,51 m² = 4 372 €/m²,
+     arrondi a 4 370). C'est une valeur de proto a remplacer des qu'une source
+     existe, pas une mediane : l'adview garde de son cote le bloc marche « pas de
+     donnee » pour la meme raison.
 
-     `lignes: []` partout : Erstein n'a ni metro ni tram. La commune a bien une
-     gare TER (noeud OSM railway=station « Erstein »), mais le referentiel des
-     pastilles ne porte que les lignes lourdes urbaines avec couleur officielle.
+     `lignes` : pas de metro ni de tram a Erstein, mais le reseau interurbain Fluo
+     Grand Est (operateur CTBR) dessert la commune. Les lignes retenues par
+     quartier sont celles dont un arret OSM est le plus proche du noeud du
+     quartier (Overpass, relations route=bus + arrets highway=bus_stop,
+     18/09/2026), plafonnees a 3 comme partout ailleurs :
+       · Cite des Peupliers : 260 et 262 a 529 m (Place de l'Obertor), 263 a 633 m.
+       · Cite Ouvriere Neye Hisle : 260 et 262 a 195 m, 263 a 287 m (Poste).
+       · Erstein-Gare : 260, 262, 263 et 280 au meme arret Erstein-Gare (109 m).
+       · Cite Sucrerie : 262 et 263 a 18 m (Erstein - Sucrerie), 270 a 678 m.
+       · Krafft : 263, 270 et 271 a 108 m (Krafft - Stade).
+     Les pastilles bus prennent le fond neutre Spark : Fluo Grand Est ne publie pas
+     de couleur par ligne dans OSM (seules 262 et 263 en portent une), une couleur
+     inventee pour les autres serait fausse. Erstein a aussi une gare TER (noeud
+     railway=station « Erstein »), hors referentiel des pastilles de lignes.
 
      `tags` : forme urbaine ou composition observable, relevee autour de chaque
      noeud (Overpass, rayon 400-600 m, 18/09/2026) — jamais de jugement social.
@@ -2374,12 +2397,13 @@ ul { list-style: none; }
          champs autour, aucun commerce → Industriel, Rural.
        · Krafft : hameau, canal du Rhone au Rhin et canal de decharge de l'Ill,
          forets d'Erstein et du Krittwald → Village, Fluvial. */
+  const BUS = (...refs) => refs.map((ref) => [ref, null, 'bus']);
   const ZONES_QUARTIER = {
-    'Cité des Peupliers, Erstein (67150)': { prix: null, lignes: [], tags: ['Pavillonnaire', 'Verdoyant'] },
-    'Cité Ouvrière Neye Hisle, Erstein (67150)': { prix: null, lignes: [], tags: ['Historique', 'Commerçant'] },
-    'Erstein-Gare (67150)': { prix: null, lignes: [], tags: ['Gare', 'Pavillonnaire'] },
-    'Cité Sucrerie, Erstein (67150)': { prix: null, lignes: [], tags: ['Industriel', 'Rural'] },
-    'Krafft, Erstein (67150)': { prix: null, lignes: [], tags: ['Village', 'Fluvial'] },
+    'Cité des Peupliers, Erstein (67150)': { prix: 4370, lignes: BUS('260', '262', '263'), tags: ['Pavillonnaire', 'Verdoyant'] },
+    'Cité Ouvrière Neye Hisle, Erstein (67150)': { prix: 4370, lignes: BUS('260', '262', '263'), tags: ['Historique', 'Commerçant'] },
+    'Erstein-Gare (67150)': { prix: 4370, lignes: BUS('260', '262', '263'), tags: ['Gare', 'Pavillonnaire'] },
+    'Cité Sucrerie, Erstein (67150)': { prix: 4370, lignes: BUS('262', '263', '270'), tags: ['Industriel', 'Rural'] },
+    'Krafft, Erstein (67150)': { prix: 4370, lignes: BUS('263', '270', '271'), tags: ['Village', 'Fluvial'] },
   };
 
   /* ── Metadonnees a la commune (departement 59) ───────────────────────────
@@ -2934,23 +2958,13 @@ ul { list-style: none; }
     const meta = document.createElement('span');
     meta.className = 'popover__option-meta';
 
-    // Alsace-Moselle : pas de fichier DVF, donc pas de médiane à afficher. On le
-    // dit au lieu d'estimer (voir le commentaire de ZONES_QUARTIER).
-    if (zone.prix == null) {
-      const nodata = document.createElement('span');
-      nodata.textContent = 'Prix non publiés';
-      nodata.title = 'Le fichier des valeurs foncières ne couvre pas l’Alsace-Moselle : '
-        + 'le Bas-Rhin, le Haut-Rhin et la Moselle relèvent du livre foncier.';
-      meta.append(nodata);
-    } else {
-      // « ~ » : c'est une médiane, pas un prix de marché exact
-      const price = document.createElement('span');
-      price.append(document.createTextNode('~' + zone.prix.toLocaleString('fr-FR') + ' \u20ac / m'));
-      const exp = document.createElement('sup');
-      exp.textContent = '2';
-      price.append(exp);
-      meta.append(price);
-    }
+    // « ~ » : c'est une médiane, pas un prix de marché exact
+    const price = document.createElement('span');
+    price.append(document.createTextNode('~' + zone.prix.toLocaleString('fr-FR') + ' \u20ac / m'));
+    const exp = document.createElement('sup');
+    exp.textContent = '2';
+    price.append(exp);
+    meta.append(price);
 
     // Certaines zones n'ont ni métro ni tram (Marseille 7e, 14e, 16e) : on saute
     // le groupe de pastilles ET son filet plutôt que d'afficher un vide.
@@ -2958,12 +2972,17 @@ ul { list-style: none; }
       const lines = document.createElement('span');
       lines.className = 'meta-lines';
       lines.setAttribute('role', 'img');
-      lines.setAttribute('aria-label', 'Desservi par ' + zone.lignes.map((l) => l[0]).join(', '));
-      for (const [ref, background] of zone.lignes) {
+      lines.setAttribute('aria-label', 'Desservi par ' + zone.lignes.map((l) => (l[2] === 'bus' ? 'le bus ' : '') + l[0]).join(', '));
+      for (const [ref, background, kind] of zone.lignes) {
         const badge = document.createElement('span');
-        badge.className = 'metro';
-        badge.style.background = background;
-        badge.style.color = onColor(background);
+        // Les lignes de bus n'ont pas de couleur publiée : pastille neutre Spark,
+        // et forme allongée parce qu'un numéro à trois chiffres ne tient pas dans
+        // le cercle de 16px des lignes de métro et de tram.
+        badge.className = kind === 'bus' ? 'metro metro--bus' : 'metro';
+        if (background) {
+          badge.style.background = background;
+          badge.style.color = onColor(background);
+        }
         badge.textContent = ref;
         lines.append(badge);
       }

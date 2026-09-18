@@ -3082,12 +3082,18 @@
   document.addEventListener('click', closeExcerpt);
   document.addEventListener('keydown', event => { if (event.key === 'Escape') closeExcerpt(); });
 
-  // Retour navigateur seulement si on vient de l'adview : sinon un back nous
-  // renverrait vers une autre entrée de la galerie (ex. ?media=plan puis ?media=video)
+  // La flèche doit toujours ramener à l'adview. On tente d'abord le retour
+  // navigateur quand on en vient, pour retrouver la position de lecture ; mais un
+  // `history.back()` est silencieux si l'entrée précédente n'est pas l'adview
+  // (onglet ouvert directement sur la galerie, entrée remplacée, ?media=… enchaînés),
+  // donc un garde-fou force la navigation si la page n'a pas bougé.
   document.querySelectorAll('.adview__back, .side__back').forEach(btn => {
     btn.addEventListener('click', () => {
-      if (document.referrer.includes('adview.html')) history.back();
-      else location.href = 'adview.html?p=' + (window.PROTO_VARIANT || '1');
+      const target = 'adview.html?p=' + (window.PROTO_VARIANT || '1');
+      if (!document.referrer.includes('adview.html')) { location.href = target; return; }
+      const guard = setTimeout(() => { location.href = target; }, 350);
+      addEventListener('pagehide', () => clearTimeout(guard), { once: true });
+      history.back();
     });
   });
 
