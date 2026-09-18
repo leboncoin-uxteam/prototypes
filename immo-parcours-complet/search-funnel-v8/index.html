@@ -2211,6 +2211,23 @@ ul { list-style: none; }
       commune: { centre: { type: 'Point', coordinates: [2.9870927, 50.6457022] } } },
     { label: 'Hellemmes (59260)', kind: 'Quartier',
       commune: { centre: { type: 'Point', coordinates: [3.1092154, 50.6274528] } } },
+    /* Erstein (variante ?p=5) : l'API ne descend pas au quartier non plus. Les
+       cinq entrees sont les seuls noeuds `place` presents dans le contour de la
+       commune (Overpass, area["ref:INSEE"="67130"], 18/09/2026) : trois
+       `neighbourhood` et deux `hamlet`, avec leur coordonnee OSM. Le libelle
+       porte « , Erstein » pour que la saisie « Erstein » les fasse remonter
+       comme la saisie du nom du quartier — sauf Erstein-Gare, qui porte deja le
+       nom de la commune. */
+    { label: 'Cité des Peupliers, Erstein (67150)', kind: 'Quartier',
+      commune: { centre: { type: 'Point', coordinates: [7.65704, 48.41646] } } },
+    { label: 'Cité Ouvrière Neye Hisle, Erstein (67150)', kind: 'Quartier',
+      commune: { centre: { type: 'Point', coordinates: [7.65979, 48.41979] } } },
+    { label: 'Erstein-Gare (67150)', kind: 'Quartier',
+      commune: { centre: { type: 'Point', coordinates: [7.638, 48.42215] } } },
+    { label: 'Cité Sucrerie, Erstein (67150)', kind: 'Quartier',
+      commune: { centre: { type: 'Point', coordinates: [7.68892, 48.40818] } } },
+    { label: 'Krafft, Erstein (67150)', kind: 'Quartier',
+      commune: { centre: { type: 'Point', coordinates: [7.70027, 48.42304] } } },
   ];
 
   const normalize = (value) =>
@@ -2322,6 +2339,47 @@ ul { list-style: none; }
     // Carquefou n'a ni tram ni metro : `lignes` vide, le groupe de pastilles est
     // saute comme pour Marseille 7e.
     '44470': { insee: '44026', prix: 3234, lignes: [], tags: ['Pavillonnaire', 'Verdoyant'] },
+  };
+
+  /* ── Metadonnees au quartier (Erstein) ───────────────────────────────────
+     Cle = libelle exact de la suggestion : les cinq quartiers partagent le code
+     postal 67150 et le code INSEE 67130, ni l'un ni l'autre ne peut les
+     distinguer. `zoneFor` interroge donc ce dictionnaire en premier.
+
+     `prix: null` — et non une valeur approchee : le fichier DVF ne couvre pas
+     l'Alsace-Moselle. Les departements 67, 68 et 57 relevent du livre foncier et
+     non de la publicite fonciere, leurs fichiers n'existent pas sur
+     files.data.gouv.fr/geo-dvf (404 verifie le 18/09/2026 sur 67, 68 et 57 la
+     ou 59 repond). Aucune autre source ouverte ne publie de mediane au quartier
+     pour Erstein, donc la ligne affiche « Prix non publies » (avec la raison en
+     infobulle) plutot qu'un chiffre estime. C'est la meme reserve que le bloc marche de
+     l'adview pour la variante ?p=5.
+
+     `lignes: []` partout : Erstein n'a ni metro ni tram. La commune a bien une
+     gare TER (noeud OSM railway=station « Erstein »), mais le referentiel des
+     pastilles ne porte que les lignes lourdes urbaines avec couleur officielle.
+
+     `tags` : forme urbaine ou composition observable, relevee autour de chaque
+     noeud (Overpass, rayon 400-600 m, 18/09/2026) — jamais de jugement social.
+       · Cite des Peupliers : parc et aire de jeux, ecole maternelle Popp, bras
+         de la Petite Ill, tissu de maisons → Pavillonnaire, Verdoyant.
+       · Cite Ouvriere Neye Hisle : cite ouvriere inscrite aux Monuments
+         historiques le 17/02/2014 (ref:mhs PA67000091) ; 25 commerces, 6
+         etablissements scolaires et le Square de l'Obertor dans les 500 m
+         → Historique, Commerçant.
+       · Erstein-Gare : gare d'Erstein, zone d'activites Erstein-Ouest, champs
+         → Gare, Pavillonnaire. Seul tag d'equipement du jeu, justifie par le
+         nom meme du lieu-dit.
+       · Cite Sucrerie : Sucrerie d'Erstein (landuse=industrial), forets, prés et
+         champs autour, aucun commerce → Industriel, Rural.
+       · Krafft : hameau, canal du Rhone au Rhin et canal de decharge de l'Ill,
+         forets d'Erstein et du Krittwald → Village, Fluvial. */
+  const ZONES_QUARTIER = {
+    'Cité des Peupliers, Erstein (67150)': { prix: null, lignes: [], tags: ['Pavillonnaire', 'Verdoyant'] },
+    'Cité Ouvrière Neye Hisle, Erstein (67150)': { prix: null, lignes: [], tags: ['Historique', 'Commerçant'] },
+    'Erstein-Gare (67150)': { prix: null, lignes: [], tags: ['Gare', 'Pavillonnaire'] },
+    'Cité Sucrerie, Erstein (67150)': { prix: null, lignes: [], tags: ['Industriel', 'Rural'] },
+    'Krafft, Erstein (67150)': { prix: null, lignes: [], tags: ['Village', 'Fluvial'] },
   };
 
   /* ── Metadonnees a la commune (departement 59) ───────────────────────────
@@ -2862,6 +2920,7 @@ ul { list-style: none; }
      la mediane de Lille entiere. Le code INSEE ne sert que de repli commune. */
   function zoneFor(location) {
     const label = typeof location === 'string' ? location : location.label;
+    if (ZONES_QUARTIER[label]) return ZONES_QUARTIER[label];
     const postcode = label.match(/\((\d{5})\)/);
     if (postcode && ZONES[postcode[1]]) return ZONES[postcode[1]];
     const insee = location && location.commune && location.commune.code;
@@ -2875,13 +2934,23 @@ ul { list-style: none; }
     const meta = document.createElement('span');
     meta.className = 'popover__option-meta';
 
-    // « ~ » : c'est une médiane, pas un prix de marché exact
-    const price = document.createElement('span');
-    price.append(document.createTextNode('~' + zone.prix.toLocaleString('fr-FR') + ' \u20ac / m'));
-    const exp = document.createElement('sup');
-    exp.textContent = '2';
-    price.append(exp);
-    meta.append(price);
+    // Alsace-Moselle : pas de fichier DVF, donc pas de médiane à afficher. On le
+    // dit au lieu d'estimer (voir le commentaire de ZONES_QUARTIER).
+    if (zone.prix == null) {
+      const nodata = document.createElement('span');
+      nodata.textContent = 'Prix non publiés';
+      nodata.title = 'Le fichier des valeurs foncières ne couvre pas l’Alsace-Moselle : '
+        + 'le Bas-Rhin, le Haut-Rhin et la Moselle relèvent du livre foncier.';
+      meta.append(nodata);
+    } else {
+      // « ~ » : c'est une médiane, pas un prix de marché exact
+      const price = document.createElement('span');
+      price.append(document.createTextNode('~' + zone.prix.toLocaleString('fr-FR') + ' \u20ac / m'));
+      const exp = document.createElement('sup');
+      exp.textContent = '2';
+      price.append(exp);
+      meta.append(price);
+    }
 
     // Certaines zones n'ont ni métro ni tram (Marseille 7e, 14e, 16e) : on saute
     // le groupe de pastilles ET son filet plutôt que d'afficher un vide.
