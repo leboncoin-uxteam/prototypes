@@ -3,7 +3,7 @@ name: Deploy Motors Depot to GitHub Pages
 on:
   push:
     branches: [main]
-    paths: ['motors-depot-annonce-pro/**', 'notif-vendeur/**', '.github/workflows/deploy-motors-depot.yml']
+    paths: ['motors-depot-annonce-pro/**', '.github/workflows/deploy-motors-depot.yml']
   workflow_dispatch:
 
 jobs:

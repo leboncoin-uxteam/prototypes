@@ -6,6 +6,7 @@ on:
     paths:
       - 'favoris/**'
       - 'immo-parcours-complet/**'
+      - 'notif-vendeur/**'
       - '.github/workflows/deploy-favoris.yml'
   # Permet de republier sans avoir à pousser un commit.
   workflow_dispatch:
