@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Composant — Offer Module (fermé)</title>
+<link rel="stylesheet" href="../../tokens.css">
+<link rel="stylesheet" href="offer-module.css">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--spark-background-variant);
+  min-height: 100vh;
+  padding: 24px 16px;
+  font-family: 'LBC Denim INK', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+}
+.component-wrap {
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+}
+</style>
+</head>
+<body>
+
+<div class="component-wrap">
+  <div class="offer-module">
+
+    <div class="offer-closed-row">
+
+      <!-- Prix résumé -->
+      <div class="offer-closed-price">
+        <span class="offer-closed-price-main">92€</span>
+        <span class="offer-closed-price-sub">au lieu de 115€</span>
+      </div>
+
+      <!-- Bouton Accepter -->
+      <button class="offer-closed-btn-accept">Accepter</button>
+
+      <!-- Chevron pointant vers le haut (module fermé = cliquer pour ouvrir) -->
+      <div class="offer-chevron offer-chevron--up">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M2.32544 7.30343C2.75935 6.89886 3.46287 6.89886 3.89679 7.30343L12 14.7836L20.1032 7.30343C20.5371 6.89886 21.2406 6.89886 21.6746 7.30343C22.1085 7.70801 22.1085 8.36396 21.6746 8.76853L13.3338 16.4702C13.1638 16.6352 12.9602 16.7671 12.7348 16.8581C12.5028 16.9517 12.2528 17 12 17C11.7472 17 11.4972 16.9517 11.2652 16.8581C11.0399 16.7671 10.8363 16.6353 10.6662 16.4702L2.32544 8.76853C1.89152 8.36396 1.89152 7.70801 2.32544 7.30343Z" fill="rgba(20,17,16,0.56)"/>
+        </svg>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>

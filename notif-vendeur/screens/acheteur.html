@@ -296,15 +296,22 @@ button, button:focus, button:focus-visible, button:active {
 
 /* ── Animations ── */
 @keyframes slideUp {
-  from { opacity: 0; transform: translateY(10px); }
+  from { opacity: 0; transform: translateY(14px); }
   to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to   { opacity: 0; }
 }
 @keyframes fadeIn {
   from { opacity: 0; }
   to   { opacity: 1; }
 }
-.anim-slide { animation: slideUp 0.22s ease-out both; }
-.anim-fade  { animation: fadeIn  0.25s ease-out both; }
+.anim-slide     { animation: slideUp   280ms ease-out both; }
+.anim-slide-out { animation: fadeOut   120ms ease-in  both; }
+.anim-sheet     { animation: slideUp   320ms ease-out both; }
+.anim-sheet-out { animation: fadeOut   140ms ease-in  both; }
+.anim-fade      { animation: fadeIn    250ms ease-out both; }
 </style>
 </head>
 <body>
@@ -346,7 +353,7 @@ button, button:focus, button:focus-visible, button:active {
               <span class="co-title">Proposer un nouveau prix</span>
               <div class="co-chevron" onclick="closeCO()" style="cursor:pointer">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                  <path fill-rule="evenodd" clip-rule="evenodd" d="M2.32544 7.30343C2.75935 6.89886 3.46287 6.89886 3.89679 7.30343L12 14.7836L20.1032 7.30343C20.5371 6.89886 21.2406 6.89886 21.6746 7.30343C22.1085 7.70801 22.1085 8.36396 21.6746 8.76853L13.3338 16.4702C13.1638 16.6352 12.9602 16.7671 12.7348 16.8581C12.5028 16.9517 12.2528 17 12 17C11.7472 17 11.4972 16.9517 11.2652 16.8581C11.0399 16.7671 10.8363 16.6353 10.6662 16.4702L2.32544 8.76853C1.89152 8.36396 1.89152 7.70801 2.32544 7.30343Z" fill="#3A4757"/>
+                  <path fill-rule="evenodd" clip-rule="evenodd" d="M2.32544 7.30343C2.75935 6.89886 3.46287 6.89886 3.89679 7.30343L12 14.7836L20.1032 7.30343C20.5371 6.89886 21.2406 6.89886 21.6746 7.30343C22.1085 7.70801 22.1085 8.36396 21.6746 8.76853L13.3338 16.4702C13.1638 16.6352 12.9602 16.7671 12.7348 16.8581C12.5028 16.9517 12.2528 17 12 17C11.7472 17 11.4972 16.9517 11.2652 16.8581C11.0399 16.7671 10.8363 16.6353 10.6662 16.4702L2.32544 8.76853C1.89152 8.36396 1.89152 7.70801 2.32544 7.30343Z" fill="rgba(20,17,16,0.56)"/>
                 </svg>
               </div>
             </div>
@@ -415,7 +422,7 @@ button, button:focus, button:focus-visible, button:active {
               </div>
               <div class="offer-chevron" onclick="toggleClosed()" style="cursor:pointer">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                  <path fill-rule="evenodd" clip-rule="evenodd" d="M2.32544 7.30343C2.75935 6.89886 3.46287 6.89886 3.89679 7.30343L12 14.7836L20.1032 7.30343C20.5371 6.89886 21.2406 6.89886 21.6746 7.30343C22.1085 7.70801 22.1085 8.36396 21.6746 8.76853L13.3338 16.4702C13.1638 16.6352 12.9602 16.7671 12.7348 16.8581C12.5028 16.9517 12.2528 17 12 17C11.7472 17 11.4972 16.9517 11.2652 16.8581C11.0399 16.7671 10.8363 16.6353 10.6662 16.4702L2.32544 8.76853C1.89152 8.36396 1.89152 7.70801 2.32544 7.30343Z" fill="#3A4757"/>
+                  <path fill-rule="evenodd" clip-rule="evenodd" d="M2.32544 7.30343C2.75935 6.89886 3.46287 6.89886 3.89679 7.30343L12 14.7836L20.1032 7.30343C20.5371 6.89886 21.2406 6.89886 21.6746 7.30343C22.1085 7.70801 22.1085 8.36396 21.6746 8.76853L13.3338 16.4702C13.1638 16.6352 12.9602 16.7671 12.7348 16.8581C12.5028 16.9517 12.2528 17 12 17C11.7472 17 11.4972 16.9517 11.2652 16.8581C11.0399 16.7671 10.8363 16.6353 10.6662 16.4702L2.32544 8.76853C1.89152 8.36396 1.89152 7.70801 2.32544 7.30343Z" fill="rgba(20,17,16,0.56)"/>
                 </svg>
               </div>
             </div>
@@ -458,7 +465,7 @@ button, button:focus, button:focus-visible, button:active {
               </div>
               <div class="offer-chevron" onclick="setModuleState('state-open')" style="cursor:pointer">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                  <path fill-rule="evenodd" clip-rule="evenodd" d="M2.32544 7.30343C2.75935 6.89886 3.46287 6.89886 3.89679 7.30343L12 14.7836L20.1032 7.30343C20.5371 6.89886 21.2406 6.89886 21.6746 7.30343C22.1085 7.70801 22.1085 8.36396 21.6746 8.76853L13.3338 16.4702C13.1638 16.6352 12.9602 16.7671 12.7348 16.8581C12.5028 16.9517 12.2528 17 12 17C11.7472 17 11.4972 16.9517 11.2652 16.8581C11.0399 16.7671 10.8363 16.6353 10.6662 16.4702L2.32544 8.76853C1.89152 8.36396 1.89152 7.70801 2.32544 7.30343Z" fill="#3A4757"/>
+                  <path fill-rule="evenodd" clip-rule="evenodd" d="M2.32544 7.30343C2.75935 6.89886 3.46287 6.89886 3.89679 7.30343L12 14.7836L20.1032 7.30343C20.5371 6.89886 21.2406 6.89886 21.6746 7.30343C22.1085 7.70801 22.1085 8.36396 21.6746 8.76853L13.3338 16.4702C13.1638 16.6352 12.9602 16.7671 12.7348 16.8581C12.5028 16.9517 12.2528 17 12 17C11.7472 17 11.4972 16.9517 11.2652 16.8581C11.0399 16.7671 10.8363 16.6353 10.6662 16.4702L2.32544 8.76853C1.89152 8.36396 1.89152 7.70801 2.32544 7.30343Z" fill="rgba(20,17,16,0.56)"/>
                 </svg>
               </div>
             </div>
@@ -500,7 +507,7 @@ button, button:focus, button:focus-visible, button:active {
               <button class="offer-closed-btn-accept" onclick="showScreen('paiement')">Accepter</button>
               <div class="offer-chevron offer-chevron--up" onclick="toggleClosed()" style="cursor:pointer">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                  <path fill-rule="evenodd" clip-rule="evenodd" d="M2.32544 7.30343C2.75935 6.89886 3.46287 6.89886 3.89679 7.30343L12 14.7836L20.1032 7.30343C20.5371 6.89886 21.2406 6.89886 21.6746 7.30343C22.1085 7.70801 22.1085 8.36396 21.6746 8.76853L13.3338 16.4702C13.1638 16.6352 12.9602 16.7671 12.7348 16.8581C12.5028 16.9517 12.2528 17 12 17C11.7472 17 11.4972 16.9517 11.2652 16.8581C11.0399 16.7671 10.8363 16.6353 10.6662 16.4702L2.32544 8.76853C1.89152 8.36396 1.89152 7.70801 2.32544 7.30343Z" fill="#3A4757"/>
+                  <path fill-rule="evenodd" clip-rule="evenodd" d="M2.32544 7.30343C2.75935 6.89886 3.46287 6.89886 3.89679 7.30343L12 14.7836L20.1032 7.30343C20.5371 6.89886 21.2406 6.89886 21.6746 7.30343C22.1085 7.70801 22.1085 8.36396 21.6746 8.76853L13.3338 16.4702C13.1638 16.6352 12.9602 16.7671 12.7348 16.8581C12.5028 16.9517 12.2528 17 12 17C11.7472 17 11.4972 16.9517 11.2652 16.8581C11.0399 16.7671 10.8363 16.6353 10.6662 16.4702L2.32544 8.76853C1.89152 8.36396 1.89152 7.70801 2.32544 7.30343Z" fill="rgba(20,17,16,0.56)"/>
                 </svg>
               </div>
             </div>
@@ -651,7 +658,7 @@ button, button:focus, button:focus-visible, button:active {
             <button class="offer-btn-primary" style="flex:1" onclick="contreOffreOrigin='messagerie-refus'; showScreen('messagerie'); setModuleState('contre-offre')">Faire une offre</button>
             <div class="offer-chevron offer-chevron--up" onclick="contreOffreOrigin='messagerie-refus'; showScreen('messagerie'); setModuleState('contre-offre');" style="cursor:pointer">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                <path fill-rule="evenodd" clip-rule="evenodd" d="M2.32544 7.30343C2.75935 6.89886 3.46287 6.89886 3.89679 7.30343L12 14.7836L20.1032 7.30343C20.5371 6.89886 21.2406 6.89886 21.6746 7.30343C22.1085 7.70801 22.1085 8.36396 21.6746 8.76853L13.3338 16.4702C13.1638 16.6352 12.9602 16.7671 12.7348 16.8581C12.5028 16.9517 12.2528 17 12 17C11.7472 17 11.4972 16.9517 11.2652 16.8581C11.0399 16.7671 10.8363 16.6353 10.6662 16.4702L2.32544 8.76853C1.89152 8.36396 1.89152 7.70801 2.32544 7.30343Z" fill="#3A4757"/>
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M2.32544 7.30343C2.75935 6.89886 3.46287 6.89886 3.89679 7.30343L12 14.7836L20.1032 7.30343C20.5371 6.89886 21.2406 6.89886 21.6746 7.30343C22.1085 7.70801 22.1085 8.36396 21.6746 8.76853L13.3338 16.4702C13.1638 16.6352 12.9602 16.7671 12.7348 16.8581C12.5028 16.9517 12.2528 17 12 17C11.7472 17 11.4972 16.9517 11.2652 16.8581C11.0399 16.7671 10.8363 16.6353 10.6662 16.4702L2.32544 8.76853C1.89152 8.36396 1.89152 7.70801 2.32544 7.30343Z" fill="rgba(20,17,16,0.56)"/>
               </svg>
             </div>
           </div>
@@ -715,20 +722,74 @@ function showScreen(name) {
   }
 }
 
-function setModuleState(state) {
-  ['state-open', 'state-autres-options', 'state-closed'].forEach(function(id) {
-    document.getElementById(id).style.display = 'none';
+var EXIT_DURATION = 140;
+var _pendingModuleTimer = null;
+var _moduleState = 'state-open';
+var ALL_ANIM_CLS = ['anim-slide', 'anim-slide-out', 'anim-sheet', 'anim-sheet-out'];
+
+function clearAllAnims() {
+  var ids = ['state-open', 'state-autres-options', 'state-closed', 'contre-offre-wrap'];
+  ids.forEach(function(id) {
+    var el = document.getElementById(id);
+    ALL_ANIM_CLS.forEach(function(c) { el.classList.remove(c); });
   });
-  if (state === 'contre-offre') {
-    document.getElementById('offer-module-wrap').style.display = 'none';
-    document.getElementById('contre-offre-wrap').style.display = 'block';
-    animate(document.getElementById('contre-offre-wrap'), 'anim-slide');
+}
+
+function setModuleState(state) {
+  var coWrap = document.getElementById('contre-offre-wrap');
+  var moduleWrap = document.getElementById('offer-module-wrap');
+  var stateIds = ['state-open', 'state-autres-options', 'state-closed'];
+
+  // Annule le timer en cours + nettoie toutes les classes d'animation
+  if (_pendingModuleTimer !== null) {
+    clearTimeout(_pendingModuleTimer);
+    _pendingModuleTimer = null;
+    clearAllAnims();
+    stateIds.forEach(function(id) { document.getElementById(id).style.display = 'none'; });
+    coWrap.style.display = 'none';
+  }
+
+  _moduleState = state;
+
+  var currentEl = null;
+  var isSheet = false;
+  if (coWrap.style.display === 'block') {
+    currentEl = coWrap;
+    isSheet = true;
   } else {
-    document.getElementById('offer-module-wrap').style.display = 'block';
-    document.getElementById('contre-offre-wrap').style.display = 'none';
-    var el = document.getElementById(state);
-    el.style.display = 'flex';
-    animate(el, 'anim-slide');
+    stateIds.forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el.style.display === 'flex') currentEl = el;
+    });
+  }
+
+  function showNew() {
+    // Nettoie toutes les classes anim avant d'entrer — évite les conflits CSS
+    clearAllAnims();
+    if (state === 'contre-offre') {
+      moduleWrap.style.display = 'none';
+      coWrap.style.display = 'block';
+      animate(coWrap, 'anim-sheet');
+    } else {
+      moduleWrap.style.display = 'block';
+      coWrap.style.display = 'none';
+      stateIds.forEach(function(id) { document.getElementById(id).style.display = 'none'; });
+      var el = document.getElementById(state);
+      el.style.display = 'flex';
+      animate(el, 'anim-slide');
+    }
+  }
+
+  if (currentEl) {
+    var exitEl = currentEl;
+    animate(exitEl, isSheet ? 'anim-sheet-out' : 'anim-slide-out');
+    _pendingModuleTimer = setTimeout(function() {
+      _pendingModuleTimer = null;
+      exitEl.style.display = 'none';
+      showNew();
+    }, EXIT_DURATION);
+  } else {
+    showNew();
   }
 }
 
@@ -757,11 +818,10 @@ function closeCO() {
 }
 
 function toggleClosed() {
-  var closed = document.getElementById('state-closed');
-  if (closed.style.display === 'none') {
-    setModuleState('state-closed');
-  } else {
+  if (_moduleState === 'state-closed') {
     setModuleState('state-open');
+  } else {
+    setModuleState('state-closed');
   }
 }
 
