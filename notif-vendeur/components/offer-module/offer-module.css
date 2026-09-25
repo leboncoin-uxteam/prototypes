@@ -1,0 +1,327 @@
+/* ============================================================
+   Composant : Offer Module
+   Dépendance : ../../tokens.css
+   ============================================================ */
+
+/* ── Conteneur principal ── */
+.offer-module {
+  background: var(--spark-surface);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+  box-shadow: 0 2px 12px rgba(20,17,16,0.10);
+}
+
+/* ── Header ── */
+.offer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+}
+.offer-seller {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  flex: 1;
+  min-width: 0;
+}
+.offer-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  object-fit: cover;
+  flex-shrink: 0;
+}
+.offer-seller-meta {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 4px;
+  font-size: 14px;
+  color: var(--spark-on-surface);
+  min-width: 0;
+  overflow: hidden;
+}
+.offer-seller-name {
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex-shrink: 1;
+  min-width: 0;
+}
+.offer-seller-star  { color: var(--spark-main); flex-shrink: 0; white-space: nowrap; }
+.offer-seller-meta > span:not(.offer-seller-name) { flex-shrink: 0; white-space: nowrap; }
+.offer-seller-label { color: var(--spark-on-surface); }
+
+.offer-chevron {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: #3a4757;
+}
+.offer-chevron svg { display: block; }
+
+/* ── Carte prix ── */
+.offer-price-card {
+  background: var(--spark-surface);
+  border: var(--border-sm) solid var(--spark-outline);
+  border-radius: var(--radius-md);
+  padding: var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+  overflow: hidden;
+}
+
+/* Prix principal */
+.offer-price-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-md);
+}
+.offer-price-left { display: flex; flex-direction: column; gap: 4px; }
+.offer-price-main {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--spark-on-surface);
+  line-height: 1.1;
+}
+.offer-price-original {
+  font-size: 14px;
+  color: var(--spark-on-background-variant);
+}
+.offer-price-discount {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--spark-success);
+}
+.offer-price-validity {
+  font-size: 12px;
+  color: rgba(20,17,16,0.72);
+}
+.offer-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--spark-alert-container);
+  color: var(--spark-on-alert-container);
+  font-size: 12px;
+  font-weight: 500;
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* ── Histogramme des prix ── */
+.offer-histogram {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.histogram-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 46px;
+}
+.histogram-bar {
+  flex: 1;
+  border-radius: 2px 2px 0 0;
+  min-height: 3px;
+}
+.histogram-pointer-row {
+  display: flex;
+  gap: 2px;
+  height: 7px;
+  margin-top: 1px;
+}
+.histogram-pointer-row .h-slot { flex: 1; }
+.histogram-pointer-row .h-ptr  {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+.ptr-triangle {
+  width: 0; height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-bottom: 7px solid var(--color-blue-700);
+}
+.histogram-scale {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 4px;
+}
+.histogram-scale span {
+  font-size: 12px;
+  color: var(--spark-on-background-variant);
+}
+.histogram-scale .scale-offer {
+  color: var(--color-blue-700);
+  font-weight: 600;
+}
+
+/* ── Lien source ── */
+.offer-source {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+.offer-source a {
+  font-size: 12px;
+  color: var(--spark-on-background-variant);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.offer-source .source-icon {
+  flex-shrink: 0;
+  display: block;
+}
+
+/* ── CTAs ── */
+.offer-ctas {
+  display: flex;
+  gap: var(--space-md);
+}
+.offer-btn-secondary {
+  flex: 1;
+  height: 44px;
+  background: var(--spark-surface);
+  color: var(--spark-on-surface);
+  border: var(--border-sm) solid var(--spark-outline);
+  border-radius: var(--radius-full);
+  font-family: 'LBC Denim INK', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  padding: 8px 24px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.offer-btn-primary {
+  flex: 1;
+  height: 44px;
+  background: var(--spark-main);
+  color: var(--spark-on-main);
+  border: none;
+  border-radius: var(--radius-full);
+  font-family: 'LBC Denim INK', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  padding: 8px 24px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.offer-btn-primary:active  { background: var(--color-orange-700); }
+.offer-btn-secondary:active { background: var(--spark-background-variant); }
+
+/* Bouton avec icône (ex: Acheter à 92 € →) */
+.offer-btn--icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-md);
+}
+.offer-btn--icon img { display: block; flex-shrink: 0; }
+
+/* Bouton support (dark rouge — Faire une offre) */
+.offer-btn-support {
+  flex: 1;
+  height: 44px;
+  background: var(--spark-support);
+  color: var(--spark-on-main);
+  border: none;
+  border-radius: var(--radius-full);
+  font-family: 'LBC Denim INK', sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 20px;
+  padding: 8px 24px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  box-shadow: 0 10px 20px 0 rgba(0,0,0,0.10);
+}
+.offer-btn-support:active { background: var(--color-brique-800); }
+
+/* Text link (Refuser) */
+.offer-cta-link {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+.offer-btn-text {
+  background: none;
+  border: none;
+  font-family: 'LBC Denim INK', sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 20px;
+  color: var(--spark-on-surface);
+  cursor: pointer;
+  padding: 4px 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ── Version fermée ───────────────────────────────────────── */
+.offer-closed-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.offer-closed-price {
+  flex: 1;
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px;
+  min-width: 0;
+}
+
+.offer-closed-price-main {
+  font-family: 'LBC Denim INK', sans-serif;
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 32px;
+  color: var(--spark-on-surface);
+}
+
+.offer-closed-price-sub {
+  font-family: 'LBC Denim INK', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+  color: var(--spark-on-surface);
+}
+
+.offer-closed-btn-accept {
+  flex-shrink: 0;
+  height: 44px;
+  background: var(--spark-main);
+  color: var(--spark-on-main);
+  border: none;
+  border-radius: var(--radius-full);
+  font-family: 'LBC Denim INK', sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 20px;
+  padding: 0 16px;
+  cursor: pointer;
+  white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
+}
+.offer-closed-btn-accept:active { background: var(--color-orange-700); }
+
+.offer-chevron--up {
+  transform: rotate(180deg);
+}

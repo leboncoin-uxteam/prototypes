@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Composant — Price Option</title>
+<link rel="stylesheet" href="../../tokens.css">
+<link rel="stylesheet" href="price-option.css">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--spark-background-variant);
+  min-height: 100vh;
+  padding: 24px 16px;
+  font-family: 'LBC Denim INK', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+}
+.component-wrap {
+  width: 100%;
+  max-width: 343px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+.label {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--spark-on-background-variant);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+}
+.row {
+  display: flex;
+  gap: 10px;
+}
+.row .price-option { flex: 1; }
+</style>
+</head>
+<body>
+
+<div class="component-wrap">
+
+  <!-- Default -->
+  <div>
+    <div class="label">Default</div>
+    <div class="row">
+      <div class="price-option" onclick="select(this)">
+        <div class="price-option-content">
+          <span class="price-option-title">86,25 €</span>
+          <span class="price-option-subtitle">Réduction de 25%</span>
+        </div>
+      </div>
+      <div class="price-option" onclick="select(this)">
+        <div class="price-option-content">
+          <span class="price-option-title">80,5 €</span>
+          <span class="price-option-subtitle">Réduction de 30%</span>
+        </div>
+      </div>
+      <div class="price-option" onclick="select(this)">
+        <div class="price-option-content">
+          <span class="price-option-title">Autre prix</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Focus / sélectionné -->
+  <div>
+    <div class="label">Sélectionné</div>
+    <div class="row">
+      <div class="price-option selected" onclick="select(this)">
+        <div class="price-option-content">
+          <span class="price-option-title">86,25 €</span>
+          <span class="price-option-subtitle">Réduction de 25%</span>
+        </div>
+      </div>
+      <div class="price-option" onclick="select(this)">
+        <div class="price-option-content">
+          <span class="price-option-title">80,5 €</span>
+          <span class="price-option-subtitle">Réduction de 30%</span>
+        </div>
+      </div>
+      <div class="price-option" onclick="select(this)">
+        <div class="price-option-content">
+          <span class="price-option-title">Autre prix</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function select(card) {
+  const row = card.closest('.row');
+  row.querySelectorAll('.price-option').forEach(c => c.classList.remove('selected'));
+  card.classList.add('selected');
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Composant — Validation Message</title>
+<link rel="stylesheet" href="../../tokens.css">
+<link rel="stylesheet" href="validation-message.css">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--spark-background-variant);
+  min-height: 100vh;
+  padding: 24px 16px;
+  font-family: 'LBC Denim INK', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+}
+.component-wrap {
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+}
+</style>
+</head>
+<body>
+
+<div class="component-wrap">
+  <div class="validation-msg">
+    <div class="validation-msg-title">Offre envoyée !</div>
+    <div class="validation-msg-subtitle">
+      Julien Dereims à 48h pour répondre à votre offre de <span class="validation-msg-price">80 €</span>.
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

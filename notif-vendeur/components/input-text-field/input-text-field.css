@@ -1,0 +1,77 @@
+/* ============================================================
+   Composant : Input text field
+   Ref Figma : FT-Connect node 23038:9800
+   Dépendance : ../../tokens.css
+   ============================================================ */
+
+.itf-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  width: 100%;
+}
+
+/* ── Label ── */
+.itf-label {
+  font-family: 'LBC Denim INK', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  color: var(--spark-on-surface);
+}
+
+/* ── Champ (conteneur pill) ── */
+.itf-field {
+  display: flex;
+  align-items: center;
+  height: 44px;
+  background: var(--spark-surface);
+  border: 1px solid var(--spark-outline);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  transition: border-color .15s;
+}
+
+.itf-field:focus-within {
+  border: 2px solid var(--spark-outline-focus);
+}
+
+/* ── Zone de saisie (gauche, flex 1) ── */
+.itf-input {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  border: none;
+  background: transparent;
+  padding: 0 16px;
+  font-family: 'LBC Denim INK', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+  color: var(--spark-on-surface);
+  outline: none;
+  -webkit-appearance: none;
+}
+
+.itf-input::placeholder {
+  color: var(--spark-on-background-variant);
+}
+
+/* ── Séparateur vertical ── */
+.itf-separator {
+  width: 1px;
+  align-self: stretch;
+  background: var(--spark-outline);
+  flex-shrink: 0;
+}
+
+/* ── Suffix (droite du séparateur) ── */
+.itf-suffix {
+  font-family: 'LBC Denim INK', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+  color: var(--spark-on-surface);
+  padding: 0 16px;
+  flex-shrink: 0;
+}

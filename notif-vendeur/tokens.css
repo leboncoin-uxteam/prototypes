@@ -1,0 +1,243 @@
+/* ============================================================
+   Spark Rebranding — Design Tokens
+   Extrait de Figma : ⚠️ DRAFT Spark rebranding
+   Mode : 🟠 [PART] LightMode ☀️
+   ============================================================ */
+
+/* ── Typographie LBCDenimINK ───────────────────────────────── */
+
+@font-face {
+  font-family: 'LBC Denim INK';
+  src: url('assets/fonts/LBCDenimINK-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'LBC Denim INK';
+  src: url('assets/fonts/LBCDenimINK-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'LBC Denim INK';
+  src: url('assets/fonts/LBCDenimINK-SemiBold.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'LBC Denim INK';
+  src: url('assets/fonts/LBCDenimINK-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+
+  /* ── Palettes primitives ──────────────────────────────────── */
+
+  /* Grey */
+  --color-grey-100: #ffffff;
+  --color-grey-200: #f3f2f1;
+  --color-grey-300: #e3dfde;
+  --color-grey-400: #d7d3d0;
+  --color-grey-500: #a7a3a2;
+  --color-grey-600: #706e6e;
+  --color-grey-700: #363535;
+  --color-grey-800: #272525;
+  --color-grey-900: #141110;
+
+  /* Orange */
+  --color-orange-100: #fff1e7;
+  --color-orange-200: #ffd7b8;
+  --color-orange-300: #ffb17e;
+  --color-orange-400: #ff8945;
+  --color-orange-500: #f96316;
+  --color-orange-600: #eb4807;
+  --color-orange-700: #d54006;
+  --color-orange-800: #8e2d05;
+  --color-orange-900: #441703;
+
+  /* Brique */
+  --color-brique-100: #f9edea;
+  --color-brique-200: #f0cfc7;
+  --color-brique-300: #e1a89b;
+  --color-brique-400: #c87967;
+  --color-brique-500: #a44b3b;
+  --color-brique-600: #872e1f;
+  --color-brique-700: #741813;
+  --color-brique-800: #690b0b;
+  --color-brique-900: #4d0604;
+
+  /* Sand */
+  --color-sand-100: #f5f1ef;
+  --color-sand-200: #ebe4e0;
+  --color-sand-300: #ddd0ca;
+  --color-sand-400: #d1bfb6;
+  --color-sand-500: #c4ada1;
+  --color-sand-600: #ba9f91;
+  --color-sand-700: #a68472;
+  --color-sand-800: #7d5e4f;
+  --color-sand-900: #3f2f27;
+
+  /* Linen */
+  --color-linen-100: #f7f4f0;
+  --color-linen-200: #ece5dc;
+  --color-linen-300: #ddd0c0;
+  --color-linen-400: #c9b39a;
+  --color-linen-500: #b09076;
+  --color-linen-600: #95775f;
+  --color-linen-700: #745a4e;
+  --color-linen-800: #58443b;
+  --color-linen-900: #372a25;
+
+  /* Yellow */
+  --color-yellow-100: #fcf6d7;
+  --color-yellow-200: #faeba3;
+  --color-yellow-300: #f5da42;
+  --color-yellow-400: #e6c447;
+  --color-yellow-500: #c69e22;
+  --color-yellow-600: #a27e18;
+  --color-yellow-700: #7e6012;
+  --color-yellow-800: #5b430d;
+  --color-yellow-900: #2f2306;
+
+  /* Blue */
+  --color-blue-100: #e6edf3;
+  --color-blue-200: #d0dde9;
+  --color-blue-300: #b6cadc;
+  --color-blue-400: #80a7c8;
+  --color-blue-500: #3f83be;
+  --color-blue-600: #1e68a8;
+  --color-blue-700: #0e538f;
+  --color-blue-800: #0a3d6b;
+  --color-blue-900: #07284a;
+
+  /* Feedback — Success */
+  --color-success-100: #e9f4e6;
+  --color-success-300: #89d279;
+  --color-success-500: #429130;
+  --color-success-700: #2e6522;
+  --color-success-900: #093300;
+
+  /* Feedback — Error */
+  --color-error-100: #fee6e6;
+  --color-error-300: #f4717c;
+  --color-error-500: #ef394e;
+  --color-error-700: #d51323;
+  --color-error-900: #8c0d17;
+
+  /* Feedback — Alert */
+  --color-alert-100: #f6e5d5;
+  --color-alert-300: #ebb07a;
+  --color-alert-500: #e78123;
+  --color-alert-700: #b45b09;
+  --color-alert-900: #572c05;
+
+  /* ── Tokens sémantiques — PART LightMode ────────────────── */
+
+  /* Main (orange LBC) */
+  --spark-main:               #eb4807;
+  --spark-on-main:            #ffffff;
+  --spark-main-container:     #f7f4f0;
+  --spark-on-main-container:  #141110;
+  --spark-main-variant:       #eb4807;
+  --spark-on-main-variant:    #ffffff;
+
+  /* Support */
+  --spark-support:               #690b0b;
+  --spark-on-support:            #ffffff;
+  --spark-support-container:     #e3dfde;
+  --spark-on-support-container:  #141110;
+
+  /* Accent (jaune) */
+  --spark-accent:               #f5da42;
+  --spark-on-accent:            #141110;
+  --spark-accent-container:     #f3f2f1;
+  --spark-on-accent-container:  #141110;
+  --spark-accent-variant:       #faeba3;
+  --spark-on-accent-variant:    #141110;
+
+  /* Base */
+  --spark-surface:                 #ffffff;
+  --spark-on-surface:              #141110;
+  --spark-background:              #ffffff;
+  --spark-on-background:           #141110;
+  --spark-background-variant:      #f3f2f1;
+  --spark-on-background-variant:   #706e6e;
+  --spark-outline:                 #d7d3d0;
+  --spark-outline-focus:           #690b0b;
+  --spark-surface-inverse:         #141110;
+  --spark-on-surface-inverse:      #ffffff;
+  --spark-overlay-dark:            rgba(20,17,16,0.72);
+  --spark-overlay-light:           rgba(247,244,240,0.72);
+
+  /* Feedback — Error */
+  --spark-error:               #d51323;
+  --spark-on-error:            #ffffff;
+  --spark-error-container:     #fee6e6;
+  --spark-on-error-container:  #141110;
+
+  /* Feedback — Success */
+  --spark-success:               #2e6522;
+  --spark-on-success:            #ffffff;
+  --spark-success-container:     #e9f4e6;
+  --spark-on-success-container:  #141110;
+
+  /* Feedback — Alert */
+  --spark-alert:               #b45b09;
+  --spark-on-alert:            #ffffff;
+  --spark-alert-container:     #f6e5d5;
+  --spark-on-alert-container:  #141110;
+
+  /* Feedback — Neutral */
+  --spark-neutral:               #706e6e;
+  --spark-on-neutral:            #ffffff;
+  --spark-neutral-container:     #f3f2f1;
+  --spark-on-neutral-container:  #141110;
+
+  /* Feedback — Info */
+  --spark-info:               #ddd0c0;
+  --spark-on-info:            #141110;
+  --spark-info-container:     #f7f4f0;
+  --spark-on-info-container:  #141110;
+
+  /* ── Spacing ──────────────────────────────────────────────── */
+  --space-none:  0px;
+  --space-sm:    4px;
+  --space-md:    8px;
+  --space-lg:   16px;
+  --space-xl:   24px;
+  --space-2xl:  32px;
+  --space-3xl:  40px;
+  --space-4xl:  48px;
+
+  /* ── Border Radius ───────────────────────────────────────── */
+  --radius-none:  0px;
+  --radius-sm:    4px;
+  --radius-md:    8px;
+  --radius-lg:   16px;
+  --radius-xl:   24px;
+  --radius-xxl:  32px;
+  --radius-full: 9999px;
+
+  /* ── Border Width ────────────────────────────────────────── */
+  --border-none: 0px;
+  --border-sm:   1px;
+  --border-md:   2px;
+  --border-lg:   4px;
+
+  /* ── Opacités (Dim) ──────────────────────────────────────── */
+  --dim-1: 72%;
+  --dim-2: 56%;
+  --dim-3: 40%;
+  --dim-4: 16%;
+  --dim-5:  8%;
+
+}

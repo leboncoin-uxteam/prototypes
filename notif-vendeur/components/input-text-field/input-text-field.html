@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Composant — Input text field</title>
+<link rel="stylesheet" href="../../tokens.css">
+<link rel="stylesheet" href="input-text-field.css">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--spark-background-variant);
+  min-height: 100vh;
+  padding: 24px 16px;
+  font-family: 'LBC Denim INK', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+}
+.component-wrap {
+  width: 100%;
+  max-width: 343px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+.label {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--spark-on-background-variant);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+}
+</style>
+</head>
+<body>
+
+<div class="component-wrap">
+
+  <!-- Default / vide -->
+  <div>
+    <div class="label">Default</div>
+    <div class="itf-wrapper">
+      <label class="itf-label" for="itf-1">Proposer un prix (obligatoire)</label>
+      <div class="itf-field">
+        <input class="itf-input" type="text" id="itf-1" inputmode="decimal" placeholder="ex : 78">
+        <div class="itf-separator"></div>
+        <span class="itf-suffix">€</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Avec valeur -->
+  <div>
+    <div class="label">Avec valeur</div>
+    <div class="itf-wrapper">
+      <label class="itf-label" for="itf-2">Proposer un prix (obligatoire)</label>
+      <div class="itf-field">
+        <input class="itf-input" type="text" id="itf-2" inputmode="decimal" value="78">
+        <div class="itf-separator"></div>
+        <span class="itf-suffix">€</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

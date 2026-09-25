@@ -1,0 +1,57 @@
+/* ============================================================
+   Composant : Spark TextField
+   Ref Figma : Spark Design System node 4231:12330
+   Dépendance : ../../tokens.css
+   ============================================================ */
+
+.spark-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+}
+
+/* ── Label ── */
+.spark-field-label {
+  font-family: 'LBC Denim INK', sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 16px;
+  color: var(--spark-on-background-variant);
+}
+
+/* ── Input ── */
+.spark-field-input {
+  height: 44px;
+  background: var(--spark-background-variant);
+  border: 1px solid var(--spark-outline);
+  border-radius: var(--radius-md);
+  padding: 0 16px;
+  font-family: 'LBC Denim INK', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+  color: var(--spark-on-surface);
+  width: 100%;
+  box-sizing: border-box;
+  outline: none;
+  -webkit-appearance: none;
+}
+
+.spark-field-input::placeholder {
+  color: var(--spark-on-background-variant);
+}
+
+.spark-field-input:focus {
+  border: 2px solid var(--spark-outline-focus);
+  padding: 0 15px; /* compense la bordure 2px pour éviter le saut de layout */
+}
+
+/* ── Helper text ── */
+.spark-field-helper {
+  font-family: 'LBC Denim INK', sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 16px;
+  color: var(--spark-on-background-variant);
+}
