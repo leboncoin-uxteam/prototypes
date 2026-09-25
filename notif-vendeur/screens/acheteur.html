@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Flow acheteur</title>
+<link rel="stylesheet" href="../tokens.css">
+<link rel="stylesheet" href="../components/offer-module/offer-module.css">
+<link rel="stylesheet" href="../components/price-option/price-option.css">
+<link rel="stylesheet" href="../components/input-text-field/input-text-field.css">
+<link rel="stylesheet" href="../components/contre-offre/contre-offre.css">
+<link rel="stylesheet" href="../components/validation-message/validation-message.css">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  height: 100%;
+  background: var(--spark-surface);
+  font-family: 'LBC Denim INK', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+}
+
+/* ── Mobile first : plein écran ── */
+.phone {
+  position: relative;
+  width: 100%;
+  height: 100dvh;
+  overflow: hidden;
+}
+
+/* ── Desktop : cadre téléphone ── */
+@media (min-width: 600px) and (min-height: 861px) {
+  body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #1a1a1a;
+  }
+  .phone {
+    width: 375px;
+    height: 812px;
+    border-radius: 40px;
+    box-shadow: 0 32px 80px rgba(0,0,0,.6);
+    flex-shrink: 0;
+  }
+}
+
+/* ── Écrans (vues) ── */
+.screen {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+/* ════════════════════════════════════════
+   ÉCRAN 1 — HOME (lock screen)
+════════════════════════════════════════ */
+#screen-home {
+  background: #000;
+}
+#screen-home .screen-bg img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+.notif-hit {
+  position: absolute;
+  left: 4%;
+  right: 4%;
+  height: 0; /* positionné par JS */
+  border-radius: 14px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: rgba(255,255,255,0.06);
+  transition: background .12s;
+}
+.notif-hit:active { background: rgba(255,255,255,0.08); }
+
+/* ════════════════════════════════════════
+   ÉCRAN 2 — MESSAGERIE BASE
+════════════════════════════════════════ */
+#screen-messagerie { display: none; }
+
+/* ════════════════════════════════════════
+   ÉCRAN 3 — PAIEMENT
+════════════════════════════════════════ */
+#screen-paiement {
+  display: none;
+  flex-direction: column;
+  background: #fff;
+}
+.paiement-scroll {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.paiement-scroll img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+.paiement-cta-bar {
+  flex-shrink: 0;
+  padding: 12px 16px calc(env(safe-area-inset-bottom, 0px) + 16px);
+  background: #fff;
+  border-top: 1px solid var(--spark-outline);
+}
+.paiement-cta {
+  width: 100%;
+  height: 52px;
+  background: var(--spark-main);
+  color: var(--spark-on-main);
+  border: none;
+  border-radius: var(--radius-full);
+  font-family: 'LBC Denim INK', sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.paiement-cta:active { background: var(--color-orange-700); }
+/* Hitbox retour < — fixe, hors du scroll */
+.paiement-back {
+  position: absolute;
+  top: 12px; left: 0;
+  width: 72px; height: 48px;
+  z-index: 2;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+/* Hitbox fermeture × — fixe, hors du scroll */
+.paiement-close {
+  position: absolute;
+  top: 12px; right: 0;
+  width: 72px; height: 48px;
+  z-index: 2;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.convo-bg {
+  position: absolute;
+  inset: 0;
+}
+.convo-bg img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top;
+  display: block;
+}
+
+.bottom-overlay {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  display: flex;
+  flex-direction: column;
+}
+.bottom-overlay::before {
+  content: '';
+  display: block;
+  height: 32px;
+  background: linear-gradient(to bottom, transparent, var(--spark-background-variant));
+  pointer-events: none;
+}
+
+/* 8px de marge de chaque côté + 8px entre module et barre de saisie */
+.module-wrapper {
+  background: var(--spark-background-variant);
+  padding: 0 8px 8px;
+}
+
+/* ── Barre de saisie ── */
+.input-bar {
+  background: var(--spark-surface);
+  border-top: 1px solid var(--spark-outline);
+  padding: 10px 16px 24px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.input-bar-add {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--spark-outline);
+  background: none;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.input-bar-field {
+  flex: 1;
+  height: 36px;
+  border: 1px solid var(--spark-outline);
+  border-radius: 999px;
+  padding: 0 14px;
+  font-size: 14px;
+  color: var(--spark-on-background-variant);
+  background: var(--spark-surface);
+  display: flex; align-items: center;
+}
+.input-bar-send {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: var(--spark-main);
+  border: none;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  opacity: 0.4;
+  cursor: default;
+}
+
+button, button:focus, button:focus-visible, button:active {
+  outline: none !important;
+  box-shadow: none !important;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ════════════════════════════════════════
+   ÉCRAN 4 — PAIEMENT 2
+════════════════════════════════════════ */
+#screen-messagerie-validee { display: none; flex-direction: column; background: #fff; }
+.validee-header { flex-shrink: 0; width: 100%; }
+.validee-header img { width: 100%; height: auto; display: block; }
+.validee-scroll { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding-bottom: 32px; }
+.validee-scroll img { width: 100%; height: auto; display: block; }
+.validee-nav { flex-shrink: 0; width: 100%; }
+.validee-nav img { width: 100%; height: auto; display: block; }
+.validee-back { position: absolute; top: 0; left: 0; width: 72px; height: 72px; z-index: 10; background: transparent; border: none; cursor: pointer; -webkit-tap-highlight-color: transparent; padding: 0; }
+
+#screen-paiement2 {
+  display: none;
+  flex-direction: column;
+  background: #fff;
+}
+.paiement2-cta-bar {
+  flex-shrink: 0;
+  padding: 12px 16px calc(env(safe-area-inset-bottom, 0px) + 16px);
+  background: #fff;
+  border-top: 1px solid var(--spark-outline);
+}
+.paiement2-nav {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  background: #fff;
+  border: 1px solid #d7d3d0;
+  border-radius: 999px;
+  padding: 8px;
+  box-shadow: 0px 10px 20px 0px rgba(0,0,0,.10);
+  width: 100%;
+}
+.paiement2-btn-terminer {
+  flex-shrink: 0;
+  height: 56px;
+  padding: 0 24px;
+  background: none;
+  border: 1px solid #d7d3d0;
+  border-radius: 999px;
+  font-family: 'LBC Denim INK', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: #141110;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.paiement2-btn-transactions {
+  flex: 1;
+  height: 56px;
+  padding: 0 24px;
+  background: #690b0b;
+  border: none;
+  border-radius: 999px;
+  font-family: 'LBC Denim INK', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: #fff;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.validation-msg-price { font-weight: 600; }
+
+/* ── Écran messagerie-offre ── */
+#screen-messagerie-offre { display: none; flex-direction: column; background: #fff; }
+.offre-scroll { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+.offre-scroll > img { width: 100%; height: auto; display: block; }
+.offre-envoyee-card { padding: 16px 16px 120px; background: #fff; }
+
+/* ── Écran messagerie-refus ── */
+#screen-messagerie-refus { display: none; flex-direction: column; background: #fff; }
+.refus-scroll { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+.refus-scroll img { width: 100%; height: auto; display: block; }
+.refus-module { flex-shrink: 0; }
+.refus-module::before { content: ''; display: block; height: 32px; background: linear-gradient(to bottom, transparent, var(--spark-background-variant)); pointer-events: none; }
+.refus-module-inner { background: var(--spark-background-variant); padding: 0 8px 8px; }
+.refus-module-inner .offer-btn-secondary,
+.refus-module-inner .offer-btn-primary { padding: 8px 12px; white-space: nowrap; }
+
+/* ── Animations ── */
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+.anim-slide { animation: slideUp 0.22s ease-out both; }
+.anim-fade  { animation: fadeIn  0.25s ease-out both; }
+</style>
+</head>
+<body>
+
+<div class="phone">
+
+  <!-- ════════════════════════════════════════
+       ÉCRAN 1 — HOME
+  ════════════════════════════════════════ -->
+  <div id="screen-home" class="screen">
+
+    <div class="screen-bg">
+      <img id="bg-home" src="../assets/images/home-screen.png" alt="Lock screen">
+    </div>
+
+    <div class="notif-hit" id="notif-hit" onclick="showScreen('messagerie')"></div>
+
+  </div>
+
+
+  <!-- ════════════════════════════════════════
+       ÉCRAN 2 — MESSAGERIE BASE
+  ════════════════════════════════════════ -->
+  <div id="screen-messagerie" class="screen">
+
+    <div class="convo-bg">
+      <img src="../assets/images/messagerie-base.png" alt="Conversation">
+    </div>
+
+    <div class="bottom-overlay">
+
+      <div id="module-wrapper-inner" class="module-wrapper">
+
+        <!-- CONTRE-OFFRE (caché par défaut) -->
+        <div id="contre-offre-wrap" style="display:none">
+          <div class="contre-offre">
+
+            <div class="co-header">
+              <span class="co-title">Proposer un nouveau prix</span>
+              <div class="co-chevron" onclick="closeCO()" style="cursor:pointer">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                  <path fill-rule="evenodd" clip-rule="evenodd" d="M2.32544 7.30343C2.75935 6.89886 3.46287 6.89886 3.89679 7.30343L12 14.7836L20.1032 7.30343C20.5371 6.89886 21.2406 6.89886 21.6746 7.30343C22.1085 7.70801 22.1085 8.36396 21.6746 8.76853L13.3338 16.4702C13.1638 16.6352 12.9602 16.7671 12.7348 16.8581C12.5028 16.9517 12.2528 17 12 17C11.7472 17 11.4972 16.9517 11.2652 16.8581C11.0399 16.7671 10.8363 16.6353 10.6662 16.4702L2.32544 8.76853C1.89152 8.36396 1.89152 7.70801 2.32544 7.30343Z" fill="#3A4757"/>
+                </svg>
+              </div>
+            </div>
+
+            <div class="co-price-card">
+              <span class="co-last-offer">Dernière offre : 92 €</span>
+              <img class="co-gauge-img" src="../assets/images/jauge-prix.png" alt="Distribution des prix">
+              <div class="co-source">
+                <img src="../components/icons/alert-info.svg" alt="" width="16" height="16">
+                <a href="#">Comment est calculé la fourchette de prix</a>
+              </div>
+              <div class="co-my-offer">
+                <span class="co-my-offer-title">Mon offre</span>
+                <div class="co-radio-group">
+                  <div class="price-option" onclick="selectPrice(this,'option1')">
+                    <div class="price-option-content">
+                      <span class="price-option-title">86,25 €</span>
+                      <span class="price-option-subtitle">Réduction de 25%</span>
+                    </div>
+                  </div>
+                  <div class="price-option selected" onclick="selectPrice(this,'option2')">
+                    <div class="price-option-content">
+                      <span class="price-option-title">80,25 €</span>
+                      <span class="price-option-subtitle">Réduction de 30%</span>
+                    </div>
+                  </div>
+                  <div class="price-option" onclick="selectPrice(this,'other')">
+                    <div class="price-option-content">
+                      <span class="price-option-title">Autre prix</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="co-custom-input" id="custom-input">
+                  <div class="itf-wrapper">
+                    <label class="itf-label" for="prix-libre">Proposer un prix (obligatoire)</label>
+                    <div class="itf-field">
+                      <input class="itf-input" type="text" id="prix-libre" inputmode="decimal" placeholder="ex : 78">
+                      <div class="itf-separator"></div>
+                      <span class="itf-suffix">€</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <button class="co-cta" onclick="sendOffer()">Envoyer</button>
+
+          </div>
+        </div><!-- /contre-offre-wrap -->
+
+
+        <!-- OFFER MODULE — 3 états -->
+        <div id="offer-module-wrap">
+
+          <!-- ÉTAT OUVERT -->
+          <div id="state-open" class="offer-module">
+            <div class="offer-header">
+              <div class="offer-seller">
+                <img class="offer-avatar" src="../assets/images/avatar-julien.png" alt="Julien Dereims">
+                <div class="offer-seller-meta">
+                  <span class="offer-seller-name">Julien Dereims</span>
+                  <span class="offer-seller-star">★</span>
+                  <span>3,8</span>
+                  <span class="offer-seller-label">vous fait une offre</span>
+                </div>
+              </div>
+              <div class="offer-chevron" onclick="toggleClosed()" style="cursor:pointer">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                  <path fill-rule="evenodd" clip-rule="evenodd" d="M2.32544 7.30343C2.75935 6.89886 3.46287 6.89886 3.89679 7.30343L12 14.7836L20.1032 7.30343C20.5371 6.89886 21.2406 6.89886 21.6746 7.30343C22.1085 7.70801 22.1085 8.36396 21.6746 8.76853L13.3338 16.4702C13.1638 16.6352 12.9602 16.7671 12.7348 16.8581C12.5028 16.9517 12.2528 17 12 17C11.7472 17 11.4972 16.9517 11.2652 16.8581C11.0399 16.7671 10.8363 16.6353 10.6662 16.4702L2.32544 8.76853C1.89152 8.36396 1.89152 7.70801 2.32544 7.30343Z" fill="#3A4757"/>
+                </svg>
+              </div>
+            </div>
+            <div class="offer-price-card">
+              <div class="offer-price-row">
+                <div class="offer-price-left">
+                  <div>
+                    <span class="offer-price-main">92€</span>
+                    <span class="offer-price-original"> au lieu de 115€</span>
+                  </div>
+                  <div class="offer-price-discount">Soit 20% du prix (- 23€)</div>
+                  <div class="offer-price-validity">Offre valable jusqu'à jeudi</div>
+                </div>
+                <div class="offer-badge">⏱ 42h restantes</div>
+              </div>
+              <img class="offer-histogram-img" src="../assets/images/jauge-prix.png" alt="Distribution des prix" style="width:100%;height:auto;display:block;">
+              <div class="offer-source">
+                <img class="source-icon" src="../components/icons/alert-info.svg" alt="" width="16" height="16">
+                <a href="#">Comment est calculé la fourchette de prix</a>
+              </div>
+            </div>
+            <div class="offer-ctas">
+              <button class="offer-btn-secondary" onclick="setModuleState('state-autres-options')">Autres options</button>
+              <button class="offer-btn-primary" onclick="showScreen('paiement')">Accepter</button>
+            </div>
+          </div><!-- /state-open -->
+
+
+          <!-- ÉTAT AUTRES OPTIONS -->
+          <div id="state-autres-options" class="offer-module" style="display:none">
+            <div class="offer-header">
+              <div class="offer-seller">
+                <img class="offer-avatar" src="../assets/images/avatar-julien.png" alt="Julien Dereims">
+                <div class="offer-seller-meta">
+                  <span class="offer-seller-name">Julien Dereims</span>
+                  <span class="offer-seller-star">★</span>
+                  <span>3,8</span>
+                  <span class="offer-seller-label">vous fait une offre</span>
+                </div>
+              </div>
+              <div class="offer-chevron" onclick="setModuleState('state-open')" style="cursor:pointer">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                  <path fill-rule="evenodd" clip-rule="evenodd" d="M2.32544 7.30343C2.75935 6.89886 3.46287 6.89886 3.89679 7.30343L12 14.7836L20.1032 7.30343C20.5371 6.89886 21.2406 6.89886 21.6746 7.30343C22.1085 7.70801 22.1085 8.36396 21.6746 8.76853L13.3338 16.4702C13.1638 16.6352 12.9602 16.7671 12.7348 16.8581C12.5028 16.9517 12.2528 17 12 17C11.7472 17 11.4972 16.9517 11.2652 16.8581C11.0399 16.7671 10.8363 16.6353 10.6662 16.4702L2.32544 8.76853C1.89152 8.36396 1.89152 7.70801 2.32544 7.30343Z" fill="#3A4757"/>
+                </svg>
+              </div>
+            </div>
+            <div class="offer-price-card">
+              <div class="offer-price-row">
+                <div class="offer-price-left">
+                  <div>
+                    <span class="offer-price-main">92€</span>
+                    <span class="offer-price-original"> au lieu de 115€</span>
+                  </div>
+                  <div class="offer-price-discount">Soit 20% du prix (- 23€)</div>
+                  <div class="offer-price-validity">Offre valable jusqu'à jeudi</div>
+                </div>
+                <div class="offer-badge">⏱ 42h restantes</div>
+              </div>
+              <img class="offer-histogram-img" src="../assets/images/jauge-prix.png" alt="Distribution des prix" style="width:100%;height:auto;display:block;">
+              <div class="offer-source">
+                <img class="source-icon" src="../components/icons/alert-info.svg" alt="" width="16" height="16">
+                <a href="#">Comment est calculé la fourchette de prix</a>
+              </div>
+            </div>
+            <div class="offer-ctas">
+              <button class="offer-btn-support" onclick="contreOffreOrigin='messagerie'; setModuleState('contre-offre')">Faire une offre</button>
+              <button class="offer-btn-primary" onclick="showScreen('paiement')">Accepter</button>
+            </div>
+            <div class="offer-cta-link">
+              <button class="offer-btn-text" onclick="showScreen('messagerie-refus')">Refuser</button>
+            </div>
+          </div><!-- /state-autres-options -->
+
+
+          <!-- ÉTAT FERMÉ -->
+          <div id="state-closed" class="offer-module" style="display:none">
+            <div class="offer-closed-row">
+              <div class="offer-closed-price">
+                <span class="offer-closed-price-main">92€</span>
+                <span class="offer-closed-price-sub">au lieu de 115€</span>
+              </div>
+              <button class="offer-closed-btn-accept" onclick="showScreen('paiement')">Accepter</button>
+              <div class="offer-chevron offer-chevron--up" onclick="toggleClosed()" style="cursor:pointer">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                  <path fill-rule="evenodd" clip-rule="evenodd" d="M2.32544 7.30343C2.75935 6.89886 3.46287 6.89886 3.89679 7.30343L12 14.7836L20.1032 7.30343C20.5371 6.89886 21.2406 6.89886 21.6746 7.30343C22.1085 7.70801 22.1085 8.36396 21.6746 8.76853L13.3338 16.4702C13.1638 16.6352 12.9602 16.7671 12.7348 16.8581C12.5028 16.9517 12.2528 17 12 17C11.7472 17 11.4972 16.9517 11.2652 16.8581C11.0399 16.7671 10.8363 16.6353 10.6662 16.4702L2.32544 8.76853C1.89152 8.36396 1.89152 7.70801 2.32544 7.30343Z" fill="#3A4757"/>
+                </svg>
+              </div>
+            </div>
+          </div><!-- /state-closed -->
+
+        </div><!-- /offer-module-wrap -->
+
+      </div><!-- /module-wrapper -->
+
+      <div class="input-bar">
+        <div class="input-bar-add">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M8 2v12M2 8h12" stroke="#706e6e" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="input-bar-field">Écrivez votre message</div>
+        <div class="input-bar-send">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M13.5 8L2.5 3l2 5-2 5 11-5z" fill="#fff"/>
+          </svg>
+        </div>
+      </div>
+
+    </div><!-- /bottom-overlay -->
+
+  </div><!-- /screen-messagerie -->
+
+
+  <!-- ════════════════════════════════════════
+       ÉCRAN 3 — PAIEMENT
+  ════════════════════════════════════════ -->
+  <div id="screen-paiement" class="screen">
+
+    <!-- Retour < et fermeture × (par-dessus le scroll) -->
+    <div class="paiement-back"  onclick="showScreen('messagerie')"></div>
+    <div class="paiement-close" onclick="showScreen('messagerie')"></div>
+
+    <div class="paiement-scroll">
+      <img src="../assets/images/paiement-1.png" alt="Paiement">
+    </div>
+
+    <div class="paiement-cta-bar">
+      <button class="paiement-cta" onclick="showScreen('paiement2')">Payer 100,59 €</button>
+    </div>
+
+  </div><!-- /screen-paiement -->
+
+
+  <!-- ════════════════════════════════════════
+       ÉCRAN 4 — PAIEMENT 2
+  ════════════════════════════════════════ -->
+  <div id="screen-paiement2" class="screen">
+
+    <div class="paiement-scroll">
+      <img src="../assets/images/paiement-2.png" alt="Paiement confirmé">
+    </div>
+
+    <div class="paiement2-cta-bar">
+      <div class="paiement2-nav">
+        <button class="paiement2-btn-terminer" onclick="showScreen('messagerie-validee')">Terminer</button>
+        <button class="paiement2-btn-transactions">Voir mes transactions</button>
+      </div>
+    </div>
+
+  </div><!-- /screen-paiement2 -->
+
+
+  <!-- ════════════════════════════════════════
+       ÉCRAN 5 — MESSAGERIE TRANSACTION VALIDÉE
+  ════════════════════════════════════════ -->
+  <div id="screen-messagerie-validee" class="screen">
+    <div class="validee-header">
+      <img src="../assets/images/header-messagerie.png" alt="Header messagerie">
+    </div>
+    <div class="validee-scroll">
+      <img src="../assets/images/corps-messagerie-validee.png" alt="Conversation">
+    </div>
+    <div class="validee-nav">
+      <img src="../assets/images/nav-barre-messagerie.png" alt="Nav barre">
+    </div>
+    <button class="validee-back" onclick="showScreen('home')"></button>
+  </div><!-- /screen-messagerie-validee -->
+
+
+  <!-- ════════════════════════════════════════
+       ÉCRAN 6 — MESSAGERIE OFFRE ENVOYÉE
+  ════════════════════════════════════════ -->
+  <div id="screen-messagerie-offre" class="screen">
+
+    <button class="validee-back" onclick="showScreen('home')"></button>
+
+    <div class="validee-header">
+      <img src="../assets/images/header-messagerie.png" alt="Header">
+    </div>
+
+    <div class="offre-scroll">
+      <img src="../assets/images/corps-messagerie-offre.png" alt="Conversation">
+      <div class="offre-envoyee-card">
+        <div class="validation-msg">
+          <div class="validation-msg-title">Offre envoyée !</div>
+          <div class="validation-msg-subtitle">
+            Julien Dereims a 48h pour répondre à votre offre de <span class="validation-msg-price" id="offre-prix">80,25 €</span>.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="refus-module">
+      <div class="refus-module-inner">
+        <div class="offer-module">
+          <div class="offer-ctas">
+            <button class="offer-btn-secondary" onclick="contreOffreOrigin='messagerie-offre'; showScreen('messagerie'); setModuleState('contre-offre')">Modifier mon offre</button>
+            <button class="offer-btn-primary offer-btn--icon" onclick="showScreen('paiement')">
+              Acheter à 92 €
+              <img src="../components/icons/arrow-right.svg" alt="" width="16" height="16">
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="validee-nav">
+      <img src="../assets/images/nav-barre-messagerie.png" alt="Nav barre">
+    </div>
+
+  </div><!-- /screen-messagerie-offre -->
+
+
+  <!-- ════════════════════════════════════════
+       ÉCRAN 7 — MESSAGERIE OFFRE REFUSÉE
+  ════════════════════════════════════════ -->
+  <div id="screen-messagerie-refus" class="screen">
+
+    <button class="validee-back" onclick="showScreen('home')"></button>
+
+    <div class="validee-header">
+      <img src="../assets/images/header-messagerie.png" alt="Header">
+    </div>
+
+    <div class="refus-scroll">
+      <img src="../assets/images/corps-messagerie-refus.png" alt="Conversation">
+    </div>
+
+    <div class="refus-module">
+      <div class="refus-module-inner">
+        <div class="offer-module">
+          <div class="offer-closed-row">
+            <button class="offer-btn-primary" style="flex:1" onclick="contreOffreOrigin='messagerie-refus'; showScreen('messagerie'); setModuleState('contre-offre')">Faire une offre</button>
+            <div class="offer-chevron offer-chevron--up" onclick="contreOffreOrigin='messagerie-refus'; showScreen('messagerie'); setModuleState('contre-offre');" style="cursor:pointer">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M2.32544 7.30343C2.75935 6.89886 3.46287 6.89886 3.89679 7.30343L12 14.7836L20.1032 7.30343C20.5371 6.89886 21.2406 6.89886 21.6746 7.30343C22.1085 7.70801 22.1085 8.36396 21.6746 8.76853L13.3338 16.4702C13.1638 16.6352 12.9602 16.7671 12.7348 16.8581C12.5028 16.9517 12.2528 17 12 17C11.7472 17 11.4972 16.9517 11.2652 16.8581C11.0399 16.7671 10.8363 16.6353 10.6662 16.4702L2.32544 8.76853C1.89152 8.36396 1.89152 7.70801 2.32544 7.30343Z" fill="#3A4757"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="validee-nav">
+      <img src="../assets/images/nav-barre-messagerie.png" alt="Nav barre">
+    </div>
+
+  </div><!-- /screen-messagerie-refus -->
+
+</div><!-- /phone -->
+
+<script>
+function animate(el, cls) {
+  el.classList.remove(cls);
+  void el.offsetWidth; // force reflow
+  el.classList.add(cls);
+}
+
+var contreOffreOrigin = 'messagerie';
+
+var SCREEN_DISPLAY = { home: 'block', messagerie: 'block', paiement: 'flex', paiement2: 'flex', 'messagerie-validee': 'flex', 'messagerie-offre': 'flex', 'messagerie-refus': 'flex' };
+function showScreen(name) {
+  Object.keys(SCREEN_DISPLAY).forEach(function(s) {
+    document.getElementById('screen-' + s).style.display = 'none';
+  });
+  var el = document.getElementById('screen-' + name);
+  el.style.display = SCREEN_DISPLAY[name];
+  animate(el, 'anim-fade');
+  if (name === 'home') {
+    setModuleState('state-open');
+    document.getElementById('custom-input').classList.remove('visible');
+    document.querySelectorAll('#contre-offre-wrap .price-option').forEach(function(c) { c.classList.remove('selected'); });
+    document.querySelector('#contre-offre-wrap .price-option:nth-child(2)').classList.add('selected');
+  }
+  if (name === 'messagerie-validee') {
+    var scrollEl = el.querySelector('.validee-scroll');
+    var imgEl = scrollEl.querySelector('img');
+    function scrollToBottom() { scrollEl.scrollTop = scrollEl.scrollHeight; }
+    if (imgEl.complete) { scrollToBottom(); } else { imgEl.addEventListener('load', scrollToBottom, { once: true }); }
+  }
+  if (name === 'messagerie-refus') {
+    var refusScroll = el.querySelector('.refus-scroll');
+    var refusImg = refusScroll.querySelector('img');
+    function scrollRefusBottom() { refusScroll.scrollTop = refusScroll.scrollHeight; }
+    if (refusImg.complete) { scrollRefusBottom(); } else { refusImg.addEventListener('load', scrollRefusBottom, { once: true }); }
+  }
+  if (name === 'messagerie-offre') {
+    var offreScroll = el.querySelector('.offre-scroll');
+    var offreImg = offreScroll.querySelector('img');
+    function centerCard() {
+      var card = el.querySelector('.offre-envoyee-card');
+      var cardTop = card.offsetTop;
+      var cardH = card.offsetHeight;
+      offreScroll.scrollTop = cardTop - (offreScroll.clientHeight - cardH) / 2;
+    }
+    if (offreImg.complete) { centerCard(); } else { offreImg.addEventListener('load', centerCard, { once: true }); }
+  }
+}
+
+function setModuleState(state) {
+  ['state-open', 'state-autres-options', 'state-closed'].forEach(function(id) {
+    document.getElementById(id).style.display = 'none';
+  });
+  if (state === 'contre-offre') {
+    document.getElementById('offer-module-wrap').style.display = 'none';
+    document.getElementById('contre-offre-wrap').style.display = 'block';
+    animate(document.getElementById('contre-offre-wrap'), 'anim-slide');
+  } else {
+    document.getElementById('offer-module-wrap').style.display = 'block';
+    document.getElementById('contre-offre-wrap').style.display = 'none';
+    var el = document.getElementById(state);
+    el.style.display = 'flex';
+    animate(el, 'anim-slide');
+  }
+}
+
+function sendOffer() {
+  var price = '80,25 €';
+  var customInput = document.getElementById('custom-input');
+  if (customInput && customInput.classList.contains('visible')) {
+    var val = document.getElementById('prix-libre').value.trim();
+    if (val) price = val + ' €';
+  } else {
+    var sel = document.querySelector('#contre-offre-wrap .price-option.selected .price-option-title');
+    if (sel) price = sel.textContent.trim();
+  }
+  document.getElementById('offre-prix').textContent = price;
+  showScreen('messagerie-offre');
+}
+
+function closeCO() {
+  if (contreOffreOrigin === 'messagerie-refus') {
+    showScreen('messagerie-refus');
+  } else if (contreOffreOrigin === 'messagerie-offre') {
+    showScreen('messagerie-offre');
+  } else {
+    setModuleState('state-closed');
+  }
+}
+
+function toggleClosed() {
+  var closed = document.getElementById('state-closed');
+  if (closed.style.display === 'none') {
+    setModuleState('state-closed');
+  } else {
+    setModuleState('state-open');
+  }
+}
+
+function selectPrice(card, key) {
+  document.querySelectorAll('#contre-offre-wrap .price-option').forEach(function(c) {
+    c.classList.remove('selected');
+  });
+  card.classList.add('selected');
+  document.getElementById('custom-input').classList.toggle('visible', key === 'other');
+}
+
+// Position de la hitbox notification (31%–43% de la hauteur de l'image)
+var NOTIF_TOP_PCT    = 0.310;
+var NOTIF_HEIGHT_PCT = 0.120;
+function positionHitbox() {
+  var img = document.getElementById('bg-home');
+  var hit = document.getElementById('notif-hit');
+  var h   = img.offsetHeight;
+  hit.style.top    = (h * NOTIF_TOP_PCT)    + 'px';
+  hit.style.height = (h * NOTIF_HEIGHT_PCT) + 'px';
+}
+var bgImg = document.getElementById('bg-home');
+if (bgImg.complete) { positionHitbox(); } else { bgImg.addEventListener('load', positionHitbox); }
+window.addEventListener('resize', positionHitbox);
+</script>
+
+</body>
+</html>
