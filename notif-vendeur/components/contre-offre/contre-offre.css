@@ -128,3 +128,9 @@
   -webkit-tap-highlight-color: transparent;
 }
 .co-cta:active { background: var(--color-orange-700); }
+.co-cta:disabled {
+  background: rgba(235,72,7,0.4);
+  color: rgba(255,255,255,0.4);
+  cursor: default;
+  pointer-events: none;
+}

@@ -390,7 +390,7 @@ button, button:focus, button:focus-visible, button:active {
                   <div class="itf-wrapper">
                     <label class="itf-label" for="prix-libre">Proposer un prix (obligatoire)</label>
                     <div class="itf-field">
-                      <input class="itf-input" type="text" id="prix-libre" inputmode="decimal" placeholder="ex : 78">
+                      <input class="itf-input" type="text" id="prix-libre" inputmode="decimal" placeholder="ex : 78" oninput="updateCTAState('other')">
                       <div class="itf-separator"></div>
                       <span class="itf-suffix">€</span>
                     </div>
@@ -399,7 +399,7 @@ button, button:focus, button:focus-visible, button:active {
               </div>
             </div>
 
-            <button class="co-cta" onclick="sendOffer()">Envoyer</button>
+            <button class="co-cta" id="btn-envoyer" onclick="sendOffer()">Envoyer</button>
 
           </div>
         </div><!-- /contre-offre-wrap -->
@@ -620,9 +620,8 @@ button, button:focus, button:focus-visible, button:active {
         <div class="offer-module">
           <div class="offer-ctas">
             <button class="offer-btn-secondary" onclick="contreOffreOrigin='messagerie-offre'; showScreen('messagerie'); setModuleState('contre-offre')">Modifier mon offre</button>
-            <button class="offer-btn-primary offer-btn--icon" onclick="showScreen('paiement')">
+            <button class="offer-btn-primary" onclick="showScreen('paiement')">
               Acheter à 92 €
-              <img src="../components/icons/arrow-right.svg" alt="" width="16" height="16">
             </button>
           </div>
         </div>
@@ -696,6 +695,8 @@ function showScreen(name) {
     document.getElementById('custom-input').classList.remove('visible');
     document.querySelectorAll('#contre-offre-wrap .price-option').forEach(function(c) { c.classList.remove('selected'); });
     document.querySelector('#contre-offre-wrap .price-option:nth-child(2)').classList.add('selected');
+    document.getElementById('prix-libre').value = '';
+    document.getElementById('btn-envoyer').disabled = false;
   }
   if (name === 'messagerie-validee') {
     var scrollEl = el.querySelector('.validee-scroll');
@@ -825,12 +826,23 @@ function toggleClosed() {
   }
 }
 
+function updateCTAState(selectedKey) {
+  var btn = document.getElementById('btn-envoyer');
+  if (selectedKey === 'other') {
+    var val = document.getElementById('prix-libre').value.trim();
+    btn.disabled = val === '';
+  } else {
+    btn.disabled = false;
+  }
+}
+
 function selectPrice(card, key) {
   document.querySelectorAll('#contre-offre-wrap .price-option').forEach(function(c) {
     c.classList.remove('selected');
   });
   card.classList.add('selected');
   document.getElementById('custom-input').classList.toggle('visible', key === 'other');
+  updateCTAState(key);
 }
 
 // Position de la hitbox notification (31%–43% de la hauteur de l'image)
