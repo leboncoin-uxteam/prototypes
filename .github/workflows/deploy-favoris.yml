@@ -7,6 +7,7 @@ on:
       - 'favoris/**'
       - 'immo-parcours-complet/**'
       - 'notif-vendeur/**'
+      - '2026-09-deblocage-wallet/**'
       - '.github/workflows/deploy-favoris.yml'
   # Permet de republier sans avoir à pousser un commit.
   workflow_dispatch:
@@ -38,6 +39,14 @@ jobs:
         run: npm run build
         working-directory: favoris
 
+      - name: Install dependencies (deblocage-wallet)
+        run: npm ci
+        working-directory: 2026-09-deblocage-wallet
+
+      - name: Build deblocage-wallet
+        run: npm run build
+        working-directory: 2026-09-deblocage-wallet
+
       - name: Assemble site
         run: |
           mkdir -p _site
@@ -49,9 +58,12 @@ jobs:
             -not -name '.git' \
             -not -name '.github' \
             -not -name 'favoris' \
+            -not -name '2026-09-deblocage-wallet' \
             -exec cp -r {} _site/ \;
           # Copier le build Next.js dans un sous-dossier favoris/
           cp -r favoris/out _site/favoris
+          # Copier le build Vite dans un sous-dossier 2026-09-deblocage-wallet/
+          cp -r 2026-09-deblocage-wallet/dist _site/2026-09-deblocage-wallet
 
       - uses: actions/configure-pages@v4
 
