@@ -1,0 +1,14 @@
+.home {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100dvh;
+  padding: var(--spacing-lg);
+}
+
+.home h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--color-main);
+}
