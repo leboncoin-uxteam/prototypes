@@ -115,7 +115,7 @@ function SuccessModal({ balance, onClose, onReturn }) {
 export default function WalletHome({
   balance, locked, completedSteps, steps, ibanMasked,
   transferStep, setTransferStep, transactions,
-  onUnlock, onGoToStep, onReturnToWallet,
+  onUnlock, onGoToStep, onReturnToWallet, onTabChange,
 }) {
   const stepsRemaining = 3 - completedSteps
   const nextStep = Object.keys(steps).find(k => steps[k] === 'todo') ?? null
@@ -206,7 +206,7 @@ export default function WalletHome({
         </div>
       </div>
 
-      <TabBar active="compte" />
+      <TabBar active="compte" onChange={onTabChange} />
 
       {transferStep === 'confirm' && (
         <ConfirmModal

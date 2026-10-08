@@ -51,11 +51,16 @@ const TABS = [
   { id: 'compte', label: 'Compte', Icon: IconAccount },
 ]
 
-export default function TabBar({ active = 'compte' }) {
+export default function TabBar({ active = 'compte', onChange }) {
   return (
     <nav className="tab-bar" aria-label="Navigation principale">
       {TABS.map(({ id, label, Icon }) => (
-        <button key={id} className={`tab-bar__item${active === id ? ' tab-bar__item--active' : ''}`} aria-current={active === id ? 'page' : undefined}>
+        <button
+          key={id}
+          className={`tab-bar__item${active === id ? ' tab-bar__item--active' : ''}`}
+          aria-current={active === id ? 'page' : undefined}
+          onClick={() => onChange?.(id)}
+        >
           <Icon />
           <span>{label}</span>
         </button>

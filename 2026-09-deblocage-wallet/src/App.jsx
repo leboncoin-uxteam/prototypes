@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react'
+import Home from './components/home/Home'
 import WalletHome from './components/wallet-home/WalletHome'
 
 const devPanelStyle = {
@@ -51,6 +52,8 @@ const INITIAL_TRANSACTIONS = [
 ]
 
 export default function App() {
+  const [screen, setScreen] = useState('recherche')
+
   const [balance,       setBalance]       = useState(14250)
   const [locked,        setLocked]        = useState(true)
   const [completedSteps]                  = useState(0)
@@ -98,6 +101,10 @@ export default function App() {
     }, 350)
   }, [balance, ibanMasked])
 
+  if (screen !== 'compte') {
+    return <Home onTabChange={setScreen} />
+  }
+
   return (
     <>
       <WalletHome
@@ -112,6 +119,7 @@ export default function App() {
         onUnlock={() => {}}
         onGoToStep={() => {}}
         onReturnToWallet={onReturnToWallet}
+        onTabChange={setScreen}
       />
       <div style={devPanelStyle}>
         <button
