@@ -39,6 +39,21 @@ jobs:
         run: npm run build
         working-directory: favoris
 
+      - name: Install dependencies (deblocage-wallet)
+        run: npm ci
+        working-directory: 2026-09-deblocage-wallet
+
+      - name: Inject proto users data
+        env:
+          PROTO_USERS_JSON: ${{ secrets.PROTO_USERS_JSON }}
+        run: |
+          if [ -n "$PROTO_USERS_JSON" ]; then
+            printf 'export const PROTO_USERS = %s\n' "$PROTO_USERS_JSON" > 2026-09-deblocage-wallet/src/proto-users.js
+          fi
+
+      - name: Build deblocage-wallet
+        run: npm run build
+        working-directory: 2026-09-deblocage-wallet
 
       - name: Assemble site
         run: |
