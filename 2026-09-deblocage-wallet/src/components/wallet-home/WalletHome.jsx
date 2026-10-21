@@ -614,7 +614,7 @@ const DOC_BACK_CONFIG = {
     imgWidth: 198, imgHeight: 120,
     primaryLabel: 'Photographier le verso',
     secondaryLabel: null,
-    showTips: false,
+    showTips: true,
     scanScreen: 'cni-back-scan',
   },
   'permis-back': {
@@ -624,7 +624,7 @@ const DOC_BACK_CONFIG = {
     imgWidth: 195, imgHeight: 120,
     primaryLabel: 'Photographier le verso',
     secondaryLabel: null,
-    showTips: false,
+    showTips: true,
     scanScreen: 'permis-back-scan',
   },
 }
@@ -2216,7 +2216,7 @@ export default function WalletHome({
       {kycScreen === 'cni-back-data' && (
         <KycAddressScreen
           direction={navDirection}
-          defaultValue={protoUser?.adresse}
+          defaultValue="24 Rue des Jeuneurs, 75002 Paris"
           onBack={() => kycNavigate('cni-back-scan', 'back')}
           onConfirm={() => kycNavigate('iban', 'forward')}
           onRetake={() => kycNavigate('cni-back-scan', 'back')}
@@ -2229,7 +2229,7 @@ export default function WalletHome({
           direction={navDirection}
           confirmLabel="Valider"
           showRetake={false}
-          defaultValue={protoUser?.adresse}
+          defaultValue="24 Rue des Jeuneurs, 75002 Paris"
           onBack={() => kycNavigate('passport-data', 'back')}
           onConfirm={() => kycNavigate('iban', 'forward')}
           onRetake={() => kycNavigate('passport-scan', 'back')}
