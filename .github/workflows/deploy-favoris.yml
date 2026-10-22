@@ -71,7 +71,8 @@ jobs:
           # Copier le build Next.js dans un sous-dossier favoris/
           cp -r favoris/out _site/favoris
           # Copier le build Vite dans un sous-dossier 2026-09-deblocage-wallet/
-          cp -r 2026-09-deblocage-wallet/dist _site/2026-09-deblocage-wallet
+          mkdir -p _site/2026-09-deblocage-wallet
+          cp -r 2026-09-deblocage-wallet/dist/. _site/2026-09-deblocage-wallet/
 
       - uses: actions/configure-pages@v4
 
