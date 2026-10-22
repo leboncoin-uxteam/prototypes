@@ -1970,6 +1970,7 @@ export default function WalletHome({
   const [kycScreen, setKycScreen] = useState(null)
   const [prevKycScreen, setPrevKycScreen] = useState(null)
   const [navDirection, setNavDirection] = useState('up')
+  const [importOrigin, setImportOrigin] = useState(null)
   const kycTimerRef = useRef(null)
 
   const kycNavigate = (screen, dir = 'forward') => {
@@ -2155,9 +2156,9 @@ export default function WalletHome({
           onBack={() => kycNavigate('document-select', 'back')}
           onTakePhoto={() => kycNavigate(DOC_PHOTO_CONFIG[kycScreen].scanScreen, 'forward')}
           onImport={() => {
-            if (kycScreen === 'cni-front') kycNavigate('cni-import', 'forward')
-            else if (kycScreen === 'passport-front') kycNavigate('passport-import', 'forward')
-            else kycNavigate('permis-import', 'forward')
+            if (kycScreen === 'cni-front') { setImportOrigin('cni-front'); kycNavigate('cni-import', 'forward') }
+            else if (kycScreen === 'passport-front') { setImportOrigin('passport-front'); kycNavigate('passport-import', 'forward') }
+            else { setImportOrigin('permis-front'); kycNavigate('permis-import', 'forward') }
           }}
           {...DOC_PHOTO_CONFIG[kycScreen]}
         />
@@ -2179,9 +2180,9 @@ export default function WalletHome({
           retakeLabel={KYC_DATA_RETAKE_LABEL[kycScreen]}
           onBack={() => kycNavigate(KYC_DATA_BACK[kycScreen], 'back')}
           onImportDoc={() => {
-            if (kycScreen === 'cni-data') kycNavigate('cni-import', 'forward')
-            else if (kycScreen === 'passport-data') kycNavigate('passport-import', 'forward')
-            else kycNavigate('permis-import', 'forward')
+            if (kycScreen === 'cni-data') { setImportOrigin('cni-data'); kycNavigate('cni-import', 'forward') }
+            else if (kycScreen === 'passport-data') { setImportOrigin('passport-data'); kycNavigate('passport-import', 'forward') }
+            else { setImportOrigin('permis-data'); kycNavigate('permis-import', 'forward') }
           }}
           onManualEntry={() => kycNavigate('manual-entry', 'forward')}
           onConfirm={() => {
@@ -2220,7 +2221,7 @@ export default function WalletHome({
           onBack={() => kycNavigate('cni-back-scan', 'back')}
           onConfirm={() => kycNavigate('iban', 'forward')}
           onRetake={() => kycNavigate('cni-back-scan', 'back')}
-          onImportDoc={() => kycNavigate('cni-import', 'forward')}
+          onImportDoc={() => { setImportOrigin('cni-back-data'); kycNavigate('cni-import', 'forward') }}
           onManualEntry={() => kycNavigate('manual-entry', 'forward')}
         />
       )}
@@ -2233,7 +2234,7 @@ export default function WalletHome({
           onBack={() => kycNavigate('passport-data', 'back')}
           onConfirm={() => kycNavigate('iban', 'forward')}
           onRetake={() => kycNavigate('passport-scan', 'back')}
-          onImportDoc={() => kycNavigate('passport-import', 'forward')}
+          onImportDoc={() => { setImportOrigin('passport-address'); kycNavigate('passport-import', 'forward') }}
           onManualEntry={() => kycNavigate('manual-entry', 'forward')}
         />
       )}
@@ -2256,7 +2257,7 @@ export default function WalletHome({
         <KycImportScreen
           direction={navDirection}
           docType={kycScreen.split('-')[0]}
-          onBack={() => kycNavigate(KYC_IMPORT_BACK[kycScreen], 'back')}
+          onBack={() => kycNavigate(importOrigin || KYC_IMPORT_BACK[kycScreen], 'back')}
           onContinue={() => kycNavigate('iban', 'forward')}
         />
       )}
