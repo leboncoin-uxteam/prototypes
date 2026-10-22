@@ -714,7 +714,7 @@ function KycDataScreen({ onBack, onConfirm, onRetake, onImportDoc, onManualEntry
   )
 }
 
-function KycAddressScreen({ onBack, onConfirm, onRetake, onImportDoc, onManualEntry, retakeLabel = 'Reprendre le verso', confirmLabel = 'Je valide les informations', showRetake = true, showCorrection = true, defaultValue = '24 Rue des Jeuneurs, 75002 Paris', direction = 'forward' }) {
+function KycAddressScreen({ onBack, onConfirm, onRetake, onImportDoc, onManualEntry, retakeLabel = 'Reprendre le verso', confirmLabel = 'Je valide les informations', showRetake = true, showCorrection = false, defaultValue = '24 Rue des Jeuneurs, 75002 Paris', direction = 'forward' }) {
   const [value, setValue] = useState(defaultValue)
   const [error, setError] = useState(false)
 
