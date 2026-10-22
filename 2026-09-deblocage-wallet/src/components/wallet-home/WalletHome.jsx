@@ -652,7 +652,7 @@ const KYC_BACK_SCAN_BACK = {
   'permis-back-scan': 'permis-back',
 }
 
-function KycDataScreen({ onBack, onConfirm, onRetake, onImportDoc, onManualEntry, nom, prenom, dateNaissance, retakeLabel = 'Reprendre le recto', direction = 'forward' }) {
+function KycDataScreen({ onBack, onConfirm, onRetake, onImportDoc, onManualEntry, nom, prenom, dateNaissance, retakeLabel = 'Reprendre le recto', showRetake = true, confirmLabel = 'Je valide les informations', direction = 'forward' }) {
   return (
     <div className={`kyc-data-screen kyc-screen--${direction}`}>
       <div className="otp-screen__navbar">
@@ -707,8 +707,8 @@ function KycDataScreen({ onBack, onConfirm, onRetake, onImportDoc, onManualEntry
       </div>
 
       <div className="kyc-data-screen__footer">
-        <button className="btn-primary btn-primary--full" onClick={onConfirm}>Je valide les informations</button>
-        <button className="btn-outlined-support btn-outlined-support--full" onClick={onRetake}>{retakeLabel}</button>
+        <button className="btn-primary btn-primary--full" onClick={onConfirm}>{confirmLabel}</button>
+        {showRetake && <button className="btn-outlined-support btn-outlined-support--full" onClick={onRetake}>{retakeLabel}</button>}
       </div>
     </div>
   )
@@ -2194,8 +2194,11 @@ export default function WalletHome({
           prenom={protoUser?.prenom}
           dateNaissance={protoUser?.dateNaissance}
           retakeLabel={KYC_DATA_RETAKE_LABEL[kycScreen]}
+          showRetake={!dataFromImport}
+          confirmLabel={dataFromImport ? 'Continuer' : 'Je valide les informations'}
           onBack={() => kycNavigate(dataFromImport ? kycScreen.replace('-data', '-import') : KYC_DATA_BACK[kycScreen], 'back')}
           onImportDoc={() => {
+            setDataFromImport(false)
             if (kycScreen === 'cni-data') { setImportOrigin('cni-data'); kycNavigate('cni-import', 'forward') }
             else if (kycScreen === 'passport-data') { setImportOrigin('passport-data'); kycNavigate('passport-import', 'forward') }
             else { setImportOrigin('permis-data'); kycNavigate('permis-import', 'forward') }
@@ -2234,9 +2237,11 @@ export default function WalletHome({
         <KycAddressScreen
           direction={navDirection}
           defaultValue="24 Rue des Jeuneurs, 75002 Paris"
-          onBack={() => kycNavigate('cni-back-scan', 'back')}
+          showRetake={!dataFromImport}
+          confirmLabel={dataFromImport ? 'Continuer' : 'Je valide les informations'}
+          onBack={() => kycNavigate(dataFromImport ? 'cni-data' : 'cni-back-scan', 'back')}
           onConfirm={() => kycNavigate('iban', 'forward')}
-          onRetake={() => kycNavigate('cni-back-scan', 'back')}
+          onRetake={() => kycNavigate(dataFromImport ? 'cni-data' : 'cni-back-scan', 'back')}
           onImportDoc={() => { setImportOrigin('cni-back-data'); kycNavigate('cni-import', 'forward') }}
           onManualEntry={() => { setManualEntryOrigin('cni-back-data'); kycNavigate('manual-entry', 'forward') }}
         />
@@ -2244,7 +2249,7 @@ export default function WalletHome({
       {kycScreen === 'passport-address' && (
         <KycAddressScreen
           direction={navDirection}
-          confirmLabel="Valider"
+          confirmLabel={dataFromImport ? 'Continuer' : 'Valider'}
           showRetake={false}
           defaultValue="24 Rue des Jeuneurs, 75002 Paris"
           onBack={() => kycNavigate('passport-data', 'back')}
@@ -2257,11 +2262,11 @@ export default function WalletHome({
       {kycScreen === 'permis-address' && (
         <KycAddressScreen
           direction={navDirection}
-          confirmLabel="Valider"
+          confirmLabel={dataFromImport ? 'Continuer' : 'Valider'}
           showRetake={false}
           showCorrection={false}
           defaultValue=""
-          onBack={() => kycNavigate('permis-back-scan', 'back')}
+          onBack={() => kycNavigate(dataFromImport ? 'permis-data' : 'permis-back-scan', 'back')}
           onConfirm={() => kycNavigate('iban', 'forward')}
           onRetake={() => {}}
         />
