@@ -76,6 +76,19 @@ const imgConfirmCheck     = './assets/confirm-check.svg'
 const imgConfirmSandglass = './assets/confirm-sandglass.svg'
 const imgConfirmPiggyBank = './assets/confirm-piggybank.svg'
 
+function InfoBanner({ children }) {
+  return (
+    <div className="info-banner">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true" className="info-banner__icon">
+        <circle cx="10" cy="10" r="9" stroke="currentColor" strokeWidth="1.5" />
+        <path d="M10 9.5V13.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+        <circle cx="10" cy="7" r="0.75" fill="currentColor" />
+      </svg>
+      <div className="info-banner__text">{children}</div>
+    </div>
+  )
+}
+
 function formatBalance(centimes) {
   return (centimes / 100).toFixed(2).replace('.', ',') + ' €'
 }
@@ -1171,10 +1184,10 @@ function KycDocumentScreen({ onBack, onSelectDoc, direction = 'forward' }) {
         <div className="kyc-doc-screen__content">
           <div className="kyc-doc-screen__header">
             <h1 className="kyc-doc-screen__title">Sélectionnez un document d'identité</h1>
-            <p className="kyc-doc-screen__subtitle">
+            <InfoBanner>
               La vérification de votre identité est nécessaire pour sécuriser votre compte.{' '}
               <button className="kyc-doc-screen__link" onClick={() => setShowLearnMore(true)}>En savoir plus</button>
-            </p>
+            </InfoBanner>
           </div>
 
           <div className="kyc-doc-list">
@@ -1606,10 +1619,10 @@ function KycFiscaliteScreen({ onBack, onConfirm, direction = 'forward' }) {
           <div className="kyc-fiscalite__header">
             <h2 className="kyc-data-screen__title">Numéro d'identification fiscale</h2>
             <p className="kyc-fiscalite__required">* Champs obligatoires</p>
-            <p className="kyc-fiscalite__subtitle">
+            <InfoBanner>
               La réglementation DAC7 nous impose de collecter vos informations fiscales.{' '}
               <button className="kyc-fiscalite__link" type="button" onClick={() => setShowDac7(true)}>En savoir plus</button>
-            </p>
+            </InfoBanner>
           </div>
 
           <div className="kyc-textfield">
@@ -1793,14 +1806,14 @@ function KycIbanScreen({ onBack, onConfirm, onOpenBanking, direction = 'forward'
         <div className="kyc-data-screen__content">
           <div className="kyc-iban-screen__header">
             <h2 className="kyc-data-screen__title">Ajoutez votre IBAN</h2>
-            <p className="kyc-iban-screen__subtitle">Votre IBAN est nécessaire pour transférer votre argent vers votre compte bancaire.</p>
+            <InfoBanner>Votre IBAN est nécessaire pour transférer votre argent vers votre compte bancaire.</InfoBanner>
           </div>
 
           <button className="iban-link-card" onClick={onOpenBanking || onConfirm}>
             <div className="iban-link-card__left">
               <span className="iban-tag iban-tag--recommande">Recommandé</span>
-              <p className="iban-link-card__title">Ajouter mon IBAN en quelques clics</p>
-              <p className="iban-link-card__desc">En vous connectant via votre application bancaire, votre IBAN est récupéré automatiquement.</p>
+              <p className="iban-link-card__title">Récupérer mon IBAN automatiquement</p>
+              <p className="iban-link-card__desc"><strong>Seul votre IBAN nous est transmis</strong> grâce à votre application bancaire. Votre compte bancaire ne sera pas lié à leboncoin.</p>
             </div>
             <div className="iban-link-card__arrow">{ARROW_RIGHT_ICON}</div>
           </button>

@@ -75,6 +75,10 @@
 .wallet-card__unlock-btn {
   position: relative;
   z-index: 2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
 }
 
 .wallet-card__footer {
@@ -943,6 +947,27 @@
   flex-direction: column;
   gap: 16px;
   padding: 0 16px;
+}
+
+.info-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  background: var(--color-support-container);
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.info-banner__icon {
+  color: var(--color-support);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.info-banner__text {
+  font-size: 14px;
+  line-height: 20px;
+  color: rgba(21, 34, 51, 0.88);
 }
 
 .kyc-doc-screen__header {
