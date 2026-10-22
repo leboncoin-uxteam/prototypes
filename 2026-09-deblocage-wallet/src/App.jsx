@@ -36,7 +36,10 @@ export default function App() {
     const n = parseInt(window.location.hash.replace(/^#/, ''))
     if (!n) return
     const user = PROTO_USERS.find(u => u.user_id === String(n))
-    if (user) setProtoUser(user)
+    if (user) {
+      setProtoUser(user)
+      setScreen('wallet')
+    }
   }, [])
 
   const [balance,       setBalance]       = useState(5000)
