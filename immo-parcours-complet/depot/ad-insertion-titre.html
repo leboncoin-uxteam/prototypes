@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dépôt annonce — Quel est le titre de l'annonce ?</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,300;0,6..12,400;0,6..12,600;0,6..12,700;0,6..12,800&display=swap" rel="stylesheet" />
+  <style>
+    /* ══ Spark design tokens — thème light ══════════════════════════ */
+    :root {
+      --color-main:                     #ec5a13;
+      --color-on-main:                  #ffffff;
+      --color-main-hovered:             #f07b42;
+      --color-main-container:           #ffe9de;
+      --color-on-main-container:        #89380f;
+
+      --color-support:                  #094171;
+      --color-on-support:               #ffffff;
+      --color-support-hovered:          #0c5291;
+      --color-support-container:        #e6f2fd;
+      --color-on-support-container:     #152233;
+      --color-support-container-hovered:#f4f9fe;
+
+      --color-neutral-container:        #f0f2f5;
+      --color-on-neutral-container:     #3a4757;
+
+      --color-surface:                  #ffffff;
+      --color-on-surface:               #152233;
+      --color-background:               #ffffff;
+      --color-background-variant:       #f4f9fe;
+      --color-on-background:            #152233;
+
+      --color-outline:                  #acb8c7;
+      --color-shadow:                   rgba(108,129,157,0.5);
+      --color-focus:                    #0000ff;
+
+      /* dim */
+      --color-on-surface-dim:           rgba(21,34,51,0.72);
+      --color-on-background-dim-4:      rgba(21,34,51,0.16);
+
+      /* spacing */
+      --sp-none: 0px;
+      --sp-sm:   4px;
+      --sp-md:   8px;
+      --sp-lg:   16px;
+      --sp-xl:   24px;
+      --sp-2xl:  32px;
+      --sp-3xl:  40px;
+
+      /* radius */
+      --radius-sm:   4px;
+      --radius-md:   8px;
+      --radius-lg:   16px;
+
+      --border-sm:   1px;
+      --border-md:   2px;
+
+      --ease-standard: cubic-bezier(0.2,0,0,1);
+      --duration-short: 150ms;
+      --duration-medium: 250ms;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Nunito Sans', sans-serif;
+      background: var(--color-background-variant);
+      color: var(--color-on-surface);
+      min-height: 100vh;
+    }
+    button { font-family: inherit; cursor: pointer; }
+
+    .page-wrapper { display: flex; flex-direction: column; align-items: center; gap: var(--sp-md); min-height: 100vh; }
+
+    /* ══ Header simple ═══════════════════════════════════════════════ */
+    .header {
+      background: var(--color-surface);
+      width: 100%;
+      filter: drop-shadow(0 4px 8px var(--color-shadow));
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      position: sticky; top: 0; z-index: 10;
+    }
+    .header-inner {
+      display: flex; align-items: center; justify-content: space-between;
+      height: 60px; width: 100%; max-width: 1066px;
+      padding: 0 var(--sp-lg);
+    }
+    .header-left { display: flex; align-items: center; gap: var(--sp-lg); }
+    .brand-logo  { display: block; }
+    .header-title {
+      display: flex; align-items: center; justify-content: center;
+      height: 44px; padding: var(--sp-md) var(--sp-lg);
+      border-radius: var(--radius-lg);
+      font-size: 16px; font-weight: 700; line-height: 24px;
+      color: var(--color-support);
+    }
+
+    .progress-bar-track {
+      width: 100%; height: 4px; overflow: hidden;
+      background: var(--color-on-background-dim-4);
+    }
+    .progress-bar-fill {
+      height: 100%; background: var(--color-main);
+      transition: width var(--duration-medium) var(--ease-standard);
+    }
+
+    /* ══ Spark Buttons ═══════════════════════════════════════════════ */
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: var(--sp-md);
+      height: 44px; padding: var(--sp-md) var(--sp-lg);
+      border-radius: var(--radius-lg);
+      font-size: 16px; font-weight: 700; line-height: 24px;
+      text-decoration: none;
+      transition: background var(--duration-short) var(--ease-standard);
+    }
+    .btn:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; }
+
+    .btn-outlined {
+      border: var(--border-sm) solid var(--color-support);
+      background: transparent; color: var(--color-support);
+    }
+    .btn-outlined:hover { background: var(--color-support-container-hovered); }
+
+    .btn-filled-main {
+      border: none;
+      background: var(--color-main); color: var(--color-on-main);
+    }
+    .btn-filled-main:hover  { background: var(--color-main-hovered); }
+    .btn-filled-main:active { transform: scale(0.98); }
+
+    /* ══ Layout ══════════════════════════════════════════════════════ */
+    .full-page {
+      display: flex; flex-direction: column; align-items: center;
+      gap: var(--sp-xl); padding: var(--sp-3xl) 0; width: 100%;
+    }
+    .main-content {
+      display: flex; align-items: center; gap: var(--sp-xl);
+      width: 1066px; max-width: 100%;
+      padding: 0 var(--sp-lg);
+    }
+
+    .step-content {
+      background: var(--color-surface);
+      display: flex; flex-direction: column; align-items: flex-start;
+      gap: var(--sp-xl); padding: var(--sp-xl);
+      border-radius: var(--radius-lg);
+      width: 815px; max-width: 100%;
+    }
+    .step-main {
+      display: flex; flex-direction: column; align-items: flex-start;
+      gap: var(--sp-2xl); width: 100%; min-width: 0;
+    }
+
+    /* ══ Titres ══════════════════════════════════════════════════════ */
+    .title-block { display: flex; flex-direction: column; gap: var(--sp-md); width: 100%; }
+    .headline-2    { font-size: 18px; font-weight: 700; line-height: 24px; color: var(--color-on-surface); }
+    .caption       { font-size: 12px; font-weight: 400; line-height: 16px; color: var(--color-on-surface); }
+
+    /* ══ Input textfield (Spark) ═════════════════════════════════════ */
+    .input-field { display: flex; flex-direction: column; align-items: flex-start; gap: var(--sp-sm); width: 100%; max-width: 385px; }
+    .field-label-row { display: flex; align-items: center; gap: var(--sp-sm); }
+    .field-label { font-size: 14px; font-weight: 400; line-height: 20px; color: var(--color-on-surface); white-space: nowrap; }
+    .mandatory {
+      display: flex; align-items: flex-end; height: 20px; padding-bottom: 1px;
+      font-size: 12px; font-weight: 400; line-height: 16px; color: var(--color-on-surface-dim);
+    }
+
+    .input-container {
+      background: var(--color-surface);
+      border: var(--border-sm) solid var(--color-outline);
+      border-radius: var(--radius-lg);
+      display: flex; align-items: center;
+      height: 44px; width: 100%;
+      padding-left: var(--sp-lg);
+      overflow: hidden;
+      transition: border-color var(--duration-short) var(--ease-standard);
+    }
+    .input-container:focus-within { border-color: var(--color-support); }
+    .input-container input {
+      flex: 1 0 0; min-width: 0; height: 44px;
+      border: none; outline: none; background: transparent;
+      padding-right: var(--sp-lg);
+      font-family: inherit; font-size: 16px; font-weight: 400; line-height: 24px;
+      color: var(--color-on-surface);
+      text-overflow: ellipsis;
+    }
+    .helper-text {
+      display: flex; align-items: center; justify-content: flex-end; width: 100%;
+      font-size: 12px; font-weight: 400; line-height: 16px;
+      color: var(--color-on-surface-dim); text-align: right;
+    }
+
+    /* ══ Divider (Spark) ═════════════════════════════════════════════ */
+    .divider { width: 100%; height: 0; border-top: var(--border-sm) solid var(--color-outline); }
+
+    /* ══ Bloc suggestion de catégories ═══════════════════════════════ */
+    .category-suggestion { display: flex; flex-direction: column; align-items: flex-start; gap: var(--sp-2xl); width: 100%; }
+    .cat-block { display: flex; flex-direction: column; align-items: flex-start; gap: var(--sp-xl); width: 100%; }
+    .body-1-highlight { font-size: 16px; font-weight: 700; line-height: 24px; color: var(--color-on-surface); width: 100%; }
+
+    .cat-list { display: flex; flex-direction: column; align-items: flex-start; gap: var(--sp-lg); width: 100%; }
+
+    /* Radio row — Spark "Ad insertion radio" */
+    .cat-radio { display: flex; align-items: center; gap: var(--sp-lg); width: 100%; cursor: pointer; }
+    .cat-radio input { position: absolute; opacity: 0; width: 0; height: 0; }
+
+    /* Reproduit l'asset Radio button : cercle 24px, bordure 2px outline */
+    .radio-mark {
+      flex-shrink: 0; width: 24px; height: 24px; border-radius: 50%;
+      border: var(--border-md) solid var(--color-outline);
+      display: flex; align-items: center; justify-content: center;
+      transition:
+        border-color var(--duration-short) var(--ease-standard),
+        background var(--duration-short) var(--ease-standard);
+    }
+    .radio-mark::after {
+      content: ''; width: 12px; height: 12px; border-radius: 50%;
+      background: var(--color-on-main);
+      transform: scale(0);
+      transition: transform var(--duration-short) var(--ease-standard);
+    }
+    .cat-radio:hover .radio-mark { border-color: var(--color-support); }
+    .cat-radio input:checked + .radio-mark {
+      border-color: var(--color-main);
+      background: var(--color-main);
+    }
+    .cat-radio input:checked + .radio-mark::after { transform: scale(1); }
+    .cat-radio input:focus-visible + .radio-mark { outline: 2px solid var(--color-focus); outline-offset: 2px; }
+
+    .cat-label { display: flex; flex: 1 0 0; min-width: 0; align-items: center; gap: var(--sp-md); }
+    .cat-icon  { flex-shrink: 0; display: block; }
+    .cat-path  { display: flex; flex: 1 0 0; min-width: 0; flex-wrap: wrap; align-items: center; align-content: center; gap: var(--sp-sm); }
+    .cat-parent { font-size: 16px; font-weight: 400; line-height: 24px; color: var(--color-on-surface); white-space: nowrap; }
+    .cat-leaf   { font-size: 16px; font-weight: 700; line-height: 24px; color: var(--color-on-surface); white-space: nowrap; }
+    .cat-chevron { flex-shrink: 0; display: block; }
+
+    /* ══ Select (Input textfield + trailing chevron) ═════════════════ */
+    .select-container {
+      background: var(--color-surface);
+      border: var(--border-sm) solid var(--color-outline);
+      border-radius: var(--radius-lg);
+      display: flex; align-items: center;
+      height: 44px; width: 100%;
+      padding: 0 var(--sp-lg);
+      overflow: hidden;
+      transition: border-color var(--duration-short) var(--ease-standard);
+    }
+    .select-container:focus-within { border-color: var(--color-support); }
+    .select-container select {
+      flex: 1 0 0; min-width: 0; height: 44px;
+      border: none; outline: none; background: transparent; appearance: none;
+      font-family: inherit; font-size: 16px; font-weight: 400; line-height: 24px;
+      color: var(--color-on-surface);
+      cursor: pointer;
+    }
+    .select-container select:invalid { color: var(--color-on-surface-dim); }
+    .select-trailing {
+      display: flex; align-items: center; height: 44px;
+      padding-left: var(--sp-md); flex-shrink: 0; pointer-events: none;
+    }
+
+    /* ══ Mention DPO ═════════════════════════════════════════════════ */
+    .dpo-mention { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; }
+    .dpo-mention p {
+      width: 100%;
+      font-size: 12px; font-weight: 400; line-height: 16px;
+      color: var(--color-on-surface-dim);
+    }
+    .dpo-mention a {
+      color: var(--color-on-surface-dim);
+      font-weight: 700;
+      text-decoration: underline;
+      text-underline-offset: from-font;
+    }
+    .dpo-mention a:hover { color: var(--color-support); }
+
+    /* ══ Action footer ═══════════════════════════════════════════════ */
+    .action-footer { display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%; }
+
+    /* ══ Tips ════════════════════════════════════════════════════════ */
+    .tips {
+      display: flex; flex-direction: column; align-items: flex-start;
+      gap: var(--sp-lg); width: 200px; flex-shrink: 0;
+    }
+    .tips-icon { display: flex; align-items: center; justify-content: center; gap: var(--sp-md); width: 100%; }
+    .tips-icon::before,
+    .tips-icon::after {
+      content: ''; flex: 1 0 0; min-width: 0; height: 0;
+      border-top: var(--border-sm) solid var(--color-main);
+    }
+    .tips-text {
+      width: 100%;
+      font-size: 14px; font-weight: 400; line-height: 20px;
+      color: var(--color-on-background); text-align: center;
+    }
+
+    /* ══ Révélation progressive ══════════════════════════════════════ */
+    [hidden] { display: none !important; }
+    .reveal { animation: reveal var(--duration-medium) var(--ease-standard) both; }
+    @keyframes reveal {
+      from { opacity: 0; transform: translateY(-4px); }
+      to   { opacity: 1; transform: none; }
+    }
+
+    @media (max-width: 1080px) {
+      .main-content { flex-direction: column; align-items: stretch; }
+      .step-content { width: 100%; }
+      .tips { width: 100%; align-items: center; }
+    }
+  </style>
+</head>
+<body>
+<div class="page-wrapper">
+
+  <!-- ══ Header simple ═════════════════════════════════════════════ -->
+  <header class="header">
+    <div class="header-inner">
+      <div class="header-left">
+        <img class="brand-logo" src="assets/leboncoin-logo.svg" width="140" height="26" alt="leboncoin" />
+        <span class="header-title">Déposer une annonce</span>
+      </div>
+      <button type="button" class="btn btn-outlined">Quitter</button>
+    </div>
+    <div class="progress-bar-track">
+      <div class="progress-bar-fill" id="progress-fill" style="width:25%"></div>
+    </div>
+  </header>
+
+  <!-- ══ Full page ═════════════════════════════════════════════════ -->
+  <div class="full-page">
+    <main class="main-content">
+
+      <!-- ══ Step content ════════════════════════════════════════════ -->
+      <div class="step-content">
+        <div class="step-main">
+
+          <div class="title-block">
+            <h1 class="headline-2">Commençons par l’essentiel&nbsp;!</h1>
+            <p class="caption">* Champs obligatoires</p>
+          </div>
+
+          <!-- Titre de l'annonce -->
+          <div class="input-field">
+            <div class="field-label-row">
+              <label class="field-label" for="titre">Quel est le titre de l'annonce ?</label>
+              <span class="mandatory" aria-hidden="true">*</span>
+            </div>
+            <div class="input-container">
+              <input
+                type="text"
+                id="titre"
+                maxlength="200"
+                autocomplete="off"
+                required
+                aria-describedby="titre-counter"
+              />
+            </div>
+            <p class="helper-text" id="titre-counter" aria-live="polite">0/200</p>
+          </div>
+
+          <!-- Suggestion de catégories -->
+          <div class="category-suggestion" id="category-suggestion" hidden>
+            <div class="cat-block">
+              <div class="divider"></div>
+              <p class="body-1-highlight" id="cat-legend">Choisissez une catégorie suggérée</p>
+
+              <div class="cat-list" role="radiogroup" aria-labelledby="cat-legend">
+                <label class="cat-radio">
+                  <input type="radio" name="categorie-suggeree" value="immobilier/ventes-immobilieres" />
+                  <span class="radio-mark"></span>
+                  <span class="cat-label">
+                    <img class="cat-icon" src="assets/cat-house.svg" width="16" height="16" alt="" />
+                    <span class="cat-path">
+                      <span class="cat-parent">Immobilier</span>
+                      <img class="cat-chevron" src="assets/chevron-vertical.svg" width="12" height="12" alt="" />
+                      <span class="cat-leaf">Ventes immobilières</span>
+                    </span>
+                  </span>
+                </label>
+
+                <label class="cat-radio">
+                  <input type="radio" name="categorie-suggeree" value="immobilier/locations" />
+                  <span class="radio-mark"></span>
+                  <span class="cat-label">
+                    <img class="cat-icon" src="assets/cat-house.svg" width="16" height="16" alt="" />
+                    <span class="cat-path">
+                      <span class="cat-parent">Immobilier</span>
+                      <img class="cat-chevron" src="assets/chevron-vertical.svg" width="12" height="12" alt="" />
+                      <span class="cat-leaf">Locations</span>
+                    </span>
+                  </span>
+                </label>
+
+                <label class="cat-radio">
+                  <input type="radio" name="categorie-suggeree" value="locations-vacances/locations-saisonnieres" />
+                  <span class="radio-mark"></span>
+                  <span class="cat-label">
+                    <img class="cat-icon" src="assets/cat-sunny-house.svg" width="16" height="16" alt="" />
+                    <span class="cat-path">
+                      <span class="cat-parent">Locations de vacances</span>
+                      <img class="cat-chevron" src="assets/chevron-vertical.svg" width="12" height="12" alt="" />
+                      <span class="cat-leaf">Locations saisonnières</span>
+                    </span>
+                  </span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Ou choisissez une autre catégorie -->
+            <div class="input-field">
+              <div class="field-label-row">
+                <label class="field-label" for="categorie">Ou choisissez une autre catégorie</label>
+                <span class="mandatory" aria-hidden="true">*</span>
+              </div>
+              <div class="select-container">
+                <select id="categorie" required>
+                  <option value="" selected>Choisissez</option>
+                  <option value="immobilier">Immobilier</option>
+                  <option value="vehicules">Véhicules</option>
+                  <option value="locations-vacances">Locations de vacances</option>
+                  <option value="emploi">Emploi</option>
+                  <option value="mode">Mode</option>
+                  <option value="maison">Maison &amp; Jardin</option>
+                  <option value="multimedia">Multimédia</option>
+                  <option value="loisirs">Loisirs</option>
+                  <option value="autres">Autres</option>
+                </select>
+                <span class="select-trailing">
+                  <img src="assets/chevron-horizontal.svg" width="16" height="16" alt="" />
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Mention DPO -->
+          <div class="dpo-mention">
+            <p>
+              <a href="#">En savoir plus</a> sur le traitement de vos données et exercer vos droits.
+            </p>
+          </div>
+
+        </div>
+
+        <!-- Action footer -->
+        <div class="action-footer">
+          <button type="button" class="btn btn-outlined">Retour</button>
+          <a href="ad-insertion-localisation.html" class="btn btn-filled-main" id="btn-continuer">Continuer</a>
+        </div>
+      </div>
+
+      <!-- ══ Tips ════════════════════════════════════════════════════ -->
+      <aside class="tips">
+        <div class="tips-icon">
+          <img src="assets/light-bulb.svg" width="40" height="40" alt="" />
+        </div>
+        <p class="tips-text">
+          Votre annonce sera trouvée plus facilement&nbsp;!<br /><br />
+          Vous aurez 50% de chances en plus d’être contacté si votre annonce est dans la bonne catégorie.
+        </p>
+      </aside>
+
+    </main>
+  </div>
+</div>
+
+<script>
+  const SUGGESTION_DELAY = 1000
+
+  const input       = document.getElementById('titre')
+  const counter     = document.getElementById('titre-counter')
+  const block       = document.getElementById('category-suggestion')
+  const progress    = document.getElementById('progress-fill')
+  const select      = document.getElementById('categorie')
+  const radios      = document.querySelectorAll('input[name="categorie-suggeree"]')
+
+  let timer = null
+
+  // Les suggestions sont fixes : seul le fait d'avoir saisi un titre les déclenche,
+  // après une pause dans la frappe.
+  function showSuggestions() {
+    if (!block.hidden) return
+    block.hidden = false
+    block.classList.add('reveal')
+    progress.style.width = '32%'
+  }
+
+  function hideSuggestions() {
+    block.hidden = true
+    block.classList.remove('reveal')
+    radios.forEach(r => { r.checked = false })
+    select.value = ''
+    progress.style.width = '25%'
+  }
+
+  input.addEventListener('input', () => {
+    counter.textContent = input.value.length + '/200'
+    clearTimeout(timer)
+
+    if (input.value.trim().length === 0) {
+      hideSuggestions()
+      return
+    }
+    timer = setTimeout(showSuggestions, SUGGESTION_DELAY)
+  })
+
+  radios.forEach(radio => {
+    radio.addEventListener('change', () => { if (radio.checked) select.value = '' })
+  })
+
+  select.addEventListener('change', () => {
+    if (select.value) radios.forEach(r => { r.checked = false })
+  })
+</script>
+<script src="exit-dialog.js"></script>
+</body>
+</html>

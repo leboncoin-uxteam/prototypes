@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dépôt annonce — Ajoutez des photos</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,300;0,6..12,400;0,6..12,600;0,6..12,700;0,6..12,800&display=swap" rel="stylesheet" />
+  <style>
+    /* ══ Spark design tokens — thème light ══════════════════════════ */
+    :root {
+      --color-main:                     #ec5a13;
+      --color-on-main:                  #ffffff;
+      --color-main-hovered:             #f07b42;
+      --color-main-container:           #ffe9de;
+      --color-on-main-container:        #89380f;
+
+      --color-support:                  #094171;
+      --color-on-support:               #ffffff;
+      --color-support-hovered:          #0c5291;
+      --color-support-container:        #e6f2fd;
+      --color-on-support-container:     #152233;
+      --color-support-container-hovered:#f4f9fe;
+
+      --color-neutral-container:        #f0f2f5;
+      --color-on-neutral-container:     #3a4757;
+
+      --color-surface:                  #ffffff;
+      --color-on-surface:               #152233;
+      --color-background:               #ffffff;
+      --color-background-variant:       #f4f9fe;
+      --color-on-background:            #152233;
+
+      --color-outline:                  #acb8c7;
+      --color-shadow:                   rgba(108,129,157,0.5);
+      --color-focus:                    #0000ff;
+
+      /* dim */
+      --color-on-surface-dim:           rgba(21,34,51,0.72);
+      --color-on-background-dim-4:      rgba(21,34,51,0.16);
+
+      /* spacing */
+      --sp-none: 0px;
+      --sp-sm:   4px;
+      --sp-md:   8px;
+      --sp-lg:   16px;
+      --sp-xl:   24px;
+      --sp-2xl:  32px;
+      --sp-3xl:  40px;
+
+      /* radius */
+      --radius-sm:   4px;
+      --radius-md:   8px;
+      --radius-lg:   16px;
+
+      --border-sm:   1px;
+      --border-md:   2px;
+
+      --ease-standard: cubic-bezier(0.2,0,0,1);
+      --duration-short: 150ms;
+      --duration-medium: 250ms;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Nunito Sans', sans-serif;
+      background: var(--color-background-variant);
+      color: var(--color-on-surface);
+      min-height: 100vh;
+    }
+    button { font-family: inherit; cursor: pointer; }
+
+    .page-wrapper { display: flex; flex-direction: column; align-items: center; gap: var(--sp-md); min-height: 100vh; }
+
+    /* ══ Header simple ═══════════════════════════════════════════════ */
+    .header {
+      background: var(--color-surface);
+      width: 100%;
+      filter: drop-shadow(0 4px 8px var(--color-shadow));
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      position: sticky; top: 0; z-index: 10;
+    }
+    .header-inner {
+      display: flex; align-items: center; justify-content: space-between;
+      height: 60px; width: 100%; max-width: 1066px;
+      padding: 0 var(--sp-lg);
+    }
+    .header-left { display: flex; align-items: center; gap: var(--sp-lg); }
+    .brand-logo  { display: block; }
+    .header-title {
+      display: flex; align-items: center; justify-content: center;
+      height: 44px; padding: var(--sp-md) var(--sp-lg);
+      border-radius: var(--radius-lg);
+      font-size: 16px; font-weight: 700; line-height: 24px;
+      color: var(--color-support);
+    }
+
+    .progress-bar-track {
+      width: 100%; height: 4px; overflow: hidden;
+      background: var(--color-on-background-dim-4);
+    }
+    .progress-bar-fill {
+      height: 100%; background: var(--color-main);
+      transition: width var(--duration-medium) var(--ease-standard);
+    }
+
+    /* ══ Spark Buttons ═══════════════════════════════════════════════ */
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: var(--sp-md);
+      height: 44px; padding: var(--sp-md) var(--sp-lg);
+      border-radius: var(--radius-lg);
+      font-size: 16px; font-weight: 700; line-height: 24px;
+      text-decoration: none;
+      transition: background var(--duration-short) var(--ease-standard);
+    }
+    .btn:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; }
+
+    .btn-outlined {
+      border: var(--border-sm) solid var(--color-support);
+      background: transparent; color: var(--color-support);
+    }
+    .btn-outlined:hover { background: var(--color-support-container-hovered); }
+
+    .btn-filled-main {
+      border: none;
+      background: var(--color-main); color: var(--color-on-main);
+    }
+    .btn-filled-main:hover  { background: var(--color-main-hovered); }
+    .btn-filled-main:active { transform: scale(0.98); }
+
+    /* Tinted neutral — le bouton « Quelques astuces » du design */
+    .btn-tinted-neutral {
+      border: none;
+      background: var(--color-neutral-container);
+      color: var(--color-on-neutral-container);
+    }
+    .btn-tinted-neutral:hover { background: #e4e8ee; }
+
+    /* ══ Layout ══════════════════════════════════════════════════════ */
+    .full-page {
+      display: flex; flex-direction: column; align-items: center;
+      gap: var(--sp-xl); padding: var(--sp-3xl) 0; width: 100%;
+    }
+    .main-content {
+      display: flex; align-items: center; gap: var(--sp-xl);
+      width: 1066px; max-width: 100%;
+      padding: 0 var(--sp-lg);
+    }
+
+    .step-content {
+      background: var(--color-surface);
+      display: flex; flex-direction: column; align-items: flex-start;
+      gap: var(--sp-xl); padding: var(--sp-xl);
+      border-radius: var(--radius-lg);
+      width: 815px; max-width: 100%;
+    }
+    .step-main {
+      display: flex; flex-direction: column; align-items: flex-start;
+      gap: var(--sp-xl); width: 100%; min-width: 0;
+    }
+
+    /* ══ Typo ════════════════════════════════════════════════════════ */
+    .body-1 { font-size: 16px; font-weight: 400; line-height: 24px; color: var(--color-on-surface); }
+    .caption { font-size: 12px; font-weight: 400; line-height: 16px; color: var(--color-on-surface-dim); }
+
+    /* ══ Grille photos ═══════════════════════════════════════════════ */
+    .photo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, 150px);
+      gap: var(--sp-xl);
+      width: 100%;
+    }
+
+    /* Socle commun des cases : 150 × 150, radius 8 */
+    .photo-slot {
+      position: relative;
+      width: 150px; height: 150px;
+      border-radius: var(--radius-md);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: var(--sp-md);
+      padding: var(--sp-md) 10px;
+      background: var(--color-surface);
+      transition:
+        border-color var(--duration-short) var(--ease-standard),
+        background var(--duration-short) var(--ease-standard);
+    }
+    .photo-slot-label {
+      width: 130px;
+      font-size: 16px; font-weight: 700; line-height: 24px;
+      text-align: center;
+    }
+
+    /* Case d'ajout — bordure pleine, intention support */
+    .photo-add {
+      border: var(--border-sm) solid var(--color-support);
+      color: var(--color-on-surface);
+    }
+    .photo-add:hover { background: var(--color-support-container-hovered); }
+    .photo-add:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; }
+
+    /* Emplacements vides numérotés — bordure tiretée */
+    .photo-empty {
+      border: var(--border-sm) dashed var(--color-on-neutral-container);
+      color: var(--color-on-neutral-container);
+    }
+    .photo-empty:hover {
+      background: var(--color-neutral-container);
+      border-color: var(--color-support);
+    }
+    .photo-empty:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; }
+
+    /* Vignette d'une photo ajoutée */
+    .photo-filled {
+      padding: 0;
+      border: var(--border-sm) solid var(--color-outline);
+      overflow: hidden;
+      cursor: grab;
+    }
+    .photo-filled img.photo-thumb {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: block;
+      pointer-events: none;
+    }
+    .photo-filled:active { cursor: grabbing; }
+
+    /* Badge « Photo principale » sur la première vignette */
+    .photo-badge {
+      position: absolute; left: var(--sp-md); bottom: var(--sp-md);
+      padding: 2px var(--sp-md);
+      border-radius: var(--radius-sm);
+      background: var(--color-main);
+      color: var(--color-on-main);
+      font-size: 12px; font-weight: 700; line-height: 16px;
+    }
+
+    .photo-remove {
+      position: absolute; top: var(--sp-sm); right: var(--sp-sm);
+      width: 28px; height: 28px;
+      display: flex; align-items: center; justify-content: center;
+      border: none; border-radius: 50%;
+      background: rgba(255,255,255,.92);
+      box-shadow: 0 1px 4px rgba(21,34,51,.24);
+      transition: background var(--duration-short) var(--ease-standard);
+    }
+    .photo-remove:hover { background: #fff; }
+    .photo-remove:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; }
+
+    /* États du glisser-déposer */
+    .photo-filled.is-dragging { opacity: .4; }
+    .photo-slot.is-dropzone {
+      border-color: var(--color-main);
+      border-style: solid;
+      background: var(--color-main-container);
+    }
+
+    /* ══ Tips ════════════════════════════════════════════════════════ */
+    .tips {
+      display: flex; flex-direction: column; align-items: flex-start;
+      gap: var(--sp-lg); width: 200px; flex-shrink: 0;
+      border-radius: var(--radius-md);
+      transition: background var(--duration-medium) var(--ease-standard);
+    }
+    .tips.is-highlighted { background: var(--color-main-container); }
+    .tips-icon { display: flex; align-items: center; justify-content: center; gap: var(--sp-md); width: 100%; }
+    .tips-icon::before,
+    .tips-icon::after {
+      content: ''; flex: 1 0 0; min-width: 0; height: 0;
+      border-top: var(--border-sm) solid var(--color-main);
+    }
+    .tips-text {
+      width: 100%;
+      font-size: 14px; font-weight: 400; line-height: 20px;
+      color: var(--color-on-background); text-align: center;
+    }
+
+    /* ══ Action footer ═══════════════════════════════════════════════ */
+    .action-footer { display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%; }
+
+    [hidden] { display: none !important; }
+
+    @media (max-width: 1080px) {
+      .main-content { flex-direction: column; align-items: stretch; }
+      .step-content { width: 100%; }
+      .tips { width: 100%; align-items: center; padding: var(--sp-lg) 0; }
+    }
+    @media (max-width: 560px) {
+      .photo-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+      .photo-slot { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+<div class="page-wrapper">
+
+  <!-- ══ Header simple ═════════════════════════════════════════════ -->
+  <header class="header">
+    <div class="header-inner">
+      <div class="header-left">
+        <img class="brand-logo" src="assets/leboncoin-logo.svg" width="140" height="26" alt="leboncoin" />
+        <span class="header-title">Déposer une annonce</span>
+      </div>
+      <button type="button" class="btn btn-outlined">Quitter</button>
+    </div>
+    <div class="progress-bar-track">
+      <div class="progress-bar-fill" id="progress-fill" style="width:70%"></div>
+    </div>
+  </header>
+
+  <!-- ══ Full page ═════════════════════════════════════════════════ -->
+  <div class="full-page">
+    <main class="main-content">
+
+      <!-- ══ Step content ════════════════════════════════════════════ -->
+      <div class="step-content" data-node-id="15761:11330">
+        <div class="step-main">
+
+          <button type="button" class="btn btn-tinted-neutral" id="btn-astuces">
+            <img src="assets/icon-idea.svg" width="16" height="16" alt="" />
+            Quelques astuces
+          </button>
+
+          <p class="body-1" id="grid-hint">
+            Faites glisser vos photos pour changer leur ordre. (jusqu’à 99 photos gratuites)
+          </p>
+
+          <div class="photo-grid" id="photo-grid" data-node-id="15761:63409">
+            <!-- Les cases sont rendues par render() ci-dessous. -->
+          </div>
+
+          <p class="caption" id="photo-count" aria-live="polite">Aucune photo ajoutée</p>
+
+        </div>
+
+        <!-- Action footer -->
+        <div class="action-footer">
+          <a href="ad-insertion-localisation.html" class="btn btn-outlined">Retour</a>
+          <!-- Dernière étape du parcours pour l'instant : pas de destination. -->
+          <button type="button" class="btn btn-filled-main" id="btn-continuer">Continuer</button>
+        </div>
+      </div>
+
+      <!-- ══ Tips ════════════════════════════════════════════════════ -->
+      <aside class="tips" id="tips">
+        <div class="tips-icon">
+          <img src="assets/light-bulb.svg" width="40" height="40" alt="" />
+        </div>
+        <p class="tips-text">
+          Mettez en valeur votre annonce&nbsp;!<br /><br />
+          Une bonne lumière, un bon cadrage vous permettront d’attirer l’œil. Une annonce avec photo est 7 fois plus consultée qu’une annonce sans photo.
+        </p>
+      </aside>
+
+    </main>
+  </div>
+</div>
+
+<!-- Sélecteur de fichiers, piloté par les cases de la grille -->
+<input type="file" id="file-input" accept="image/*" multiple hidden />
+
+<script>
+  /* ══ Paramètres ══════════════════════════════════════════════════ */
+  const MAX_PHOTOS    = 99   // « jusqu'à 99 photos gratuites »
+  const SLOTS_MINIMUM = 3    // emplacements numérotés visibles à vide, comme le design
+
+  const grid      = document.getElementById('photo-grid')
+  const fileInput = document.getElementById('file-input')
+  const countEl   = document.getElementById('photo-count')
+  const progress  = document.getElementById('progress-fill')
+  const tips      = document.getElementById('tips')
+
+  // Une photo = { id, src, name }. L'ordre du tableau est l'ordre affiché.
+  let photos = []
+  let dragFrom = null
+
+  /* ══ Rendu ═══════════════════════════════════════════════════════ */
+  function render() {
+    grid.textContent = ''
+
+    // 1. La case d'ajout, toujours en tête.
+    if (photos.length < MAX_PHOTOS) grid.appendChild(buildAddSlot())
+
+    // 2. Les photos déjà ajoutées.
+    photos.forEach((photo, index) => grid.appendChild(buildFilledSlot(photo, index)))
+
+    // 3. Des emplacements vides pour compléter, tant qu'il en manque.
+    const empties = Math.max(0, SLOTS_MINIMUM - photos.length)
+    for (let i = 0; i < empties; i++) {
+      grid.appendChild(buildEmptySlot(photos.length + i + 1))
+    }
+
+    // Compteur et barre d'avancement.
+    countEl.textContent = photos.length === 0
+      ? 'Aucune photo ajoutée'
+      : `${photos.length} photo${photos.length > 1 ? 's' : ''} ajoutée${photos.length > 1 ? 's' : ''} sur ${MAX_PHOTOS}`
+
+    // La barre avance un peu dès qu'il y a au moins une photo.
+    progress.style.width = photos.length > 0 ? '76%' : '70%'
+  }
+
+  function buildAddSlot() {
+    const btn = document.createElement('button')
+    btn.type = 'button'
+    btn.className = 'photo-slot photo-add'
+    btn.dataset.nodeId = '15761:63411'
+    btn.innerHTML = `
+      <img src="assets/photo-add-image.svg" width="64" height="64" alt="" />
+      <span class="photo-slot-label">Ajouter des photos</span>`
+    btn.addEventListener('click', () => fileInput.click())
+    registerDropzone(btn, photos.length)
+    return btn
+  }
+
+  function buildEmptySlot(number) {
+    const btn = document.createElement('button')
+    btn.type = 'button'
+    btn.className = 'photo-slot photo-empty'
+    btn.dataset.nodeId = '15761:63414'
+    btn.innerHTML = `
+      <img src="assets/photo-camera.svg" width="52" height="52" alt="" />
+      <span class="photo-slot-label">Photo n°${number}</span>`
+    btn.addEventListener('click', () => fileInput.click())
+    return btn
+  }
+
+  function buildFilledSlot(photo, index) {
+    const cell = document.createElement('div')
+    cell.className = 'photo-slot photo-filled'
+    cell.draggable = true
+    cell.dataset.index = index
+
+    const principale = index === 0
+      ? '<span class="photo-badge">Photo principale</span>'
+      : ''
+
+    cell.innerHTML = `
+      <img class="photo-thumb" src="${photo.src}" alt="${photo.name}" />
+      ${principale}
+      <button type="button" class="photo-remove" aria-label="Retirer ${photo.name}">
+        <img src="assets/circle-cross.svg" width="16" height="16" alt="" />
+      </button>`
+
+    cell.querySelector('.photo-remove').addEventListener('click', e => {
+      e.stopPropagation()
+      photos = photos.filter(p => p.id !== photo.id)
+      render()
+    })
+
+    // Glisser-déposer pour réordonner — le geste annoncé par la consigne.
+    cell.addEventListener('dragstart', () => {
+      dragFrom = index
+      cell.classList.add('is-dragging')
+    })
+    cell.addEventListener('dragend', () => {
+      dragFrom = null
+      cell.classList.remove('is-dragging')
+      grid.querySelectorAll('.is-dropzone').forEach(el => el.classList.remove('is-dropzone'))
+    })
+    registerDropzone(cell, index)
+
+    return cell
+  }
+
+  /* Toute case peut recevoir une vignette déplacée. */
+  function registerDropzone(el, targetIndex) {
+    el.addEventListener('dragover', e => {
+      if (dragFrom === null) return
+      e.preventDefault()
+      el.classList.add('is-dropzone')
+    })
+    el.addEventListener('dragleave', () => el.classList.remove('is-dropzone'))
+    el.addEventListener('drop', e => {
+      if (dragFrom === null) return
+      e.preventDefault()
+      const moved = photos.splice(dragFrom, 1)[0]
+      photos.splice(Math.min(targetIndex, photos.length), 0, moved)
+      dragFrom = null
+      render()
+    })
+  }
+
+  /* ══ Ajout de fichiers ═══════════════════════════════════════════ */
+  fileInput.addEventListener('change', () => {
+    const files = Array.from(fileInput.files || [])
+    const place = MAX_PHOTOS - photos.length
+
+    files.slice(0, place).forEach(file => {
+      const reader = new FileReader()
+      reader.onload = () => {
+        photos.push({
+          id: `${file.name}-${file.size}-${Math.random().toString(36).slice(2)}`,
+          src: reader.result,
+          name: file.name,
+        })
+        render()
+      }
+      reader.readAsDataURL(file)
+    })
+
+    // Permet de re-sélectionner le même fichier ensuite.
+    fileInput.value = ''
+  })
+
+  /* Dépôt de fichiers directement sur la grille. */
+  grid.addEventListener('dragover', e => {
+    if (dragFrom !== null) return   // réordonnancement, pas un fichier externe
+    if (!e.dataTransfer.types.includes('Files')) return
+    e.preventDefault()
+  })
+  grid.addEventListener('drop', e => {
+    if (dragFrom !== null) return
+    const files = Array.from(e.dataTransfer.files || []).filter(f => f.type.startsWith('image/'))
+    if (files.length === 0) return
+    e.preventDefault()
+    const dt = new DataTransfer()
+    files.forEach(f => dt.items.add(f))
+    fileInput.files = dt.files
+    fileInput.dispatchEvent(new Event('change'))
+  })
+
+  /* ══ « Quelques astuces » ════════════════════════════════════════
+     Les astuces sont déjà dans le panneau de droite : le bouton y amène
+     et le souligne brièvement, plutôt que de dupliquer le contenu. */
+  document.getElementById('btn-astuces').addEventListener('click', () => {
+    tips.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    tips.classList.add('is-highlighted')
+    setTimeout(() => tips.classList.remove('is-highlighted'), 1200)
+  })
+
+  render()
+</script>
+<script src="exit-dialog.js"></script>
+</body>
+</html>

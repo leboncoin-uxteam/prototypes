@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>leboncoin — page d'accueil</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,300;0,6..12,400;0,6..12,600;0,6..12,700;0,6..12,800&display=swap" rel="stylesheet" />
+<style>
+  /* ══ Tokens Spark relevés dans le Figma ══════════════════════════ */
+  :root {
+    --main:                    #ec5a13;
+    --main-hover:              #d14f10;
+    --main-container:          #ffe9de;
+    --on-main:                 #ffffff;
+
+    --surface:                 #ffffff;
+    --on-surface:              #152233;
+    --on-background:           #1d1f2a;
+    --on-surface-dim:          rgba(21, 34, 51, .72);
+    --outline:                 #acb8c7;
+    --outline-dim-3:           rgba(172, 184, 199, .4);
+
+    --neutral-container:       #f0f2f5;
+    --on-neutral-container:    #3a4757;
+    --support-container:       #dcdce5;
+
+    --habillage-bg:            #feedd6;
+
+    --radius-xs:  4px;
+    --radius-s:   8px;
+    --radius-lg: 16px;
+
+    --sp-sm:  4px;
+    --sp-md:  8px;
+    --sp-lg: 16px;
+
+    /* Largeurs du Figma : habillage 1696, page 1086, contenu 1020. */
+    --page-w:    1086px;
+    --content-w: 1020px;
+  }
+
+  * { box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    margin: 0;
+    font-family: 'Nunito Sans', system-ui, -apple-system, sans-serif;
+    font-variation-settings: "YTLC" 500, "wdth" 100;
+    color: var(--on-surface);
+    background-color: var(--habillage-bg);
+    /* L'habillage publicitaire : 1696 × 900, centré, ancré en haut. */
+    background-image: url('assets/habillage-vide-dressing.png');
+    background-repeat: no-repeat;
+    background-position: top center;
+    background-size: 1696px 900px;
+  }
+
+  p { margin: 0; }
+
+  /* ══ Coquille de page ════════════════════════════════════════════ */
+  /* Dans le Figma la page blanche démarre à y=247, sous le visuel de
+     campagne. Au-delà de 1696px l'habillage reste centré. */
+  .shell {
+    width: var(--page-w);
+    margin: 0 auto;
+    padding-top: 247px;
+  }
+
+  .page {
+    background: var(--surface);
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    overflow: clip;
+  }
+
+  /* ══ Header ══════════════════════════════════════════════════════ */
+  .site-header {
+    position: sticky; top: 0; z-index: 50;
+    display: flex; flex-direction: column; align-items: center;
+    background: var(--surface);
+    border-bottom: 1px solid var(--outline);
+  }
+
+  .header-main {
+    display: flex; align-items: center; gap: var(--sp-lg);
+    width: 100%; max-width: 1066px;
+    padding: 0 var(--sp-lg);
+  }
+
+  .logo { display: flex; padding-right: var(--sp-lg); flex-shrink: 0; }
+  .logo img { display: block; }
+
+  .header-search {
+    display: flex; flex: 1 0 0; min-width: 0;
+    align-items: center; gap: var(--sp-lg);
+    padding: var(--sp-md) 0;
+  }
+
+  /* ══ Boutons (Spark) ═════════════════════════════════════════════ */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    gap: var(--sp-md);
+    min-height: 44px; padding: var(--sp-md) var(--sp-lg);
+    border: 0; border-radius: var(--radius-lg);
+    font: inherit; font-size: 16px; font-weight: 700; line-height: 24px;
+    cursor: pointer; text-decoration: none; white-space: nowrap;
+    transition: background-color .15s ease;
+  }
+  .btn-main { background: var(--main); color: var(--on-main); }
+  .btn-main:hover  { background: var(--main-hover); }
+  .btn-main:active { background: var(--main-hover); }
+  .btn:focus-visible {
+    outline: 2px solid var(--on-surface); outline-offset: 2px;
+  }
+  .btn img { display: block; flex-shrink: 0; }
+
+  /* ══ Barre de recherche ══════════════════════════════════════════ */
+  .searchbar {
+    display: flex; flex: 1 0 0; min-width: 0;
+    align-items: center; gap: var(--sp-md);
+    height: 44px; padding: var(--sp-md) var(--sp-md) var(--sp-md) var(--sp-lg);
+    background: var(--neutral-container);
+    border-radius: var(--radius-lg);
+  }
+  .searchbar input {
+    flex: 1 0 0; min-width: 0;
+    border: 0; background: none; outline: none;
+    font: inherit; font-size: 16px; line-height: 24px;
+    color: var(--on-surface);
+  }
+  .searchbar input::placeholder { color: var(--on-neutral-container); opacity: 1; }
+
+  .icon-btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    padding: var(--sp-md); border: 0; border-radius: var(--radius-lg);
+    background: none; cursor: pointer;
+    transition: background-color .15s ease;
+  }
+  .icon-btn img { display: block; }
+  .icon-btn-main { background: var(--main); }
+  .icon-btn-main:hover { background: var(--main-hover); }
+  .icon-btn-neutral { background: var(--neutral-container); }
+  .icon-btn-neutral:hover { background: var(--support-container); }
+  .icon-btn-ghost:hover { background: var(--neutral-container); }
+  .icon-btn:focus-visible {
+    outline: 2px solid var(--on-surface); outline-offset: 2px;
+  }
+
+  /* ══ Raccourcis compte ═══════════════════════════════════════════ */
+  .header-items { display: flex; align-items: flex-start; flex-shrink: 0; }
+  .header-item {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: var(--sp-sm);
+    padding: 0 var(--sp-md) var(--sp-md);
+    border: 0; background: var(--surface); cursor: pointer;
+    font: inherit; font-size: 12px; line-height: 16px;
+    color: var(--on-surface); text-align: center; white-space: nowrap;
+    text-decoration: none;
+  }
+  .header-item-icon {
+    display: flex; align-items: flex-end;
+    width: 24px; height: 32px; padding-top: var(--sp-md);
+  }
+  .header-item:hover { text-decoration: underline; }
+  .header-item:last-child { width: 96px; }
+
+  /* ══ Nav catégories ══════════════════════════════════════════════ */
+  .header-categories {
+    display: flex; flex-direction: column; align-items: center;
+    width: 100%; height: 50px;
+    background: var(--surface);
+  }
+  .categories {
+    display: flex; align-items: center; justify-content: space-between;
+    width: 100%; max-width: 1066px;
+    padding: 0 var(--sp-lg);
+    overflow: clip;
+  }
+  .category {
+    display: flex; align-items: center; justify-content: center;
+    height: 50px; padding: 10px 0;
+    font-size: 14px; line-height: 20px;
+    color: var(--on-surface); text-decoration: none; white-space: nowrap;
+  }
+  .category:hover { text-decoration: underline; }
+  .category-strong { font-weight: 700; }
+  .category-sep {
+    display: flex; align-items: center; justify-content: center;
+    height: 50px; padding: 10px var(--sp-md);
+    font-size: 14px; font-weight: 700; line-height: 20px;
+    color: var(--on-surface-dim);
+  }
+
+  /* ══ Contenu ═════════════════════════════════════════════════════ */
+  .content {
+    width: var(--content-w);
+    margin: 0 auto;
+    padding: 24px 0 40px;
+  }
+
+  /* ══ Bandeau « C'est le moment de vendre » ═══════════════════════ */
+  .sell-banner {
+    position: relative;
+    height: 80px;
+    background: var(--main-container);
+    border-radius: var(--radius-lg);
+    overflow: clip;
+  }
+  /* Le décor déborde volontairement du cadre, comme dans le Figma. */
+  .sell-banner-deco {
+    position: absolute; left: -20px; top: -62px;
+    width: 1112.08px; height: 280px;
+    pointer-events: none;
+  }
+  .sell-banner-inner {
+    position: relative;
+    display: flex; align-items: center; justify-content: center; gap: var(--sp-lg);
+    height: 100%;
+  }
+  .sell-banner-title {
+    font-size: 20px; font-weight: 700; line-height: 28px;
+    color: var(--on-background); text-align: center; white-space: nowrap;
+  }
+
+  /* ══ Section ═════════════════════════════════════════════════════ */
+  .section { margin-top: 40px; }
+  .section-title {
+    font-size: 20px; font-weight: 700; line-height: 28px;
+    color: var(--on-surface);
+    margin: 0 0 var(--sp-lg);
+  }
+
+  /* ══ Cartes « Reprendre ma recherche » ═══════════════════════════ */
+  .recent-searches {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+  .search-card {
+    position: relative;
+    display: flex; flex-direction: column; justify-content: center;
+    min-height: 100px;
+    padding: var(--sp-lg) var(--sp-lg) var(--sp-lg) 88px;
+    background: var(--surface);
+    border: 1px solid var(--outline-dim-3);
+    border-radius: var(--radius-s);
+    overflow: clip;
+    transition: border-color .15s ease, box-shadow .15s ease;
+  }
+  .search-card:hover {
+    border-color: var(--outline);
+    box-shadow: 0 2px 8px rgba(21, 34, 51, .08);
+  }
+  .search-card-title {
+    font-size: 14px; font-weight: 700; line-height: 20px;
+    color: var(--on-surface);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    padding-right: 36px;
+  }
+  .search-card-body {
+    display: flex; align-items: flex-start; gap: 19px;
+    margin-top: var(--sp-sm);
+  }
+  .search-card-criteria {
+    width: 157px;
+    font-size: 12px; line-height: 16px;
+    color: var(--on-surface-dim);
+  }
+  .search-card-dismiss {
+    position: absolute; top: 0; right: 0;
+  }
+
+  /* Vignettes empilées — le composant « Carrousel » du Figma. */
+  .thumb-stack {
+    position: absolute; left: 15.5px; top: 17.5px;
+    width: 56px; height: 64px;
+    border-radius: var(--radius-xs);
+    overflow: clip;
+  }
+  .thumb-stack img { position: absolute; object-fit: cover; display: block; }
+  .thumb-3 {
+    width: 40px; height: 40px;
+    left: 50%; top: calc(50% + 12px);
+    transform: translate(-50%, -50%);
+    border-radius: 2px;
+  }
+  .thumb-2 {
+    width: 49px; height: 49px;
+    left: calc(50% + .5px); top: calc(50% + 3.5px);
+    transform: translate(-50%, -50%) scaleY(-1);
+    border: 1px solid var(--surface);
+    border-radius: var(--radius-xs);
+  }
+  .thumb-1 {
+    width: 56px; height: 56px;
+    left: 0; top: -1px;
+    border: 1px solid var(--surface);
+    border-radius: var(--radius-xs);
+  }
+
+  /* ══ Zoning ══════════════════════════════════════════════════════
+     Les deux carrousels ne sont pas nécessaires pour la démonstration du
+     parcours : ils restent en zoning, à la hauteur qu'ils occupent dans le
+     Figma, pour que les proportions de la page soient justes. */
+  .zoning {
+    display: flex; align-items: center; justify-content: center;
+    background: var(--neutral-container);
+    border-radius: var(--radius-s);
+    font-size: 14px; line-height: 20px;
+    color: var(--on-surface-dim);
+  }
+
+  /* ══ Responsive ══════════════════════════════════════════════════ */
+  /* Sous 1086px l'habillage n'a plus la place : on le retire et la page
+     prend toute la largeur, comme le fait le site. */
+  @media (max-width: 1120px) {
+    body { background-image: none; background-color: var(--surface); }
+    .shell { width: 100%; padding-top: 0; }
+    .page { border-radius: 0; }
+    .content { width: 100%; padding-left: var(--sp-lg); padding-right: var(--sp-lg); }
+  }
+  @media (max-width: 900px) {
+    .recent-searches { grid-template-columns: repeat(2, 1fr); }
+    .header-item span { display: none; }
+  }
+  @media (max-width: 720px) {
+    .recent-searches { grid-template-columns: 1fr; }
+    .sell-banner { height: auto; padding: var(--sp-lg); }
+    .sell-banner-inner { flex-direction: column; }
+    .sell-banner-title { white-space: normal; }
+    .categories { overflow-x: auto; justify-content: flex-start; }
+  }
+</style>
+</head>
+<body>
+
+<div class="shell">
+  <div class="page">
+
+    <!-- ══ Header ═══════════════════════════════════════════════ -->
+    <header class="site-header" data-node-id="15472:22937">
+      <div class="header-main">
+        <a class="logo" href="#" aria-label="leboncoin — accueil">
+          <img src="assets/brand-logo.svg" width="164" height="30" alt="leboncoin" />
+        </a>
+
+        <div class="header-search">
+          <!-- Point de raccordement au proto de dépôt -->
+          <a class="btn btn-main" href="../ad-insertion-titre.html">
+            <img src="assets/icon-add-square.svg" width="16" height="16" alt="" />
+            Déposer une annonce
+          </a>
+
+          <form class="searchbar" role="search" onsubmit="return false">
+            <input type="search" aria-label="Rechercher sur leboncoin" placeholder="Rechercher sur leboncoin" />
+            <button class="icon-btn icon-btn-main" type="submit" aria-label="Rechercher">
+              <img src="assets/icon-magnifier.svg" width="16" height="16" alt="" />
+            </button>
+          </form>
+        </div>
+
+        <nav class="header-items" aria-label="Mon compte">
+          <a class="header-item" href="#">
+            <span class="header-item-icon"><img src="assets/icon-bell.svg" width="24" height="24" alt="" /></span>
+            <span>Mes recherches</span>
+          </a>
+          <a class="header-item" href="#">
+            <span class="header-item-icon"><img src="assets/icon-heart.svg" width="24" height="24" alt="" /></span>
+            <span>Favoris</span>
+          </a>
+          <a class="header-item" href="#">
+            <span class="header-item-icon"><img src="assets/icon-bubble-text.svg" width="24" height="24" alt="" /></span>
+            <span>Messages</span>
+          </a>
+          <a class="header-item" href="#">
+            <span class="header-item-icon"><img src="assets/icon-user.svg" width="24" height="24" alt="" /></span>
+            <span>Se connecter</span>
+          </a>
+        </nav>
+      </div>
+
+      <div class="header-categories">
+        <nav class="categories" aria-label="Catégories">
+          <a class="category" href="#">Immobilier</a>
+          <span class="category-sep" aria-hidden="true">·</span>
+          <a class="category" href="#">Véhicules</a>
+          <span class="category-sep" aria-hidden="true">·</span>
+          <a class="category" href="#">Matériel pro</a>
+          <span class="category-sep" aria-hidden="true">·</span>
+          <a class="category" href="#">Emploi</a>
+          <span class="category-sep" aria-hidden="true">·</span>
+          <a class="category" href="#">Mode</a>
+          <span class="category-sep" aria-hidden="true">·</span>
+          <a class="category" href="#">Maison &amp; Jardin</a>
+          <span class="category-sep" aria-hidden="true">·</span>
+          <a class="category" href="#">Famille</a>
+          <span class="category-sep" aria-hidden="true">·</span>
+          <a class="category" href="#">Électronique</a>
+          <span class="category-sep" aria-hidden="true">·</span>
+          <a class="category" href="#">Loisirs</a>
+          <span class="category-sep" aria-hidden="true">·</span>
+          <a class="category" href="#">Plus</a>
+          <span class="category-sep" aria-hidden="true">·</span>
+          <a class="category category-strong" href="#">Bon plans !</a>
+        </nav>
+      </div>
+    </header>
+
+    <!-- ══ Contenu ══════════════════════════════════════════════ -->
+    <main class="content">
+
+      <!-- Bandeau de dépôt -->
+      <section class="sell-banner" data-node-id="15472:22939">
+        <img class="sell-banner-deco" src="assets/searchform-deco.svg" width="1112" height="280" alt="" />
+        <div class="sell-banner-inner">
+          <p class="sell-banner-title">C’est le moment de vendre.</p>
+          <a class="btn btn-main" href="../ad-insertion-titre.html">
+            <img src="assets/icon-add-square.svg" width="16" height="16" alt="" />
+            Déposer une annonce
+          </a>
+        </div>
+      </section>
+
+      <!-- Recherches récentes -->
+      <section class="section" data-node-id="15472:22951">
+        <h2 class="section-title">Reprendre ma recherche</h2>
+        <div class="recent-searches" id="recent-searches">
+          <!-- Les 3 cartes sont injectées depuis RECENT_SEARCHES ci-dessous. -->
+        </div>
+      </section>
+
+      <!-- Carrousels laissés en zoning : hors périmètre de la démonstration. -->
+      <section class="section">
+        <h2 class="section-title">Vos coups de cœur</h2>
+        <div class="zoning" style="height: 295px" data-node-id="15472:22959">Carrousel « Favoris »</div>
+      </section>
+
+      <section class="section">
+        <h2 class="section-title">Ça va vous plaire</h2>
+        <div class="zoning" style="height: 388px" data-node-id="15472:22960">Carrousel « Ça va vous plaire »</div>
+      </section>
+
+    </main>
+  </div>
+</div>
+
+<script>
+  /* ══ Recherches récentes ═════════════════════════════════════════
+     Contenu repris du Figma (les trois cartes y portent les mêmes
+     valeurs). Modifier ce tableau pour changer les cartes. */
+  const RECENT_SEARCHES = [
+    { title: 'Appartement avec charme', criteria: 'Périgueux (24000) - 5 km, maison +1,  max. 500 000...' },
+    { title: 'Appartement avec charme', criteria: 'Périgueux (24000) - 5 km, maison +1,  max. 500 000...' },
+    { title: 'Appartement avec charme', criteria: 'Périgueux (24000) - 5 km, maison +1,  max. 500 000...' },
+  ]
+
+  const container = document.getElementById('recent-searches')
+
+  RECENT_SEARCHES.forEach(s => {
+    const card = document.createElement('article')
+    card.className = 'search-card'
+    card.dataset.nodeId = '15472:25154'
+    card.innerHTML = `
+      <div class="thumb-stack" aria-hidden="true">
+        <img class="thumb-3" src="assets/search-thumb-03.png" alt="" />
+        <img class="thumb-2" src="assets/search-thumb-02.png" alt="" />
+        <img class="thumb-1" src="assets/search-thumb-01.png" alt="" />
+      </div>
+
+      <p class="search-card-title">${s.title}</p>
+
+      <div class="search-card-body">
+        <p class="search-card-criteria">${s.criteria}</p>
+        <button class="icon-btn icon-btn-neutral" type="button" aria-label="Désactiver l’alerte pour cette recherche">
+          <img src="assets/icon-bell-off.svg" width="16" height="16" alt="" />
+        </button>
+      </div>
+
+      <button class="icon-btn icon-btn-ghost search-card-dismiss" type="button" aria-label="Supprimer cette recherche">
+        <img src="assets/icon-cross.svg" width="16" height="16" alt="" />
+      </button>`
+
+    // La croix retire la carte — le geste est démontrable dans le proto.
+    card.querySelector('.search-card-dismiss').addEventListener('click', () => card.remove())
+
+    container.appendChild(card)
+  })
+</script>
+
+</body>
+</html>

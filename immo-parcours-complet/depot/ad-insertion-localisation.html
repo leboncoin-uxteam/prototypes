@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dépôt annonce — Où se situe votre bien ?</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,300;0,6..12,400;0,6..12,600;0,6..12,700;0,6..12,800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <style>
+    /* ══ Spark design tokens — thème light ══════════════════════════ */
+    :root {
+      --color-main:                     #ec5a13;
+      --color-on-main:                  #ffffff;
+      --color-main-hovered:             #f07b42;
+
+      --color-support:                  #094171;
+      --color-on-support:               #ffffff;
+      --color-support-container:        #e6f2fd;
+      --color-on-support-container:     #152233;
+      --color-support-container-hovered:#f4f9fe;
+
+      --color-surface:                  #ffffff;
+      --color-on-surface:               #152233;
+      --color-surface-hovered:          #f6f8f9;
+      --color-background-variant:       #f4f9fe;
+      --color-on-background:            #152233;
+
+      --color-neutral-container:        #f0f2f5;
+
+      /* feedback */
+      --color-info-container:           #c2e0fa;
+      --color-on-info-container:        #0c5291;
+
+      --color-error:                    #ad291f;
+      --color-outline:                  #acb8c7;
+      --color-shadow:                   rgba(108,129,157,0.5);
+      --color-focus:                    #0000ff;
+
+      /* dim */
+      --color-on-surface-dim:           rgba(21,34,51,0.72);
+      --color-on-surface-dim-4:         rgba(21,34,51,0.16);
+      --color-on-background-dim-4:      rgba(21,34,51,0.16);
+      --dim-3:                          0.4;
+
+      /* spacing */
+      --sp-sm:   4px;
+      --sp-md:   8px;
+      --sp-lg:   16px;
+      --sp-xl:   24px;
+      --sp-2xl:  32px;
+      --sp-3xl:  40px;
+
+      /* radius */
+      --radius-sm:   4px;
+      --radius-md:   8px;
+      --radius-lg:   16px;
+      --radius-full: 100px;
+
+      --border-sm:   1px;
+      --border-md:   2px;
+
+      --ease-standard: cubic-bezier(0.2,0,0,1);
+      --duration-short: 150ms;
+      --duration-medium: 250ms;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Nunito Sans', sans-serif;
+      background: var(--color-background-variant);
+      color: var(--color-on-surface);
+      min-height: 100vh;
+    }
+    button { font-family: inherit; cursor: pointer; }
+
+    .page-wrapper { display: flex; flex-direction: column; align-items: center; gap: var(--sp-md); min-height: 100vh; }
+
+    /* ══ Header simple ═══════════════════════════════════════════════ */
+    .header {
+      background: var(--color-surface);
+      width: 100%;
+      filter: drop-shadow(0 4px 8px var(--color-shadow));
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      position: sticky; top: 0; z-index: 1000;
+    }
+    .header-inner {
+      display: flex; align-items: center; justify-content: space-between;
+      height: 60px; width: 100%; max-width: 1066px;
+      padding: 0 var(--sp-lg);
+    }
+    .header-left { display: flex; align-items: center; gap: var(--sp-lg); }
+    .brand-logo  { display: block; }
+    .header-title {
+      display: flex; align-items: center; justify-content: center;
+      height: 44px; padding: var(--sp-md) var(--sp-lg);
+      border-radius: var(--radius-lg);
+      font-size: 16px; font-weight: 700; line-height: 24px;
+      color: var(--color-support);
+    }
+
+    .progress-bar-track {
+      width: 100%; height: 4px; overflow: hidden;
+      background: var(--color-on-background-dim-4);
+    }
+    .progress-bar-fill {
+      height: 100%; background: var(--color-main);
+      transition: width var(--duration-medium) var(--ease-standard);
+    }
+
+    /* ══ Spark Buttons ═══════════════════════════════════════════════ */
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: var(--sp-md);
+      height: 44px; padding: var(--sp-md) var(--sp-lg);
+      font-size: 16px; font-weight: 700; line-height: 24px;
+      text-decoration: none;
+      transition: background var(--duration-short) var(--ease-standard);
+    }
+    .btn:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; }
+
+    .btn-outlined {
+      border: var(--border-sm) solid var(--color-support);
+      background: transparent; color: var(--color-support);
+      border-radius: var(--radius-lg);
+    }
+    .btn-outlined:hover { background: var(--color-support-container-hovered); }
+
+    .btn-footer-back {
+      border: var(--border-sm) solid var(--color-support);
+      background: transparent; color: var(--color-support);
+      border-radius: var(--radius-full);
+      width: 83px;
+    }
+    .btn-footer-back:hover { background: var(--color-support-container-hovered); }
+
+    .btn-footer-next {
+      border: none;
+      background: var(--color-main); color: var(--color-on-main);
+      border-radius: var(--radius-full);
+    }
+    .btn-footer-next:not(:disabled):hover  { background: var(--color-main-hovered); }
+    .btn-footer-next:not(:disabled):active { transform: scale(0.98); }
+
+    /* State Disabled (Spark) : opacité dim-3, comme le switch immersif. */
+    .btn-footer-next:disabled {
+      opacity: var(--dim-3);
+      cursor: not-allowed;
+    }
+
+    /* ══ Layout ══════════════════════════════════════════════════════ */
+    .full-page {
+      display: flex; flex-direction: column; align-items: center;
+      gap: var(--sp-xl); padding: var(--sp-3xl) 0; width: 100%;
+    }
+    .main-content {
+      display: flex; align-items: center; gap: var(--sp-xl);
+      width: 1066px; max-width: 100%;
+      padding: 0 var(--sp-lg);
+    }
+    .step-content {
+      background: var(--color-surface);
+      display: flex; flex-direction: column; align-items: flex-start;
+      gap: var(--sp-xl); padding: var(--sp-xl);
+      border-radius: var(--radius-lg);
+      width: 815px; max-width: 100%;
+    }
+    .step-main {
+      display: flex; flex-direction: column; align-items: flex-start;
+      gap: var(--sp-2xl); width: 100%; min-width: 0;
+    }
+
+    .headline-2 { font-size: 18px; font-weight: 700; line-height: 24px; color: var(--color-on-surface); width: 100%; }
+
+    /* ══ Bloc carte ══════════════════════════════════════════════════ */
+    .map-block  { display: flex; flex-direction: column; align-items: flex-start; gap: var(--sp-xl); width: 100%; }
+    .maps-text  { display: flex; flex-direction: column; align-items: flex-start; gap: var(--sp-lg); width: 100%; }
+
+    /* ══ Combobox (Spark) + autocomplete ═════════════════════════════ */
+    .combobox-field { display: flex; flex-direction: column; align-items: flex-start; gap: var(--sp-sm); width: 100%; }
+    .field-label-row { display: flex; align-items: center; gap: var(--sp-sm); }
+    .field-label { font-size: 14px; font-weight: 400; line-height: 20px; color: var(--color-on-surface); }
+    .mandatory {
+      display: flex; align-items: flex-end; height: 20px; padding-bottom: 1px;
+      font-size: 12px; font-weight: 400; line-height: 16px; color: var(--color-on-surface-dim);
+    }
+
+    .combobox-anchor { position: relative; width: 100%; }
+    .combobox {
+      background: var(--color-surface);
+      border: var(--border-sm) solid var(--color-outline);
+      border-radius: var(--radius-lg);
+      display: flex; align-items: center;
+      height: 44px; width: 100%;
+      padding-left: var(--sp-lg);
+      transition: border-color var(--duration-short) var(--ease-standard);
+    }
+    /* State Error (Spark) : bordure error, et le message juste dessous. */
+    .combobox.has-error,
+    .combobox.has-error:focus-within {
+      border-color: var(--color-error);
+    }
+    .field-error {
+      display: flex; align-items: center; gap: var(--sp-sm);
+      margin-top: var(--sp-sm);
+      font-size: 14px; font-weight: 400; line-height: 20px;
+      color: var(--color-error);
+    }
+    .field-error[hidden] { display: none; }
+    .field-error img { flex-shrink: 0; display: block; }
+
+    .combobox:focus-within {
+      border-color: var(--color-support);
+      border-width: var(--border-md);
+      padding-left: 15px;
+    }
+    .combobox-lead {
+      display: flex; align-items: center; height: 44px;
+      padding-right: var(--sp-xl); flex-shrink: 0;
+    }
+    .combobox input {
+      flex: 1 0 0; min-width: 0; height: 44px;
+      border: none; outline: none; background: transparent;
+      font-family: inherit; font-size: 16px; font-weight: 400; line-height: 24px;
+      color: var(--color-on-surface);
+      text-overflow: ellipsis;
+    }
+    .combobox input::placeholder { color: var(--color-on-surface-dim); }
+    .combobox-clear {
+      display: none; align-items: center; justify-content: center;
+      width: 44px; height: 44px; flex-shrink: 0;
+      border: none; background: none; padding: 0;
+      color: var(--color-on-surface-dim);
+      border-radius: 50%;
+    }
+    .combobox-clear.is-visible { display: flex; }
+    .combobox-clear:hover { color: var(--color-on-surface); }
+    .combobox-clear:focus-visible { outline: 2px solid var(--color-focus); outline-offset: -4px; }
+
+    /* Dropdown de suggestions */
+    .combobox-list {
+      position: absolute; top: calc(100% + 4px); left: 0; right: 0; z-index: 900;
+      background: var(--color-surface);
+      border: var(--border-sm) solid var(--color-outline);
+      border-radius: var(--radius-lg);
+      box-shadow: 0 4px 8px 0 var(--color-shadow);
+      padding: var(--sp-md) 0;
+      max-height: 320px; overflow-y: auto;
+      list-style: none;
+    }
+    .combobox-list[hidden] { display: none; }
+    .combobox-option {
+      display: flex; align-items: center; gap: var(--sp-md);
+      padding: var(--sp-md) var(--sp-lg);
+      cursor: pointer;
+      transition: background var(--duration-short) var(--ease-standard);
+    }
+    .combobox-option:hover,
+    .combobox-option.is-active { background: var(--color-support-container-hovered); }
+    .combobox-option-icon { flex-shrink: 0; display: block; }
+    .combobox-option-text { display: flex; flex-direction: column; min-width: 0; }
+    .combobox-option-label {
+      font-size: 16px; font-weight: 400; line-height: 24px; color: var(--color-on-surface);
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .combobox-option-context {
+      font-size: 12px; font-weight: 400; line-height: 16px; color: var(--color-on-surface-dim);
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .combobox-status {
+      padding: var(--sp-md) var(--sp-lg);
+      font-size: 14px; line-height: 20px; color: var(--color-on-surface-dim);
+    }
+
+    /* ══ Carte ═══════════════════════════════════════════════════════ */
+    .map {
+      position: relative; width: 100%; height: 260px;
+      overflow: hidden; background: var(--color-neutral-container);
+    }
+    #leaflet-map { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 0; }
+
+    /* Contrôle zoom repris de la maquette (40×80, radius 8) */
+    .map-zoom {
+      position: absolute; right: var(--sp-lg); bottom: var(--sp-lg); z-index: 500;
+      width: 40px; height: 80px;
+      background: var(--color-surface);
+      border-radius: var(--radius-md);
+      box-shadow:
+        0 3px 4px 0 rgba(0,0,0,0.14),
+        0 3px 3px -2px rgba(0,0,0,0.04),
+        0 1px 8px 0 rgba(0,0,0,0.2);
+      overflow: hidden;
+    }
+    /* Zone cliquable de 40 × 40 par bouton — la moitié du bloc, qui en fait
+       80 de haut. L'icône garde sa position : centrée par le flex, elle
+       retombe au même pixel qu'avec l'ancien calage absolu. */
+    .map-zoom button {
+      position: absolute; left: 0;
+      width: 40px; height: 40px;
+      border: none; background: none; padding: 0;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+    }
+    .map-zoom-in  { top: 0; }
+    .map-zoom-out { top: 40px; }
+    .map-zoom-sep {
+      position: absolute; left: 4px; top: 40px;
+      width: 32px; height: 1px;
+      border-top: var(--border-sm) solid var(--color-outline);
+    }
+    /* Zoning : reste immobile au centre, la carte glisse dessous */
+    .map-zoning {
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 400;
+      width: 101px; height: 101px;
+      pointer-events: none;
+    }
+    .map-zoning[hidden] { display: none; }
+
+    /* Adresse avec numéro : un pin, dont la pointe marque le point exact.
+       D'où translate(-50%, -100%) et non -50% : c'est le bas du pin qui
+       doit tomber sur le centre de la carte, pas son milieu. */
+    .map-pin {
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -100%);
+      z-index: 400;
+      width: 32px; height: 32px;
+      pointer-events: none;
+    }
+    .map-pin[hidden] { display: none; }
+
+    /* Coach mark « Faites glisser la carte » */
+    .map-tip {
+      position: absolute; top: 9px; left: 50%;
+      transform: translateX(-50%);
+      z-index: 600;
+      display: flex; align-items: center; gap: 12px;
+      padding: var(--sp-md) 12px;
+      max-width: calc(100% - 2 * var(--sp-lg));
+      background: var(--color-info-container);
+      border-radius: var(--radius-sm);
+      filter: drop-shadow(0 6px 12px var(--color-shadow));
+    }
+    .map-tip[hidden] { display: none; }
+    .map-tip-inner { display: flex; align-items: center; gap: var(--sp-md); min-width: 0; }
+    .map-tip-badge {
+      display: flex; align-items: center; flex-shrink: 0;
+      padding: var(--sp-sm);
+      background: var(--color-surface);
+      border-radius: var(--radius-full);
+    }
+    .map-tip-text {
+      font-size: 14px; font-weight: 400; line-height: 20px;
+      color: var(--color-on-info-container);
+      white-space: nowrap;
+    }
+    .map-tip-text strong { font-weight: 700; }
+    @media (max-width: 720px) { .map-tip-text { white-space: normal; } }
+
+    /* Attribution Esri — obligatoire avec les tuiles ArcGIS */
+    .leaflet-container .leaflet-control-attribution {
+      font-family: 'Nunito Sans', sans-serif; font-size: 10px;
+      background: rgba(255,255,255,0.8);
+    }
+
+    .caption { font-size: 12px; font-weight: 400; line-height: 16px; color: var(--color-on-surface-dim); width: 100%; }
+
+    /* ══ Switch label (Spark) ════════════════════════════════════════ */
+    .switch-label { display: flex; align-items: center; gap: var(--sp-md); width: 100%; }
+    .switch-label.is-disabled { opacity: var(--dim-3); }
+    .switch-label:not(.is-disabled) { cursor: pointer; }
+    .switch-label input { position: absolute; opacity: 0; width: 0; height: 0; }
+
+    .switch-track {
+      position: relative; flex-shrink: 0; width: 56px; height: 32px;
+      background: var(--color-on-surface-dim-4);
+      border-radius: var(--radius-lg);
+      padding: var(--sp-sm);
+      display: flex; align-items: center;
+      transition: background var(--duration-short) var(--ease-standard);
+    }
+    .switch-handle {
+      position: relative; width: 24px; height: 24px;
+      display: flex; align-items: center; justify-content: center;
+      transition: transform var(--duration-short) var(--ease-standard);
+    }
+    .switch-handle img { display: block; }
+    .switch-check {
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--color-support);
+      opacity: 0;
+      transition: opacity var(--duration-short) var(--ease-standard);
+    }
+    .switch-label input:checked + .switch-track { background: var(--color-support); }
+    .switch-label input:checked + .switch-track .switch-handle { transform: translateX(24px); }
+    .switch-label input:checked + .switch-track .switch-check { opacity: 1; }
+    .switch-label input:focus-visible + .switch-track { outline: 2px solid var(--color-focus); outline-offset: 2px; }
+
+    .switch-text { flex: 1 0 0; min-width: 0; font-size: 16px; font-weight: 400; line-height: 24px; color: var(--color-on-surface); }
+
+    /* ══ Awareness (callout) ═════════════════════════════════════════ */
+    .awareness {
+      background: var(--color-support-container);
+      border-radius: var(--radius-lg);
+      display: flex; align-items: flex-start; gap: var(--sp-lg);
+      padding: var(--sp-lg); width: 100%;
+    }
+    .awareness-icon { flex-shrink: 0; display: block; }
+    .awareness-text {
+      flex: 1 0 0; min-width: 0;
+      font-size: 14px; font-weight: 400; line-height: 20px;
+      color: var(--color-on-support-container);
+    }
+
+    /* ══ Action footer ═══════════════════════════════════════════════ */
+    .action-footer { display: flex; align-items: center; justify-content: space-between; width: 100%; }
+
+    /* ══ Tips ════════════════════════════════════════════════════════ */
+    .tips {
+      display: flex; flex-direction: column; align-items: flex-start;
+      gap: var(--sp-lg); width: 200px; flex-shrink: 0;
+    }
+    .tips-icon { display: flex; align-items: center; justify-content: center; gap: var(--sp-md); width: 100%; }
+    .tips-icon::before,
+    .tips-icon::after {
+      content: ''; flex: 1 0 0; min-width: 0; height: 0;
+      border-top: var(--border-sm) solid var(--color-main);
+    }
+    .tips-text {
+      width: 100%;
+      font-size: 14px; font-weight: 400; line-height: 20px;
+      color: var(--color-on-background); text-align: center;
+    }
+
+    @media (max-width: 1080px) {
+      .main-content { flex-direction: column; align-items: stretch; }
+      .step-content { width: 100%; }
+      .tips { width: 100%; align-items: center; }
+    }
+  </style>
+</head>
+<body>
+<div class="page-wrapper">
+
+  <!-- ══ Header simple ═════════════════════════════════════════════ -->
+  <header class="header">
+    <div class="header-inner">
+      <div class="header-left">
+        <img class="brand-logo" src="assets/leboncoin-logo.svg" width="140" height="26" alt="leboncoin" />
+        <span class="header-title">Déposer une annonce</span>
+      </div>
+      <button type="button" class="btn btn-outlined">Quitter</button>
+    </div>
+    <div class="progress-bar-track">
+      <div class="progress-bar-fill" style="width:25%"></div>
+    </div>
+  </header>
+
+  <!-- ══ Full page ═════════════════════════════════════════════════ -->
+  <div class="full-page">
+    <main class="main-content">
+
+      <div class="step-content">
+        <div class="step-main">
+
+          <h1 class="headline-2">Où se situe votre bien ?</h1>
+
+          <div class="map-block">
+
+            <!-- Combobox adresse avec autocomplete -->
+            <div class="combobox-field">
+              <div class="field-label-row">
+                <label class="field-label" for="adresse">Adresse</label>
+                <span class="mandatory" aria-hidden="true">*</span>
+              </div>
+
+              <div class="combobox-anchor">
+                <div class="combobox">
+                  <span class="combobox-lead">
+                    <img src="assets/map-target.svg" width="16" height="16" alt="" />
+                  </span>
+                  <input
+                    type="text"
+                    id="adresse"
+                    placeholder="Numéro, nom de rue"
+                    autocomplete="off"
+                    role="combobox"
+                    aria-expanded="false"
+                    aria-controls="adresse-list"
+                    aria-autocomplete="list"
+                  />
+                  <button type="button" class="combobox-clear" id="adresse-clear" aria-label="Effacer l'adresse">
+                    <img src="assets/circle-cross.svg" width="16" height="16" alt="" />
+                  </button>
+                </div>
+
+                <ul class="combobox-list" id="adresse-list" role="listbox" aria-label="Suggestions d'adresses" hidden></ul>
+              </div>
+
+              <p class="field-error" id="adresse-error" role="alert" hidden>
+                <img src="assets/alert-alert.svg" width="16" height="16" alt="" />
+                Veuillez saisir une adresse
+              </p>
+            </div>
+
+            <div class="maps-text">
+              <!-- Carte -->
+              <div class="map">
+                <div id="leaflet-map"></div>
+
+                <!-- Zoning : immobile au centre de la carte. Adresse sans
+                     numéro, donc on situe un secteur, pas un point. -->
+                <img
+                  class="map-zoning"
+                  id="map-zoning"
+                  src="assets/zoning-ellipse.svg"
+                  width="101" height="101"
+                  alt=""
+                  hidden
+                />
+
+                <!-- Pin : adresse avec numéro, la position est connue -->
+                <img
+                  class="map-pin"
+                  id="map-pin"
+                  src="assets/map-pin.svg"
+                  width="32" height="32"
+                  alt=""
+                  hidden
+                />
+
+                <!-- Coach mark -->
+                <div class="map-tip" id="map-tip" role="status" hidden>
+                  <div class="map-tip-inner">
+                    <span class="map-tip-badge">
+                      <img src="assets/hand-click.svg" width="16" height="16" alt="" />
+                    </span>
+                    <p class="map-tip-text">
+                      <strong>Faites glisser la carte</strong>
+                      <span id="map-tip-suffix">pour préciser le secteur du bien</span>
+                    </p>
+                  </div>
+                </div>
+
+                <div class="map-zoom">
+                  <button type="button" class="map-zoom-in" id="zoom-in" aria-label="Zoomer">
+                    <!-- ?v=2 : le cadre de frame Figma a été retiré du SVG, ce
+                         paramètre évite que le navigateur serve l'ancienne version -->
+                    <img src="assets/zoom-plus.svg?v=2" width="16" height="16" alt="" />
+                  </button>
+                  <span class="map-zoom-sep" aria-hidden="true"></span>
+                  <button type="button" class="map-zoom-out" id="zoom-out" aria-label="Dézoomer">
+                    <img src="assets/zoom-minus.svg" width="16" height="2.28571" alt="" />
+                  </button>
+                </div>
+              </div>
+
+              <p class="caption">
+                Complétez votre adresse et les personnes utilisant la recherche autour de soi trouveront
+                plus facilement votre annonce. Si vous ne souhaitez pas renseigner votre adresse exacte,
+                indiquez votre rue sans donner le numéro. Cette information ne sera conservée que le temps
+                de la publication de votre annonce.
+              </p>
+            </div>
+          </div>
+
+          <!-- Switch vue immersive -->
+          <label class="switch-label is-disabled" id="switch-immersive">
+            <input type="checkbox" id="immersive" disabled />
+            <span class="switch-track">
+              <span class="switch-handle">
+                <img src="assets/switch-handle.svg" width="24" height="24" alt="" />
+                <span class="switch-check">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M5 13l4.5 4.5L19 8" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </span>
+              </span>
+            </span>
+            <span class="switch-text">Activer la vue immersive (Street View)</span>
+          </label>
+
+          <!-- Awareness -->
+          <div class="awareness">
+            <img class="awareness-icon" src="assets/info-vector.svg" width="24" height="24" alt="" />
+            <p class="awareness-text">
+              La vue immersive ne sera affichée sur votre annonce que si vous remplissez l’adresse précise
+              (avec le numéro et la rue)
+            </p>
+          </div>
+
+        </div>
+
+        <!-- Action footer -->
+        <div class="action-footer">
+          <a href="ad-insertion-titre.html" class="btn btn-footer-back">Retour</a>
+          <!-- Désactivé tant qu'aucune localisation n'est retenue. Un <button>
+               et non un <a> : `disabled` ne s'applique pas à un lien. -->
+          <button type="button" class="btn btn-footer-next" id="btn-continuer" disabled>Continuer</button>
+        </div>
+      </div>
+
+      <!-- ══ Tips ════════════════════════════════════════════════════ -->
+      <aside class="tips">
+        <div class="tips-icon">
+          <img src="assets/light-bulb.svg" width="40" height="40" alt="" />
+        </div>
+        <p class="tips-text">
+          Pour des raisons de confidentialité, si vous renseignez votre adresse exacte,
+          celle-ci n’apparaîtra jamais sur votre annonce.
+        </p>
+      </aside>
+
+    </main>
+  </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+  /* ══ Carte ═══════════════════════════════════════════════════════ */
+  const FRANCE_CENTER = [46.6, 2.4]
+  const FRANCE_ZOOM   = 5
+
+  const map = L.map('leaflet-map', {
+    zoomControl: false,
+    attributionControl: true,
+    scrollWheelZoom: false,
+  }).setView(FRANCE_CENTER, FRANCE_ZOOM)
+
+  /* ══ Fond de carte ═══════════════════════════════════════════════
+     OSM France : le seul fond accessible qui dessine déjà les pictogrammes
+     de transport (M du métro, RER, gares) directement dans ses tuiles.
+     Pas de calque de stations à superposer. */
+  L.tileLayer('https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', {
+    maxZoom: 20,
+    subdomains: 'abc',
+    attribution: '&copy; OpenStreetMap France',
+  }).addTo(map)
+
+  document.getElementById('zoom-in').addEventListener('click', () => map.zoomIn())
+  document.getElementById('zoom-out').addEventListener('click', () => map.zoomOut())
+
+  /* Le marqueur est un overlay fixe au centre : la carte glisse dessous, donc
+     le point retenu est toujours le centre courant de la carte. */
+  const zoning = document.getElementById('map-zoning')
+  const pin    = document.getElementById('map-pin')
+  const tip    = document.getElementById('map-tip')
+  const tipSuffix = document.getElementById('map-tip-suffix')
+
+  let sectorCenter = null
+
+  /* Deux marqueurs pour deux précisions d'adresse : un pin quand le numéro
+     de rue est connu — la position est un point —, une ellipse sinon, où
+     seul un secteur a du sens. Le vocabulaire de la consigne suit. */
+  function setMarker(precise) {
+    pin.hidden    = !precise
+    zoning.hidden = precise
+    tipSuffix.textContent = precise
+      ? 'pour préciser la position du bien'
+      : 'pour préciser le secteur du bien'
+  }
+
+  function hideMarkers() {
+    pin.hidden = true
+    zoning.hidden = true
+  }
+
+  map.on('move', () => {
+    if (!zoning.hidden || !pin.hidden) sectorCenter = map.getCenter()
+  })
+
+  // Le coach mark reste affiché tant qu'une adresse est sélectionnée : il
+  // décrit un geste répétable, pas une étape à franchir une fois. Il ne
+  // disparaît qu'à la réinitialisation du champ (voir plus bas).
+
+  /* ══ Autocomplete — Base Adresse Nationale ═══════════════════════ */
+  const BAN_URL  = 'https://api-adresse.data.gouv.fr/search/'
+  const DEBOUNCE = 250
+  const MIN_CHARS = 3
+
+  const input    = document.getElementById('adresse')
+  const list     = document.getElementById('adresse-list')
+  const clearBtn = document.getElementById('adresse-clear')
+  const immersive = document.getElementById('immersive')
+  const switchRow = document.getElementById('switch-immersive')
+  const btnNext   = document.getElementById('btn-continuer')
+  const combobox  = document.querySelector('.combobox')
+  const errorMsg  = document.getElementById('adresse-error')
+
+  /* Une adresse tapée mais non choisie dans la liste n'est pas une adresse :
+     on le signale quand l'utilisateur quitte le champ, pas pendant la frappe. */
+  function showAddressError() {
+    errorMsg.hidden = false
+    combobox.classList.add('has-error')
+    input.setAttribute('aria-invalid', 'true')
+    input.setAttribute('aria-describedby', 'adresse-error')
+  }
+
+  function hideAddressError() {
+    errorMsg.hidden = true
+    combobox.classList.remove('has-error')
+    input.removeAttribute('aria-invalid')
+    input.removeAttribute('aria-describedby')
+  }
+
+  function validateAddress() {
+    if (!selected && input.value.trim().length > 0) showAddressError()
+    else hideAddressError()
+  }
+
+  /* L'étape n'est franchissable qu'avec une localisation retenue. */
+  const NEXT_STEP = 'ad-insertion-photos.html'
+  const setNextEnabled = on => { btnNext.disabled = !on }
+
+  btnNext.addEventListener('click', () => {
+    if (!btnNext.disabled) window.location.href = NEXT_STEP
+  })
+
+  let timer = null
+  let features = []
+  let activeIndex = -1
+  let selected = null
+  let requestId = 0
+
+  // "Rue Victor Hugo, Montrouge (92120)" — une commune n'affiche que son nom.
+  function formatLabel(p) {
+    const place = p.postcode ? `${p.city} (${p.postcode})` : p.city
+    if (p.type === 'municipality') return place
+    return p.name ? `${p.name}, ${place}` : place
+  }
+
+  function closeList() {
+    list.hidden = true
+    list.replaceChildren()
+    input.setAttribute('aria-expanded', 'false')
+    activeIndex = -1
+  }
+
+  function renderStatus(message) {
+    const li = document.createElement('li')
+    li.className = 'combobox-status'
+    li.textContent = message
+    list.replaceChildren(li)
+    list.hidden = false
+    input.setAttribute('aria-expanded', 'true')
+  }
+
+  function renderOptions() {
+    if (features.length === 0) {
+      renderStatus('Aucune adresse trouvée')
+      return
+    }
+    const items = features.map((f, i) => {
+      const p = f.properties
+      const li = document.createElement('li')
+      li.className = 'combobox-option'
+      li.id = `adresse-option-${i}`
+      li.setAttribute('role', 'option')
+      li.setAttribute('aria-selected', 'false')
+      li.dataset.index = String(i)
+
+      const icon = document.createElement('img')
+      icon.className = 'combobox-option-icon'
+      icon.src = 'assets/map-target.svg'
+      icon.width = 16
+      icon.height = 16
+      icon.alt = ''
+
+      const text = document.createElement('span')
+      text.className = 'combobox-option-text'
+
+      const label = document.createElement('span')
+      label.className = 'combobox-option-label'
+      label.textContent = formatLabel(p)
+
+      const context = document.createElement('span')
+      context.className = 'combobox-option-context'
+      context.textContent = p.context || ''
+
+      text.append(label, context)
+      li.append(icon, text)
+      return li
+    })
+    list.replaceChildren(...items)
+    list.hidden = false
+    input.setAttribute('aria-expanded', 'true')
+    activeIndex = -1
+  }
+
+  function setActive(index) {
+    const options = list.querySelectorAll('.combobox-option')
+    if (options.length === 0) return
+    activeIndex = (index + options.length) % options.length
+    options.forEach((el, i) => {
+      const on = i === activeIndex
+      el.classList.toggle('is-active', on)
+      el.setAttribute('aria-selected', on ? 'true' : 'false')
+      if (on) el.scrollIntoView({ block: 'nearest' })
+    })
+  }
+
+  async function search(query) {
+    const id = ++requestId
+    try {
+      const res = await fetch(`${BAN_URL}?q=${encodeURIComponent(query)}&limit=7`)
+      if (!res.ok) throw new Error(res.status)
+      const data = await res.json()
+      if (id !== requestId) return
+      features = data.features || []
+      renderOptions()
+    } catch {
+      if (id !== requestId) return
+      renderStatus('Recherche indisponible pour le moment')
+    }
+  }
+
+  function select(index) {
+    const f = features[index]
+    if (!f) return
+    selected = f
+    const p = f.properties
+    const [lon, lat] = f.geometry.coordinates
+
+    input.value = formatLabel(p)
+    closeList()
+    clearBtn.classList.add('is-visible')
+
+    // Le callout le dit : la vue immersive exige l'adresse précise, donc un numéro.
+    const precise = p.type === 'housenumber'
+
+    map.setView([lat, lon], p.type === 'municipality' ? 13 : 15)
+    setMarker(precise)
+    tip.hidden = false
+    sectorCenter = map.getCenter()
+
+    immersive.disabled = !precise
+    switchRow.classList.toggle('is-disabled', !precise)
+    if (!precise) immersive.checked = false
+
+    setNextEnabled(true)
+    hideAddressError()
+  }
+
+  function reset() {
+    selected = null
+    features = []
+    input.value = ''
+    closeList()
+    clearBtn.classList.remove('is-visible')
+    hideMarkers()
+    tip.hidden = true
+    sectorCenter = null
+    map.setView(FRANCE_CENTER, FRANCE_ZOOM)
+    immersive.checked = false
+    immersive.disabled = true
+    switchRow.classList.add('is-disabled')
+    setNextEnabled(false)
+    hideAddressError()
+    input.focus()
+  }
+
+  input.addEventListener('input', () => {
+    const q = input.value.trim()
+    clearBtn.classList.toggle('is-visible', q.length > 0)
+    clearTimeout(timer)
+    // On ne reproche rien pendant que l'utilisateur corrige.
+    hideAddressError()
+
+    if (selected && q !== formatLabel(selected.properties)) {
+      selected = null
+      hideMarkers()
+      tip.hidden = true
+      sectorCenter = null
+      immersive.checked = false
+      immersive.disabled = true
+      switchRow.classList.add('is-disabled')
+      setNextEnabled(false)
+    }
+    if (q.length < MIN_CHARS) { closeList(); return }
+    timer = setTimeout(() => search(q), DEBOUNCE)
+  })
+
+  input.addEventListener('keydown', e => {
+    if (e.key === 'ArrowDown')      { e.preventDefault(); if (list.hidden && features.length) renderOptions(); setActive(activeIndex + 1) }
+    else if (e.key === 'ArrowUp')   { e.preventDefault(); setActive(activeIndex - 1) }
+    else if (e.key === 'Enter')     { if (activeIndex >= 0) { e.preventDefault(); select(activeIndex) } }
+    else if (e.key === 'Escape')    { closeList() }
+  })
+
+  list.addEventListener('click', e => {
+    const option = e.target.closest('.combobox-option')
+    if (option) select(Number(option.dataset.index))
+  })
+
+  clearBtn.addEventListener('click', reset)
+
+  document.addEventListener('click', e => {
+    if (e.target.closest('.combobox-anchor')) return
+    closeList()
+    validateAddress()
+  })
+
+  // Sortie au clavier : même contrôle qu'au clic hors du champ.
+  input.addEventListener('blur', () => {
+    // Laisse le clic sur une suggestion se produire avant de juger.
+    setTimeout(() => { if (!list.contains(document.activeElement)) validateAddress() }, 150)
+  })
+</script>
+<script src="exit-dialog.js"></script>
+</body>
+</html>
