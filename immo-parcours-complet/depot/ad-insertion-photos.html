@@ -142,11 +142,16 @@
       display: flex; flex-direction: column; align-items: center;
       gap: var(--sp-xl); padding: var(--sp-3xl) 0; width: 100%;
     }
+    /* La colonne du progress tracker (215px) s'ajoute à gauche : la zone
+       passe de 1066 à 1278px pour que le contenu de l'étape garde ses
+       815px et les astuces leurs 200px, comme dans le Figma. */
     .main-content {
       display: flex; align-items: center; gap: var(--sp-xl);
-      width: 1066px; max-width: 100%;
+      width: 1278px; max-width: 100%;
       padding: 0 var(--sp-lg);
     }
+    /* Le tracker longe l'étape : il s'aligne en haut, pas au centre. */
+    .step-progress { align-self: flex-start; }
 
     .step-content {
       background: var(--color-surface);
@@ -280,7 +285,7 @@
 
     [hidden] { display: none !important; }
 
-    @media (max-width: 1080px) {
+    @media (max-width: 1320px) {
       .main-content { flex-direction: column; align-items: stretch; }
       .step-content { width: 100%; }
       .tips { width: 100%; align-items: center; padding: var(--sp-lg) 0; }
@@ -313,6 +318,9 @@
     <main class="main-content">
 
       <!-- ══ Step content ════════════════════════════════════════════ -->
+      <!-- Progress tracker — rempli par progress-tracker.js -->
+      <div class="step-progress" data-current="photos"></div>
+
       <div class="step-content" data-node-id="15761:11330">
         <div class="step-main">
 
@@ -336,8 +344,9 @@
         <!-- Action footer -->
         <div class="action-footer">
           <a href="ad-insertion-localisation.html" class="btn btn-outlined">Retour</a>
-          <!-- Dernière étape du parcours pour l'instant : pas de destination. -->
-          <button type="button" class="btn btn-filled-main" id="btn-continuer">Continuer</button>
+          <!-- Les étapes suivantes ne sont pas construites : on rejoint
+               « Mes annonces », où le dépôt apparaît en brouillon. -->
+          <a href="mes-annonces/index.html" class="btn btn-filled-main" id="btn-continuer">Continuer</a>
         </div>
       </div>
 
@@ -359,6 +368,7 @@
 <!-- Sélecteur de fichiers, piloté par les cases de la grille -->
 <input type="file" id="file-input" accept="image/*" multiple hidden />
 
+<script src="draft-store.js"></script>
 <script>
   /* ══ Paramètres ══════════════════════════════════════════════════ */
   const MAX_PHOTOS    = 99   // « jusqu'à 99 photos gratuites »
@@ -397,6 +407,22 @@
 
     // La barre avance un peu dès qu'il y a au moins une photo.
     progress.style.width = photos.length > 0 ? '76%' : '70%'
+
+    /* Où va ce qu'on vient de faire, selon l'usage de l'écran.
+
+       Mode édition : dans les retouches de l'annonce publiée. Le brouillon
+       du dépôt n'est pas touché — modifier les photos d'une annonce en
+       ligne ne doit pas créer ni salir un dépôt en cours.
+
+       Dépôt neuf : dans le brouillon, qui donne sa carte dans « Mes
+       annonces ». On y retient le nombre de photos et la première en
+       vignette, pas les fichiers : trop lourds à stocker. */
+    if (adId) {
+      AdEdits.patch(adId, { nbPhotos: photos.length })
+    } else {
+      Draft.patch({ nbPhotos: photos.length })
+      Draft.setThumb(photos.length > 0 ? photos[0].src : null)
+    }
   }
 
   function buildAddSlot() {
@@ -528,8 +554,38 @@
     setTimeout(() => tips.classList.remove('is-highlighted'), 1200)
   })
 
+  /* ══ Photos de départ ════════════════════════════════════════════
+     « ?photos=t3 » remplit la grille avec les quatre photos de
+     l'appartement 3 pièces. C'est par là qu'arrive « Ajouter des photos »
+     du panneau de complétion de « Mes annonces » : on y modifie les
+     photos d'une annonce déjà déposée, pas d'un dépôt vierge.
+
+     Sans ce paramètre la grille reste vide, comme pour un nouveau dépôt. */
+  const PHOTOS_T3 = [
+    { id: 't3-01', src: 'assets/annonce-t3/01-cuisine.jpeg',  name: 'Cuisine équipée' },
+    { id: 't3-02', src: 'assets/annonce-t3/02-terrasse.jpeg', name: 'Terrasse couverte' },
+    { id: 't3-03', src: 'assets/annonce-t3/03-sejour.jpeg',   name: 'Séjour' },
+    { id: 't3-04', src: 'assets/annonce-t3/04-vue.jpeg',      name: 'Vue dégagée' },
+  ]
+
+  const params = new URLSearchParams(location.search)
+
+  if (params.get('photos') === 't3') {
+    photos = PHOTOS_T3.slice()
+  }
+
+  /* En mode édition — « ad=<id> » dans l'URL — « Continuer » referme la
+     boucle sur l'annonce retouchée, détail ouvert, au lieu de retomber sur
+     la liste. Voir exit-dialog.js pour le bouton du header. */
+  const adId = params.get('ad')
+  if (adId) {
+    document.getElementById('btn-continuer')
+      .setAttribute('href', `mes-annonces/index.html?ad=${encodeURIComponent(adId)}`)
+  }
+
   render()
 </script>
+<script src="progress-tracker.js"></script>
 <script src="exit-dialog.js"></script>
 </body>
 </html>

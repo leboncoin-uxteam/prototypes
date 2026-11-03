@@ -153,11 +153,16 @@
       display: flex; flex-direction: column; align-items: center;
       gap: var(--sp-xl); padding: var(--sp-3xl) 0; width: 100%;
     }
+    /* La colonne du progress tracker (215px) s'ajoute à gauche : la zone
+       passe de 1066 à 1278px pour que le contenu de l'étape garde ses
+       815px et les astuces leurs 200px, comme dans le Figma. */
     .main-content {
       display: flex; align-items: center; gap: var(--sp-xl);
-      width: 1066px; max-width: 100%;
+      width: 1278px; max-width: 100%;
       padding: 0 var(--sp-lg);
     }
+    /* Le tracker longe l'étape : il s'aligne en haut, pas au centre. */
+    .step-progress { align-self: flex-start; }
     .step-content {
       background: var(--color-surface);
       display: flex; flex-direction: column; align-items: flex-start;
@@ -434,7 +439,7 @@
       color: var(--color-on-background); text-align: center;
     }
 
-    @media (max-width: 1080px) {
+    @media (max-width: 1320px) {
       .main-content { flex-direction: column; align-items: stretch; }
       .step-content { width: 100%; }
       .tips { width: 100%; align-items: center; }
@@ -461,6 +466,9 @@
   <!-- ══ Full page ═════════════════════════════════════════════════ -->
   <div class="full-page">
     <main class="main-content">
+
+      <!-- Progress tracker — rempli par progress-tracker.js -->
+      <div class="step-progress" data-current="adresse" data-animate></div>
 
       <div class="step-content">
         <div class="step-main">
@@ -618,6 +626,7 @@
 </div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="draft-store.js"></script>
 <script>
   /* ══ Carte ═══════════════════════════════════════════════════════ */
   const FRANCE_CENTER = [46.6, 2.4]
@@ -710,8 +719,16 @@
     else hideAddressError()
   }
 
-  /* L'étape n'est franchissable qu'avec une localisation retenue. */
-  const NEXT_STEP = 'ad-insertion-photos.html'
+  /* L'étape n'est franchissable qu'avec une localisation retenue.
+
+     En mode édition — « ad=<id> » dans l'URL, on corrige l'adresse d'une
+     annonce déjà déposée — « Continuer » referme la boucle sur l'annonce
+     plutôt que d'enchaîner sur les photos. Voir exit-dialog.js pour le
+     bouton du header. */
+  const editedAdId = new URLSearchParams(location.search).get('ad')
+  const NEXT_STEP = editedAdId
+    ? `mes-annonces/index.html?ad=${encodeURIComponent(editedAdId)}`
+    : 'ad-insertion-photos.html'
   const setNextEnabled = on => { btnNext.disabled = !on }
 
   btnNext.addEventListener('click', () => {
@@ -841,6 +858,20 @@
 
     setNextEnabled(true)
     hideAddressError()
+
+    /* La localisation retenue va dans les retouches de l'annonce quand on
+       en corrige une déjà publiée, et dans le brouillon quand il s'agit
+       d'un dépôt en cours. Jamais dans les deux : une annonce en ligne et
+       un dépôt sont deux choses distinctes. */
+    const localisation = {
+      adresse: input.value,
+      ville: p.city || p.name || '',
+      codePostal: p.postcode || '',
+      adressePrecise: precise,
+    }
+
+    if (editedAdId) AdEdits.patch(editedAdId, localisation)
+    else Draft.patch(localisation)
   }
 
   function reset() {
@@ -908,6 +939,7 @@
     setTimeout(() => { if (!list.contains(document.activeElement)) validateAddress() }, 150)
   })
 </script>
+<script src="progress-tracker.js"></script>
 <script src="exit-dialog.js"></script>
 </body>
 </html>

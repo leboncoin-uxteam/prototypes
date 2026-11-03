@@ -464,6 +464,7 @@
   </div>
 </div>
 
+<script src="draft-store.js"></script>
 <script>
   const SUGGESTION_DELAY = 1000
 
@@ -511,6 +512,40 @@
   select.addEventListener('change', () => {
     if (select.value) radios.forEach(r => { r.checked = false })
   })
+
+  /* ══ Brouillon ═══════════════════════════════════════════════════
+     Le titre et la catégorie sont enregistrés au fil de la saisie, pour
+     que « Mes annonces » puisse afficher ce dépôt en brouillon. */
+  function categorieLabel() {
+    const picked = [...radios].find(r => r.checked)
+    if (picked) return picked.closest('.cat-radio').querySelector('.cat-leaf').textContent.trim()
+    if (select.value) return select.options[select.selectedIndex].textContent.trim()
+    return ''
+  }
+
+  function saveDraft() {
+    Draft.patch({ titre: input.value.trim(), categorieLabel: categorieLabel() })
+  }
+
+  input.addEventListener('input', saveDraft)
+  radios.forEach(r => r.addEventListener('change', saveDraft))
+  select.addEventListener('change', saveDraft)
+
+  /* ══ Champ vide à la création ════════════════════════════════════
+     Créer une annonce part toujours d'un titre vide : c'est l'utilisateur
+     qui le choisit, rien ne lui est proposé. Recommencer le dépôt donne
+     la même page vierge.
+
+     Seule exception, « ?draft=1 » : on vient de « Finaliser l'annonce »
+     sur la carte de brouillon de « Mes annonces », donc on reprend un
+     dépôt entamé plutôt que d'en créer un. */
+  if (new URLSearchParams(location.search).get('draft') === '1') {
+    const draft = Draft.read()
+    if (draft.titre) {
+      input.value = draft.titre
+      input.dispatchEvent(new Event('input'))
+    }
+  }
 </script>
 <script src="exit-dialog.js"></script>
 </body>

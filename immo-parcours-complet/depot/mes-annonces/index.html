@@ -1,0 +1,1271 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>leboncoin — Mes annonces</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,300;0,6..12,400;0,6..12,600;0,6..12,700;0,6..12,800&display=swap" rel="stylesheet" />
+<style>
+  /* ══ Tokens Spark relevés dans le Figma ══════════════════════════
+     Fichier « Score de complétion », frame MyAds card • Immo (2150:24506).
+     Valeurs issues de get_variable_defs, pas devinées. */
+  :root {
+    --main:                    #ec5a13;
+    --main-hover:              #d14f10;
+    --main-container:          #ffe9de;
+    --on-main:                 #ffffff;
+
+    --support:                 #094171;
+    --on-support-container:    #152233;
+
+    --surface:                 #ffffff;
+    --on-surface:              #152233;
+    --background-variant:      #f4f9fe;
+    --on-surface-dim-1:        rgba(21, 34, 51, .72);   /* texte secondaire */
+    --on-surface-dim-2:        rgba(21, 34, 51, .56);   /* icônes */
+    --on-background-dim-4:     rgba(21, 34, 51, .16);   /* pistes de jauge */
+    --outline:                 #acb8c7;
+    --outline-dim-3:           rgba(172, 184, 199, .4);
+
+    --neutral:                 #3a4757;
+    --neutral-container:       #f0f2f5;
+    --on-neutral-container:    #3a4757;
+    --support-container:       #dcdce5;
+
+    --error:                   #ad291f;
+    --error-container:         #f7d7d4;
+    --on-error-container:      #822017;
+    --alert:                   #ffaa00;
+    --success:                 #1d6340;
+
+    --radius-xs:  4px;
+    --radius-s:   8px;
+    --radius-lg: 16px;
+    --radius-full: 99999px;
+
+    --sp-sm:  4px;
+    --sp-md:  8px;
+    --sp-lg: 16px;
+
+    /* Du Figma : header 1440 avec contenu 1066, page 1086. */
+    --page-w: 1086px;
+    /* Largeur de la colonne de statistiques, à droite de chaque carte. */
+    --stats-w: 150px;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    font-family: 'Nunito Sans', system-ui, -apple-system, sans-serif;
+    font-variation-settings: "YTLC" 500, "wdth" 100;
+    font-size: 16px; line-height: 24px;
+    color: var(--on-surface);
+    background: var(--surface);
+  }
+
+  p, h1, h2, h3 { margin: 0; }
+  img { display: block; }
+
+  /* ══ Header ══════════════════════════════════════════════════════
+     Repris à l'identique de la homepage du prototype, pour que le
+     parcours garde la même coquille d'un écran à l'autre. */
+  .site-header {
+    position: sticky; top: 0; z-index: 50;
+    display: flex; flex-direction: column; align-items: center;
+    background: var(--surface);
+    border-bottom: 1px solid var(--outline);
+  }
+  .header-main {
+    display: flex; align-items: center; gap: var(--sp-lg);
+    width: 100%; max-width: 1066px;
+    padding: 0 var(--sp-lg);
+  }
+  .logo { display: flex; padding-right: var(--sp-lg); flex-shrink: 0; }
+  .header-search {
+    display: flex; flex: 1 0 0; min-width: 0;
+    align-items: center; gap: var(--sp-lg);
+    padding: var(--sp-md) 0;
+  }
+  .header-items { display: flex; align-items: flex-start; flex-shrink: 0; }
+  .header-item {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: var(--sp-sm);
+    padding: 0 var(--sp-md) var(--sp-md);
+    border: 0; background: var(--surface); cursor: pointer;
+    font: inherit; font-size: 12px; line-height: 16px;
+    color: var(--on-surface); text-align: center; white-space: nowrap;
+    text-decoration: none;
+  }
+  .header-item-icon {
+    display: flex; align-items: flex-end;
+    width: 24px; height: 32px; padding-top: var(--sp-md);
+  }
+  .header-item:hover { text-decoration: underline; }
+  .header-item:last-child { width: 96px; }
+
+  .header-categories {
+    display: flex; flex-direction: column; align-items: center;
+    width: 100%; height: 50px;
+    background: var(--surface);
+  }
+  .categories {
+    display: flex; align-items: center; justify-content: space-between;
+    width: 100%; max-width: 1066px;
+    padding: 0 var(--sp-lg);
+    overflow: clip;
+  }
+  .category {
+    display: flex; align-items: center; justify-content: center;
+    height: 50px; padding: 10px 0;
+    font-size: 14px; line-height: 20px;
+    color: var(--on-surface); text-decoration: none; white-space: nowrap;
+  }
+  .category:hover { text-decoration: underline; }
+  .category-strong { font-weight: 700; }
+  .category-sep {
+    display: flex; align-items: center; justify-content: center;
+    height: 50px; padding: 10px var(--sp-md);
+    font-size: 14px; font-weight: 700; line-height: 20px;
+    color: var(--on-surface-dim-1);
+  }
+
+  /* ══ Boutons (Spark) ═════════════════════════════════════════════ */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    gap: var(--sp-md);
+    min-height: 44px; padding: var(--sp-md) var(--sp-lg);
+    border: 0; border-radius: var(--radius-lg);
+    font: inherit; font-size: 16px; font-weight: 700; line-height: 24px;
+    cursor: pointer; text-decoration: none; white-space: nowrap;
+    transition: background-color .15s ease, border-color .15s ease;
+  }
+  .btn-filled-main  { background: var(--main); color: var(--on-main); }
+  .btn-filled-main:hover { background: var(--main-hover); }
+  .btn-tinted {
+    background: var(--neutral-container); color: var(--on-neutral-container);
+  }
+  .btn-tinted:hover { background: var(--support-container); }
+  .btn-outlined-support {
+    background: var(--surface); color: var(--support);
+    box-shadow: inset 0 0 0 1px var(--support);
+  }
+  .btn-outlined-support:hover { background: var(--background-variant); }
+  .btn-ghost {
+    background: none; color: var(--on-surface);
+    padding: var(--sp-md) var(--sp-md);
+  }
+  .btn-ghost:hover { background: var(--neutral-container); }
+  .btn[disabled] { opacity: .4; cursor: not-allowed; }
+  .btn[disabled]:hover { background: var(--neutral-container); }
+  .btn:focus-visible { outline: 2px solid var(--on-surface); outline-offset: 2px; }
+
+  .btn-sm { min-height: 32px; padding: var(--sp-sm) var(--sp-md); font-size: 14px; line-height: 20px; }
+
+  .icon-btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 44px; height: 44px;
+    padding: 0; border: 0; border-radius: var(--radius-full);
+    background: var(--neutral-container); cursor: pointer;
+    transition: background-color .15s ease;
+  }
+  .icon-btn:hover { background: var(--support-container); }
+  .icon-btn-main { background: var(--main); }
+  .icon-btn-main:hover { background: var(--main-hover); }
+  .icon-btn-ghost { background: none; }
+  .icon-btn-ghost:hover { background: var(--neutral-container); }
+  .icon-btn-sm { width: 32px; height: 32px; }
+  .icon-btn:focus-visible { outline: 2px solid var(--on-surface); outline-offset: 2px; }
+
+  /* Lien textuel souligné — le « TextLink » de Spark. */
+  .text-link {
+    display: inline-flex; align-items: center; gap: var(--sp-md);
+    padding: var(--sp-sm) var(--sp-sm);
+    border: 0; background: none; cursor: pointer;
+    font: inherit; font-weight: 700;
+    color: var(--on-support-container);
+    text-decoration: underline; text-underline-offset: 2px;
+    border-radius: var(--radius-xs);
+  }
+  .text-link:hover { background: var(--neutral-container); }
+  .text-link-sm { font-size: 14px; line-height: 20px; }
+  .text-link:focus-visible { outline: 2px solid var(--on-surface); outline-offset: 2px; }
+
+  /* ══ Barre de recherche du header ════════════════════════════════ */
+  .searchbar {
+    display: flex; flex: 1 0 0; min-width: 0;
+    align-items: center; gap: var(--sp-md);
+    height: 44px; padding: var(--sp-md) var(--sp-md) var(--sp-md) var(--sp-lg);
+    background: var(--neutral-container);
+    border-radius: var(--radius-lg);
+  }
+  .searchbar input {
+    flex: 1 0 0; min-width: 0;
+    border: 0; background: none; outline: none;
+    font: inherit; color: var(--on-surface);
+  }
+  .searchbar input::placeholder { color: var(--on-neutral-container); opacity: 1; }
+  .searchbar .icon-btn { width: 32px; height: 32px; border-radius: var(--radius-lg); }
+
+  /* ══ Coquille de page ════════════════════════════════════════════ */
+  .page {
+    width: var(--page-w);
+    margin: 0 auto;
+    padding: 24px var(--sp-lg) 40px;
+  }
+
+  .breadcrumb {
+    display: flex; align-items: center; gap: var(--sp-sm);
+    font-size: 12px; line-height: 16px;
+  }
+  .breadcrumb a { color: var(--on-surface); text-decoration: underline; }
+  .breadcrumb span { color: var(--on-surface-dim-1); }
+
+  .page-title {
+    margin-top: var(--sp-lg);
+    font-size: 20px; font-weight: 700; line-height: 28px;
+  }
+
+  /* ══ Onglets En ligne / Expirées ═════════════════════════════════ */
+  .toolbar {
+    display: flex; align-items: flex-end; justify-content: space-between;
+    gap: var(--sp-lg);
+    margin-top: var(--sp-lg);
+  }
+  .tabs {
+    display: flex; align-items: stretch;
+    border-bottom: 1px solid var(--outline-dim-3);
+  }
+  .tab {
+    display: inline-flex; align-items: center; gap: var(--sp-md);
+    padding: var(--sp-md) var(--sp-lg);
+    border: 0; border-bottom: 2px solid transparent;
+    background: none; cursor: pointer;
+    font: inherit; color: var(--on-surface);
+    transition: color .15s ease, border-color .15s ease, background-color .15s ease;
+  }
+  .tab:hover { background: var(--neutral-container); }
+  .tab[aria-selected="true"] {
+    border-bottom-color: var(--support);
+    color: var(--support); font-weight: 700;
+  }
+  .tab:focus-visible { outline: 2px solid var(--on-surface); outline-offset: -2px; }
+
+  /* Champ au contour arrondi — le « Dropdown » de Spark. */
+  .field {
+    display: flex; align-items: center; gap: var(--sp-md);
+    height: 44px; padding: 0 var(--sp-lg);
+    border-radius: var(--radius-lg);
+    box-shadow: inset 0 0 0 1px var(--outline);
+    background: var(--surface);
+    font-size: 16px; line-height: 24px;
+    cursor: pointer;
+  }
+  .field:focus-within { box-shadow: inset 0 0 0 2px var(--on-surface); }
+  .field select {
+    flex: 1 0 0; min-width: 0;
+    border: 0; background: none; outline: none; appearance: none;
+    font: inherit; color: var(--on-surface); cursor: pointer;
+  }
+  .field-sort { width: 328px; }
+
+  /* ══ Recherche dans les annonces ═════════════════════════════════ */
+  .search-row {
+    display: flex; align-items: center; gap: var(--sp-lg);
+    margin-top: 24px;
+  }
+  .search-row .field-query { flex: 1 0 0; min-width: 0; }
+  .search-row .field-query input {
+    flex: 1 0 0; min-width: 0;
+    border: 0; background: none; outline: none;
+    font: inherit; color: var(--on-surface);
+  }
+  .search-row .field-query input::placeholder { color: var(--on-neutral-container); opacity: 1; }
+  .search-row .field-categories { width: 248px; }
+
+  /* ══ Barre d'actions groupées ════════════════════════════════════
+     Désactivée jusqu'à ce qu'une annonce soit cochée. */
+  .bulk-row {
+    display: flex; align-items: center; gap: var(--sp-lg);
+    margin-top: 32px; padding-left: var(--sp-lg);
+  }
+  .bulk-actions { display: flex; flex: 1 0 0; align-items: center; gap: var(--sp-lg); min-width: 0; }
+  .bulk-actions .btn { font-size: 16px; }
+
+  /* Case à cocher — le « Checkbox » de Spark, intention Support. */
+  .checkbox { position: relative; display: inline-flex; flex-shrink: 0; }
+  .checkbox input {
+    appearance: none; margin: 0;
+    width: 24px; height: 24px;
+    border: 2px solid var(--support); border-radius: var(--radius-xs);
+    background: var(--surface); cursor: pointer;
+  }
+  .checkbox input:checked { background: var(--support); border-color: var(--support); }
+  .checkbox input:checked::after {
+    content: ''; position: absolute; left: 7px; top: 3px;
+    width: 8px; height: 13px;
+    border: solid var(--surface); border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+  }
+  .checkbox input:focus-visible { outline: 2px solid var(--on-surface); outline-offset: 2px; }
+
+  /* ══ Liste d'annonces ════════════════════════════════════════════ */
+  .ads { display: flex; flex-direction: column; gap: var(--sp-lg); margin-top: 24px; }
+
+  .ad-card {
+    border: 1px solid var(--outline);
+    border-radius: var(--radius-lg);
+    background: var(--surface);
+    overflow: clip;
+    /* Au retour d'une retouche on amène la carte à l'écran : la marge la
+       garde sous le header, qui est sticky et la recouvrirait. */
+    scroll-margin-top: 130px;
+  }
+
+  /* Ligne principale : visuel + informations + colonne de statistiques. */
+  .ad-main { display: flex; align-items: stretch; }
+  .ad-body {
+    display: flex; flex: 1 0 0; min-width: 0;
+    align-items: center; gap: var(--sp-lg);
+    padding-left: var(--sp-lg);
+  }
+  .ad-check { display: flex; align-items: center; align-self: stretch; }
+  .ad-photo {
+    width: 160px; height: 128px;
+    border-radius: var(--radius-s) var(--radius-s) var(--radius-s) 0;
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+  /* Visuel absent : le brouillon n'a pas encore de photo. */
+  .ad-photo-empty {
+    display: flex; align-items: center; justify-content: center;
+    background: var(--neutral-container);
+    color: var(--on-neutral-container);
+    font-size: 14px; line-height: 20px;
+  }
+
+  .ad-info {
+    display: flex; flex: 1 0 0; min-width: 0;
+    flex-direction: column; gap: var(--sp-lg);
+    padding: var(--sp-lg) var(--sp-lg) var(--sp-lg) 0;
+  }
+  .ad-meta { display: flex; flex-direction: column; gap: var(--sp-md); align-items: flex-start; }
+  .ad-title { font-size: 16px; font-weight: 700; line-height: 24px; }
+  .ad-price { font-size: 16px; font-weight: 700; line-height: 24px; }
+  .ad-extra { font-size: 14px; line-height: 20px; color: var(--on-surface-dim-1); }
+  .ad-actions { display: flex; align-items: center; gap: var(--sp-md); flex-wrap: wrap; }
+
+  /* ── Pastille de score de complétion ──────────────────────────── */
+  .score-pill {
+    display: inline-flex; align-items: center; gap: var(--sp-md);
+    padding: 0 var(--sp-md);
+    border-radius: var(--radius-s);
+    background: var(--background-variant);
+  }
+  .score-pill-label {
+    display: inline-flex; align-items: center; gap: var(--sp-sm);
+    padding: var(--sp-md) 0;
+    font-size: 14px; line-height: 20px;
+  }
+  .score-pill-label strong { font-weight: 700; }
+  .score-pill-sep { color: var(--on-surface); }
+
+  /* Jauge circulaire — le « Circle meter » de Spark.
+     Le tracé est dessiné en SVG parce que le pourcentage est une donnée :
+     un fichier figé ne pourrait pas rendre 30, 50 et 90 %. */
+  .meter-circle { flex-shrink: 0; }
+  .meter-circle circle { fill: none; stroke-linecap: round; }
+  .meter-circle .meter-track { stroke: var(--on-background-dim-4); }
+  .meter-circle .meter-value { transition: stroke-dashoffset .4s ease; }
+  .meter-circle-text {
+    font-size: 14px; font-weight: 700;
+    fill: var(--on-surface);
+    text-anchor: middle; dominant-baseline: central;
+  }
+
+  /* ── Colonne de statistiques ──────────────────────────────────── */
+  .ad-stats {
+    display: flex; flex-direction: column;
+    width: var(--stats-w); flex-shrink: 0;
+    background: var(--surface);
+  }
+  .ad-stat {
+    display: flex; flex: 1 0 0; align-items: center; gap: var(--sp-md);
+    padding: 12px var(--sp-lg);
+    border-left: 1px solid var(--outline);
+    border-bottom: 1px solid var(--outline);
+    font-size: 14px; font-weight: 700; line-height: 20px;
+    color: var(--on-surface-dim-1);
+  }
+  .ad-stats-toggle {
+    display: flex; align-items: center; justify-content: space-between; gap: var(--sp-md);
+    padding: 12px var(--sp-lg);
+    border: 0; border-left: 1px solid var(--outline);
+    background: none; cursor: pointer;
+    font: inherit; font-size: 16px; line-height: 24px; color: var(--on-surface);
+    transition: background-color .15s ease;
+  }
+  .ad-stats-toggle:hover { background: var(--neutral-container); }
+  .ad-stats-toggle:focus-visible { outline: 2px solid var(--on-surface); outline-offset: -2px; }
+  .ad-stats-toggle img { transition: transform .2s ease; }
+  .ad-stats-toggle[aria-expanded="true"] img { transform: rotate(180deg); }
+
+  /* ══ Détail de performance (replié par défaut) ═══════════════════ */
+  .ad-details {
+    border-top: 1px solid var(--outline);
+    background: var(--neutral-container);
+    padding: var(--sp-lg) 24px;
+    /* « Afficher le détail » amène ce panneau à l'écran : la marge le
+       garde sous le header, qui est sticky et le recouvrirait. */
+    scroll-margin-top: 130px;
+  }
+  .ad-details[hidden] { display: none; }
+
+  .perf-tabs {
+    display: flex; align-items: stretch;
+    border-bottom: 1px solid var(--outline-dim-3);
+  }
+  .perf-tabs .tab { flex: 1 0 0; justify-content: center; }
+
+  /* ── Graphe des vues ──────────────────────────────────────────── */
+  .chart-card {
+    margin-top: 24px; padding: 24px;
+    background: var(--surface);
+    border-radius: var(--radius-s);
+  }
+  .chart {
+    display: grid;
+    grid-template-columns: 24px 1fr;
+    column-gap: var(--sp-md);
+  }
+  .chart-y {
+    display: flex; flex-direction: column; justify-content: space-between;
+    height: 280px;
+    font-size: 14px; line-height: 20px; color: var(--on-surface-dim-1);
+    text-align: right;
+    /* Les graduations se lisent au niveau des lignes, pas entre elles. */
+    transform: translateY(-10px);
+  }
+  .chart-plot { position: relative; height: 280px; }
+  /* Les six lignes de grille du Figma, reproduites en CSS pour qu'elles
+     s'étirent avec la largeur du graphe. */
+  .chart-plot::before {
+    content: ''; position: absolute; inset: 0;
+    background-image: repeating-linear-gradient(
+      to bottom,
+      var(--outline-dim-3) 0 1px,
+      transparent 1px 56px
+    );
+    background-size: 100% 280px;
+  }
+  .chart-plot::after {
+    content: ''; position: absolute; left: 0; right: 0; bottom: 0;
+    border-bottom: 1px solid var(--outline-dim-3);
+  }
+  .chart-curve {
+    position: absolute; left: 0; bottom: 0;
+    width: 100%; height: 177px;
+  }
+  /* Les dates se lisent sous les points de la courbe : la rangée est donc
+     décalée de la gouttière de l'axe Y, comme dans le Figma. */
+  .chart-x {
+    display: flex; justify-content: space-between;
+    margin-top: var(--sp-md); margin-left: 32px;
+    font-size: 14px; line-height: 20px; color: var(--on-surface-dim-1);
+  }
+
+  /* ── Panneau « Compléter votre annonce » ──────────────────────── */
+  .quality-card {
+    margin-top: var(--sp-lg); padding: var(--sp-lg);
+    background: var(--surface);
+    border-radius: var(--radius-s);
+  }
+  .quality-grid {
+    display: grid;
+    grid-template-columns: 288px 1fr;
+    gap: var(--sp-lg);
+  }
+  .quality-intro {
+    display: flex; flex-direction: column; gap: var(--sp-lg);
+    padding: var(--sp-lg);
+    background: var(--background-variant);
+    border-radius: var(--radius-s);
+  }
+  .quality-intro-title { font-size: 16px; font-weight: 700; line-height: 24px; }
+  .quality-intro-sub { font-size: 14px; line-height: 20px; color: var(--on-surface-dim-1); }
+  .quality-score { display: flex; align-items: center; gap: var(--sp-lg); }
+  .quality-score-text { display: flex; flex-direction: column; gap: var(--sp-sm); align-items: flex-start; }
+  .quality-score-label {
+    display: inline-flex; align-items: center; gap: var(--sp-sm);
+    font-size: 14px; font-weight: 700; line-height: 20px;
+    white-space: nowrap;
+  }
+
+  .tag {
+    display: inline-flex; align-items: center;
+    padding: 0 var(--sp-md); height: 20px;
+    border-radius: var(--radius-xs);
+    font-size: 12px; font-weight: 700; line-height: 16px;
+  }
+  /* Les tags vivent dans des colonnes flex : sans cela ils s'étireraient. */
+  .tag { align-self: flex-start; }
+  .tag-error { background: var(--error-container); color: var(--on-error-container); }
+  .tag-neutral { background: var(--neutral-container); color: var(--on-neutral-container); }
+  .tag-support { background: var(--support); color: var(--surface); }
+  .tag-dark { background: var(--neutral); color: var(--surface); }
+  .tag-main { background: var(--main); color: var(--on-main); }
+
+  /* Les quatre pistes d'amélioration. */
+  .quality-items {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--sp-lg);
+    align-content: start;
+  }
+  .quality-item {
+    display: flex; flex-direction: column; gap: var(--sp-md);
+    padding: var(--sp-lg);
+    border: 1px solid var(--outline-dim-3);
+    border-radius: var(--radius-s);
+    background: var(--surface);
+    text-align: left;
+    font: inherit; color: inherit; text-decoration: none;
+    cursor: pointer;
+    transition: border-color .15s ease, box-shadow .15s ease;
+  }
+  .quality-item:hover {
+    border-color: var(--outline);
+    box-shadow: 0 2px 8px rgba(21, 34, 51, .08);
+  }
+  .quality-item:focus-visible { outline: 2px solid var(--on-surface); outline-offset: 2px; }
+  .quality-item-head {
+    display: flex; align-items: flex-start; gap: var(--sp-md);
+  }
+  .quality-item-title {
+    flex: 1 0 0; min-width: 0;
+    font-size: 16px; font-weight: 700; line-height: 24px;
+  }
+  .quality-item-head img { flex-shrink: 0; margin-top: 2px; }
+  .quality-item-measure { font-size: 14px; line-height: 20px; }
+  .quality-item-gain { font-size: 12px; line-height: 16px; color: var(--on-surface-dim-1); }
+  .quality-item-gain strong { color: var(--on-surface); font-weight: 700; }
+  .quality-item-link {
+    font-size: 14px; font-weight: 700; line-height: 20px;
+    text-decoration: underline; text-underline-offset: 2px;
+  }
+
+  /* Jauge linéaire — le « Meter » de Spark. */
+  .meter-bar {
+    height: var(--sp-md);
+    border-radius: var(--radius-full);
+    background: var(--on-background-dim-4);
+    overflow: clip;
+  }
+  .meter-bar > span {
+    display: block; height: 100%;
+    border-radius: var(--radius-full);
+    background: var(--support);
+  }
+
+  .quality-note {
+    margin-top: var(--sp-lg); padding-top: var(--sp-lg);
+    border-top: 1px solid var(--outline-dim-3);
+    font-size: 12px; line-height: 16px; color: var(--on-surface-dim-1);
+  }
+
+  /* ══ Bandeau « Vendez plus vite » ════════════════════════════════ */
+  .ad-banner {
+    display: flex; align-items: center; gap: var(--sp-lg);
+    padding: var(--sp-lg);
+    border-top: 1px solid var(--outline);
+    background: var(--surface);
+  }
+  .ad-banner-squares { width: 132px; height: 100px; flex-shrink: 0; }
+  .ad-banner-text { flex: 1 0 0; min-width: 0; display: flex; flex-direction: column; gap: var(--sp-sm); }
+  .ad-banner-title { font-size: 16px; font-weight: 700; line-height: 24px; }
+  .ad-banner-body { font-size: 16px; line-height: 24px; }
+
+  /* ══ Pied de page ════════════════════════════════════════════════ */
+  .site-footer {
+    display: flex; align-items: center; justify-content: center;
+    height: 56px; margin-top: 24px;
+    background: #2b3441;
+    color: #ffffff;
+  }
+  .site-footer p {
+    width: 100%; max-width: 1066px; padding: 0 var(--sp-lg);
+  }
+
+  /* Repli sans annonce — après suppression du brouillon et des annonces. */
+  .ads-empty {
+    padding: 48px var(--sp-lg);
+    border: 1px dashed var(--outline);
+    border-radius: var(--radius-lg);
+    text-align: center;
+    color: var(--on-surface-dim-1);
+  }
+  .ads-empty[hidden] { display: none; }
+
+  /* ══ Responsive ══════════════════════════════════════════════════ */
+  @media (max-width: 1120px) {
+    .page { width: 100%; }
+  }
+  @media (max-width: 1000px) {
+    .quality-grid { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 900px) {
+    .header-item span { display: none; }
+    .toolbar { flex-direction: column; align-items: stretch; }
+    .field-sort { width: 100%; }
+    .search-row { flex-wrap: wrap; }
+    .search-row .field-categories { width: 180px; }
+    .bulk-row { overflow-x: auto; padding-bottom: var(--sp-md); }
+    .ad-main { flex-direction: column; }
+    .ad-stats { width: 100%; flex-direction: row; flex-wrap: wrap; border-top: 1px solid var(--outline); }
+    .ad-stat { border-left: 0; border-bottom: 0; }
+    .ad-stats-toggle { border-left: 0; margin-left: auto; }
+    .quality-items { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 720px) {
+    .categories { overflow-x: auto; justify-content: flex-start; }
+    .ad-body { flex-wrap: wrap; padding: var(--sp-lg); }
+    .ad-photo { width: 100%; height: 180px; border-radius: var(--radius-s); }
+    .ad-info { padding: 0; }
+    .ad-banner { flex-wrap: wrap; }
+    .ad-banner-squares { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══ Header ═══════════════════════════════════════════════════════ -->
+<header class="site-header" data-node-id="2143:22634">
+  <div class="header-main">
+    <a class="logo" href="../homepage/index.html" aria-label="leboncoin — accueil">
+      <img src="assets/brand-logo.svg" width="164" height="30" alt="leboncoin" />
+    </a>
+
+    <div class="header-search">
+      <a class="btn btn-filled-main" href="../ad-insertion-titre.html">
+        <img src="assets/icon-add-square.svg" width="16" height="16" alt="" />
+        Déposer une annonce
+      </a>
+
+      <form class="searchbar" role="search" onsubmit="return false">
+        <input type="search" aria-label="Rechercher sur leboncoin" placeholder="Rechercher sur leboncoin" />
+        <button class="icon-btn icon-btn-main" type="submit" aria-label="Rechercher">
+          <img src="assets/icon-search.svg" width="20" height="20" alt="" />
+        </button>
+      </form>
+    </div>
+
+    <nav class="header-items" aria-label="Mon compte">
+      <a class="header-item" href="#">
+        <span class="header-item-icon"><img src="assets/icon-bell.svg" width="24" height="24" alt="" /></span>
+        <span>Mes recherches</span>
+      </a>
+      <a class="header-item" href="#">
+        <span class="header-item-icon"><img src="assets/icon-heart.svg" width="24" height="24" alt="" /></span>
+        <span>Favoris</span>
+      </a>
+      <a class="header-item" href="#">
+        <span class="header-item-icon"><img src="assets/icon-bubble-text.svg" width="24" height="24" alt="" /></span>
+        <span>Messages</span>
+      </a>
+      <a class="header-item" href="#">
+        <span class="header-item-icon"><img src="assets/icon-user.svg" width="24" height="24" alt="" /></span>
+        <span>Se connecter</span>
+      </a>
+    </nav>
+  </div>
+
+  <div class="header-categories">
+    <nav class="categories" aria-label="Catégories">
+      <a class="category" href="#">Immobilier</a>
+      <span class="category-sep" aria-hidden="true">·</span>
+      <a class="category" href="#">Véhicules</a>
+      <span class="category-sep" aria-hidden="true">·</span>
+      <a class="category" href="#">Vacances</a>
+      <span class="category-sep" aria-hidden="true">·</span>
+      <a class="category" href="#">Emploi</a>
+      <span class="category-sep" aria-hidden="true">·</span>
+      <a class="category" href="#">Mode</a>
+      <span class="category-sep" aria-hidden="true">·</span>
+      <a class="category" href="#">Maison &amp; Jardin</a>
+      <span class="category-sep" aria-hidden="true">·</span>
+      <a class="category" href="#">Famille</a>
+      <span class="category-sep" aria-hidden="true">·</span>
+      <a class="category" href="#">Électronique</a>
+      <span class="category-sep" aria-hidden="true">·</span>
+      <a class="category" href="#">Loisirs</a>
+      <span class="category-sep" aria-hidden="true">·</span>
+      <a class="category" href="#">Autres</a>
+      <span class="category-sep" aria-hidden="true">·</span>
+      <a class="category category-strong" href="#">Bon plans !</a>
+    </nav>
+  </div>
+</header>
+
+<!-- ══ Contenu ══════════════════════════════════════════════════════ -->
+<main class="page">
+
+  <nav class="breadcrumb" aria-label="Fil d'ariane" data-node-id="2143:22636">
+    <a href="#">Mon compte</a>
+    <img src="assets/icon-breadcrumb-chevron.svg" width="8" height="8" alt="" />
+    <span aria-current="page">Mes annonces</span>
+  </nav>
+
+  <h1 class="page-title" data-node-id="2143:22638">Mes annonces</h1>
+
+  <div class="toolbar" data-node-id="2143:22640">
+    <div class="tabs" role="tablist" aria-label="État des annonces">
+      <button class="tab" type="button" role="tab" aria-selected="true" id="tab-online"><span id="tab-online-label">En ligne (5)</span></button>
+      <button class="tab" type="button" role="tab" aria-selected="false" id="tab-expired">Expirées (2)</button>
+    </div>
+
+    <label class="field field-sort" data-node-id="2143:22642">
+      <img src="assets/icon-sort.svg" width="20" height="20" alt="" />
+      <select aria-label="Trier par">
+        <option>Trier par : Date</option>
+        <option>Trier par : Prix</option>
+        <option>Trier par : Score de complétion</option>
+      </select>
+      <img src="assets/icon-chevron-down.svg" width="20" height="10" alt="" />
+    </label>
+  </div>
+
+  <form class="search-row" data-node-id="2143:22644" onsubmit="return false">
+    <label class="field field-query">
+      <img src="assets/icon-search.svg" width="20" height="20" alt="" />
+      <input type="search" aria-label="Recherchez dans vos annonces" placeholder="Recherchez dans vos annonces" />
+    </label>
+
+    <label class="field field-categories">
+      <img src="assets/icon-list.svg" width="20" height="17" alt="" />
+      <select aria-label="Catégories">
+        <option>Catégories</option>
+        <option>Ventes immobilières</option>
+        <option>Locations</option>
+      </select>
+      <img src="assets/icon-chevron-down.svg" width="20" height="10" alt="" />
+    </label>
+
+    <button class="btn btn-filled-main" type="submit">Rechercher</button>
+  </form>
+
+  <!-- Actions groupées : actives dès qu'une annonce est cochée. -->
+  <div class="bulk-row" data-node-id="2143:22648">
+    <span class="checkbox">
+      <input type="checkbox" id="check-all" aria-label="Sélectionner toutes les annonces" />
+    </span>
+    <div class="bulk-actions" id="bulk-actions">
+      <button class="btn btn-tinted" type="button" disabled>
+        <img src="assets/icon-arrow-up.svg" width="17" height="18" alt="" />Remontez votre annonce
+      </button>
+      <button class="btn btn-tinted" type="button" disabled>
+        <img src="assets/icon-pin.svg" width="17" height="17" alt="" />À la une / Vitrine
+      </button>
+      <button class="btn btn-tinted" type="button" disabled>
+        <img src="assets/icon-hourglass.svg" width="14" height="20" alt="" />Logo Urgent
+      </button>
+      <button class="btn btn-tinted" type="button" disabled>
+        <img src="assets/icon-pause.svg" width="20" height="20" alt="" />Pause
+      </button>
+      <button class="btn btn-tinted" type="button" disabled>
+        <img src="assets/icon-play.svg" width="20" height="20" alt="" />Réactiver
+      </button>
+      <button class="btn btn-tinted" type="button" disabled>
+        <img src="assets/icon-trash.svg" width="18" height="20" alt="" />Supprimer
+      </button>
+    </div>
+  </div>
+
+  <div class="ads" id="ads" data-node-id="2143:22657">
+    <!-- Les cartes sont injectées depuis le script en bas de page. -->
+  </div>
+
+  <p class="ads-empty" id="ads-empty" hidden>
+    Plus aucune annonce en ligne.
+    <a href="../ad-insertion-titre.html">Déposer une annonce</a>
+  </p>
+
+</main>
+
+<footer class="site-footer" data-node-id="2143:22664">
+  <p>Leboncoin 2006 - 2026</p>
+</footer>
+
+<script src="../draft-store.js"></script>
+<script src="../ads-data.js"></script>
+<script>
+  /* ══ Les annonces publiées ═════════════════════════════════════════
+     Leur contenu vient de `../ads-data.js` — les quatre annonces de la
+     frame Figma (2143:22658, 2143:23768, 2143:23864, 2193:6418), avec les
+     scores 30 / 30 / 50 / 90 % qui font tout l'intérêt de la maquette.
+
+     On y superpose les retouches faites depuis les étapes de dépôt en
+     mode édition. Le brouillon du dépôt en cours, lui, est une autre
+     affaire : il donne sa propre carte, plus bas. */
+  const ADS = Ads.all().map(ad => {
+    const edits = AdEdits.get(ad.id)
+    return {
+      ...ad,
+      score: Math.min(100, ad.score + (edits.scoreBonus || 0)),
+      descLength: edits.descLength ?? ad.descLength,
+      nbPhotos: edits.nbPhotos ?? ad.nbPhotos,
+      title: edits.titre || ad.title,
+      photo: 'assets/ad-photo.png',
+    }
+  })
+
+  /* Les deux cibles affichées par les pistes, reprises de la maquette :
+     « sur 1 300 caractères » et « sur 12 photos ». */
+  const DESCRIPTION_CIBLE = 1300
+  const PHOTOS_CIBLE = 12
+
+  /* Les quatre pistes d'amélioration du panneau de complétion.
+     Reprises telles quelles de la maquette.
+
+     `href` renvoie vers l'étape de dépôt qui corrige le manque. Les photos
+     y arrivent avec « ?photos=t3 », qui pré-remplit la grille avec les
+     quatre photos de l'annonce. « Ajouter des caractéristiques » n'a pas
+     de destination : cette étape n'est pas construite.
+
+     La piste de description est la seule à dépendre de l'annonce : sa
+     mesure suit la description retouchée. Elle est donc recalculée dans
+     `qualityItemsFor()` plus bas. */
+  const QUALITY_ITEMS = [
+    {
+      key: 'photos',
+      title: 'Ajouter des photos',
+      gainValue: '+52 % d’attractivité',
+      gainRest: 'si plus de 10 photos*',
+      alert: 'info',
+      href: '../ad-insertion-photos.html?photos=t3',
+    },
+    {
+      title: 'Compléter la localisation',
+      tag: 'Adresse précise manquante',
+      gainValue: '+41 % d’attractivité',
+      gainRest: 'avec une adresse précise*',
+      alert: 'alert',
+      href: '../ad-insertion-localisation.html',
+    },
+    {
+      title: 'Ajouter des caractéristiques',
+      measure: '5 sur 25 caractéristiques',
+      ratio: 5 / 25,
+      gainValue: '+60 % d’attention',
+      gainRest: 'avec des détails enrichies*',
+      link: 'Voir les 20 caractéristiques manquantes',
+      alert: 'info',
+    },
+    {
+      key: 'description',
+      title: 'Enrichir ma description',
+      gainValue: '+52 % d’attention',
+      gainRest: 'avec une description enrichie*',
+      alert: 'info',
+    },
+  ]
+
+  /* Les pistes d'une annonce donnée.
+
+     Chaque lien reçoit « ad=<id> » : c'est ce paramètre qui dit à l'étape
+     de dépôt qu'elle modifie une annonce existante plutôt que de recevoir
+     un dépôt neuf. Elle y passe alors en mode édition — son bouton de
+     sortie devient « Enregistrer et quitter » et ramène ici.
+
+     La piste de description est la seule dont la mesure varie, avec la
+     longueur du texte retouché. */
+  function qualityItemsFor(ad) {
+    return QUALITY_ITEMS.map(item => {
+      const withAd = item.href
+        ? `${item.href}${item.href.includes('?') ? '&' : '?'}ad=${encodeURIComponent(ad.id)}`
+        : undefined
+
+      if (item.key === 'description') {
+        return {
+          ...item,
+          measure: `${ad.descLength} sur ${DESCRIPTION_CIBLE.toLocaleString('fr-FR')} caractères`,
+          ratio: ad.descLength / DESCRIPTION_CIBLE,
+          href: withAd,
+        }
+      }
+
+      if (item.key === 'photos') {
+        return {
+          ...item,
+          measure: `${ad.nbPhotos} sur ${PHOTOS_CIBLE} photos`,
+          ratio: ad.nbPhotos / PHOTOS_CIBLE,
+          href: withAd,
+        }
+      }
+
+      return { ...item, href: withAd }
+    })
+  }
+
+  const CHART_Y = ['25', '20', '15', '10', '5', '0']
+  const CHART_X = ['13/11', '28/11', '10/12', '26/12', '03/01', '16/01', '28/01']
+
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]))
+
+  /* Les défilements accompagnent le geste, sauf si le système demande à
+     limiter les animations : ils deviennent alors instantanés. */
+  const glisseDouce = () =>
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'
+
+  /* ══ Jauge circulaire ══════════════════════════════════════════════
+     Le pourcentage étant une donnée, le tracé est calculé plutôt que
+     repris d'un SVG figé. Les trois couleurs sont celles du Figma :
+     rouge sous 40 %, jaune jusqu'à 70 %, vert au-delà. */
+  function meterColor(score) {
+    if (score < 40) return 'var(--error)'
+    if (score < 70) return 'var(--alert)'
+    return 'var(--success)'
+  }
+
+  function meterCircle(score, { size = 24, stroke = 3, showValue = false } = {}) {
+    const r = (size - stroke) / 2
+    const c = 2 * Math.PI * r
+    return `
+      <svg class="meter-circle" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}"
+           role="img" aria-label="Score de complétion : ${score} %">
+        <circle class="meter-track" cx="${size / 2}" cy="${size / 2}" r="${r}" stroke-width="${stroke}" />
+        <circle class="meter-value" cx="${size / 2}" cy="${size / 2}" r="${r}" stroke-width="${stroke}"
+                stroke="${meterColor(score)}"
+                stroke-dasharray="${c.toFixed(2)}"
+                stroke-dashoffset="${(c * (1 - score / 100)).toFixed(2)}"
+                transform="rotate(-90 ${size / 2} ${size / 2})" />
+        ${showValue ? `<text class="meter-circle-text" x="${size / 2}" y="${size / 2}">${score} %</text>` : ''}
+      </svg>`
+  }
+
+  /* ══ Fragments de carte ════════════════════════════════════════════ */
+  function statsColumn(ad) {
+    return `
+      <div class="ad-stats" data-node-id="2143:22048">
+        <div class="ad-stat">
+          <img src="assets/icon-eye.svg" width="16" height="16" alt="" />
+          <span>${ad.views}</span>
+        </div>
+        <div class="ad-stat">
+          <img src="assets/icon-like.svg" width="16" height="16" alt="" />
+          <span>${ad.favorites}</span>
+        </div>
+        <div class="ad-stat">
+          <!-- Bulle en contour, comme l'œil et le cœur au-dessus.
+               L'icône « contact/message » du Figma est une bulle pleine :
+               à 16px elle fait un bloc et jure avec les deux autres. -->
+          <img src="assets/icon-bubble-text.svg" width="16" height="16" alt="" />
+          <span>${ad.messages}</span>
+        </div>
+        <button class="ad-stats-toggle" type="button" aria-expanded="false">
+          Performance
+          <img src="assets/icon-chevron-down.svg" width="20" height="10" alt="" />
+        </button>
+      </div>`
+  }
+
+  function qualityItem(item) {
+    const alertIcon = item.alert === 'alert' ? 'assets/alert-alert.svg' : 'assets/alert-info.svg'
+    // Une piste qui mène quelque part est un lien ; les autres, un bouton.
+    const open = item.href ? `<a class="quality-item" href="${item.href}">` : '<button class="quality-item" type="button">'
+    const close = item.href ? '</a>' : '</button>'
+    return `
+      ${open}
+        <div class="quality-item-head">
+          <span class="quality-item-title">${esc(item.title)}</span>
+          <img src="${alertIcon}" width="20" height="20" alt="" />
+          <img src="assets/icon-chevron-right.svg" width="10" height="20" alt="" />
+        </div>
+        ${item.measure ? `<p class="quality-item-measure">${esc(item.measure)}</p>` : ''}
+        ${item.ratio !== undefined
+          ? `<div class="meter-bar"><span style="width:${Math.round(item.ratio * 100)}%"></span></div>`
+          : ''}
+        ${item.tag ? `<span class="tag tag-neutral">${esc(item.tag)}</span>` : ''}
+        <p class="quality-item-gain"><strong>${item.gainValue}</strong> ${item.gainRest}</p>
+        ${item.link ? `<span class="quality-item-link">${esc(item.link)}</span>` : ''}
+      ${close}`
+  }
+
+  function detailsPanel(ad) {
+    return `
+      <div class="ad-details" hidden data-node-id="2002:31756">
+
+        <div class="perf-tabs" role="tablist" aria-label="Performance de l’annonce">
+          <button class="tab" type="button" role="tab" aria-selected="true">
+            <img src="assets/icon-eye.svg" width="16" height="16" alt="" />Vues
+          </button>
+          <button class="tab" type="button" role="tab" aria-selected="false">
+            <img src="assets/icon-listing-criteria.svg" width="15" height="11" alt="" />Apparitions
+          </button>
+        </div>
+
+        <div class="chart-card">
+          <div class="chart">
+            <div class="chart-y" aria-hidden="true">${CHART_Y.map(v => `<span>${v}</span>`).join('')}</div>
+            <div class="chart-plot">
+              <img class="chart-curve" src="assets/chart-curve.svg" alt="Courbe des vues, en baisse sur la période" />
+            </div>
+          </div>
+          <div class="chart-x" aria-hidden="true">${CHART_X.map(v => `<span>${v}</span>`).join('')}</div>
+        </div>
+
+        <div class="quality-card" data-node-id="2057:23144">
+          <div class="quality-grid">
+            <div class="quality-intro">
+              <div>
+                <p class="quality-intro-title">Compléter votre annonce</p>
+                <p class="quality-intro-sub">Améliorer celle-ci en ajoutant les éléments manquants</p>
+              </div>
+              <div class="quality-score">
+                ${meterCircle(ad.score, { size: 96, stroke: 12, showValue: true })}
+                <div class="quality-score-text">
+                  <span class="quality-score-label">
+                    Annonce à enrichir
+                    <img src="assets/alert-info.svg" width="20" height="20" alt="" />
+                  </span>
+                  <span class="tag tag-error">Score bas</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="quality-items">${qualityItemsFor(ad).map(qualityItem).join('')}</div>
+          </div>
+
+          <p class="quality-note">*Source : Données internes et enquêtes leboncoin.</p>
+        </div>
+      </div>`
+  }
+
+  function awarenessBanner() {
+    return `
+      <div class="ad-banner" data-node-id="2143:22049">
+        <img class="ad-banner-squares" src="assets/banner-squares.png" width="132" height="100" alt="" />
+        <div class="ad-banner-text">
+          <span class="tag tag-support">Nouveau</span>
+          <p class="ad-banner-title">Vendez plus vite !</p>
+          <p class="ad-banner-body">
+            Vous n’êtes pas certain d’être au bon prix ?<br />
+            Comparez votre bien avec ceux du marché.
+          </p>
+        </div>
+        <a class="btn btn-outlined-support" href="#">Voir les biens similaires</a>
+      </div>`
+  }
+
+  /* ══ Carte d'annonce en ligne ══════════════════════════════════════ */
+  function adCard(ad) {
+    const card = document.createElement('article')
+    card.className = 'ad-card'
+    card.dataset.adId = ad.id
+    card.innerHTML = `
+      <div class="ad-main">
+        <div class="ad-body">
+          <span class="ad-check checkbox">
+            <input type="checkbox" class="ad-select" aria-label="Sélectionner « ${esc(ad.title)} »" />
+          </span>
+          <img class="ad-photo" src="${ad.photo}" width="160" height="128" alt="" />
+
+          <div class="ad-info">
+            <div class="ad-meta">
+              <p class="ad-title">${esc(ad.title)}</p>
+              <p class="ad-price">${esc(ad.price)}</p>
+              <p class="ad-extra">${esc(ad.category)} · ${esc(ad.createdAt)}</p>
+
+              <div class="score-pill" data-node-id="2193:6629">
+                <span class="score-pill-label">
+                  ${meterCircle(ad.score)}
+                  <strong>${ad.score}%</strong>
+                  <span class="score-pill-sep" aria-hidden="true">·</span>
+                  <strong>Annonce à enrichir</strong>
+                </span>
+                <button class="text-link js-toggle-details" type="button">Afficher le détail</button>
+              </div>
+            </div>
+
+            <div class="ad-actions">
+              <button class="btn btn-filled-main" type="button">Vendez plus vite</button>
+              <button class="btn btn-tinted" type="button">Mettre en pause</button>
+              <button class="btn btn-tinted" type="button">Modifier</button>
+              <button class="icon-btn" type="button" aria-label="Supprimer l’annonce">
+                <img src="assets/icon-trash.svg" width="18" height="20" alt="" />
+              </button>
+            </div>
+          </div>
+        </div>
+
+        ${statsColumn(ad)}
+      </div>
+
+      ${detailsPanel(ad)}
+      ${awarenessBanner()}`
+
+    /* « Performance » et « Afficher le détail » ouvrent le même panneau :
+       dans la maquette, c'est le second qui est actionné. */
+    const details = card.querySelector('.ad-details')
+    const toggle = card.querySelector('.ad-stats-toggle')
+    const link = card.querySelector('.js-toggle-details')
+
+    /* `reveal` amène le panneau à l'écran après l'avoir ouvert. Sur une
+       carte basse dans la liste, le détail s'ouvrirait sinon hors de vue :
+       on cliquerait sans rien voir se passer. */
+    const setOpen = (open, { reveal = false } = {}) => {
+      details.hidden = !open
+      toggle.setAttribute('aria-expanded', String(open))
+      link.textContent = open ? 'Masquer le détail' : 'Afficher le détail'
+
+      if (open && reveal) {
+        details.scrollIntoView({ block: 'start', behavior: glisseDouce() })
+      }
+    }
+
+    toggle.addEventListener('click', () => setOpen(details.hidden))
+    link.addEventListener('click', () => setOpen(details.hidden, { reveal: true }))
+
+    // Onglets Vues / Apparitions : le second est un zoning, pas de données.
+    card.querySelectorAll('.perf-tabs .tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        card.querySelectorAll('.perf-tabs .tab')
+          .forEach(t => t.setAttribute('aria-selected', String(t === tab)))
+      })
+    })
+
+    card.querySelector('.ad-select').addEventListener('change', refreshBulkState)
+    card.querySelector('[aria-label="Supprimer l’annonce"]').addEventListener('click', () => {
+      card.remove()
+      refreshCounts()
+    })
+
+    return card
+  }
+
+  /* ══ Carte de brouillon ════════════════════════════════════════════
+     Alimentée par ce que le parcours de dépôt a enregistré. Sans
+     brouillon en mémoire, la carte n'apparaît pas. */
+  function draftCard(draft) {
+    const title = draft.titre || 'Annonce sans titre'
+    const photo = draft.thumb
+      ? `<img class="ad-photo" src="${draft.thumb}" width="160" height="128" alt="" />`
+      : `<div class="ad-photo ad-photo-empty">Brouillon</div>`
+
+    const bits = []
+    if (draft.categorieLabel) bits.push(esc(draft.categorieLabel))
+    if (draft.ville) bits.push(esc(draft.ville))
+    if (draft.nbPhotos) bits.push(`${draft.nbPhotos} photo${draft.nbPhotos > 1 ? 's' : ''}`)
+
+    const card = document.createElement('article')
+    card.className = 'ad-card'
+    card.dataset.adId = 'draft'
+    card.innerHTML = `
+      <div class="ad-main">
+        <div class="ad-body">
+          <span class="ad-check checkbox">
+            <input type="checkbox" class="ad-select" aria-label="Sélectionner le brouillon" />
+          </span>
+          ${photo}
+
+          <div class="ad-info">
+            <div class="ad-meta">
+              <p class="ad-title">${esc(title)}</p>
+              ${draft.prix ? `<p class="ad-price">${esc(draft.prix)}</p>` : ''}
+              <p class="ad-extra">Expire dans 29 jours</p>
+              ${bits.length ? `<p class="ad-extra">${bits.join(' · ')}</p>` : ''}
+              <span class="tag tag-dark">Brouillon</span>
+            </div>
+
+            <div class="ad-actions">
+              <!-- « draft=1 » : on reprend ce dépôt, le titre saisi est
+                   retrouvé. Sans ce paramètre l'étape ouvre un titre vide. -->
+              <a class="btn btn-filled-main" href="../ad-insertion-titre.html?draft=1">Finaliser l’annonce</a>
+              <button class="icon-btn js-delete-draft" type="button" aria-label="Supprimer le brouillon">
+                <img src="assets/icon-trash.svg" width="18" height="20" alt="" />
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>`
+
+    card.querySelector('.ad-select').addEventListener('change', refreshBulkState)
+    card.querySelector('.js-delete-draft').addEventListener('click', () => {
+      Draft.clear()
+      card.remove()
+      refreshCounts()
+    })
+
+    return card
+  }
+
+  /* ══ Actions groupées ══════════════════════════════════════════════ */
+  const container = document.getElementById('ads')
+  const empty = document.getElementById('ads-empty')
+  const checkAll = document.getElementById('check-all')
+  const bulkButtons = document.querySelectorAll('#bulk-actions .btn')
+
+  function refreshBulkState() {
+    const boxes = [...container.querySelectorAll('.ad-select')]
+    const picked = boxes.filter(b => b.checked).length
+    bulkButtons.forEach(b => { b.disabled = picked === 0 })
+    checkAll.checked = picked > 0 && picked === boxes.length
+    checkAll.indeterminate = picked > 0 && picked < boxes.length
+  }
+
+  function refreshCounts() {
+    const n = container.querySelectorAll('.ad-card').length
+    document.getElementById('tab-online-label').textContent = `En ligne (${n})`
+    empty.hidden = n > 0
+    refreshBulkState()
+  }
+
+  checkAll.addEventListener('change', () => {
+    container.querySelectorAll('.ad-select').forEach(b => { b.checked = checkAll.checked })
+    refreshBulkState()
+  })
+
+  /* ══ Rendu ═════════════════════════════════════════════════════════ */
+  const draft = Draft.read()
+  if (draft.titre || draft.thumb || draft.ville) container.appendChild(draftCard(draft))
+  ADS.forEach(ad => container.appendChild(adCard(ad)))
+  refreshCounts()
+
+  /* Deux façons d'arriver avec un détail déjà ouvert :
+
+     « ?detail=2 » — la 2ᵉ carte, comme la vue de la maquette Figma.
+                     Pratique pour une capture ou un lien de démonstration.
+     « ?ad=a2 »    — l'annonce qu'on vient de retoucher, pour que le score
+                     et la jauge de description se voient à l'arrivée. */
+  const params = new URLSearchParams(location.search)
+
+  function openDetails(card) {
+    if (!card) return
+    card.querySelector('.ad-stats-toggle')?.click()
+    card.scrollIntoView({ block: 'start' })
+  }
+
+  const wantedRank = Number(params.get('detail'))
+  if (wantedRank) openDetails(container.querySelectorAll('.ad-card')[wantedRank - 1])
+
+  const wantedAd = params.get('ad')
+  if (wantedAd) openDetails(container.querySelector(`.ad-card[data-ad-id="${CSS.escape(wantedAd)}"]`))
+
+  /* Les onglets En ligne / Expirées : seul le premier porte des annonces. */
+  document.querySelectorAll('.toolbar .tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.toolbar .tab')
+        .forEach(t => t.setAttribute('aria-selected', String(t === tab)))
+      const online = tab.id === 'tab-online'
+      container.hidden = !online
+      empty.hidden = online ? container.querySelectorAll('.ad-card').length > 0 : false
+      empty.textContent = online
+        ? 'Plus aucune annonce en ligne.'
+        : 'Les annonces expirées ne sont pas construites dans ce prototype.'
+    })
+  })
+</script>
+
+</body>
+</html>

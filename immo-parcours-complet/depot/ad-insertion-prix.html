@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dépôt annonce — Quel est votre prix ?</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,300;0,6..12,400;0,6..12,600;0,6..12,700;0,6..12,800&display=swap" rel="stylesheet" />
+  <style>
+    /* ══ Spark design tokens — thème light ══════════════════════════ */
+    :root {
+      /* main */
+      --color-main:                     #ec5a13;
+      --color-on-main:                  #ffffff;
+      --color-main-hovered:             #f07b42;
+      --color-main-container:           #ffe9de;
+      --color-on-main-container:        #89380f;
+      /* support */
+      --color-support:                  #094171;
+      --color-on-support:               #ffffff;
+      --color-support-hovered:          #0c5291;
+      --color-support-container:        #e6f2fd;
+      --color-on-support-container:     #152233;
+      --color-support-container-hovered:#f4f9fe;
+      /* neutral */
+      --color-neutral-container:        #f0f2f5;
+      --color-on-neutral-container:     #3a4757;
+      --color-neutral-container-hovered:#f6f8f9;
+      /* surface / background */
+      --color-surface:                  #ffffff;
+      --color-on-surface:               #152233;
+      --color-surface-hovered:          #f6f8f9;
+      --color-background:               #ffffff;
+      --color-background-variant:       #f4f9fe;
+      --color-on-background:            #152233;
+      /* outline */
+      --color-outline:                  #acb8c7;
+      --color-outline-high:             #202730;
+      /* shadow */
+      --color-shadow:                   rgba(108,129,157,0.5);
+      /* focus */
+      --color-focus:                    #0000ff;
+
+      /* spacing */
+      --sp-sm:  4px;
+      --sp-md:  8px;
+      --sp-lg:  16px;
+      --sp-xl:  24px;
+      --sp-2xl: 32px;
+      --sp-3xl: 40px;
+
+      /* border-radius */
+      --radius-sm:   4px;
+      --radius-md:   8px;
+      --radius-lg:   16px;
+      --radius-xl:   24px;
+      --radius-full: 9999px;
+
+      /* border-width */
+      --border-sm:   1px;
+      --border-md:   2px;
+
+      /* motion */
+      --ease-standard: cubic-bezier(0.2,0,0,1);
+      --duration-short: 150ms;
+      --duration-medium: 250ms;
+
+      /* non-Spark tokens (spécifiques à la page) */
+      --color-linen:          #ece5dc;
+      --color-text-black:     #1f0a06;
+      --color-on-dim:         rgba(20,17,16,0.72);
+      --color-on-surface-dim: rgba(21,34,51,0.72);
+      --color-outline-dim:    rgba(172,184,199,0.56);
+      --color-grey-border:    #dddddd;
+    }
+
+    /* ══ Reset ══════════════════════════════════════════════════════ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Nunito Sans', sans-serif;
+      background: var(--color-background-variant);
+      color: var(--color-on-surface);
+      min-height: 100vh;
+    }
+    button { font-family: inherit; cursor: pointer; }
+    a { cursor: pointer; }
+
+    /* ══ Layout ══════════════════════════════════════════════════════ */
+    .page-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    /* ══ Header ══════════════════════════════════════════════════════ */
+    .header {
+      background: var(--color-surface);
+      width: 100%;
+      box-shadow: 0 4px 8px 0 var(--color-shadow);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 60px;
+      width: 100%;
+      max-width: 1066px;
+      padding: 0 var(--sp-lg);
+    }
+    .header-left { display: flex; align-items: center; gap: var(--sp-lg); }
+    .brand-logo  { height: 26px; width: auto; display: block; }
+
+    /* Spark Button — Ghost / Support */
+    .btn-ghost {
+      border: none;
+      background: transparent;
+      color: var(--color-support);
+      font-size: 14px;
+      font-weight: 700;
+      padding: 0 12px;
+      height: 40px;
+      border-radius: var(--radius-full);
+      transition: background var(--duration-short) var(--ease-standard);
+    }
+    .btn-ghost:hover   { background: var(--color-support-container-hovered); }
+    .btn-ghost:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; }
+
+    /* Spark Button — Outlined / Support */
+    .btn-outlined {
+      border: var(--border-sm) solid var(--color-support);
+      background: transparent;
+      color: var(--color-support);
+      font-size: 14px;
+      font-weight: 700;
+      padding: 0 20px;
+      height: 40px;
+      border-radius: var(--radius-full);
+      transition: background var(--duration-short) var(--ease-standard);
+    }
+    .btn-outlined:hover   { background: var(--color-support-container-hovered); }
+    .btn-outlined:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; }
+
+    /* Progress bar */
+    .progress-bar-track {
+      width: 100%;
+      height: 4px;
+      background: rgba(21,34,51,0.12);
+    }
+    .progress-bar-fill {
+      height: 100%;
+      background: var(--color-main);
+      border-radius: 0 2px 2px 0;
+      transition: width var(--duration-medium) var(--ease-standard);
+    }
+
+    /* ══ Content ══════════════════════════════════════════════════════ */
+    .content {
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-xl);
+      padding: var(--sp-3xl) 0;
+      width: 1018px;
+      max-width: calc(100vw - var(--sp-2xl));
+    }
+
+    /* ══ Step card ════════════════════════════════════════════════════ */
+    .step-card {
+      background: var(--color-surface);
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-xl);
+      padding: var(--sp-xl);
+      border-radius: var(--radius-md);
+      width: 100%;
+    }
+    .step-inner {
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-2xl);
+    }
+
+    /* ══ Page title ═══════════════════════════════════════════════════ */
+    .page-title {
+      font-size: 32px;
+      font-weight: 700;
+      line-height: 44px;
+      color: var(--color-on-surface);
+    }
+
+    /* ══ Section label ════════════════════════════════════════════════ */
+    .section-label { display: flex; align-items: center; gap: var(--sp-md); }
+    .icon-circle {
+      width: 24px; height: 24px;
+      background: var(--color-linen);
+      border-radius: 40px;
+      flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
+    }
+    .icon-circle img { width: 14px; height: 14px; object-fit: contain; }
+    .section-label-text {
+      font-size: 20px;
+      font-weight: 600;
+      color: #000;
+      letter-spacing: -0.3px;
+      white-space: nowrap;
+    }
+
+    /* ══ Form fields ══════════════════════════════════════════════════ */
+    .field-wrap { position: relative; width: 328px; }
+    .text-field {
+      width: 100%;
+      height: 52px;
+      border: var(--border-sm) solid var(--color-outline);
+      border-radius: var(--radius-full);
+      padding: 0 44px 0 20px;
+      font-family: inherit;
+      font-size: 16px;
+      color: var(--color-on-surface);
+      background: var(--color-surface);
+      outline: none;
+      transition: border-color var(--duration-short) var(--ease-standard);
+    }
+    .text-field:focus { border-color: var(--color-support); border-width: var(--border-md); }
+    .text-field:focus-visible { outline: none; }
+    .field-clear {
+      position: absolute;
+      right: 14px; top: 50%;
+      transform: translateY(-50%);
+      background: none; border: none;
+      display: flex; align-items: center;
+      color: var(--color-on-dim);
+      padding: 4px;
+      border-radius: 50%;
+      transition: background var(--duration-short) var(--ease-standard);
+    }
+    .field-clear:hover { background: var(--color-neutral-container); }
+    .field-clear svg { width: 20px; height: 20px; }
+
+    /* ══ Price summary ════════════════════════════════════════════════ */
+    .price-summary {
+      background: var(--color-background-variant);
+      border-radius: var(--radius-lg);
+      padding: var(--sp-lg);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--sp-md);
+      width: 328px;
+    }
+    .price-amount {
+      display: flex;
+      align-items: baseline;
+      justify-content: center;
+      gap: 6px;
+      width: 100%;
+    }
+    .price-value {
+      font-size: 42px;
+      font-weight: 700;
+      color: var(--color-on-surface-dim);
+      letter-spacing: -1.26px;
+      line-height: 1;
+    }
+    .price-currency {
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--color-on-surface-dim);
+      letter-spacing: -0.96px;
+      line-height: 1;
+    }
+    .price-label {
+      font-size: 14px;
+      color: var(--color-on-dim);
+      text-align: center;
+      line-height: 1.3;
+      letter-spacing: -0.14px;
+    }
+
+    /* ══ Chips ════════════════════════════════════════════════════════ */
+    .chips-section { display: flex; flex-direction: column; gap: var(--sp-md); width: 328px; }
+    .chips-label { font-size: 16px; font-weight: 700; line-height: 24px; }
+    .chips-list  { display: flex; flex-wrap: wrap; gap: var(--sp-md); }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      height: 36px;
+      padding: 0 12px;
+      border: var(--border-sm) solid var(--color-support);
+      border-radius: var(--radius-full);
+      background: transparent;
+      color: var(--color-support);
+      font-size: 14px;
+      font-weight: 600;
+      white-space: nowrap;
+      transition:
+        background var(--duration-short) var(--ease-standard),
+        border-color var(--duration-short) var(--ease-standard);
+    }
+    .chip:hover  { background: var(--color-support-container); }
+    .chip:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; }
+    .chip.selected {
+      background: var(--color-support-container);
+      border-color: var(--color-support);
+    }
+    .chip-icon { font-style: normal; line-height: 1; font-size: 15px; font-weight: 400; }
+
+    /* ══ Segmented control ════════════════════════════════════════════ */
+    .segmented {
+      background: var(--color-surface);
+      border: var(--border-sm) solid var(--color-outline-dim);
+      border-radius: var(--radius-full);
+      padding: 4px;
+      display: flex;
+      align-items: center;
+      height: 52px;
+      width: 328px;
+    }
+    .seg-btn {
+      flex: 1;
+      height: 44px;
+      border: var(--border-sm) solid transparent;
+      background: transparent;
+      border-radius: var(--radius-full);
+      font-size: 16px;
+      font-weight: 400;
+      color: var(--color-on-dim);
+      padding: 0 var(--sp-lg);
+      white-space: nowrap;
+      transition:
+        background var(--duration-short) var(--ease-standard),
+        border-color var(--duration-short) var(--ease-standard),
+        font-weight var(--duration-short) var(--ease-standard);
+    }
+    .seg-btn:hover:not(.active) { background: var(--color-support-container-hovered); }
+    .seg-btn.active {
+      background: var(--color-support-container);
+      border-color: var(--color-support);
+      font-weight: 500;
+      color: #141110;
+      letter-spacing: -0.16px;
+    }
+    .seg-btn:focus-visible { outline: 2px solid var(--color-focus); outline-offset: -2px; }
+    .seg-divider {
+      width: 0;
+      height: 24px;
+      border-left: var(--border-sm) solid var(--color-outline-dim);
+      flex-shrink: 0;
+    }
+    /* 3-option variant (dépôt de garantie) */
+    .seg-btn-multi {
+      flex: 1;
+      height: 44px;
+      border: var(--border-sm) solid transparent;
+      background: transparent;
+      border-radius: var(--radius-full);
+      padding: 0 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1px;
+      transition:
+        background var(--duration-short) var(--ease-standard),
+        border-color var(--duration-short) var(--ease-standard);
+    }
+    .seg-btn-multi:hover:not(.active) { background: var(--color-support-container-hovered); }
+    .seg-btn-multi.active {
+      background: var(--color-support-container);
+      border-color: var(--color-support);
+    }
+    .seg-btn-multi .seg-main { font-size: 16px; font-weight: 400; color: var(--color-on-dim); }
+    .seg-btn-multi .seg-sub  { font-size: 10px;  font-weight: 400; color: var(--color-on-dim); }
+    .seg-btn-multi.active .seg-main,
+    .seg-btn-multi.active .seg-sub { color: #141110; font-weight: 500; }
+    .seg-btn-multi:focus-visible { outline: 2px solid var(--color-focus); outline-offset: -2px; }
+
+    /* ══ Réglementation card ══════════════════════════════════════════ */
+    .rgl-card {
+      border: var(--border-sm) solid var(--color-grey-border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      width: 328px;
+    }
+    .rgl-inner {
+      padding: var(--sp-lg);
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-2xl);
+    }
+    .rgl-question { display: flex; flex-direction: column; gap: var(--sp-lg); }
+    .rgl-question-text {
+      font-size: 16px;
+      font-weight: 500;
+      color: var(--color-text-black);
+      letter-spacing: -0.16px;
+      line-height: 1.3;
+    }
+    .info-rows { display: flex; flex-direction: column; gap: var(--sp-lg); }
+    .info-row  { display: flex; gap: var(--sp-md); align-items: flex-start; }
+    .info-icon {
+      width: 48px; height: 48px;
+      background: var(--color-neutral-container);
+      border-radius: var(--radius-sm);
+      flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
+    }
+    .info-icon img { width: 26px; height: 26px; object-fit: contain; }
+    .info-text {
+      flex: 1;
+      font-size: 14px;
+      color: var(--color-on-surface-dim);
+      line-height: 1.3;
+      letter-spacing: -0.14px;
+    }
+    .info-text strong { font-weight: 600; }
+    .info-text a {
+      color: var(--color-on-surface-dim);
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+    .info-text a:hover { color: var(--color-support); }
+
+    /* Plafond field */
+    .plafond-field-wrap { position: relative; width: 100%; }
+    .plafond-field {
+      width: 100%;
+      height: 52px;
+      border: var(--border-sm) solid var(--color-outline);
+      border-radius: var(--radius-full);
+      padding: 0 60px 0 20px;
+      font-family: inherit;
+      font-size: 16px;
+      color: var(--color-on-surface);
+      background: var(--color-surface);
+      outline: none;
+      transition: border-color var(--duration-short) var(--ease-standard);
+    }
+    .plafond-field:focus { border-color: var(--color-support); border-width: var(--border-md); }
+    .plafond-unit {
+      position: absolute;
+      right: 18px; top: 50%;
+      transform: translateY(-50%);
+      font-size: 12px;
+      color: var(--color-on-dim);
+      pointer-events: none;
+    }
+
+    /* Expand/collapse */
+    .expandable { overflow: hidden; transition: max-height var(--duration-medium) var(--ease-standard), opacity var(--duration-medium) var(--ease-standard); }
+    .expandable.hidden { max-height: 0 !important; opacity: 0; }
+    .expandable.visible { opacity: 1; }
+
+    /* ══ Dépôt de garantie ════════════════════════════════════════════ */
+    .depot-section { display: flex; flex-direction: column; gap: var(--sp-lg); width: 328px; }
+
+    /* Depot field wrapper — hidden when preset selected */
+    #depot-custom-wrap.hidden { display: none; }
+
+    /* ══ Navigation ═══════════════════════════════════════════════════ */
+    .nav-buttons {
+      display: flex;
+      justify-content: flex-end;
+      padding-top: var(--sp-lg);
+      width: 100%;
+    }
+    .btn-continuer {
+      border: none;
+      background: var(--color-main);
+      color: var(--color-on-main);
+      font-size: 16px;
+      font-weight: 700;
+      padding: 0 var(--sp-xl);
+      height: 44px;
+      border-radius: var(--radius-full);
+      transition: background var(--duration-short) var(--ease-standard);
+    }
+    .btn-continuer:hover { background: var(--color-main-hovered); }
+    .btn-continuer:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; }
+    .btn-continuer:active { transform: scale(0.98); }
+
+    /* ══ Responsive ═══════════════════════════════════════════════════ */
+    @media (max-width: 860px) {
+      .content { padding: var(--sp-xl) var(--sp-lg); }
+      .field-wrap, .segmented, .price-summary, .chips-section,
+      .rgl-card, .depot-section { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+<div class="page-wrapper">
+
+  <!-- ══ Header ════════════════════════════════════════════════════ -->
+  <header class="header">
+    <div class="header-inner">
+      <div class="header-left">
+        <img
+          class="brand-logo"
+          src="https://www.figma.com/api/mcp/asset/d8ba2655-2e8e-41a5-9417-ed03d14ae283"
+          alt="leboncoin"
+        />
+        <button class="btn-ghost">Déposer une annonce</button>
+      </div>
+      <button class="btn-outlined">Quitter</button>
+    </div>
+    <div class="progress-bar-track">
+      <div class="progress-bar-fill" id="progress-fill" style="width:50%"></div>
+    </div>
+  </header>
+
+  <!-- ══ Main content ═══════════════════════════════════════════════ -->
+  <main class="content">
+    <div class="step-card">
+      <div class="step-inner">
+
+        <!-- Title -->
+        <h1 class="page-title">Quel est votre prix ?</h1>
+
+        <!-- ── Loyer hors charges ─────────────────────────────────── -->
+        <div style="display:flex;flex-direction:column;gap:var(--sp-sm)">
+          <div class="section-label">
+            <div class="icon-circle">
+              <img src="https://www.figma.com/api/mcp/asset/adc8a684-759b-42b9-81cc-e776408f1f0b" alt="" />
+            </div>
+            <span class="section-label-text">Loyer hors charges*</span>
+          </div>
+          <div class="field-wrap">
+            <input
+              class="text-field"
+              type="number"
+              inputmode="numeric"
+              value="1200"
+              min="0"
+              aria-label="Loyer hors charges en euros"
+              id="loyer"
+            />
+            <button class="field-clear" aria-label="Effacer le loyer" onclick="clearField('loyer')">
+              <svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="1.5"/><path d="M7 7l6 6M13 7l-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- ── Charges ────────────────────────────────────────────── -->
+        <div style="display:flex;flex-direction:column;gap:var(--sp-lg)">
+
+          <div style="display:flex;flex-direction:column;gap:var(--sp-sm)">
+            <div class="section-label">
+              <div class="icon-circle">
+                <img src="https://www.figma.com/api/mcp/asset/f0624958-af81-4d86-872f-fac9d9e46ef4" alt="" style="width:12px;height:12px" />
+              </div>
+              <span class="section-label-text">Charges</span>
+            </div>
+            <div class="field-wrap">
+              <input
+                class="text-field"
+                type="number"
+                inputmode="numeric"
+                value="50"
+                min="0"
+                aria-label="Charges en euros"
+                id="charges"
+              />
+              <button class="field-clear" aria-label="Effacer les charges" onclick="clearField('charges')">
+                <svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="1.5"/><path d="M7 7l6 6M13 7l-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Chips -->
+          <div class="chips-section">
+            <span class="chips-label">Inclus dans ces charges</span>
+            <div class="chips-list">
+              <button class="chip" onclick="toggleChip(this)" aria-pressed="false"><span class="chip-icon" aria-hidden="true">+</span> Eau froide</button>
+              <button class="chip" onclick="toggleChip(this)" aria-pressed="false"><span class="chip-icon" aria-hidden="true">+</span> Eau chaude</button>
+              <button class="chip" onclick="toggleChip(this)" aria-pressed="false"><span class="chip-icon" aria-hidden="true">+</span> Chauffage</button>
+              <button class="chip" onclick="toggleChip(this)" aria-pressed="false"><span class="chip-icon" aria-hidden="true">+</span> Électricité</button>
+              <button class="chip" onclick="toggleChip(this)" aria-pressed="false"><span class="chip-icon" aria-hidden="true">+</span> Entretien des parties communes</button>
+              <button class="chip" onclick="toggleChip(this)" aria-pressed="false"><span class="chip-icon" aria-hidden="true">+</span> Ordures ménagères</button>
+              <button class="chip" onclick="toggleChip(this)" aria-pressed="false"><span class="chip-icon" aria-hidden="true">+</span> Internet</button>
+              <button class="chip" onclick="toggleChip(this)" aria-pressed="false"><span class="chip-icon" aria-hidden="true">+</span> Autre</button>
+            </div>
+          </div>
+
+          <!-- Prix total TCC -->
+          <div class="price-summary" role="status" aria-live="polite" aria-label="Loyer mensuel toutes charges comprises">
+            <div class="price-amount">
+              <span class="price-value" id="total-price">1 250</span>
+              <span class="price-currency">€</span>
+            </div>
+            <p class="price-label">Loyer mensuel toutes charges comprises.<br/>Ce montant sera visible sur l'annonce.</p>
+          </div>
+
+          <!-- Bloc réglementation -->
+          <div class="rgl-card">
+            <div class="rgl-inner">
+
+              <!-- Question encadrement des loyers -->
+              <div class="rgl-question">
+                <p class="rgl-question-text">Votre bien est-il en zone soumise à l'encadrement des loyers ?</p>
+                <div style="display:flex;flex-direction:column;gap:var(--sp-lg)">
+                  <div class="info-row">
+                    <div class="info-icon">
+                      <img src="https://www.figma.com/api/mcp/asset/e637e173-f1de-4b1b-8a79-c553fb85f04c" alt="" />
+                    </div>
+                    <p class="info-text">
+                      Dans certaines communes, les loyers hors charges sont <strong>plafonnés</strong>.<br/>
+                      <a href="#" onclick="return false">Voir les villes concernées</a>
+                    </p>
+                  </div>
+                  <!-- Segmented Oui / Non -->
+                  <div class="segmented" role="group" aria-label="Votre bien est-il en zone encadrée ?">
+                    <button class="seg-btn active" data-group="encadrement" onclick="selectSeg(this,'encadrement')" aria-pressed="true">Oui</button>
+                    <div class="seg-divider" aria-hidden="true"></div>
+                    <button class="seg-btn" data-group="encadrement" onclick="selectSeg(this,'encadrement')" aria-pressed="false">Non</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Infos plafond — visible si Oui -->
+              <div class="expandable visible" id="plafond-infos" style="max-height:400px">
+                <div class="info-rows">
+                  <div class="info-row">
+                    <div class="info-icon">
+                      <img src="https://www.figma.com/api/mcp/asset/2a069e07-df4b-4ab2-9200-989769805d60" alt="" />
+                    </div>
+                    <div class="info-text">
+                      <strong>Comment trouver le plafond 2026 ?</strong><br/>
+                      Le plafond ou "Loyer de référence majoré", réévalué chaque année, est disponible sur le site de votre commune.
+                    </div>
+                  </div>
+                  <div class="info-row">
+                    <div class="info-icon">
+                      <img src="https://www.figma.com/api/mcp/asset/1dda1762-d828-4727-81de-b9b1bc62b6f7" alt="" />
+                    </div>
+                    <p class="info-text">
+                      <strong>Est-il possible de dépasser ce plafond ?</strong><br/>
+                      Sous certaines conditions, le montant de votre loyer hors charges peut dépasser le Loyer de référence majoré. Ce dépassement constitue alors le "complément de loyer".<br/>
+                      <a href="#" onclick="return false">Vérifier les conditions</a>
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Plafond de loyer autorisé — visible si Oui -->
+              <div class="expandable visible" id="plafond-field-wrap" style="max-height:120px">
+                <div style="display:flex;flex-direction:column;gap:var(--sp-md)">
+                  <span class="rgl-question-text">Plafond de loyer autorisé</span>
+                  <div class="plafond-field-wrap">
+                    <input
+                      class="plafond-field"
+                      type="number"
+                      inputmode="numeric"
+                      min="0"
+                      id="plafond"
+                      aria-label="Plafond de loyer autorisé en euros par mois"
+                    />
+                    <span class="plafond-unit">€/mois</span>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ── Dépôt de garantie ──────────────────────────────────── -->
+        <div class="depot-section">
+          <div class="section-label">
+            <div class="icon-circle">
+              <img src="https://www.figma.com/api/mcp/asset/1147fb0e-1093-4b47-a80c-65e5c6f59503" alt="" style="width:12px;height:12px" />
+            </div>
+            <span class="section-label-text">Dépôt de garantie</span>
+          </div>
+
+          <!-- Segmented 3 options — avec calcul dynamique -->
+          <div class="segmented" role="group" aria-label="Mode de calcul du dépôt de garantie">
+            <button class="seg-btn-multi" data-group="depot" data-preset="75" onclick="selectDepot(this)" aria-pressed="false">
+              <span class="seg-main" id="depot-75-val">– €</span>
+              <span class="seg-sub">75% du loyer</span>
+            </button>
+            <div class="seg-divider" aria-hidden="true"></div>
+            <button class="seg-btn-multi" data-group="depot" data-preset="100" onclick="selectDepot(this)" aria-pressed="false">
+              <span class="seg-main" id="depot-100-val">– €</span>
+              <span class="seg-sub">1 mois de loyer (max)</span>
+            </button>
+            <div class="seg-divider" aria-hidden="true"></div>
+            <button class="seg-btn-multi active" data-group="depot" data-preset="autre" onclick="selectDepot(this)" aria-pressed="true">
+              <span class="seg-main">Autre</span>
+              <span class="seg-sub"></span>
+            </button>
+          </div>
+
+          <!-- Montant libre — visible si "Autre" -->
+          <div id="depot-custom-wrap">
+            <div class="field-wrap">
+              <input
+                class="text-field"
+                type="number"
+                inputmode="numeric"
+                value="2000"
+                min="0"
+                aria-label="Montant du dépôt de garantie en euros"
+                id="depot"
+              />
+              <button class="field-clear" aria-label="Effacer le dépôt de garantie" onclick="clearField('depot')">
+                <svg viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="1.5"/><path d="M7 7l6 6M13 7l-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Navigation ─────────────────────────────────────────── -->
+        <div class="nav-buttons">
+          <button class="btn-continuer" onclick="handleContinuer()">Continuer</button>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+</div>
+
+<script>
+  /* ── Helpers ──────────────────────────────────────────────────── */
+  const $ = id => document.getElementById(id);
+  const fmt = n => n.toLocaleString('fr-FR');
+
+  function getVal(id) {
+    return parseFloat($(id).value) || 0;
+  }
+
+  /* ── Prix total TCC ──────────────────────────────────────────── */
+  function updateTotal() {
+    const total = getVal('loyer') + getVal('charges');
+    $('total-price').textContent = fmt(total);
+    updateDepotPresets();
+  }
+
+  /* ── Dépôt de garantie — montants calculés ───────────────────── */
+  function updateDepotPresets() {
+    const loyer = getVal('loyer');
+    $('depot-75-val').textContent  = loyer > 0 ? fmt(Math.round(loyer * 0.75)) + ' €' : '– €';
+    $('depot-100-val').textContent = loyer > 0 ? fmt(loyer) + ' €'               : '– €';
+  }
+
+  /* ── Clear field ─────────────────────────────────────────────── */
+  function clearField(id) {
+    $(id).value = '';
+    updateTotal();
+  }
+
+  /* ── Segmented control générique ────────────────────────────── */
+  function selectSeg(btn, group) {
+    document.querySelectorAll(`[data-group="${group}"]`).forEach(b => {
+      b.classList.remove('active');
+      b.setAttribute('aria-pressed', 'false');
+    });
+    btn.classList.add('active');
+    btn.setAttribute('aria-pressed', 'true');
+
+    if (group === 'encadrement') {
+      const isOui = btn.textContent.trim() === 'Oui';
+      toggleExpandable('plafond-infos', isOui);
+      toggleExpandable('plafond-field-wrap', isOui);
+    }
+  }
+
+  /* ── Segmented dépôt de garantie ────────────────────────────── */
+  function selectDepot(btn) {
+    document.querySelectorAll('[data-group="depot"]').forEach(b => {
+      b.classList.remove('active');
+      b.setAttribute('aria-pressed', 'false');
+    });
+    btn.classList.add('active');
+    btn.setAttribute('aria-pressed', 'true');
+
+    const preset = btn.dataset.preset;
+    const customWrap = $('depot-custom-wrap');
+    const loyer = getVal('loyer');
+
+    if (preset === 'autre') {
+      customWrap.classList.remove('hidden');
+    } else {
+      customWrap.classList.add('hidden');
+      // pré-remplir le champ caché avec la valeur calculée (pour soumission)
+      const val = preset === '75' ? Math.round(loyer * 0.75) : loyer;
+      $('depot').value = val;
+    }
+  }
+
+  /* ── Expand / collapse animé ─────────────────────────────────── */
+  function toggleExpandable(id, show) {
+    const el = $(id);
+    if (show) {
+      el.classList.remove('hidden');
+      el.classList.add('visible');
+    } else {
+      el.classList.add('hidden');
+      el.classList.remove('visible');
+    }
+  }
+
+  /* ── Chips ───────────────────────────────────────────────────── */
+  function toggleChip(btn) {
+    const selected = btn.classList.toggle('selected');
+    btn.setAttribute('aria-pressed', selected ? 'true' : 'false');
+    const icon = btn.querySelector('.chip-icon');
+    icon.textContent = selected ? '✓' : '+';
+  }
+
+  /* ── Continuer ───────────────────────────────────────────────── */
+  function handleContinuer() {
+    const data = {
+      loyer:    getVal('loyer'),
+      charges:  getVal('charges'),
+      total:    getVal('loyer') + getVal('charges'),
+      depot:    getVal('depot'),
+      encadrement: document.querySelector('[data-group="encadrement"].active')?.textContent.trim(),
+      plafond:  getVal('plafond') || null,
+    };
+    console.log('Données formulaire :', data);
+    // Simuler progression
+    $('progress-fill').style.width = '65%';
+    $('progress-fill').title = '65% complété';
+  }
+
+  /* ── Initialisation ──────────────────────────────────────────── */
+  $('loyer').addEventListener('input', updateTotal);
+  $('charges').addEventListener('input', updateTotal);
+  updateTotal();
+</script>
+<script src="exit-dialog.js"></script>
+</body>
+</html>

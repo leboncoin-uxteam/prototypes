@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dépôt annonce — Décrivez votre bien !</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,300;0,6..12,400;0,6..12,600;0,6..12,700;0,6..12,800&display=swap" rel="stylesheet" />
+  <style>
+    /* ══ Spark design tokens — thème light ══════════════════════════ */
+    :root {
+      --color-main:                     #ec5a13;
+      --color-on-main:                  #ffffff;
+      --color-main-hovered:             #f07b42;
+
+      --color-support:                  #094171;
+      --color-on-support:               #ffffff;
+      --color-support-container-hovered:#f4f9fe;
+
+      --color-neutral-container:        #f0f2f5;
+      --color-on-neutral-container:     #3a4757;
+
+      --color-surface:                  #ffffff;
+      --color-on-surface:               #152233;
+      --color-background-variant:       #f4f9fe;
+      --color-on-background:            #152233;
+
+      --color-outline:                  #acb8c7;
+      --color-shadow:                   rgba(108,129,157,0.5);
+      --color-focus:                    #0000ff;
+
+      --color-on-surface-dim:           rgba(21,34,51,0.72);
+      --color-on-background-dim-4:      rgba(21,34,51,0.16);
+
+      --sp-sm:   4px;
+      --sp-md:   8px;
+      --sp-lg:   16px;
+      --sp-xl:   24px;
+      --sp-2xl:  32px;
+      --sp-3xl:  40px;
+
+      --radius-sm:   4px;
+      --radius-md:   8px;
+      --radius-lg:   16px;
+
+      --border-sm:   1px;
+      --border-md:   2px;
+
+      --ease-standard: cubic-bezier(0.2,0,0,1);
+      --duration-short: 150ms;
+      --duration-medium: 250ms;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Nunito Sans', sans-serif;
+      background: var(--color-background-variant);
+      color: var(--color-on-surface);
+      min-height: 100vh;
+    }
+    button { font-family: inherit; cursor: pointer; }
+
+    .page-wrapper { display: flex; flex-direction: column; align-items: center; gap: var(--sp-md); min-height: 100vh; }
+
+    /* ══ Header simple ═══════════════════════════════════════════════ */
+    .header {
+      background: var(--color-surface);
+      width: 100%;
+      filter: drop-shadow(0 4px 8px var(--color-shadow));
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      position: sticky; top: 0; z-index: 10;
+    }
+    .header-inner {
+      display: flex; align-items: center; justify-content: space-between;
+      height: 60px; width: 100%; max-width: 1066px;
+      padding: 0 var(--sp-lg);
+    }
+    .header-left { display: flex; align-items: center; gap: var(--sp-lg); }
+    .brand-logo  { display: block; }
+    .header-title {
+      display: flex; align-items: center; justify-content: center;
+      height: 44px; padding: var(--sp-md) var(--sp-lg);
+      border-radius: var(--radius-lg);
+      font-size: 16px; font-weight: 700; line-height: 24px;
+      color: var(--color-support);
+    }
+
+    .progress-bar-track {
+      width: 100%; height: 4px; overflow: hidden;
+      background: var(--color-on-background-dim-4);
+    }
+    .progress-bar-fill {
+      height: 100%; background: var(--color-main);
+      transition: width var(--duration-medium) var(--ease-standard);
+    }
+
+    /* ══ Spark Buttons ═══════════════════════════════════════════════ */
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: var(--sp-md);
+      height: 44px; padding: var(--sp-md) var(--sp-lg);
+      border-radius: var(--radius-lg);
+      font-size: 16px; font-weight: 700; line-height: 24px;
+      text-decoration: none;
+      transition: background var(--duration-short) var(--ease-standard);
+    }
+    .btn:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; }
+
+    .btn-outlined {
+      border: var(--border-sm) solid var(--color-support);
+      background: transparent; color: var(--color-support);
+    }
+    .btn-outlined:hover { background: var(--color-support-container-hovered); }
+
+    .btn-filled-main {
+      border: none;
+      background: var(--color-main); color: var(--color-on-main);
+    }
+    .btn-filled-main:hover  { background: var(--color-main-hovered); }
+    .btn-filled-main:active { transform: scale(0.98); }
+
+    /* ══ Layout ══════════════════════════════════════════════════════ */
+    .full-page {
+      display: flex; flex-direction: column; align-items: center;
+      gap: var(--sp-xl); padding: var(--sp-3xl) 0; width: 100%;
+    }
+    /* La colonne du progress tracker (215px) s'ajoute à gauche : la zone
+       passe de 1066 à 1278px pour que le contenu de l'étape garde ses
+       815px et les astuces leurs 200px, comme dans le Figma. */
+    .main-content {
+      display: flex; align-items: center; gap: var(--sp-xl);
+      width: 1278px; max-width: 100%;
+      padding: 0 var(--sp-lg);
+    }
+    /* Le tracker longe l'étape : il s'aligne en haut, pas au centre. */
+    .step-progress { align-self: flex-start; }
+
+    .step-content {
+      background: var(--color-surface);
+      display: flex; flex-direction: column; align-items: flex-start;
+      gap: var(--sp-xl); padding: var(--sp-xl);
+      border-radius: var(--radius-lg);
+      width: 815px; max-width: 100%;
+    }
+    .step-main {
+      display: flex; flex-direction: column; align-items: flex-start;
+      gap: var(--sp-2xl); width: 100%; min-width: 0;
+    }
+
+    /* ══ Titres ══════════════════════════════════════════════════════ */
+    .headline-2 { font-size: 18px; font-weight: 700; line-height: 24px; color: var(--color-on-surface); }
+
+    /* ══ Input textfield (Spark) ═════════════════════════════════════
+       Sur cette étape les deux champs occupent toute la largeur de la
+       carte : la description a besoin de la place, le titre s'aligne. */
+    .input-field { display: flex; flex-direction: column; align-items: flex-start; gap: var(--sp-sm); width: 100%; }
+    .field-label-row { display: flex; align-items: center; gap: var(--sp-sm); }
+    .field-label { font-size: 14px; font-weight: 400; line-height: 20px; color: var(--color-on-surface); }
+    .mandatory {
+      display: flex; align-items: flex-end; height: 20px; padding-bottom: 1px;
+      font-size: 12px; font-weight: 400; line-height: 16px; color: var(--color-on-surface-dim);
+    }
+
+    .input-container {
+      background: var(--color-surface);
+      border: var(--border-sm) solid var(--color-outline);
+      border-radius: var(--radius-lg);
+      display: flex; align-items: center;
+      height: 44px; width: 100%;
+      padding-left: var(--sp-lg);
+      overflow: hidden;
+      transition: border-color var(--duration-short) var(--ease-standard);
+    }
+    .input-container:focus-within { border-color: var(--color-support); }
+    .input-container input {
+      flex: 1 0 0; min-width: 0; height: 44px;
+      border: none; outline: none; background: transparent;
+      padding-right: var(--sp-lg);
+      font-family: inherit; font-size: 16px; font-weight: 400; line-height: 24px;
+      color: var(--color-on-surface);
+      text-overflow: ellipsis;
+    }
+
+    /* ══ Zone de description ═════════════════════════════════════════ */
+    .textarea-container {
+      position: relative;
+      background: var(--color-surface);
+      border: var(--border-sm) solid var(--color-outline);
+      border-radius: var(--radius-lg);
+      width: 100%;
+      padding: var(--sp-lg);
+      transition: border-color var(--duration-short) var(--ease-standard);
+    }
+    .textarea-container:focus-within { border-color: var(--color-support); }
+    .textarea-container textarea {
+      display: block; width: 100%; min-height: 290px;
+      border: none; outline: none; background: transparent; resize: vertical;
+      padding-right: var(--sp-2xl);
+      font-family: inherit; font-size: 16px; font-weight: 400; line-height: 24px;
+      color: var(--color-on-surface);
+    }
+    /* La croix vide le champ — l'« Icon button » de Spark, en ghost. */
+    .textarea-clear {
+      position: absolute; top: var(--sp-md); right: var(--sp-md);
+      display: flex; align-items: center; justify-content: center;
+      width: 32px; height: 32px;
+      border: none; border-radius: 50%;
+      background: transparent;
+      opacity: 0; pointer-events: none;
+      transition: opacity var(--duration-short) var(--ease-standard),
+                  background var(--duration-short) var(--ease-standard);
+    }
+    .textarea-clear.is-visible { opacity: 1; pointer-events: auto; }
+    .textarea-clear:hover { background: var(--color-neutral-container); }
+    .textarea-clear:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 2px; }
+
+    /* Ligne de bas de champ : mention à gauche, compteur à droite. */
+    .helper-row {
+      display: flex; align-items: flex-start; justify-content: space-between;
+      gap: var(--sp-lg); width: 100%;
+      font-size: 12px; font-weight: 400; line-height: 16px;
+      color: var(--color-on-surface-dim);
+    }
+    .helper-row .counter { flex-shrink: 0; text-align: right; }
+
+    /* ══ Mentions légales ════════════════════════════════════════════ */
+    .legal-links { display: flex; flex-direction: column; align-items: flex-start; gap: var(--sp-sm); }
+    .legal-links a {
+      font-size: 12px; font-weight: 400; line-height: 16px;
+      color: var(--color-on-surface);
+      text-decoration: underline; text-underline-offset: from-font;
+    }
+    .legal-links a:hover { color: var(--color-support); }
+
+    /* ══ Action footer ═══════════════════════════════════════════════ */
+    .action-footer { display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%; }
+
+    /* ══ Tips ════════════════════════════════════════════════════════ */
+    .tips {
+      display: flex; flex-direction: column; align-items: flex-start;
+      gap: var(--sp-lg); width: 200px; flex-shrink: 0;
+    }
+    .tips-icon { display: flex; align-items: center; justify-content: center; gap: var(--sp-md); width: 100%; }
+    .tips-icon::before,
+    .tips-icon::after {
+      content: ''; flex: 1 0 0; min-width: 0; height: 0;
+      border-top: var(--border-sm) solid var(--color-main);
+    }
+    .tips-text {
+      width: 100%;
+      font-size: 14px; font-weight: 400; line-height: 20px;
+      color: var(--color-on-background); text-align: center;
+    }
+
+    [hidden] { display: none !important; }
+
+    @media (max-width: 1320px) {
+      .main-content { flex-direction: column; align-items: stretch; }
+      .step-content { width: 100%; }
+      .tips { width: 100%; align-items: center; }
+    }
+  </style>
+</head>
+<body>
+<div class="page-wrapper">
+
+  <!-- ══ Header simple ═════════════════════════════════════════════ -->
+  <header class="header">
+    <div class="header-inner">
+      <div class="header-left">
+        <img class="brand-logo" src="assets/leboncoin-logo.svg" width="140" height="26" alt="leboncoin" />
+        <span class="header-title">Déposer une annonce</span>
+      </div>
+      <button type="button" class="btn btn-outlined">Quitter</button>
+    </div>
+    <div class="progress-bar-track">
+      <div class="progress-bar-fill" id="progress-fill" style="width:58%"></div>
+    </div>
+  </header>
+
+  <!-- ══ Full page ═════════════════════════════════════════════════ -->
+  <div class="full-page">
+    <main class="main-content">
+
+      <!-- ══ Step content ════════════════════════════════════════════ -->
+      <!-- Progress tracker — rempli par progress-tracker.js -->
+      <div class="step-progress" data-current="description"></div>
+
+      <div class="step-content">
+        <div class="step-main">
+
+          <h1 class="headline-2">Décrivez votre bien&nbsp;!</h1>
+
+          <!-- Titre de l'annonce -->
+          <div class="input-field">
+            <div class="field-label-row">
+              <label class="field-label" for="titre">Titre de l'annonce</label>
+              <span class="mandatory" aria-hidden="true">*</span>
+            </div>
+            <div class="input-container">
+              <input
+                type="text"
+                id="titre"
+                maxlength="200"
+                autocomplete="off"
+                required
+                aria-describedby="titre-counter"
+              />
+            </div>
+            <div class="helper-row">
+              <span>Vous n'avez pas besoin de mentionner «&nbsp;Achat&nbsp;» ou «&nbsp;Vente&nbsp;» ici.</span>
+              <span class="counter" id="titre-counter" aria-live="polite">0/200</span>
+            </div>
+          </div>
+
+          <!-- Description de l'annonce -->
+          <div class="input-field">
+            <div class="field-label-row">
+              <label class="field-label" for="description">Description de l'annonce</label>
+              <span class="mandatory" aria-hidden="true">*</span>
+            </div>
+
+            <div class="textarea-container">
+              <textarea
+                id="description"
+                maxlength="4000"
+                required
+                aria-describedby="description-counter"
+              ></textarea>
+              <button
+                type="button"
+                class="textarea-clear"
+                id="description-clear"
+                aria-label="Effacer la description"
+              >
+                <img src="assets/circle-cross.svg" width="20" height="20" alt="" />
+              </button>
+            </div>
+
+            <div class="helper-row">
+              <span>Vous devez renseigner des informations légales dans la partie description au risque de sanction.</span>
+              <span class="counter" id="description-counter" aria-live="polite">0/4000</span>
+            </div>
+
+            <div class="legal-links">
+              <a href="#">Voir les mentions obligatoires concernant le DPE</a>
+              <a href="#">Voir les mentions obligatoires relatives aux biens immobiliers situés dans une zone à risque</a>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Action footer -->
+        <div class="action-footer">
+          <button type="button" class="btn btn-outlined" id="btn-retour">Retour</button>
+          <button type="button" class="btn btn-filled-main" id="btn-continuer">Continuer</button>
+        </div>
+      </div>
+
+      <!-- ══ Tips ════════════════════════════════════════════════════ -->
+      <aside class="tips">
+        <div class="tips-icon">
+          <img src="assets/light-bulb.svg" width="40" height="40" alt="" />
+        </div>
+        <p class="tips-text">
+          Mettez en valeur votre bien&nbsp;! Plus il y a de détails, plus votre annonce sera de qualité.
+          Détaillez ici ce qui a de l’importance et ajoutera de la valeur.
+        </p>
+      </aside>
+
+    </main>
+  </div>
+</div>
+
+<script src="draft-store.js"></script>
+<script src="ads-data.js"></script>
+<script>
+  /* Gain de score accordé quand la description d'une annonce publiée est
+     enrichie. « Mes annonces » l'ajoute au score de l'annonce. */
+  const GAIN_SCORE = 5
+
+  const titre       = document.getElementById('titre')
+  const description = document.getElementById('description')
+  const titreCount  = document.getElementById('titre-counter')
+  const descCount   = document.getElementById('description-counter')
+  const clearBtn    = document.getElementById('description-clear')
+
+  /* ══ Deux usages, strictement séparés ════════════════════════════
+     Cet écran sert à deux choses, et les deux ne partagent aucune donnée.
+
+     • Mode édition — « ?ad=a2 », depuis « Enrichir ma description » du
+       panneau de complétion. On retouche une annonce publiée : les champs
+       portent son contenu, et ce qu'on y écrit va dans `AdEdits`.
+       Le brouillon du dépôt n'est ni lu ni touché.
+
+     • Dépôt neuf — pas de paramètre. C'est l'utilisateur qui choisit son
+       titre et sa description : aucune valeur n'est imposée. Le champ
+       titre reprend seulement ce qu'il a déjà saisi à l'étape « titre ».
+       Les annonces publiées ne sont ni lues ni touchées. */
+  const adId = new URLSearchParams(location.search).get('ad')
+  const enEdition = Boolean(adId)
+
+  if (enEdition) {
+    const ad = Ads.byId(adId) || {}
+    const edits = AdEdits.get(adId)
+    // Une retouche déjà faite prime sur le contenu publié de l'annonce.
+    titre.value = edits.titre ?? ad.title ?? ''
+    description.value = edits.description ?? ad.description ?? ''
+  } else {
+    const draft = Draft.read()
+    titre.value = draft.titre || ''
+    description.value = draft.description || ''
+  }
+
+  // Sert à savoir, au moment de valider, si le texte a réellement changé.
+  const descriptionInitiale = description.value
+
+  function refresh() {
+    titreCount.textContent = `${titre.value.length}/200`
+    descCount.textContent  = `${description.value.length}/4000`
+    clearBtn.classList.toggle('is-visible', description.value.length > 0)
+  }
+
+  titre.addEventListener('input', refresh)
+  description.addEventListener('input', refresh)
+
+  clearBtn.addEventListener('click', () => {
+    description.value = ''
+    refresh()
+    description.focus()
+  })
+
+  refresh()
+
+  /* ══ Navigation ══════════════════════════════════════════════════
+     On retourne à « Mes annonces » — c'est de là qu'on vient pour
+     enrichir. Si le texte a changé, l'annonce gagne GAIN_SCORE points de
+     complétion ; sinon rien ne bouge, repasser par cet écran sans rien
+     toucher ne fait pas monter le score.
+
+     Le détail de l'annonce retouchée est rouvert à l'arrivée, pour que le
+     score et la jauge de description se voient tout de suite. */
+  /* Enregistre les deux champs. « Continuer » s'en sert, et « Enregistrer
+     et quitter » du header aussi — exit-dialog.js appelle cette fonction
+     par `window.saveEdits`, c'est pourquoi elle est exposée. */
+  function saveEdits() {
+    const nouvelleDescription = description.value.trim()
+    const nouveauTitre = titre.value.trim()
+
+    /* Dépôt neuf : tout va dans le brouillon, et rien d'autre. Le titre
+       enregistré est bien celui que l'utilisateur a choisi. */
+    if (!enEdition) {
+      Draft.patch({ titre: nouveauTitre, description: nouvelleDescription })
+      return
+    }
+
+    /* Mode édition : tout va dans les retouches de cette annonce. Le
+       brouillon du dépôt n'est pas touché — une annonce publiée et un
+       dépôt en cours sont deux choses distinctes. */
+    const enrichie = nouvelleDescription.length > descriptionInitiale.trim().length
+    const dejaGagne = AdEdits.get(adId).scoreBonus || 0
+
+    AdEdits.patch(adId, {
+      titre: nouveauTitre,
+      description: nouvelleDescription,
+      descLength: nouvelleDescription.length,
+      // Le gain ne s'accorde qu'une fois : on n'empile pas 5 % par passage.
+      scoreBonus: enrichie ? Math.max(dejaGagne, GAIN_SCORE) : dejaGagne,
+    })
+  }
+
+  window.saveEdits = saveEdits
+
+  document.getElementById('btn-continuer').addEventListener('click', () => {
+    saveEdits()
+    window.location.href = adId
+      ? `mes-annonces/index.html?ad=${encodeURIComponent(adId)}`
+      : 'mes-annonces/index.html'
+  })
+
+  document.getElementById('btn-retour').addEventListener('click', () => {
+    if (history.length > 1) history.back()
+    else window.location.href = 'mes-annonces/index.html'
+  })
+</script>
+<script src="progress-tracker.js"></script>
+<script src="exit-dialog.js"></script>
+</body>
+</html>

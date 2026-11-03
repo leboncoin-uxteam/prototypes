@@ -1,18 +1,38 @@
-/* Dialog de sortie du parcours de dépôt — Spark Dialog 🖥️🤖 (Figma 15761:9872).
-   S'accroche à tous les boutons « Quitter » de la page et propose de voir ses
-   annonces ou de recommencer le dépôt depuis la première étape.
+/* Sortie du parcours de dépôt — Spark Dialog 🖥️🤖 (Figma 15761:9872).
+   S'accroche à tous les boutons « Quitter » de la page.
+
+   Deux comportements, selon d'où l'on vient :
+
+   • Dépôt neuf — le bouton ouvre la dialog, qui propose de voir ses annonces
+     ou de recommencer depuis la première étape. Rien n'est encore publié, il
+     y a donc quelque chose à perdre : on demande confirmation.
+
+   • Mode édition — on modifie une annonce déjà déposée, signalé par « ad=<id> »
+     dans l'URL. Le bouton devient « Enregistrer et quitter » et ramène
+     directement à « Mes annonces », sur l'annonce retouchée. Pas de dialog :
+     il n'y a rien à perdre, seulement à enregistrer.
+
+     La page peut exposer `window.saveEdits()` pour enregistrer ses champs
+     avant le départ. Sans cette fonction, le bouton se contente de quitter —
+     ce qui suffit aux étapes qui écrivent déjà au fil de la saisie.
 
    Inclure en fin de <body> :  <script src="exit-dialog.js"></script>
-   Les trois étapes du parcours partagent ce fichier : une seule source. */
+   Les étapes du parcours partagent ce fichier : une seule source. */
 (() => {
   /* ══ Destinations ════════════════════════════════════════════════
      PREMIERE_ETAPE : où « Recommencer » renvoie.
-     MES_ANNONCES   : page « Voir mes annonces ». Elle n'existe pas encore
-                      dans les protos ; tant que la valeur est null, le bouton
-                      ferme simplement la dialog. Renseigner le chemin ici
-                      quand la page sera créée. */
+     MES_ANNONCES   : page « Voir mes annonces ». */
   const PREMIERE_ETAPE = 'ad-insertion-titre.html'
-  const MES_ANNONCES   = null
+  const MES_ANNONCES   = 'mes-annonces/index.html'
+
+  /* ══ Mode édition ════════════════════════════════════════════════
+     « ad=<id> » dans l'URL : on retouche cette annonce. On revient sur
+     elle, détail ouvert, pour que la modification se voie. */
+  const AD_ID = new URLSearchParams(location.search).get('ad')
+  const EN_EDITION = Boolean(AD_ID)
+  const RETOUR_EDITION = EN_EDITION
+    ? `${MES_ANNONCES}?ad=${encodeURIComponent(AD_ID)}`
+    : MES_ANNONCES
 
   /* ══ Styles ══════════════════════════════════════════════════════
      Les valeurs reprennent les tokens Spark du Figma. On réutilise les
@@ -204,15 +224,36 @@
   // pour que le navigateur serve une page neuve au lieu de restaurer les
   // champs déjà saisis.
   btnRecommencer.addEventListener('click', () => {
+    /* Recommencer veut dire repartir de zéro : le brouillon entamé est
+       effacé, pour que la première étape s'ouvre sur un titre vide et que
+       « Mes annonces » ne garde pas la carte du dépôt abandonné. */
+    if (window.Draft) Draft.clear()
     window.location.href = `${PREMIERE_ETAPE}?restart=${Date.now()}`
   })
 
   /* ══ Branchement sur les boutons « Quitter » ═════════════════════ */
+  function enregistrerEtQuitter() {
+    /* La page enregistre ses propres champs si elle sait le faire. Une
+       erreur de sa part ne doit pas bloquer la sortie. */
+    try {
+      if (typeof window.saveEdits === 'function') window.saveEdits()
+    } catch (err) {
+      console.error('saveEdits a échoué, on quitte quand même', err)
+    }
+    window.location.href = RETOUR_EDITION
+  }
+
   function brancher() {
     document.querySelectorAll('button, a').forEach(el => {
       if (el.closest('.exit-dialog-overlay')) return
       if (el.textContent.trim().toLowerCase() !== 'quitter') return
-      el.addEventListener('click', e => { e.preventDefault(); open() })
+
+      if (EN_EDITION) {
+        el.textContent = 'Enregistrer et quitter'
+        el.addEventListener('click', e => { e.preventDefault(); enregistrerEtQuitter() })
+      } else {
+        el.addEventListener('click', e => { e.preventDefault(); open() })
+      }
     })
   }
 
