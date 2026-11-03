@@ -40,10 +40,13 @@
 
      `editPrefill` : ce qu'il faut ajouter à l'adresse en mode édition,
      pour retrouver l'écran garni du contenu de l'annonce. */
+  /* L'ordre suit celui du prototype : les photos viennent juste après
+     l'adresse. La maquette Figma plaçait les caractéristiques avant, ce
+     qui faisait passer pour « faite » une étape jamais franchie. */
   const STEPS = [
     { key: 'adresse',          label: 'Adresse',          page: 'ad-insertion-localisation.html' },
-    { key: 'caracteristiques', label: 'Caractéristiques' },
     { key: 'photos',           label: 'Photos',           page: 'ad-insertion-photos.html', editPrefill: 'photos=t3' },
+    { key: 'caracteristiques', label: 'Caractéristiques' },
     { key: 'description',      label: 'Description',      page: 'ad-insertion-description.html' },
     { key: 'prix',             label: 'Prix',             page: 'ad-insertion-prix.html' },
     { key: 'coordonnees',      label: 'Coordonnées' },
