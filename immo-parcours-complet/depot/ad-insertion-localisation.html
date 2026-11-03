@@ -454,12 +454,14 @@
     <div class="header-inner">
       <div class="header-left">
         <img class="brand-logo" src="assets/leboncoin-logo.svg" width="140" height="26" alt="leboncoin" />
-        <span class="header-title">Déposer une annonce</span>
+        <!-- À partir de l'étape adresse, c'est le tracker « Votre annonce
+             pas à pas » qui situe l'utilisateur : le titre ferait double. -->
       </div>
       <button type="button" class="btn btn-outlined">Quitter</button>
     </div>
     <div class="progress-bar-track">
-      <div class="progress-bar-fill" style="width:25%"></div>
+      <!-- Largeur posée par progress-tracker.js, d'après l'étape. -->
+      <div class="progress-bar-fill" id="progress-fill"></div>
     </div>
   </header>
 

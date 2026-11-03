@@ -161,6 +161,19 @@
       color: var(--color-on-surface, #152233);
     }
 
+    /* ── Franchie, mais située après l'étape où l'on se trouve ────
+       On est revenu en arrière : cette étape reste atteignable. Même
+       dessin qu'« à venir », sans l'atténuation — active, non
+       sélectionnée. */
+    .sp-step.is-available .sp-step-dot {
+      border: 1px solid var(--color-support, #094171);
+      color: var(--color-support, #094171);
+    }
+    .sp-step.is-available .sp-step-label {
+      font-weight: 400;
+      color: var(--color-on-surface, #152233);
+    }
+
     /* ── À venir ────────────────────────────────────────────────── */
     .sp-step.is-todo .sp-step-dot {
       border: 1px solid var(--color-support, #094171);
@@ -257,12 +270,45 @@
     return
   }
 
-  const etat = i => (i < currentIndex ? 'done' : i === currentIndex ? 'current' : 'todo')
-  const dit = { done: 'Terminé', current: 'Étape en cours', todo: 'À venir' }
-
   /* En mode édition on retouche une annonce publiée : les écrans qu'on
      rejoint doivent en porter le contenu, donc le paramètre suit. */
   const adId = new URLSearchParams(location.search).get('ad')
+  const enEdition = Boolean(adId)
+
+  /* ══ Jusqu'où le parcours est allé ═══════════════════════════════
+     Revenir à une étape précédente ne doit pas rendre inaccessibles
+     celles qu'on a déjà remplies : elles restent actives, simplement
+     non sélectionnées.
+
+     En mode édition la question ne se pose pas : l'annonce est publiée,
+     donc toutes ses étapes ont été franchies.
+
+     En dépôt neuf, la progression est retenue dans le brouillon. Le
+     tracker l'avance de lui-même à chaque étape atteinte. */
+  let atteintMax = currentIndex
+
+  if (enEdition) {
+    atteintMax = STEPS.length - 1
+  } else if (window.Draft) {
+    const memoire = Draft.read().etapeMax
+    atteintMax = Math.max(Number.isInteger(memoire) ? memoire : -1, currentIndex)
+    if (atteintMax > (Number.isInteger(memoire) ? memoire : -1)) {
+      Draft.patch({ etapeMax: atteintMax })
+    }
+  }
+
+  const etat = i => {
+    if (i < currentIndex) return 'done'
+    if (i === currentIndex) return 'current'
+    return i <= atteintMax ? 'available' : 'todo'
+  }
+
+  const dit = {
+    done: 'Terminé',
+    current: 'Étape en cours',
+    available: 'Déjà remplie',
+    todo: 'À venir',
+  }
 
   function adresseDe(step) {
     if (!step.page) return null
@@ -279,12 +325,13 @@
       ? '<img src="assets/tracker-check.svg" width="16" height="16" alt="" />'
       : String(i + 1)
 
-    /* On ne revient que sur une étape déjà franchie, et seulement si son
-       écran existe. L'étape en cours n'est pas un lien — on y est — et
-       celles à venir ne se sautent pas. */
-    const href = e === 'done' ? adresseDe(step) : null
+    /* Est atteignable toute étape déjà franchie dont l'écran existe,
+       qu'elle soit avant ou après celle où l'on se trouve. L'étape en
+       cours n'est pas un lien — on y est — et celles jamais franchies ne
+       se sautent pas. */
+    const href = (e === 'done' || e === 'available') ? adresseDe(step) : null
     const label = href
-      ? `<a class="sp-step-label" href="${href}">${step.label}<span class="sp-sr-only"> — ${dit[e]}, revenir à cette étape</span></a>`
+      ? `<a class="sp-step-label" href="${href}">${step.label}<span class="sp-sr-only"> — ${dit[e]}, aller à cette étape</span></a>`
       : `<span class="sp-step-label">${step.label}<span class="sp-sr-only"> — ${dit[e]}</span></span>`
 
     return `
@@ -307,5 +354,23 @@
      première fois, c'est-à-dire à l'étape « Adresse ». */
   if (container.hasAttribute('data-animate')) {
     container.querySelector('.sp-tracker').classList.add('is-entering')
+  }
+
+  /* ══ La barre de progression du header ════════════════════════════
+     Elle dit la même chose que le tracker, elle doit donc en découler :
+     chaque page portait sa propre valeur en dur, et elles finissaient
+     par se contredire — la description était à 58 % quand les photos,
+     qui viennent avant, étaient à 76 %.
+
+     Le compte inclut l'étape du titre, qui précède le tracker et n'y
+     figure pas : sept jalons, dont « Adresse » est le deuxième. */
+  /* Le repli sur la classe rattrape une page qui aurait oublié l'id —
+     c'était le cas de l'étape adresse, dont la barre restait figée. */
+  const barre = document.getElementById('progress-fill')
+    || document.querySelector('.progress-bar-fill')
+
+  if (barre) {
+    const jalons = STEPS.length + 1
+    barre.style.width = `${Math.round(((currentIndex + 2) / jalons) * 100)}%`
   }
 })()

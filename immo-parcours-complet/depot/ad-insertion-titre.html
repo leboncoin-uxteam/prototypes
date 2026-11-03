@@ -323,7 +323,7 @@
       <button type="button" class="btn btn-outlined">Quitter</button>
     </div>
     <div class="progress-bar-track">
-      <div class="progress-bar-fill" id="progress-fill" style="width:25%"></div>
+      <div class="progress-bar-fill" id="progress-fill" style="width:14%"></div>
     </div>
   </header>
 
@@ -483,7 +483,7 @@
     if (!block.hidden) return
     block.hidden = false
     block.classList.add('reveal')
-    progress.style.width = '32%'
+    progress.style.width = '21%'
   }
 
   function hideSuggestions() {
@@ -491,7 +491,7 @@
     block.classList.remove('reveal')
     radios.forEach(r => { r.checked = false })
     select.value = ''
-    progress.style.width = '25%'
+    progress.style.width = '14%'
   }
 
   input.addEventListener('input', () => {
