@@ -344,9 +344,9 @@
         <!-- Action footer -->
         <div class="action-footer">
           <a href="ad-insertion-localisation.html" class="btn btn-outlined">Retour</a>
-          <!-- Les étapes suivantes ne sont pas construites : on rejoint
-               « Mes annonces », où le dépôt apparaît en brouillon. -->
-          <a href="mes-annonces/index.html" class="btn btn-filled-main" id="btn-continuer">Continuer</a>
+          <!-- Destination posée par le script en bas de page, selon qu'on
+               dépose ou qu'on retouche une annonce. -->
+          <a href="ad-insertion-description.html" class="btn btn-filled-main" id="btn-continuer">Continuer</a>
         </div>
       </div>
 
@@ -574,14 +574,19 @@
     photos = PHOTOS_T3.slice()
   }
 
-  /* En mode édition — « ad=<id> » dans l'URL — « Continuer » referme la
-     boucle sur l'annonce retouchée, détail ouvert, au lieu de retomber sur
-     la liste. Voir exit-dialog.js pour le bouton du header. */
+  /* « Continuer » continue le parcours : après les photos vient la
+     description. Pour sortir sans enchaîner, c'est « Enregistrer et
+     quitter » du header qui sert — voir exit-dialog.js.
+
+     En mode édition le paramètre suit, pour que l'étape suivante porte
+     bien le contenu de l'annonce qu'on retouche. */
   const adId = params.get('ad')
-  if (adId) {
-    document.getElementById('btn-continuer')
-      .setAttribute('href', `mes-annonces/index.html?ad=${encodeURIComponent(adId)}`)
-  }
+  document.getElementById('btn-continuer').setAttribute(
+    'href',
+    adId
+      ? `ad-insertion-description.html?ad=${encodeURIComponent(adId)}`
+      : 'ad-insertion-description.html'
+  )
 
   render()
 </script>

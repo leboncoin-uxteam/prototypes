@@ -229,17 +229,22 @@ Les autres sorties, plus ciblées :
 ## Place dans le parcours
 
 ```
-homepage → titre → localisation → photos → mes-annonces
-                                    ↑            │  │
-            Finaliser l'annonce ────┘            │  │
-                                                 │  │
-         photos?photos=t3  ←── Ajouter des photos┘  │
-         description       ←── Enrichir ma description
-         localisation      ←── Compléter la localisation
+homepage → titre → localisation → photos → description → mes-annonces
+             ↑                                                │  │
+             └──────────── Finaliser l'annonce ───────────────┘  │
+                                                                 │
+         localisation      ←── Compléter la localisation ────────┤
+         photos?photos=t3  ←── Ajouter des photos ──────────────-┤
+         description       ←── Enrichir ma description ──────────┘
 ```
 
-Le bouton « Continuer » de l'étape photos mène ici : les étapes suivantes du
-dépôt ne sont pas construites, le dépôt atterrit donc en brouillon.
+« Continuer » avance toujours d'une étape, en dépôt neuf comme en mode
+édition. Pour sortir sans enchaîner, c'est « Enregistrer et quitter » du
+header qui sert.
+
+L'écran de description est la dernière étape construite : son « Continuer »
+mène ici, et le dépôt atterrit en brouillon. Les étapes caractéristiques,
+prix et coordonnées n'existent pas encore.
 
 Le bouton « Quitter » du parcours de dépôt propose aussi de venir ici
 (`../exit-dialog.js`).

@@ -726,8 +726,15 @@
      plutôt que d'enchaîner sur les photos. Voir exit-dialog.js pour le
      bouton du header. */
   const editedAdId = new URLSearchParams(location.search).get('ad')
+
+  /* « Continuer » continue le parcours : l'étape suivante est celle des
+     photos, en mode édition comme en dépôt neuf. Pour sortir sans
+     enchaîner, c'est « Enregistrer et quitter » du header qui sert.
+
+     En mode édition le paramètre suit, et les photos de l'annonce avec,
+     pour que l'étape s'ouvre garnie plutôt que vide. */
   const NEXT_STEP = editedAdId
-    ? `mes-annonces/index.html?ad=${encodeURIComponent(editedAdId)}`
+    ? `ad-insertion-photos.html?photos=t3&ad=${encodeURIComponent(editedAdId)}`
     : 'ad-insertion-photos.html'
   const setNextEnabled = on => { btnNext.disabled = !on }
 

@@ -68,9 +68,8 @@ Les deux boutons « Déposer une annonce » pointent vers `../ad-insertion-titre
 
 Déplacé seul, le prototype s'affiche normalement mais ces deux boutons mènent à une 404. Pour les rebrancher, chercher `ad-insertion-titre.html` dans `index.html` (deux occurrences).
 
-Le parcours de dépôt enchaîne : titre → localisation → photos → `mes-annonces/`.
-Un écran de description (`ad-insertion-description.html`) s'y greffe, atteint
-depuis le panneau de complétion de « Mes annonces ».
+Le parcours de dépôt enchaîne : titre → localisation → photos → description →
+`mes-annonces/`, où le dépôt apparaît en brouillon.
 
 À partir de l'étape de localisation, une colonne « Votre annonce pas à pas »
 longe le contenu : le progress tracker vertical de Spark, dans
