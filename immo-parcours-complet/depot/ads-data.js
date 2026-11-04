@@ -45,8 +45,12 @@
     nbPhotos: 4,
     /* L'adresse du bien, telle qu'on la cherche dans l'étape de
        localisation : c'est elle qui garnit le champ quand on vient
-       corriger la localisation depuis « Mes annonces ». */
-    addressQuery: 'Rue de Belleville, Paris',
+       corriger la localisation depuis « Mes annonces ».
+
+       Le code postal est dans la requête : la rue de Belleville court
+       sur deux arrondissements, et sans lui la base adresse renvoie le
+       19e. */
+    addressQuery: 'Rue de Belleville, 75020 Paris',
     price: '500 000 €',
     category: 'Ventes immobilières',
     createdAt: 'Créée 29 juin 2026',

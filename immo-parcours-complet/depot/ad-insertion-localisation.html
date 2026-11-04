@@ -981,10 +981,16 @@
     if (!editedAdId || !window.Ads) return
 
     const ad = Ads.byId(editedAdId)
-    if (!ad || !ad.addressQuery) return
+    if (!ad) return
+
+    /* Une adresse déjà corrigée a la priorité sur celle de l'annonce :
+       revenir sur l'étape doit montrer ce qu'on y a enregistré, pas
+       repartir du contenu d'origine. */
+    const recherche = AdEdits.get(editedAdId).adresse || ad.addressQuery
+    if (!recherche) return
 
     try {
-      const res = await fetch(`${BAN_URL}?q=${encodeURIComponent(ad.addressQuery)}&limit=1`)
+      const res = await fetch(`${BAN_URL}?q=${encodeURIComponent(recherche)}&limit=1`)
       if (!res.ok) return
       const data = await res.json()
       if (!data.features || data.features.length === 0) return
@@ -1001,6 +1007,38 @@
   }
 
   prefillAddress()
+
+  /* ══ Enregistrer ce qui est saisi avant de quitter ════════════════
+     Jusqu'ici la localisation n'était retenue qu'en choisissant une
+     suggestion. Taper son adresse puis cliquer « Enregistrer et
+     quitter » — le geste le plus naturel — ne gardait rien.
+
+     On résout donc ce qui est dans le champ, et on retient le premier
+     résultat comme si l'utilisateur l'avait choisi : l'adresse est
+     enregistrée, et le gain de complétion accordé si elle porte un
+     numéro.
+
+     exit-dialog.js attend cette fonction avant de naviguer. */
+  window.saveEdits = async () => {
+    // Une suggestion retenue a déjà tout enregistré.
+    if (selected) return
+
+    const q = input.value.trim()
+    if (!q) return
+
+    try {
+      const res = await fetch(`${BAN_URL}?q=${encodeURIComponent(q)}&limit=1`)
+      if (!res.ok) return
+      const data = await res.json()
+      if (!data.features || data.features.length === 0) return
+
+      features = data.features
+      select(0)
+    } catch {
+      /* Base adresse injoignable : on quitte sans rien retenir plutôt
+         que d'enregistrer une adresse qu'on n'a pas pu vérifier. */
+    }
+  }
 </script>
 <script src="progress-tracker.js"></script>
 <script src="exit-dialog.js"></script>

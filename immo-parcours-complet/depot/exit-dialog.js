@@ -232,11 +232,16 @@
   })
 
   /* ══ Branchement sur les boutons « Quitter » ═════════════════════ */
-  function enregistrerEtQuitter() {
-    /* La page enregistre ses propres champs si elle sait le faire. Une
-       erreur de sa part ne doit pas bloquer la sortie. */
+  async function enregistrerEtQuitter() {
+    /* La page enregistre ses propres champs si elle sait le faire.
+
+       L'attente compte : l'étape de localisation doit interroger la base
+       adresse quand l'utilisateur a saisi sans choisir de suggestion.
+       Partir sans attendre perdrait ce qu'il vient d'écrire.
+
+       Une erreur de la page ne doit pas bloquer la sortie. */
     try {
-      if (typeof window.saveEdits === 'function') window.saveEdits()
+      if (typeof window.saveEdits === 'function') await window.saveEdits()
     } catch (err) {
       console.error('saveEdits a échoué, on quitte quand même', err)
     }
