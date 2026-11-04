@@ -931,14 +931,15 @@
         }
       }
 
-      /* Une fois l'adresse précisée, le manque n'a plus lieu d'être
-         signalé : le tag et l'alerte rouge s'effacent. */
+      /* Une fois l'adresse précisée, la case ne signale plus un manque
+         mais un acquis : le tag passe au vert et l'alerte disparaît —
+         il n'y a plus rien à porter à l'attention. */
       if (item.key === 'localisation' && ad.adressePrecise) {
         return {
           ...item,
-          tag: undefined,
-          measure: 'Adresse précise renseignée',
-          alert: 'info',
+          tag: 'Adresse précise renseignée',
+          tagClass: 'tag-success',
+          alert: null,
           href: withAd,
         }
       }
@@ -1026,28 +1027,32 @@
   }
 
   function qualityItem(item) {
-    const alertIcon = item.alert === 'alert' ? 'assets/alert-alert.svg' : 'assets/alert-info.svg'
+    /* Pas d'alerte quand `alert` est absent : une case qui ne signale
+       plus rien ne doit pas garder son pictogramme. */
+    const alertIcon = item.alert === 'alert'
+      ? 'assets/alert-alert.svg'
+      : item.alert === 'info' ? 'assets/alert-info.svg' : null
 
-    /* Une piste qui mène quelque part est un lien. Les autres sont
-       désactivées : leur écran n'est pas construit, autant le dire au
-       regard plutôt que de laisser cliquer dans le vide. */
+    /* Une piste qui mène quelque part est un lien, les autres un
+       bouton. Celui-ci se désactive au clic, pas avant : rien ne laisse
+       deviner que l'écran manque tant qu'on ne l'a pas demandé. */
     const open = item.href
       ? `<a class="quality-item" href="${item.href}">`
-      : '<button class="quality-item" type="button" disabled'
-        + ' title="Cette étape n’est pas encore construite dans le prototype">'
+      : '<button class="quality-item js-piste-indispo" type="button">'
     const close = item.href ? '</a>' : '</button>'
+
     return `
       ${open}
         <div class="quality-item-head">
           <span class="quality-item-title">${esc(item.title)}</span>
-          <img src="${alertIcon}" width="20" height="20" alt="" />
+          ${alertIcon ? `<img src="${alertIcon}" width="20" height="20" alt="" />` : ''}
           <img src="assets/icon-chevron-right.svg" width="10" height="20" alt="" />
         </div>
         ${item.measure ? `<p class="quality-item-measure">${esc(item.measure)}</p>` : ''}
         ${item.ratio !== undefined
           ? `<div class="meter-bar"><span style="width:${Math.round(item.ratio * 100)}%"></span></div>`
           : ''}
-        ${item.tag ? `<span class="tag tag-neutral">${esc(item.tag)}</span>` : ''}
+        ${item.tag ? `<span class="tag ${item.tagClass || 'tag-neutral'}">${esc(item.tag)}</span>` : ''}
         <p class="quality-item-gain"><strong>${item.gainValue}</strong> ${item.gainRest}</p>
         ${item.link ? `<span class="quality-item-link">${esc(item.link)}</span>` : ''}
       ${close}`
@@ -1187,6 +1192,16 @@
 
     toggle.addEventListener('click', () => setOpen(details.hidden))
     link.addEventListener('click', () => setOpen(details.hidden, { reveal: true }))
+
+    /* Une piste sans écran se désactive au moment où on la demande :
+       le clic répond, même si la réponse est qu'il n'y a rien derrière.
+       Avant le clic, elle a l'allure des autres. */
+    card.querySelectorAll('.js-piste-indispo').forEach(btn => {
+      btn.addEventListener('click', () => {
+        btn.disabled = true
+        btn.title = 'Cette étape n’est pas encore construite dans le prototype'
+      })
+    })
 
     // Onglets Vues / Apparitions : le second est un zoning, pas de données.
     card.querySelectorAll('.perf-tabs .tab').forEach(tab => {
