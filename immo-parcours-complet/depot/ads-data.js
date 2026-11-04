@@ -43,6 +43,10 @@
     descLength: DESCRIPTION.length,
     // Les quatre photos de l'annonce, celles de assets/annonce-t3/.
     nbPhotos: 4,
+    /* L'adresse du bien, telle qu'on la cherche dans l'étape de
+       localisation : c'est elle qui garnit le champ quand on vient
+       corriger la localisation depuis « Mes annonces ». */
+    addressQuery: 'Rue de Belleville, Paris',
     price: '500 000 €',
     category: 'Ventes immobilières',
     createdAt: 'Créée 29 juin 2026',

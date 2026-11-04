@@ -512,6 +512,9 @@
   /* Les tags vivent dans des colonnes flex : sans cela ils s'étireraient. */
   .tag { align-self: flex-start; }
   .tag-error { background: var(--error-container); color: var(--on-error-container); }
+  /* Les deux paliers hauts du score, au-dessus de 35 % puis de 70 %. */
+  .tag-alert { background: #fff0cc; color: #7a5200; }
+  .tag-success { background: #d7f0e2; color: var(--success); }
   .tag-neutral { background: var(--neutral-container); color: var(--on-neutral-container); }
   .tag-support { background: var(--support); color: var(--surface); }
   .tag-dark { background: var(--neutral); color: var(--surface); }
@@ -535,11 +538,20 @@
     cursor: pointer;
     transition: border-color .15s ease, box-shadow .15s ease;
   }
-  .quality-item:hover {
+  .quality-item:hover:not(:disabled) {
     border-color: var(--outline);
     box-shadow: 0 2px 8px rgba(21, 34, 51, .08);
   }
   .quality-item:focus-visible { outline: 2px solid var(--on-surface); outline-offset: 2px; }
+
+  /* Piste dont l'écran n'existe pas encore : désactivée, sans survol ni
+     curseur qui promettrait une action. Elle reste lisible — c'est une
+     information sur l'annonce, pas seulement un bouton. */
+  .quality-item:disabled {
+    opacity: .4;
+    cursor: not-allowed;
+    background: var(--neutral-container);
+  }
   .quality-item-head {
     display: flex; align-items: flex-start; gap: var(--sp-md);
   }
@@ -810,11 +822,24 @@
      affaire : il donne sa propre carte, plus bas. */
   const ADS = Ads.all().map(ad => {
     const edits = AdEdits.get(ad.id)
+
+    /* Les trois gains se cumulent au score de départ de l'annonce :
+       ajouter une photo, préciser l'adresse, enrichir la description.
+       Chacun est posé par l'étape de dépôt correspondante.
+
+       `scoreBonus` est l'ancien nom du seul gain qui existait, celui de
+       la description : on le lit encore pour qu'un brouillon enregistré
+       avant ce changement ne perde pas ses points. */
+    const gains = (edits.bonusPhotos || 0)
+      + (edits.bonusAdresse || 0)
+      + (edits.bonusDescription || edits.scoreBonus || 0)
+
     return {
       ...ad,
-      score: Math.min(100, ad.score + (edits.scoreBonus || 0)),
+      score: Math.min(100, ad.score + gains),
       descLength: edits.descLength ?? ad.descLength,
       nbPhotos: edits.nbPhotos ?? ad.nbPhotos,
+      adressePrecise: edits.adressePrecise ?? false,
       title: edits.titre || ad.title,
       photo: 'assets/ad-photo.png',
     }
@@ -846,6 +871,7 @@
       href: '../ad-insertion-photos.html?photos=t3',
     },
     {
+      key: 'localisation',
       title: 'Compléter la localisation',
       tag: 'Adresse précise manquante',
       gainValue: '+41 % d’attractivité',
@@ -905,6 +931,18 @@
         }
       }
 
+      /* Une fois l'adresse précisée, le manque n'a plus lieu d'être
+         signalé : le tag et l'alerte rouge s'effacent. */
+      if (item.key === 'localisation' && ad.adressePrecise) {
+        return {
+          ...item,
+          tag: undefined,
+          measure: 'Adresse précise renseignée',
+          alert: 'info',
+          href: withAd,
+        }
+      }
+
       return { ...item, href: withAd }
     })
   }
@@ -923,11 +961,27 @@
      Le pourcentage étant une donnée, le tracé est calculé plutôt que
      repris d'un SVG figé. Les trois couleurs sont celles du Figma :
      rouge sous 40 %, jaune jusqu'à 70 %, vert au-delà. */
-  function meterColor(score) {
-    if (score < 40) return 'var(--error)'
-    if (score < 70) return 'var(--alert)'
-    return 'var(--success)'
+  /* Les trois paliers du score : rouge jusqu'à 35 %, jaune jusqu'à
+     70 %, vert au-delà. */
+  function palier(score) {
+    if (score <= 35) return 'bas'
+    if (score <= 70) return 'moyen'
+    return 'eleve'
   }
+
+  const COULEUR_PALIER = {
+    bas:   'var(--error)',
+    moyen: 'var(--alert)',
+    eleve: 'var(--success)',
+  }
+
+  const TAG_PALIER = {
+    bas:   { texte: 'Score bas',   classe: 'tag-error' },
+    moyen: { texte: 'Score moyen', classe: 'tag-alert' },
+    eleve: { texte: 'Score élevé', classe: 'tag-success' },
+  }
+
+  const meterColor = score => COULEUR_PALIER[palier(score)]
 
   function meterCircle(score, { size = 24, stroke = 3, showValue = false } = {}) {
     const r = (size - stroke) / 2
@@ -973,8 +1027,14 @@
 
   function qualityItem(item) {
     const alertIcon = item.alert === 'alert' ? 'assets/alert-alert.svg' : 'assets/alert-info.svg'
-    // Une piste qui mène quelque part est un lien ; les autres, un bouton.
-    const open = item.href ? `<a class="quality-item" href="${item.href}">` : '<button class="quality-item" type="button">'
+
+    /* Une piste qui mène quelque part est un lien. Les autres sont
+       désactivées : leur écran n'est pas construit, autant le dire au
+       regard plutôt que de laisser cliquer dans le vide. */
+    const open = item.href
+      ? `<a class="quality-item" href="${item.href}">`
+      : '<button class="quality-item" type="button" disabled'
+        + ' title="Cette étape n’est pas encore construite dans le prototype">'
     const close = item.href ? '</a>' : '</button>'
     return `
       ${open}
@@ -1030,7 +1090,7 @@
                     Annonce à enrichir
                     <img src="assets/alert-info.svg" width="20" height="20" alt="" />
                   </span>
-                  <span class="tag tag-error">Score bas</span>
+                  <span class="tag ${TAG_PALIER[palier(ad.score)].classe}">${TAG_PALIER[palier(ad.score)].texte}</span>
                 </div>
               </div>
             </div>

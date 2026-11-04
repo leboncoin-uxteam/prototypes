@@ -375,11 +375,37 @@
   const MAX_PHOTOS    = 99   // « jusqu'à 99 photos gratuites »
   const SLOTS_MINIMUM = 3    // emplacements numérotés visibles à vide, comme le design
 
+  /* ══ Import de démonstration ═════════════════════════════════════
+     Cliquer une case n'ouvre pas le disque de l'utilisateur : un
+     prototype qui demande d'aller chercher des fichiers casse la
+     démonstration. Les photos arrivent de ce lot, une par clic, et le
+     sélecteur reste disponible pour qui veut ses propres images. */
+  const IMPORT_LOT = [
+    { id: 'imp-05', src: 'assets/annonce-t3/05-salon.jpeg',          name: 'Salon' },
+    { id: 'imp-06', src: 'assets/annonce-t3/06-sejour-cuisine.jpeg', name: 'Séjour et cuisine' },
+    { id: 'imp-07', src: 'assets/annonce-t3/07-exterieur.jpeg',      name: 'Extérieur' },
+  ]
+  let importees = 0
+
+  /* Ajouter ne serait-ce qu'une photo vaut ce gain de complétion : le
+     pas décisif est de passer de « sans » à « avec ». */
+  const GAIN_PHOTOS = 15
+
   const grid      = document.getElementById('photo-grid')
   const fileInput = document.getElementById('file-input')
   const countEl   = document.getElementById('photo-count')
   const progress  = document.getElementById('progress-fill')
   const tips      = document.getElementById('tips')
+
+  /* Importe la photo suivante du lot. Un clic, une photo : on voit le
+     compteur monter et le score bouger dès la première. */
+  function importerSuivante() {
+    if (importees >= IMPORT_LOT.length) return
+    if (photos.length >= MAX_PHOTOS) return
+    photos.push({ ...IMPORT_LOT[importees] })
+    importees += 1
+    render()
+  }
 
   // Une photo = { id, src, name }. L'ordre du tableau est l'ordre affiché.
   let photos = []
@@ -419,7 +445,13 @@
        annonces ». On y retient le nombre de photos et la première en
        vignette, pas les fichiers : trop lourds à stocker. */
     if (adId) {
-      AdEdits.patch(adId, { nbPhotos: photos.length })
+      /* Le gain tombe dès la première photo ajoutée, et ne s'accorde
+         qu'une fois : il récompense le geste, pas la quantité. */
+      const aAjoute = photos.length > photosAuDepart
+      AdEdits.patch(adId, {
+        nbPhotos: photos.length,
+        bonusPhotos: aAjoute ? GAIN_PHOTOS : (AdEdits.get(adId).bonusPhotos || 0),
+      })
     } else {
       Draft.patch({ nbPhotos: photos.length })
       Draft.setThumb(photos.length > 0 ? photos[0].src : null)
@@ -431,10 +463,13 @@
     btn.type = 'button'
     btn.className = 'photo-slot photo-add'
     btn.dataset.nodeId = '15761:63411'
+    const reste = IMPORT_LOT.length - importees
     btn.innerHTML = `
       <img src="assets/photo-add-image.svg" width="64" height="64" alt="" />
       <span class="photo-slot-label">Ajouter des photos</span>`
-    btn.addEventListener('click', () => fileInput.click())
+    btn.disabled = reste === 0
+    if (reste === 0) btn.title = 'Les photos du lot de démonstration sont toutes importées'
+    btn.addEventListener('click', importerSuivante)
     registerDropzone(btn, photos.length)
     return btn
   }
@@ -447,7 +482,8 @@
     btn.innerHTML = `
       <img src="assets/photo-camera.svg" width="52" height="52" alt="" />
       <span class="photo-slot-label">Photo n°${number}</span>`
-    btn.addEventListener('click', () => fileInput.click())
+    btn.disabled = importees >= IMPORT_LOT.length
+    btn.addEventListener('click', importerSuivante)
     return btn
   }
 
@@ -574,6 +610,10 @@
   if (params.get('photos') === 't3') {
     photos = PHOTOS_T3.slice()
   }
+
+  /* Ce que l'annonce comptait en arrivant : au-delà, c'est que
+     l'utilisateur en a ajouté, et le gain de complétion est dû. */
+  const photosAuDepart = photos.length
 
   /* « Continuer » continue le parcours : après les photos vient la
      description. Pour sortir sans enchaîner, c'est « Enregistrer et

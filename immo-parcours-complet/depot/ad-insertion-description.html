@@ -376,9 +376,9 @@
 <script src="draft-store.js"></script>
 <script src="ads-data.js"></script>
 <script>
-  /* Gain de score accordé quand la description d'une annonce publiée est
-     enrichie. « Mes annonces » l'ajoute au score de l'annonce. */
-  const GAIN_SCORE = 5
+  /* Gain de complétion accordé quand la description d'une annonce
+     publiée est enrichie. « Mes annonces » l'ajoute au score. */
+  const GAIN_DESCRIPTION = 5
 
   const titre       = document.getElementById('titre')
   const description = document.getElementById('description')
@@ -459,14 +459,14 @@
        brouillon du dépôt n'est pas touché — une annonce publiée et un
        dépôt en cours sont deux choses distinctes. */
     const enrichie = nouvelleDescription.length > descriptionInitiale.trim().length
-    const dejaGagne = AdEdits.get(adId).scoreBonus || 0
+    const dejaGagne = AdEdits.get(adId).bonusDescription || 0
 
     AdEdits.patch(adId, {
       titre: nouveauTitre,
       description: nouvelleDescription,
       descLength: nouvelleDescription.length,
       // Le gain ne s'accorde qu'une fois : on n'empile pas 5 % par passage.
-      scoreBonus: enrichie ? Math.max(dejaGagne, GAIN_SCORE) : dejaGagne,
+      bonusDescription: enrichie ? Math.max(dejaGagne, GAIN_DESCRIPTION) : dejaGagne,
     })
   }
 

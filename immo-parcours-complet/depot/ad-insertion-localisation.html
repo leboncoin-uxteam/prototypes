@@ -629,6 +629,7 @@
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="draft-store.js"></script>
+<script src="ads-data.js"></script>
 <script>
   /* ══ Carte ═══════════════════════════════════════════════════════ */
   const FRANCE_CENTER = [46.6, 2.4]
@@ -688,6 +689,10 @@
 
   /* ══ Autocomplete — Base Adresse Nationale ═══════════════════════ */
   const BAN_URL  = 'https://api-adresse.data.gouv.fr/search/'
+
+  /* Gain de complétion accordé pour une adresse précise, c'est-à-dire
+     avec un numéro de rue. « Mes annonces » l'ajoute au score. */
+  const GAIN_ADRESSE = 20
   const DEBOUNCE = 250
   const MIN_CHARS = 3
 
@@ -842,7 +847,10 @@
     }
   }
 
-  function select(index) {
+  /* `prefill` : la sélection vient du chargement de la page, pas d'un
+     geste de l'utilisateur. On garnit l'écran sans rien enregistrer —
+     arriver sur une étape puis repartir ne doit pas écrire. */
+  function select(index, { prefill = false } = {}) {
     const f = features[index]
     if (!f) return
     selected = f
@@ -879,8 +887,19 @@
       adressePrecise: precise,
     }
 
-    if (editedAdId) AdEdits.patch(editedAdId, localisation)
-    else Draft.patch(localisation)
+    if (prefill) return
+
+    if (editedAdId) {
+      /* L'adresse précise — avec son numéro — vaut ce gain de
+         complétion. Une rue sans numéro ne l'accorde pas : c'est la
+         précision qui fait la différence pour la recherche. */
+      AdEdits.patch(editedAdId, {
+        ...localisation,
+        bonusAdresse: precise ? GAIN_ADRESSE : 0,
+      })
+    } else {
+      Draft.patch(localisation)
+    }
   }
 
   function reset() {
@@ -947,6 +966,41 @@
     // Laisse le clic sur une suggestion se produire avant de juger.
     setTimeout(() => { if (!list.contains(document.activeElement)) validateAddress() }, 150)
   })
+
+  /* ══ Adresse de départ, en mode édition ══════════════════════════
+     On arrive de « Compléter la localisation » : l'annonce est publiée,
+     elle a donc une adresse. On la cherche dans la base adresse et on
+     retient le premier résultat, ce qui garnit le champ, pose le
+     marqueur, cadre la carte et débloque « Continuer » — exactement ce
+     que ferait l'utilisateur à la main.
+
+     L'adresse vient de ads-data.js, la source des annonces. Rien n'est
+     enregistré : ce pré-remplissage décrit l'existant, il ne le modifie
+     pas. */
+  async function prefillAddress() {
+    if (!editedAdId || !window.Ads) return
+
+    const ad = Ads.byId(editedAdId)
+    if (!ad || !ad.addressQuery) return
+
+    try {
+      const res = await fetch(`${BAN_URL}?q=${encodeURIComponent(ad.addressQuery)}&limit=1`)
+      if (!res.ok) return
+      const data = await res.json()
+      if (!data.features || data.features.length === 0) return
+
+      // L'utilisateur a pu commencer à saisir pendant la requête.
+      if (selected || input.value.trim().length > 0) return
+
+      features = data.features
+      select(0, { prefill: true })
+    } catch {
+      /* Base adresse injoignable : l'écran reste vide, à saisir à la
+         main. Le reste de l'étape fonctionne de la même façon. */
+    }
+  }
+
+  prefillAddress()
 </script>
 <script src="progress-tracker.js"></script>
 <script src="exit-dialog.js"></script>
